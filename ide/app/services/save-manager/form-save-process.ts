@@ -1,3 +1,5 @@
+import { PlominoTabsManagerService } from './../tabs-manager/index';
+import { ObjService } from './../obj.service';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { WidgetService } from './../widget.service';
 import { PlominoActiveEditorService } from './../active-editor.service';
@@ -87,6 +89,16 @@ export class PlominoFormSaveProcess {
    */
   protected widgetService: WidgetService;
 
+  /**
+   * link to ObjService instance
+   */
+  protected objService: ObjService;
+
+  /**
+   * link to PlominoTabsManagerService instance
+   */
+  protected tabsManagerService: PlominoTabsManagerService;
+
   constructor(options: PlominoFormSaveProcessOptions) {
     this.setup(options);
   }
@@ -98,6 +110,8 @@ export class PlominoFormSaveProcess {
     this.http = options.httpServiceLink;
     this.activeEditorService = options.activeEditorServiceLink;
     this.widgetService = options.widgetServiceLink;
+    this.objService = options.objServiceLink;
+    this.tabsManagerService = options.tabsManagerServiceLink;
     
     this.nextFormID = this.savingFormData.get('form.widgets.IShortName.id');
     this.originalFormID = this.originalFormURL.split('/').pop();
@@ -228,7 +242,7 @@ export class PlominoFormSaveProcess {
             /**
              * save the field title
              */
-            labels$.push(context.http
+            labels$.push(<Observable<string>> context.http
               .patch(labelURL, { title: relatedFieldTemporaryTitle }));
             $element.html(relatedFieldTemporaryTitle);
           }

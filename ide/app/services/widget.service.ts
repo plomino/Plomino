@@ -230,6 +230,8 @@ export class WidgetService {
       widgetQuerySet.add(id);
     });
 
+    this.log.info('widgetQuerySet original', Array.from(widgetQuerySet.values()));
+
     /**
      * insert additionally all elements for current form
      */
@@ -670,10 +672,12 @@ export class WidgetService {
     let template: PlominoFormGroupContent = null;
 
     let tmpId = element.html();
-    const hasAdvancedTitle = tmpId.indexOf(':') !== -1;
+    const tmpIdSplit = tmpId.split(':');
+    const hasAdvancedTitle = (tmpId.indexOf(':') !== -1) 
+      && tmpIdSplit.length > 1 && tmpIdSplit[1];
 
     if (hasAdvancedTitle) {
-      tmpId = tmpId.split(':')[0];
+      tmpId = tmpIdSplit[0];
     }
 
     if (ids.length) {
@@ -749,21 +753,23 @@ export class WidgetService {
     // this.log.extra('widget.service.ts getWidget');
     if (content && type === 'label') {
       const splitTitle = content.title.split(':');
-      if (splitTitle.length === 2) {
-        content.title = splitTitle[1];
+      const advancedTitleExists = splitTitle.length >= 2 
+        && splitTitle[1] && splitTitle[0] === id;
+      if (advancedTitleExists) {
+        content.title = splitTitle.slice(1).join(':');
       }
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
-          ${ splitTitle.length === 2 ? ` data-advanced="1"` : '' }
+          ${ advancedTitleExists ? ` data-advanced="1"` : '' }
           ${ id ? ` data-plominoid="${ id }"` : '' }>${ content.title }</span>`
       );
     }
     const splitId = id ? id.split(':') : [];
-    if (!content && id && type === 'label' && splitId.length === 2) {
+    if (!content && id && type === 'label' && splitId.length >= 2 && splitId[1]) {
       return Observable.of(
         `<span class="plominoLabelClass mceNonEditable"
           data-advanced="1"
-          data-plominoid="${ splitId[0] }">${ splitId[1] }</span>`
+          data-plominoid="${ splitId[0] }">${ splitId.slice(1).join(':') }</span>`
       );
     }
     if (content && type === 'field') {

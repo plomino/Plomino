@@ -69,7 +69,13 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 })
 export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
+  /**
+   * @description id contains the full url of form, if you want to use
+   * the tab id - follow the example below
+   * @example this.getCurrentTabId()
+   */
   @Input() id: string;
+
   @Input() item: any;
   @Output() isDirty: EventEmitter<any> = new EventEmitter();
   @Output() isLoading: EventEmitter<any> = new EventEmitter();
@@ -120,7 +126,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     private saveManager: PlominoSaveManagerService,
     private tabsManagerService: PlominoTabsManagerService,
     private http: PlominoHTTPAPIService,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     this.log.info(this.item, 'tinymce constructed');
     
@@ -287,7 +293,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     const mcePatternSub = this.formsService.tinyMCEPatternData$
       .subscribe((data) => {
-        if (this.id.split('/').pop() === data.formId) {
+        if (this.getCurrentTabId() === data.formId) {
           const tinyMCEPatData = this.modifyDataPatParams(data.data);
           if (tinyMCEPatData !== this.tinyMCEPatData) {
             this.tinyMCEPatData = tinyMCEPatData;
@@ -309,8 +315,26 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    const edId = this.id.split('/').pop();
-    this.log.info(this.id, 'tinymce destroyed');
+    const edId = this.getCurrentTabId();
+
+    /**
+     * save current state on tab close
+     */
+    const prevStateContent = this.contentManager.getContent(edId);
+    const editor = this.getEditor();
+
+    if (!editor || editor && editor.getContent().length === 0) {
+      this.log.info('current editor id changed, flushing cache...');
+      this.tabsManagerService.flushTabContentState(edId);
+    }
+    else if (editor) {
+      this.tabsManagerService.saveTabContentState(edId, {
+        content: prevStateContent,
+        pattern: this.tinyMCEPatData
+      });
+    }
+
+    this.log.info(edId, 'tinymce destroyed');
     if (this.activeEditorService.editorURL === this.id) {
       this.activeEditorService.setActive(null);
     }
@@ -359,7 +383,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.saveManager
       .createFormSaveProcess(this.id)
       .start()
-      .subscribe(() => {
+      .subscribe((x) => {
+        this.log.info('saveTheForm', x);
         this.fallLoading(false);
         this.bitDirtyStateAfterSave();
       });
@@ -482,14 +507,25 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           const editor = this.getEditor();
           if (!editor) { return; }
           const isDirty = editor.isDirty();
+
+          const refreshedHTMLContent = this.contentManager.getContent(
+            this.getCurrentTabId()
+          );
+
+          this.tabsManagerService.saveTabContentState(
+            this.getCurrentTabId(), {
+              content: refreshedHTMLContent,
+              pattern: this.tinyMCEPatData
+            }
+          );
   
           if (!isDirty) {
             const $edContainer = $(editor.getContainer());
             if ($edContainer.length) {
-              const $saveDiv = $edContainer
-                .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-              $saveDiv.attr('aria-disabled', 'true');
-              $saveDiv.addClass('mce-disabled');
+              // const $saveDiv = $edContainer
+              //   .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+              // $saveDiv.attr('aria-disabled', 'true');
+              // $saveDiv.addClass('mce-disabled');
               $(`span[data-url="${ this.id }"] > span:contains("* ")`).remove();
               $(`span[data-url="${ this.id }"] > .tabunsaved`).removeClass('tabunsaved');
             }
@@ -506,8 +542,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     const patObject = JSON.parse(dataPat);
     patObject.inline = false;
     patObject.tiny.height = 780;
+    patObject.tiny.forced_root_block = false;
     patObject.tiny.resize = false;
-    patObject.tiny.forced_root_block = '';
     patObject.tiny.cleanup = false;
     patObject.tiny.content_css = patObject.tiny.content_css.split(',');
     patObject.tiny.content_css = [patObject.tiny.content_css[2]];
@@ -538,16 +574,39 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   }
 
   initialize(): void {
+    const edId = this.getCurrentTabId();
+    const stateData = this.tabsManagerService.getTabSavedContentState(edId);
     if (!this.tinyMCEPatData) {
-      this.log.warn(
-        'you have initialized the tiny-mce before you '
-        + 'have initialized this.tinyMCEPatData'
-      );
-      return;
+      if (stateData) {
+        this.tinyMCEPatData = stateData.pattern;
+        this.fallLoading(false);
+        this.log.info('pattern restored');
+      }
+      else if (!stateData && this.formsService.latestTinyMCEPatternData) {
+        const data = this.formsService.latestTinyMCEPatternData;
+        if (data.formId === this.getCurrentTabId()) {
+          const tinyMCEPatData = this.modifyDataPatParams(data.data);
+          this.tinyMCEPatData = tinyMCEPatData;
+          this.log.warn(data.formId, 'has loaded very fast')
+        }
+        else {
+          this.log.warn(
+            '2: you have initialized the tiny-mce before you '
+            + 'have initialized this.tinyMCEPatData'
+          );
+          return;
+        }
+      }
+      else {
+        this.log.warn(
+          '1: you have initialized the tiny-mce before you '
+          + 'have initialized this.tinyMCEPatData'
+        );
+        return;
+      }
     }
 
     this.log.info('tinymce initialization started');
-    const edId = this.id.split('/').pop();
     const $el = $('textarea#' + edId);
     $el.attr('data-pat-tinymce', this.tinyMCEPatData);
     this.zone.runOutsideAngular(() => {
@@ -573,14 +632,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         editor.onMouseDown.add(this.onTinyMCEEditorMouseDown.bind(this));
         this.editorInstance = editor;
         this.editorInstance.show();
-        this.bitDirtyStateAfterSave();
+        // this.bitDirtyStateAfterSave();
 
         const $edContainer = $(editor.getContainer());
         if ($edContainer.length) {
-          const $saveDiv = $edContainer
-            .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
-          $saveDiv.attr('aria-disabled', 'true');
-          $saveDiv.addClass('mce-disabled');
+          // const $saveDiv = $edContainer
+          //   .find('.mce-toolbar-grp div.mce-widget.mce-btn:contains("Save")');
+          // $saveDiv.attr('aria-disabled', 'true');
+          // $saveDiv.addClass('mce-disabled');
           const $iframe = $edContainer.find('iframe');
           const iframeDocument = (<HTMLIFrameElement> $iframe.get(0))
             .contentWindow.document;
@@ -592,7 +651,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
         this.getFormLayout();
       }
-    }, 300);
+    }, stateData ? 1 : 300);
   }
 
   /**
@@ -944,22 +1003,20 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  getCurrentTabId() {
+    return this.id.split('/').pop();
+  }
+
   /**
    * calling REST-API and receiving form data
    */
   getFormLayout() {
     this.fallLoading();
     this.log.info('fallLoading from getFormLayout');
-    
-    this.elementService.getElementFormLayout(this.id)
-    .subscribe((form: PlominoFormDataAPIResponse) => {
-      for (let item of form.items) {
-        this.labelsRegistry.update(item['@id'], item.title, 'title');
-        this.labelsRegistry.update(item['@id'], item['@type'], '@type');
-      }
-      const data = form.form_layout;
+
+    const applyHTMLData = (data: string) => {
       let newData = '';
-      
+          
       if (data && data.length) {
         /* here I will replace the tinymce storage to virtual */
         // this.contentManager.setContent(
@@ -984,29 +1041,41 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
               $element.next().next().remove();
             }
           });
-
+  
           const htmlContent = $content.html();
           this.contentManager.setContent(this.id, htmlContent, this.draggingService);
-
-          this.saveManager.nextEditorSavedState(
-            this.id, this.contentManager.getContent(this.id)
+  
+          const refreshedHTMLContent = this.contentManager.getContent(this.id);
+          this.saveManager.nextEditorSavedState(this.id, refreshedHTMLContent);
+  
+          this.tabsManagerService.saveTabContentState(
+            this.getCurrentTabId(), {
+              content: refreshedHTMLContent,
+              pattern: this.tinyMCEPatData
+            }
           );
           
           this.fallLoading(false);
           const editor = this.getEditor();
           if (!editor) { return; }
           const isDirty = editor.isDirty();
-
+          editor.undoManager.clear();
+  
           if (editor && this.loadedFirstTime) {
             setTimeout(() => {
-              $(editor.getBody())
-              .animate(
-                { scrollTop: 0 },
-                { duration: 'medium', easing: 'swing' }
+              $(editor.getBody()).animate(
+                { scrollTop: 0 }, 'medium', 'swing', () => {
+                  try {
+                    editor.selection.setCursorLocation();
+                    this.log.info('cursor located at 0,0');
+                    editor.undoManager.clear();
+                  }
+                  catch (e) {}
+                }
               );
             }, 100);
           }
-
+  
           if (!isDirty) {
             const $edContainer = $(editor.getContainer());
             if ($edContainer.length) {
@@ -1025,12 +1094,52 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         );
         this.autoSavedContent = newData;
         this.fallLoading(false);
+        const editor = this.getEditor();
+        if (editor) {
+          editor.undoManager.clear();
+        }
       }
+    }
+    
+    const stateData = this.tabsManagerService
+      .getTabSavedContentState(this.getCurrentTabId());
 
-    }, (err) => {
-      this.log.error(err);
+    if (stateData) {
+      this.log.info('first content restored ok');
+      this.contentManager.setContent(this.id, stateData.content, this.draggingService);
+      this.saveManager.nextEditorSavedState(this.id, stateData.content);
       this.fallLoading(false);
-    });
+
+      const editor = this.getEditor();
+      if (!editor) { return; }
+      if (editor) {
+        setTimeout(() => {
+          $(editor.getBody()).animate(
+            { scrollTop: 0 }, 'medium', 'swing', () => {
+              try {
+                editor.selection.setCursorLocation();
+                this.log.info('cursor relocated at 0,0');
+                editor.undoManager.clear();
+              }
+              catch (e) {}
+            }
+          );
+        }, 100);
+      }
+    }
+    else {
+      this.elementService.getElementFormLayout(this.id)
+      .subscribe((form: PlominoFormDataAPIResponse) => {
+        for (let item of form.items) {
+          this.labelsRegistry.update(item['@id'], item.title, 'title');
+          this.labelsRegistry.update(item['@id'], item['@type'], '@type');
+        }
+        applyHTMLData(form.form_layout);
+      }, (err) => {
+        this.log.error(err);
+        this.fallLoading(false);
+      });
+    }
   }
 
   saveFormLayout(cb:any) {
@@ -1047,6 +1156,18 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.theFormIsSavingNow = false;
       this.log.info('tiny-mce loading', false, this.id);
       this.fallLoading(false);
+
+      const refreshedHTMLContent = this.contentManager.getContent(
+        this.getCurrentTabId()
+      );
+
+      this.tabsManagerService.saveTabContentState(
+        this.getCurrentTabId(), {
+          content: refreshedHTMLContent,
+          pattern: this.tinyMCEPatData
+        }
+      );
+
       this.initialize();
     }
   }

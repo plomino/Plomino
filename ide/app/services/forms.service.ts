@@ -15,6 +15,8 @@ export class FormsService {
     private formRemovedEventSource: Subject<string> = new Subject();
     private tinyMCEPatternData: Subject<{formId: string, data: string}> = new Subject();
 
+    public latestTinyMCEPatternData: {formId: string, data: string} = null;
+
     private FORM_SETTINGS_TAB_INDEX:number = 2;
 
     paletteTabChange$: Observable<any> = this.paletteTabChangeEventSource.asObservable();

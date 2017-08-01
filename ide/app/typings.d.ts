@@ -8,6 +8,8 @@ interface PlominoFormSaveProcessOptions {
   httpServiceLink: any;
   activeEditorServiceLink: any;
   widgetServiceLink: any;
+  objServiceLink: any;
+  tabsManagerServiceLink: any;
 }
 
 interface PlominoTab {

@@ -24,7 +24,29 @@ export class PlominoTabsManagerService {
   private tabDirtyReceiver: Subject<{tab: PlominoTabUnit, state: boolean}> 
     = new Subject<{tab: PlominoTabUnit, state: boolean}>();
 
-  constructor() { }
+  private tabContentStates: Map<string, { content: string, pattern?: string }> 
+    = new Map<string, { content: string, pattern?: string }>();
+
+  constructor() {
+    this.getAfterUpdateIdOfTab()
+      .subscribe((data) => {
+        if (this.tabContentStates.has(data.prevId)) {
+          // const prevState = this.tabContentStates.get(data.prevId);
+          // if (prevState.pattern) {
+          //   const patObject = JSON.parse(prevState.pattern);
+          //   let tmp = patObject.upload.currentPath.split('/');
+          //   tmp[tmp.length - 1] = data.nextId;
+          //   patObject.upload.currentPath = tmp.join('/');
+          //   tmp = patObject.base_url.split('/');
+          //   tmp[tmp.length - 1] = data.nextId;
+          //   patObject.base_url = tmp.join('/');
+          //   prevState.pattern = JSON.stringify(patObject);
+          // }
+          // this.tabContentStates.set(data.nextId, prevState);
+          this.tabContentStates.delete(data.prevId);
+        }
+      });
+  }
 
   openTab(tab: PlominoTabUnit) {
     this.tabOpenEvents.next(tab);
@@ -83,5 +105,22 @@ export class PlominoTabsManagerService {
 
   getTabDirty(): Observable<{tab: PlominoTabUnit, state: boolean}> {
     return this.tabDirtyReceiver.asObservable();
+  }
+
+  saveTabContentState(tabId: string, data: { content: string, pattern?: string }) {
+    this.tabContentStates.set(tabId, data);
+  }
+
+  flushTabContentState(tabId: string) {
+    this.tabContentStates.delete(tabId);
+  }
+
+  getTabSavedContentState(tabId: string) {
+    return this.tabContentStates.has(tabId) 
+      ? this.tabContentStates.get(tabId) : null;
+  }
+
+  getAllStates() {
+    return Array.from(this.tabContentStates);
   }
 }

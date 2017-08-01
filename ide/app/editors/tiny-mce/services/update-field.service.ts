@@ -116,10 +116,7 @@ export class UpdateFieldService {
   private wrapHidewhen2(elType: string, id: string, contentString: HTMLElement) {
     let $element = $(contentString); 
     let $class = $element.attr('class');
-    // let $position = $element.text().split(':')[0];
-    // let $id = $element.text().split(':')[1];
     let $position = $element.data('plominoPosition');
-    // let $id = $element.data('plominoid');
   
     let container = 'span';
     let content = `

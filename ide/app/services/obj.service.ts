@@ -12,6 +12,16 @@ import { Injectable, ChangeDetectorRef } from '@angular/core';
 
 @Injectable()
 export class ObjService {
+
+  private formSettingsCache: Map<string, string> = new Map();
+
+  /**
+   * @description formSettingsCurrent[formId: string, htmlFormContent: string]
+   */
+  private formSettingsCurrent: [
+    string, string
+  ] = null;
+
     // For handling the injection/fetching/submission of Plomino objects
 
     constructor(private http: PlominoHTTPAPIService, private log: LogService,
@@ -31,30 +41,39 @@ export class ObjService {
         'obj.service.ts getFieldSettings'
       ).map(this.extractText);
     }
-
-    // updateFieldSettings(fieldUrl: string, formData: FormData): Observable<any> {
-    //   const addNew = fieldUrl.indexOf('++add++PlominoColumn') !== -1;
-
-    //   return this.http.postWithOptions(
-    //     `${fieldUrl}/${ addNew ? '' : '@@edit' }`, formData, {},
-    //     'obj.service.ts updateFieldSettings'
-    //   ).map(this.extractTextAndUrl);
-    // }
     
-    getFormSettings(formUrl: string): Observable<any> {
-      // if (this.http.recentlyChangedFormURL !== null
-      //   && this.http.recentlyChangedFormURL[0] === formUrl
-      //   && $('.tab-name').toArray().map((e) => e.innerText)
-      //   .indexOf(formUrl.split('/').pop()) === -1
-      // ) {
-      //   formUrl = this.http.recentlyChangedFormURL[1];
-      //   this.log.info('patched formUrl!', this.http.recentlyChangedFormURL);
-      //   this.log.extra('obj.service.ts getFormSettings');
-      // }
+    getFormSettings(formUrl: string, flushCache = false): Observable<any> {
+      const formId = formUrl.split('/').pop();
+      if (this.formSettingsCache.has(formId) && !flushCache) {
+        const data = this.formSettingsCache.get(formId).toString();
+        const result = Observable.of(data);
+        this.formSettingsCurrent = [formId, data];
+        this.formSettingsCache.delete(formId);
+        return result;
+      }
       return this.http.get(
         `${formUrl}/@@edit?ajax_load=1&ajax_include_head=1`,
         'obj.service.ts getFormSettings'
-      ).map(this.extractText);
+      )
+      .map(this.extractText)
+      .map((data) => {
+        this.formSettingsCurrent = [formId, data];
+        return data;
+      })
+    }
+
+    updateFormSettingsCache() {
+      if (!this.formSettingsCurrent) {
+        return;
+      }
+      this.formSettingsCache.set(
+        this.formSettingsCurrent[0], this.formSettingsCurrent[1]);
+    }
+
+    flushFormSettingsCache(formId: string) {
+      if (this.formSettingsCache.has(formId)) {
+        this.formSettingsCache.delete(formId);
+      }
     }
 
   /**
@@ -65,171 +84,32 @@ export class ObjService {
     formUrl: string, formData: FakeFormData
   ): Observable<{html: string, url: string}> {
     const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
-    // let layout = formData.get('form.widgets.form_layout');
     const workingId = formData.get('form.widgets.IShortName.id');
     const context = this;
 
-    // this.http.recentlyChangedFormURL = null;
-
-    // const oldFormId = formUrl.split('/').pop();
-    // let newFormUrl = oldFormId !== workingId
-    //   ? formUrl.replace(oldFormId, workingId)
-    //   : formUrl;
-
     return Observable.of(true).flatMap(() => {
-      // if (layout) {
-      //   if (oldFormId !== workingId) {
-      //     this.http.recentlyChangedFormURL = [formUrl, newFormUrl];
-      //   }
-      //   /**
-      //    * this code will be running only while form saving
-      //    */
-      //   layout = layout.replace(/\r/g , '').replace(/\xa0/g, ' ');
-      //   let $layout = $(`<div id="tmp-layout" style="display: none">${ layout }</div>`);
-      //   $('body').append($layout);
-      //   $layout = $("#tmp-layout");
-  
-      //   $layout.find('.plominoHidewhenClass,.plominoCacheClass')
-      //   .each(function () {
-      //     let $element = $(this);
-      //     let position = $element.attr('data-plomino-position');
-      //     let hwid = $element.attr('data-plominoid');
-      //     if (position && hwid) {
-      //       $element.text(`${position}:${hwid}`);
-      //     }
-  
-      //     $element.removeAttr('data-plominoid')
-      //       .removeAttr('data-present-method')
-      //       .removeAttr('data-plomino-position');
-  
-      //     if (position === 'end' && $element.next().length 
-      //       && $element.next().prop('tagName') === 'BR') {
-      //       $element.next().remove();
-      //     }
-      //   });
+      /**
+       * field settings saving
+       */
+      if (this.activeEditorService.getActive()) {
+        const newTitle = formData.get('form.widgets.IBasic.title');
+        
+        this.labelsRegistry.update(
+          `${ formUrl }/${ workingId }`, newTitle, 'title', true
+        );
+        
+        this.labelsRegistry.update(
+          `${ formUrl }/${ workingId }`, newTitle, 'temporary_title'
+        );
 
-      //   $layout.find('span.mceEditable').each((i, mceEditable) => {
-      //     const $mceEditable = $(mceEditable);
-      //     if ($mceEditable.children().last().prop('tagName') === 'BR') {
-      //       $mceEditable.children().last().remove();
-      //       $mceEditable.replaceWith(`<p>${$mceEditable.html()}</p>`);
-      //     }
-      //   });
+        const $allTheSame = $(this.activeEditorService.getActive().getBody())
+          .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
+          .filter((i, element) => !Boolean($(element).attr('data-advanced')));
 
-      //   const labels$: Observable<any>[] = [];
-  
-      //   $layout.find('.plominoLabelClass').each(function () {
-      //     const $element = $(this);
-      //     const tag = $element.prop('tagName');
-      //     let id = $element.attr('data-plominoid');
-      //     const theLabelIsAdvanced = Boolean($element.attr('data-advanced'));
+        $allTheSame.html(newTitle);
+      }
 
-      //     if (id && !theLabelIsAdvanced) {
-      //       /**
-      //        * the label is not advanced - save its field title
-      //        */
-            
-      //       /* current element (label) text */
-      //       const title = $element.html();
-      //       const relatedFieldTitle = context.labelsRegistry.get(`${formUrl}/${id}`, 'title');
-      //       const relatedFieldTemporaryTitle = context.labelsRegistry.get(`${formUrl}/${id}`);
-
-      //       if (relatedFieldTemporaryTitle !== relatedFieldTitle) {
-      //         /**
-      //          * save the field title
-      //          */
-      //         labels$.push(
-      //           context.elementService.patchElement(
-      //             `${formUrl}/${id}`, { title: relatedFieldTemporaryTitle }
-      //           )
-      //         );
-              
-      //         $element.html(relatedFieldTemporaryTitle);
-      //         context.changeDetector.detectChanges();
-      //       }
-      //     }
-  
-      //     if (tag === 'SPAN') {
-      //       $element
-      //       .removeAttr('data-plominoid');
-
-      //       $element.html(
-      //         theLabelIsAdvanced ? `${id}:${$element.html().trim()}` : id
-      //       );
-      //     }
-  
-      //     if (tag === 'DIV') {
-      //       let html = $element.find('.plominoLabelContent').html();
-      //       html = html.replace(/<p>/g, ' ');
-      //       html = html.replace(/<\/p>/g, ' ');
-      //       html = html.replace(/<p\/>/g, ' ');
-      //       let span = `<span class="plominoLabelClass">${id}:${html}</span>`;
-      //       $(this).replaceWith(span);
-      //     }
-      //   });
-
-      //   const labels$$ = (labels$.length) 
-      //     ? Observable.forkJoin(labels$) : Observable.of('');
-  
-      //   $layout.find('*[data-plominoid]').each(function () {
-      //     let $element = $(this);
-      //     let id = $element.attr('data-plominoid');
-      //     let pClass = $element.removeClass('mceNonEditable').attr('class');
-      //     let span = `<span class="${pClass}">${id}</span>`;
-      //     $(this).replaceWith(span);
-      //   });
-
-      //   const $errLabels = $layout.find(
-      //     '.plominoLabelClass:contains(":") > .plominoLabelClass'
-      //   );
-  
-      //   $errLabels.each((i, errLabel) => {
-      //     const $errLabel = $(errLabel);
-      //     const id = $errLabel.html();
-      //     $errLabel.parent().html(id);
-      //   });
-
-      //   $layout.find(
-      //     '.mceNonEditable,.mceEditable,.plominoFieldClass--selected,' +
-      //     '.plominoLabelClass--selected'
-      //   )
-      //   .removeClass('mceNonEditable')
-      //   .removeClass('mceEditable')
-      //   .removeClass('plominoFieldClass--selected')
-      //   .removeClass('plominoLabelClass--selected');
-
-      //   formData.set('form.widgets.form_layout', $layout.html());
-      //   $layout.remove();
-
-      //   return labels$$;
-      // }
-      // else {
-        /**
-         * field settings saving
-         */
-        if (this.activeEditorService.getActive()) {
-          const newTitle = formData.get('form.widgets.IBasic.title');
-          
-          this.labelsRegistry.update(
-            `${ formUrl }/${ workingId }`, newTitle, 'title', true
-          );
-          
-          this.labelsRegistry.update(
-            `${ formUrl }/${ workingId }`, newTitle, 'temporary_title'
-          );
-  
-          const $allTheSame = $(this.activeEditorService.getActive().getBody())
-            .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
-            .filter((i, element) => !Boolean($(element).attr('data-advanced')));
-  
-          $allTheSame.html(newTitle);
-        }
-
-        return Observable.of('');
-      // }
-      
-      // throw formData.get('form.widgets.form_layout');
-      // console.warn(formData.get('form.widgets.form_layout'));
+      return Observable.of('');
     })
     .flatMap(() => {
       
