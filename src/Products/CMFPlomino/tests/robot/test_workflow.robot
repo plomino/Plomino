@@ -31,13 +31,13 @@
 Resource  plone/app/robotframework/saucelabs.robot
 #Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/keywords.robot
-Resource  description_plominodatabase.robot
+Resource  description_workflow.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
 Test Setup   Open SauceLabs test browser
-Test Teardown  description_plominodatabase.Plone Test Teardown
+Test Teardown  description_workflow.Plone Test Teardown
 
 
 
@@ -47,10 +47,18 @@ ${BROWSER}  Chrome
 
 *** Test Cases ***************************************************************
 
-Scenario: As a site administrator I can open Workflow editor
+Scenario: As a test user I can open Workflow editor
   Given a logged-in test user
     and I open the ide for "mydb"
-    and I open service tab "Workflow"
+    When I open service tab "Workflow"
+    Then I can see element Start in the workflow editor
+
+Scenario: As a test user I can add Form task to workflow editor
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    When I open service tab "Workflow"
+    Then I can add a Form Task element by dnd
+
 
 
 

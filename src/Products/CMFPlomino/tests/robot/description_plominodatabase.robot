@@ -342,11 +342,3 @@ I will see the preview form saved
   page should contain button  Close
 
 
-I can see element Start in the workflow editor
-  Wait until page contains  Insert
-  wait until page contains element  jquery=.mce-edit-area iframe:visible
-  select frame  jquery=.mce-edit-area iframe:visible
-  Wait until page contains element  css=.plominoFieldClass.mceNonEditable  #TODO change for test based on spinner
-  Page should contain element  css=.plominoFieldClass.mceNonEditable
-  Page should contain element  xpath=//*[contains(@class,"plominoFieldClass")][@data-plominoid="${fieldid}"]
-  unselect frame
