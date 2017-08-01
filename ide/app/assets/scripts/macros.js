@@ -151,7 +151,12 @@ require([
                 } catch (e) {}
 
                 if (values.length == 0 && index < count-1) {
-                    $(el).closest('li').remove();
+                    setTimeout(function () {
+                      $(el).closest('li').remove();
+                      $('.plomino-macros-rule.item-dragging.dragging,#select2-drop-mask,' +
+                        '.select2-drop.select2-drop-multi.select2-display-none.select2-drop-active'
+                      ).remove();
+                    }, 1);
                 }
                 else {
                     // find the exisitng tags and make them editable
