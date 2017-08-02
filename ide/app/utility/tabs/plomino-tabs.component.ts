@@ -25,6 +25,27 @@ export class PlominoTabsComponent implements OnInit {
     private urlManager: URLManagerService,
     private changeDetector: ChangeDetectorRef,
   ) {
+
+    $(window).bind('beforeunload', (eventObject: any) => {
+      if (
+        tinymce.editors.length
+        && (
+          // tinymce.editors
+          // .some((editor) => 
+          // this.saveManager.isEditorUnsaved(
+          //   this.dbService.getDBLink() + '/' + editor.id
+          // ))
+        // || 
+        this.tabsCollection.some((tab) => this.isTabDirty(tab)))
+      ) {
+        return 'Do you want to close window. The data is unsaved.';
+      }
+      else {
+        return void 0;
+      }
+    });
+
+    
     this.tabsManagerService.getOpeningTab()
       .subscribe((tab) => {
         const index = this.findTabIndex(tab);
@@ -88,7 +109,10 @@ export class PlominoTabsComponent implements OnInit {
     event.stopImmediatePropagation();
 
     if (tab.editor === 'layout' 
-      && this.saveManager.isEditorUnsaved(tab.url)
+      && (
+        this.saveManager.isEditorUnsaved(tab.url)
+        || this.isTabDirty(tab)
+      )
     ) {
       this.elementService.awaitForConfirm(
         'You have unsaved changes. Would you like to save your changes?',
