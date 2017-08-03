@@ -19,6 +19,14 @@ export class WidgetService {
     }
   } = {};
 
+  zombiesInformation: {
+    [formUrl: string]: {
+      [id: string]: {
+        [widget_type: string]: boolean
+      }
+    }
+  } = {};
+
   constructor(private http: PlominoHTTPAPIService,
   private adapter: PlominoElementAdapterService,
   private labelsRegistry: LabelsRegistryService,
@@ -38,6 +46,34 @@ export class WidgetService {
     }
 
     return this.widgetsCache[formUrl][id][widgetType];
+  }
+
+  detectZombie(formUrl: string, widgetType: string, id: string) {
+    if (!this.zombiesInformation.hasOwnProperty(formUrl)) {
+      this.zombiesInformation[formUrl] = {};
+    }
+    if (!this.zombiesInformation[formUrl].hasOwnProperty(id)) {
+      this.zombiesInformation[formUrl][id] = {};
+    }
+    
+    this.zombiesInformation[formUrl][id][widgetType] = true;
+    this.log.warn('zombie detected', id, widgetType);
+  }
+
+  isItAZombie(formUrl: string, widgetType: string, id: string): boolean {
+    if (!this.zombiesInformation.hasOwnProperty(formUrl)) {
+      return false;
+    }
+
+    if (!this.zombiesInformation[formUrl].hasOwnProperty(id)) {
+      return false;
+    }
+
+    if (!this.zombiesInformation[formUrl][id].hasOwnProperty(widgetType)) {
+      return false;
+    }
+
+    return this.zombiesInformation[formUrl][id][widgetType];
   }
 
   setWidgetCacheData(formUrl: string, widgetType: string, id: string, data: string) {
@@ -334,6 +370,11 @@ export class WidgetService {
           this.setWidgetCacheData(
             baseUrl, result.widget_type, result.id, result.html
           );
+          if (result.html === null) {
+            this.detectZombie(
+              baseUrl, result.widget_type, result.id
+            );
+          }
         });
         widgetsFromServer.next('loaded succeed');
       });

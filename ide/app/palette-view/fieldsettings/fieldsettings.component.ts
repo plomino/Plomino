@@ -955,7 +955,7 @@ export class FieldSettingsComponent implements OnInit {
 
     loadSettingsAfterCallback(data: any[]) {
       let template = data[1];
-      let field = data[0];
+      let field: IField = data[0];
       const $scrollingContainer = $('.scrolling-container:visible');
       if ($scrollingContainer.length && !this.groupPrefix) {
         $scrollingContainer.get(0).scrollIntoView();
@@ -965,6 +965,59 @@ export class FieldSettingsComponent implements OnInit {
         setTimeout(() => {
           this.changeDetector.detectChanges();
           this.changeDetector.markForCheck();
+          window['materialPromise'].then(() => {
+            componentHandler.upgradeDom();
+          });
+        }, 200);
+        return;
+      }
+
+      if (template === '<div>E</div>') {
+        const objectType = field.type.toLowerCase().replace('plomino', '');
+        this.formTemplate = `
+          <div class="outer-wrapper">
+            <div class="mdl-card mdl-shadow--2dp" 
+              style="margin: 0 auto;margin-top: 30px;">
+              <div class="mdl-card__title mdl-card--expand">
+                <h2 class="mdl-card__title-text">Zombie Element Warning</h2>
+              </div>
+              <div class="mdl-card__supporting-text">
+                The ${ objectType } you have selected refers to 
+                a non-existent ${ objectType }. Please remove the 
+                ${ objectType } from the layout and add it again</div>
+              <div class="mdl-card__actions mdl-card--border">
+                <a id="remove-zombie-from-layout" 
+                  data-zombie="${ field.id }"
+                  class="mdl-button mdl-button--colored mdl-js-button 
+                  mdl-js-ripple-effect mdl-text-color--red-900">
+                  <span class="icon material-icons">delete</span> 
+                  Remove it from layout
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+        this.field = field;
+        this.field.formUniqueId = 'zombie';
+        this.loading = false;
+
+        setTimeout(() => {
+          this.changeDetector.detectChanges();
+          this.changeDetector.markForCheck();
+          $('#remove-zombie-from-layout').click((event) => {
+            const editor = this.activeEditorService.getActive();
+            const zombie = (<HTMLElement> event.currentTarget).dataset.zombie;
+            if (!editor) { return; }
+            $(editor.getBody()).find(
+              '.plominoGroupClass[data-groupid="' + zombie + '"], ' +
+              '.plominoLabelClass[data-plominoid="' + zombie + '"], ' +
+              '.plominoFieldClass[data-plominoid="' + zombie + '"]')
+              .remove();
+            this.field = null;
+            this.formTemplate = null;
+            this.changeDetector.detectChanges();
+            this.changeDetector.markForCheck();
+          });
           window['materialPromise'].then(() => {
             componentHandler.upgradeDom();
           });
