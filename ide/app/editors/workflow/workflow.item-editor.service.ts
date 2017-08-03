@@ -269,6 +269,7 @@ export class PlominoWorkflowItemEditorService {
   clearFormMacro(): void {
     this.$itemSettingsDialog.find('#wf-item-settings-dialog__wd').html('');
   }
+  
 
   loadFormMacro(item: PlominoWorkflowItem): void {
     /* step 1: get form url ontop */
@@ -290,10 +291,28 @@ export class PlominoWorkflowItemEditorService {
       if (item.type === WF.FORM_TASK || item.type === WF.VIEW_TASK 
         || item.type === WF.PROCESS
       ) {
+        
         $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
           Implementation<br>
-          <small style="color: dimgray;">Please select a form/view in the 
+          <small style="color: dimgray;">Please select a 
+                  <a href onclick="return false"
+                    class="workflow-node__text-modal-link"
+                  >form/view</a>
+          in the 
           previous task so a rule can be selected.</small></label>`);
+        /*
+        $wd.html(`<label style="margin-bottom: 15px; margin-top: 10px">
+          Implementation<br>
+          <small style="color: dimgray;">Please select a 
+                  <a href onclick="return false"
+                    class="workflow-node__text-modal-link"
+                  >form/view</a>
+          in the 
+          previous task so a rule can be selected.</small></label>`);
+        const alink = $wd.find('#workflow-node__text-modal-link');
+        alink.onclick = function() {
+          console.log(item);
+          };*/
       }
       else {
         $wd.html('');

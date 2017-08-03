@@ -92,6 +92,8 @@ class AccessControl:
         "PlominoManager",
         "Owner"]
 
+
+
     def _redirectIfResponse(self, target):
         request = getattr(self, 'REQUEST', None)
         response = getattr(request, 'RESPONSE', None)
@@ -141,6 +143,7 @@ class AccessControl:
     def getUsersForRight(self, right):
         """ Return the users having the given Plomino access right
         """
+
         return self.users_with_local_role(right)
 
     security.declarePublic('getCurrentMember')

@@ -272,6 +272,11 @@ I preview "${formid}"
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/view
 
+I open service tab "${tabId}"
+  Click Link    Service
+  wait until page contains  ${tabId}
+  Click Element  jquery=.mdl-button:visible:contains(${tabId})
+
 # --- THEN -------------------------------------------------------------------
 
 a plominodatabase with the title '${title}' has been created
@@ -335,3 +340,5 @@ I will see the validation error "${error}" for field "${field}"
 
 I will see the preview form saved
   page should contain button  Close
+
+
