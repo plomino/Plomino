@@ -12,7 +12,7 @@ import config
 from utils import asList
 
 
-class AccessControl(object):
+class AccessControl:
     """ Plomino access control utilities
     """
     security = ClassSecurityInfo()
@@ -92,12 +92,7 @@ class AccessControl(object):
         "PlominoManager",
         "Owner"]
 
-    def __init__(self):
-        # Add default permission to content to avoid confirm action for the first time access
-        print('Access control invoke')
-        if not hasattr(self, 'specific_rights'):
-            self.specific_rights = {
-                'specific_deletedocument': 'PlominoAuthor'}
+
 
     def _redirectIfResponse(self, target):
         request = getattr(self, 'REQUEST', None)
