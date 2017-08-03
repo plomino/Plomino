@@ -3,6 +3,7 @@ from jsonutil import jsonutil as json
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+
 from ..config import (
     READ_PERMISSION,
     SCRIPT_ID_DELIMITER,
@@ -19,6 +20,7 @@ class ViewView(BrowserView):
         self.context = context
         self.request = request
         self.target = self.context
+
 
     def openview(self):
         """ Check read permission and open view.

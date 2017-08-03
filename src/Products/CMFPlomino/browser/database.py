@@ -29,6 +29,7 @@ class DatabaseView(BrowserView):
         self.form = self.context
         self.target = self.context
 
+
     def view(self):
         if self.context.checkUserPermission(READ_PERMISSION):
             if self.context.start_page:

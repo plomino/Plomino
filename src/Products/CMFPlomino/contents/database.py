@@ -194,6 +194,10 @@ class PlominoDatabase(
     def documents(self):
         return self.plomino_documents
 
+    def __init__(self):
+        #AccessControl.__init__(self)
+        print('Database created')
+
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu
         filterOut = ['PlominoDocument']
