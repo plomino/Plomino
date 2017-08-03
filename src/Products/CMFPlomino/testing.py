@@ -8,6 +8,7 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 from plone.testing import z2, Layer
+import logging, sys
 
 import Products.CMFPlomino
 
@@ -62,6 +63,25 @@ class ProductsMacrosLayer(Layer):
 #        super(ProductsMacrosLayer, self).setUpPloneSite(portal)
         with ploneSite() as portal:
             applyProfile(portal, 'Products.CMFPlomino.defaultmacros:macros')
+
+        # Show debug logs
+        # root_logger = logging.getLogger()
+        # root_logger.setLevel(logging.DEBUG)
+        # handler = logging.StreamHandler(sys.stderr)
+        # formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        # handler.setFormatter(formatter)
+        # root_logger.addHandler(handler)
+
+        # self.browser.handleErrors = False
+        # self.portal.error_log._ignored_exceptions = ()
+        #
+        # def raising(self, info):
+        #     import traceback
+        #     traceback.print_tb(info[2])
+        #     print info[1]
+        #
+        # from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
+        # SiteErrorLog.raising = raising
 
 
 PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()

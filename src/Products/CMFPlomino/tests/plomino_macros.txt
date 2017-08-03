@@ -36,6 +36,19 @@ Range condition
     >>> db.frm1.field1.helpers = [[range,invalid]]
     >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
 
+We can see that it generates code
+
+    >>> print db.frm1.field1.validation_formula
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_2 ###
+    def macro_condition_number_range_in_2():
+    ...
+    ### END macro_condition_number_range_in_2 ###
+    ### START macro_field_validate_invalid_2 ###
+    if macro_condition_number_range_in_2():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+
 
 Test if the macro fires::
 
@@ -67,18 +80,6 @@ Update the parameters of a "if"
     >>> db.frm1.validateInputs({'field1':'10'})
     [{'field': 'field1', 'error': 'Invalid'}]
 
-We can see that it generates code
-
-    >>> print db.frm1.field1.validation_formula
-    <BLANKLINE>
-    ### START macro_condition_number_range_in_2 ###
-    def macro_condition_number_range_in_2():
-    ...
-    ### END macro_condition_number_range_in_2 ###
-    ### START macro_field_validate_invalid_2 ###
-    if macro_condition_number_range_in_2():
-    ...
-    ### END macro_field_validate_invalid_2 ###
 
 If we remove the condition we get simplier code
     >>> db.frm1.field1.helpers = [[invalid]]
@@ -168,7 +169,7 @@ We can use NOT too
 
 If we insert our own custom code, this is preserved
 
-    db.frm1.field1.validation_formula = 'print "hello world"\n'+db.frm1.field1.validation_formula
+    >>> db.frm1.field1.validation_formula = 'print "hello world"\n'+db.frm1.field1.validation_formula
     >>> db.frm1.field1.helpers = [[invalid, range2]]
     >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
     >>> print db.frm1.field1.validation_formula
