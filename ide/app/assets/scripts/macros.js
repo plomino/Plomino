@@ -284,6 +284,7 @@ require([
             jQuery.ajax({
                 url: edit_url,
                 type: "POST",
+                traditional: true,
                 data: data
             }).done(function(html) {
                 self.loading.hide();
