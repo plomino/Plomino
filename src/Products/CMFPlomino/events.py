@@ -27,6 +27,9 @@ def afterDatabaseCreated(obj, event):
     for i in ['resources', 'scripts']:
         manage_addCMFBTreeFolder(obj, id=i)
 
+    # Add permission to avoid manual confirmation dialog
+    if not hasattr(obj, 'specific_rights'):
+        obj.specific_rights = {'specific_deletedocument': 'PlominoAuthor'}
     # Due to plone.protect we need to ensure the resource directory is created
     write_on_read = get_resource_directory()
 
