@@ -77,6 +77,17 @@ class IPlominoAction(model.Schema):
         required=True,
     )
 
+    directives.widget('html_attributes_formula', klass='plomino-formula')
+    html_attributes_formula = schema.Text(
+        title=_('CMFPlomino_label_HTMLAttributesFormula',
+            default="HTML attributes formula"),
+        description=_('CMFPlomino_help_HTMLAttributesFormula',
+            default='Inject DOM attributes in the action tag'),
+        required=False,
+        missing_value=NOT_CHANGED, # So settings won't nuke formulas in IDE
+        default=u'',
+    )
+
     # ADVANCED
     supermodel_directives.fieldset(
         'advanced',
@@ -84,6 +95,7 @@ class IPlominoAction(model.Schema):
         fields=(
             'content',
             'hidewhen',
+            'html_attributes_formula'
         ),
     )
 

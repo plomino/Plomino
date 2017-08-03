@@ -1422,12 +1422,25 @@ class PlominoForm(Container):
                     style = ' style="display: none"'
                 else:
                     style = ''
+
+                # inject html attributes
+                if hidewhen.html_attributes_formula:
+                    html_attributes = asUnicode(self.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join([
+                            'hidewhen', self.getParentNode().id, self.id,
+                            'attributes']),
+                        target,
+                        hidewhen.html_attributes_formula
+                    ))
+                else:
+                    html_attributes = ""
                 html_content = re.sub(
                     start,
-                    '<div class="plomino-hidewhen" data-hidewhen="%s/%s"%s>' % (
+                    '<div class="plomino-hidewhen" data-hidewhen="%s/%s"%s%s>' % (
                         self.id,
                         hidewhenName,
-                        style),
+                        style,
+                        html_attributes),
                     html_content,
                     re.MULTILINE + re.DOTALL)
                 html_content = re.sub(

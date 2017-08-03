@@ -86,6 +86,8 @@ class SelectionField(BaseField):
         """
         # if formula available, use formula, else use manual entries
         f = getattr(self.context,'selectionlistformula', None)
+        #import pdb
+        #pdb.set_trace()
         if f:
             # if no doc provided (if OpenForm action), we use the PlominoForm
             if doc:
@@ -99,6 +101,7 @@ class SelectionField(BaseField):
                         self.context.id, 'SelectionListFormula']),
                     obj,
                     f)
+
             except PlominoScriptException, e:
                 p = self.context.absolute_url_path()
                 e.reportError(
