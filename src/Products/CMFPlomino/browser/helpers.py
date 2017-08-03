@@ -128,7 +128,6 @@ class MacroWidget(Widget):
         return res
 
     def helper_forms(self):
-        logger.debug('Method: Widget helper_forms')
         db = self.context.getParentDatabase()
         catalog = getToolByName(db, 'portal_catalog')
         found = set()
@@ -213,17 +212,14 @@ class Helpers(object):
     """
 
     def __init__(self, context):
-        logger.debug('Method: init helpers')
         self.context = context
 
     @property
     def helpers(self):
-        logger.debug('Method: get helpers')
         return self.context.helpers
 
     @helpers.setter
     def helpers(self, value):
-        logger.debug('Method: set helpers')
         if value is None:
             value = []
         self.context.helpers=value
@@ -290,9 +286,9 @@ def load_macro(formid, helper, db, ids, curpath):
     # including hidden fields that contains macro code
     # TODO: this can generate errors as fields calculated. Need to show this
     doc.save(form=form, creation=False, refresh_index=False, asAuthor=True, onSaveEvent=False)
-    logger.info(
-        'helper id: %s generate temp doc with form: %s has items: %s' %
-        (helperid, formid, doc.items))
+    #logger.info(
+    #    'helper id: %s generate temp doc with form: %s has items: %s' %
+    #    (helperid, formid, doc.items))
 
 
     return (helperid, form, doc)
@@ -444,15 +440,26 @@ def update_macro_code(code, rules, new_code):
     all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
     old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
     old_codes.reverse()
-    for macro_id, form, doc in [m for conditions,macros in rules for m in conditions+macros]:
+    new_codes = [m for conditions,macros in rules for m in conditions+macros]
+    new_codes.reverse()
+    changes_log = []
+
+    while len(new_codes) > 0:
+
+        macro_id, form, doc = new_codes[-1]
+
         if macro_id not in new_code: # doesn't gen code for this formula
+            changes_log.append( (macro_id, "skipped: no code") )
+            new_codes.pop()
             continue
         code_id, old_code = old_codes[-1] if old_codes else (None, None)
         # 1. it's in right position. replace it
         if macro_id == code_id:
             old_codes.pop()
+            new_codes.pop()
             if new_code[macro_id] is None:
                 # macro has gone missing. Leave the code alone
+                changes_log.append( (macro_id, "skipped: no code") )
                 continue
 
             code = re.sub(
@@ -460,22 +467,29 @@ def update_macro_code(code, rules, new_code):
                 MACRO_FMT.format(id=macro_id, code="\n" + new_code[macro_id] + "\n"),
                 code,
                 1)
+            changes_log.append( (macro_id, "replaced") )
         # 2. it's not in the list. remove it
         elif code_id and code_id not in new_code:
+            changes_log.append( (code_id, "removed %s") )
             code = re.sub(
                 "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
                 "",
                 code)
             old_codes.pop()
         elif new_code[macro_id] is None:
+            new_codes.pop()
+            changes_log.append( (macro_id, "skipped: no code") )
             # macro has gone missing. leave it alone
             continue
         elif code_id is None:
+            new_codes.pop()
             # reached end. insert code at the end
+            changes_log.append( (macro_id, "inserting at end") )
             code += '\n'+MACRO_FMT.format(
                 id=macro_id,
                 code="\n"+str(new_code[macro_id])+"\n")
         else:
+            new_codes.pop()
             # 3. it's further down the list. remove it
             code = re.sub(
                 "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
@@ -495,6 +509,7 @@ def update_macro_code(code, rules, new_code):
                 switched,
                 code,
                 1)
+            changes_log.append( (macro_id, "insert before %s" % code_id) )
 
     for code_id, old_code in old_codes:
         # remove any code that's left
@@ -502,6 +517,9 @@ def update_macro_code(code, rules, new_code):
             MACRO_FMT.format(id=code_id, code=CODE_REGEX),
             "",
             code)
+        changes_log.append( (code_id, "removed") )
+    logger.debug( str(changes_log) )
+
     return code
 
 
@@ -509,8 +527,6 @@ def update_macro_code(code, rules, new_code):
 def update_helpers(obj, event):
     """Update all the formula fields based on our helpers
     """
-    logger.debug('Method: update_helpers')
-
     if not hasattr(obj, 'helpers'):
         return
 
@@ -539,9 +555,9 @@ def update_helpers(obj, event):
 
         # TODO: should not insert code that not changed or don't use macro
         if dm.get() != code:
-            logger.debug(
-                'Macro code with id: %s is inserted in %s obj. Code: %s..., old: %s...' %
-                (id, obj.id, code[:50], dm.get()[:50] if dm.get() else dm.get()))
+            #logger.debug(
+            #    'Macro code with id: %s is inserted in %s obj. Code: %s..., old: %s...' %
+            #    (id, obj.id, code[:50], dm.get()[:50] if dm.get() else dm.get()))
             dm.set(code)
         obj.helpers = helpers
 
