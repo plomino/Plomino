@@ -308,40 +308,22 @@ def get_formulas(obj):
                    id in formulas]
     return fields
 
-# Event handler
-def update_helpers(obj, event):
-    """Update all the formula fields based on our helpers
+
+def generate_all_code(obj, helpers):
     """
-    logger.debug('Method: update_helpers')
-
-    if not hasattr(obj, 'helpers'):
-        return
-
-    # helpers is a list of rules and each rule is a list of macro dict that contains 'Form', 'title',
-    # '_macro_id_' and all the field ids in that macro form.
-    helpers = obj.helpers
-
-    if helpers is None:
-        return
-
-    db = obj.getParentDatabase()
-    curpath = '/'.join(obj.getPhysicalPath())
-
-    # need to upgrade the data from the old structure if needed
-    #TODO: only do set at the end if this has changed (or an id has been added)
-    helpers = [[rule] if type(rule) != list else rule for rule in helpers]
-
-
-    # find all our ids so we can add unique ones later
-    ids = {m['_macro_id_'] for rule in helpers for m in rule if '_macro_id_' in m}
-
-    # TODO: Need to remove any code the user removed
-
     # This loop is mainly generate list of macros with
     # helper id, form obj and temp macro doc
     # need to do this first to determine which formulas a given macro wants to modify
-    # rules = [([condition_macro,...),(action_macro,...),...]
+    # return rules = [([condition_macro,...),(action_macro,...),...]
     # and a macro is (helperid, form, doc)
+    """
+    db = obj.getParentDatabase()
+
+    # find all our ids so we can add unique ones later
+    ids = {m['_macro_id_'] for rule in helpers for m in rule if '_macro_id_' in m}
+    curpath = '/'.join(obj.getPhysicalPath())
+
+
     rules = []
     for rule in helpers:
         macros = []
@@ -370,6 +352,9 @@ def update_helpers(obj, event):
             else:
                 macros.append((helperid, form, doc))
 
+    return rules
+
+def formulas_to_add_code(obj, rules):
 
     for id, field in get_formulas(obj):
 
@@ -382,6 +367,7 @@ def update_helpers(obj, event):
         # pull new macro code from that temp doc and
         # put into new_code dict
         new_code = {}
+        matched_rules = []
         for conditions, macros in rules:
             matched = False
             for macro_id, form, doc in macros:
@@ -395,51 +381,153 @@ def update_helpers(obj, event):
                     continue
                 new_code[macro_id] = value
                 matched = True
-            # if any macros then matched then we need to add the conditions
-            if not (matched and conditions):
+                matched_rules.append( (conditions, macros) )
+        yield id, field, matched_rules, new_code
+
+def add_conditions_to_code(rules, new_code):
+    for conditions, macros in rules:
+        if not(conditions):
+            continue
+
+        for macro_id, form, doc in conditions:
+            if doc is None:
+                # it's and.or,not
+                continue
+            formula = doc.getItem('formula').strip()
+            if not formula:
+                logger.warning('Macro condition id: %s has no value for "formula"' % macro_id)
+                continue
+            code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
+            code += (' '*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
+            new_code[macro_id] = code + '\n'
+        # adjust macros to use conditions
+        for macro_id, form, doc in macros:
+            if macro_id not in new_code:
+                continue
+            last_cond = 'and'
+            expression = []
+            is_op = lambda id: id in ['and', 'or', 'not']
+            for cond_id, _, _ in conditions:
+                if not is_op(cond_id) and is_op(last_cond):
+                    expression.append('{id}()'.format(id=cond_id))
+                elif cond_id in ['and','or'] and not is_op(last_cond):
+                    expression.append('{op}'.format(op=cond_id))
+                elif not is_op(cond_id) and not is_op(last_cond):
+                    # if no op then default to and
+                    expression.append('and')
+                    expression.append('{id}()'.format(id=cond_id))
+                elif cond_id == 'not':
+                    expression.append('not')
+                else:
+                    #TODO: need to warn the user
+                    # invalid statement
+                    logger.warning('Macro expression invalid %s"' % ' '.join(expression+[cond_id]))
+                last_cond = cond_id
+
+            if expression and is_op(expression[-1]):
+                logger.warning('Macro expression invalid %s"' % ' '.join(expression))
+                expression = expression[:-1]
+            if len(expression) == 0:
                 continue
 
-            for macro_id, form, doc in conditions:
-                if doc is None:
-                    # it's and.or,not
-                    continue
-                formula = doc.getItem('formula').strip()
-                if not formula:
-                    logger.warning('Macro condition id: %s has no value for "formula"' % macro_id)
-                    continue
-                code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
-                code += (' '*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
-                new_code[macro_id] = code + '\n'
-            # adjust macros to use conditions
-            for macro_id, form, doc in macros:
-                if macro_id not in new_code:
-                    continue
-                last_cond = 'and'
-                expression = []
-                is_op = lambda id: id in ['and', 'or', 'not']
-                for cond_id, _, _ in conditions:
-                    if not is_op(cond_id) and is_op(last_cond):
-                        expression.append('{id}()'.format(id=cond_id))
-                    elif cond_id in ['and','or'] and not is_op(last_cond):
-                        expression.append('{op}'.format(op=cond_id))
-                    elif cond_id == 'not' and (not is_op(last_cond) or last_cond=='not') :
-                        expression.append('not')
-                    else:
-                        # invalid statement
-                        logger.warning('Macro expression invalid %s"' % ' '.join(expression+[cond_id]))
-                    last_cond = cond_id
+            new_code[macro_id] = "if {expression}:\n{code}\n".format(
+                expression = (' '.join(expression)),
+                code = (' '*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
+            )
+            #TODO: we should add the condition line just once at the first condition
+    return new_code
 
-                if expression and is_op(expression[-1]):
-                    logger.warning('Macro expression invalid %s"' % ' '.join(expression))
-                    expression = expression[:-1]
-                if len(expression) == 0:
-                    continue
+def update_macro_code(code, rules, new_code):
 
-                new_code[macro_id] = "if {expression}:\n{code}\n".format(
-                    expression = (' '.join(expression)),
-                    code = (' '*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
-                )
-                #TODO: we should add the condition line just once at the first condition
+    # old_codes contains old macro code in the current code from the
+    # field in that obj
+    all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
+    old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
+    old_codes.reverse()
+    for macro_id, form, doc in [m for conditions,macros in rules for m in conditions+macros]:
+        if macro_id not in new_code: # doesn't gen code for this formula
+            continue
+        code_id, old_code = old_codes[-1] if old_codes else (None, None)
+        # 1. it's in right position. replace it
+        if macro_id == code_id:
+            old_codes.pop()
+            if new_code[macro_id] is None:
+                # macro has gone missing. Leave the code alone
+                continue
+
+            code = re.sub(
+                "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                MACRO_FMT.format(id=macro_id, code="\n" + new_code[macro_id] + "\n"),
+                code,
+                1)
+        # 2. it's not in the list. remove it
+        elif code_id and code_id not in new_code:
+            code = re.sub(
+                "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                "",
+                code)
+            old_codes.pop()
+        elif new_code[macro_id] is None:
+            # macro has gone missing. leave it alone
+            continue
+        elif code_id is None:
+            # reached end. insert code at the end
+            code += '\n'+MACRO_FMT.format(
+                id=macro_id,
+                code="\n"+str(new_code[macro_id])+"\n")
+        else:
+            # 3. it's further down the list. remove it
+            code = re.sub(
+                "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
+                "",
+                code)
+            old_codes = [(oid, ocode) for oid, ocode in old_codes if
+                         macro_id != oid]
+            # 4. The list one is new. insert it. or we are moving it
+            # insert before the current one
+            switched = MACRO_FMT.format(
+                id=macro_id,
+                code="\n"+str(new_code[macro_id])+"\n") + \
+                '\n' + \
+                MACRO_FMT.format(id=code_id, code=old_code)
+            code = re.sub(
+                "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+                switched,
+                code,
+                1)
+
+    for code_id, old_code in old_codes:
+        # remove any code that's left
+        code = re.sub(
+            MACRO_FMT.format(id=code_id, code=CODE_REGEX),
+            "",
+            code)
+    return code
+
+
+# Event handler
+def update_helpers(obj, event):
+    """Update all the formula fields based on our helpers
+    """
+    logger.debug('Method: update_helpers')
+
+    if not hasattr(obj, 'helpers'):
+        return
+
+    # helpers is a list of rules and each rule is a list of macro dict that contains 'Form', 'title',
+    # '_macro_id_' and all the field ids in that macro form.
+    helpers = obj.helpers
+
+    if helpers is None:
+        return
+
+    # need to upgrade the data from the old structure if needed
+    #TODO: only do set at the end if this has changed (or an id has been added)
+    helpers = [[rule] if type(rule) != list else rule for rule in helpers]
+    rules = generate_all_code(obj, helpers)
+
+    for id, field, matched_rules, new_code in formulas_to_add_code(obj, rules):
+        add_conditions_to_code(matched_rules, new_code)
 
         # replace old macro code with new macro code
         dm = getMultiAdapter((obj, field), IDataManager)
@@ -447,73 +535,11 @@ def update_helpers(obj, event):
         code = dm.get()
         code = code if code else u''
 
-        # old_codes contains old macro code in the current code from the
-        # field in that obj
-        all_code = re.compile(MACRO_FMT.format(id='([^ #]+)', code=CODE_REGEX))
-        old_codes = [(m[0], m[1]) for m in re.findall(all_code, code)]
-        old_codes.reverse()
-        for macro_id, form, doc in [m for conditions,macros in rules for m in conditions+macros]:
-            if macro_id not in new_code: # doesn't gen code for this formula
-                continue
-            code_id, old_code = old_codes[-1] if old_codes else (None, None)
-            # 1. it's in right position. replace it
-            if macro_id == code_id:
-                old_codes.pop()
-                if new_code[macro_id] is None:
-                    # macro has gone missing. Leave the code alone
-                    continue
-
-                code = re.sub(
-                    "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
-                    MACRO_FMT.format(id=macro_id, code="\n" + new_code[macro_id] + "\n"),
-                    code,
-                    1)
-            # 2. it's not in the list. remove it
-            elif code_id and code_id not in new_code:
-                code = re.sub(
-                    "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                    "",
-                    code)
-                old_codes.pop()
-            elif new_code[macro_id] is None:
-                # macro has gone missing. leave it alone
-                continue
-            elif code_id is None:
-                # reached end. insert code at the end
-                code += '\n'+MACRO_FMT.format(
-                    id=macro_id,
-                    code="\n"+str(new_code[macro_id])+"\n")
-            else:
-                # 3. it's further down the list. remove it
-                code = re.sub(
-                    "(%s)" % MACRO_FMT.format(id=macro_id, code=CODE_REGEX),
-                    "",
-                    code)
-                old_codes = [(oid, ocode) for oid, ocode in old_codes if
-                             macro_id != oid]
-                # 4. The list one is new. insert it. or we are moving it
-                # insert before the current one
-                switched = MACRO_FMT.format(
-                    id=macro_id,
-                    code="\n"+str(new_code[macro_id])+"\n") + \
-                    '\n' + \
-                    MACRO_FMT.format(id=code_id, code=old_code)
-                code = re.sub(
-                    "(%s)" % MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                    switched,
-                    code,
-                    1)
-
-        for code_id, old_code in old_codes:
-            # remove any code that's left
-            code = re.sub(
-                MACRO_FMT.format(id=code_id, code=CODE_REGEX),
-                "",
-                code)
+        code = update_macro_code(code, matched_rules, new_code)
 
         # TODO: should not insert code that not changed or don't use macro
         if dm.get() != code:
-            logger.info(
+            logger.debug(
                 'Macro code with id: %s is inserted in %s obj. Code: %s..., old: %s...' %
                 (id, obj.id, code[:50], dm.get()[:50] if dm.get() else dm.get()))
             dm.set(code)
