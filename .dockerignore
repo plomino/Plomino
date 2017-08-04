@@ -1,1 +1,15 @@
-Dockerfile
+Dockerfile*
+robottest.md
+lib
+var
+buildout-cache
+parts
+src
+!src/Products
+node_modules
+ide/node_modules
+develop-eggs
+*.egg-info
+*.mo
+*.pyc
+bin
