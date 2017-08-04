@@ -1,9 +1,3 @@
-Edit src/Products/CMFPlomino/tests/robot/test_plominodatabase.robot. and add the following variable below the ${BROWSER} entry:
-
-```
-${REMOTE_URL}  http://127.0.0.1:24444/wd/hub
-```
-
 
 Build the base image. You only need to do this if there is a big change to the buildout
 
@@ -20,7 +14,7 @@ docker build --tag robot_tests .
 Start the selenium server
 
 ```
-docker run -rm -d -p 4444:24444 -p 7777:25900 -p 55001:55001 -p8080:8080 -v /dev/shm:/dev/shm -v $PWD/src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v $PWD/test:/buildout/parts/test --privileged --rm --name rtests robot_tests
+docker run --rm -d -p 4444:24444 -p 7777:25900 -p 55001:55001 -p8080:8080 -v /dev/shm:/dev/shm -v $PWD/src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v $PWD/test:/buildout/parts/test --privileged --rm --name rtests robot_tests
 ```
 
 Start the test server and wait for it to start
