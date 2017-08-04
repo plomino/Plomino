@@ -100,8 +100,13 @@ export class PlominoHTTPAPIService {
   }
   
   throwError(error: any): any {
+    const originError = error;
     if (typeof error === 'object' && error instanceof Response) {
-      error = error.json();
+      try {
+        error = error.json();
+      } catch (e) {
+        error = JSON.parse(error.text().replace(/(?:^\{(\{))|(?:(\})\}$)/g, '$1$2'));
+      }
       if (
         error.type && error.type === 'error' 
         && error.total === 0 && error.target 
@@ -122,11 +127,9 @@ export class PlominoHTTPAPIService {
       okDialog.querySelector('.mdl-dialog__content')
         .innerHTML = `<p>${ error }</p>`;
       okDialog.showModal();
-      return Observable.throw(error);
     }
-    else {
-      return { subscribe: (): any => null };
-    }
+
+    return Observable.throw(error);
   }
 
   patch(url: string, data: any, debugInformation?: string) {

@@ -39,7 +39,11 @@ export class ObjService {
       return this.http.get(
         `${fieldUrl}/${ addNew ? '' : '@@edit' }?ajax_load=1&ajax_include_head=1`,
         'obj.service.ts getFieldSettings'
-      ).map(this.extractText);
+      )
+      .map(this.extractText)
+      .catch((error) => {
+        return 'E';
+      });
     }
     
     getFormSettings(formUrl: string, flushCache = false): Observable<any> {

@@ -876,6 +876,20 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           eventTarget.nodeName === 'OPTION') {
           $element = $element.parent().parent();
         }
+
+        const elementIsZombie = 
+          ($element.hasClass('plominoFieldClass') ||
+          $element.hasClass('plominoActionClass') ||
+          $element.hasClass('plominoHidewhenClass')) &&
+          $element.get(0).classList.length &&
+          !Boolean($element.attr('data-plominoid')) &&
+          this.widgetService.isItAZombie(
+            this.id, 
+            $element.get(0).classList.item(0)
+              .toLowerCase().replace('class', '')
+              .replace('plomino', '').trim(), 
+            $element.html().trim()
+          );
         
         let $parent = $element.parent();
         let $grandParent = $parent.parent();
@@ -909,7 +923,14 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           elementIsSubform = true;
         }
 
-        if (!elementIsSubform && $elementIsGroup) {
+        if (elementIsZombie) {
+          this.formFieldsSelection.selectField({
+            id: $element.html().trim(),
+            type: 'field',
+            parent: this.id
+          });
+        }
+        else if (!elementIsSubform && $elementIsGroup) {
           this.formFieldsSelection.selectField({
             id: $element.attr('data-groupid'),
             type: 'group',
