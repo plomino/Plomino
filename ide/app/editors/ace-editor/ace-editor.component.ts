@@ -122,6 +122,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
     }
 
     ngAfterViewInit() {
+      try {
         this.editor = ace.edit('editor' + this.generateHash(this.url));
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
@@ -154,6 +155,8 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
                 this.save();
             }
         });
+      }
+      catch (e) {}
     }
 
     addMethod(id: string) {
