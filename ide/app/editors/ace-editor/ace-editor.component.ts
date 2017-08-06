@@ -1,3 +1,4 @@
+import { LogService } from './../../services/log.service';
 import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { Component, OnInit, OnDestroy, AfterViewInit, 
   Input, Output, EventEmitter } from '@angular/core';
@@ -52,6 +53,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
       private _elementService: ElementService,
       private tabsManagerService: PlominoTabsManagerService,
       private dbService: PlominoDBService,
+      private log: LogService,
     ) {
       this.tabsManagerService.onRefreshCodeTab$
         .subscribe((fieldURL: string) => {
@@ -76,6 +78,9 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
     }
 
     ngOnInit() {
+      /**
+       * after form settings saved the ace cache should be flushed? - no
+       */
         this.id = 'editor' + this.generateHash(this.url);
         const codeId = this.getCurrentTabId();
         const stateData = this.tabsManagerService.getTabSavedContentState(codeId);
@@ -95,6 +100,9 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
               .getElementCode(`${ dbLink }/code?${ this.fullType }=${ this.name }`)
               .subscribe((code: string) => {
                 let parsed = JSON.parse(code);
+                if (stateData) {
+                  this.log.info('state restored', codeId);
+                }
                 this.editor.setValue(stateData ? stateData.content : parsed.code, -1);
                 this.methodList = parsed.methods;
                 this.editor.getSession().on('change', () => {

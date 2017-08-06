@@ -1,3 +1,4 @@
+import { LogService } from './../../services/log.service';
 import { URLManagerService } from './../../services/url-manager.service';
 import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { ElementService } from './../../services/element.service';
@@ -24,6 +25,7 @@ export class PlominoTabsComponent implements OnInit {
     private tabsManagerService: PlominoTabsManagerService,
     private urlManager: URLManagerService,
     private changeDetector: ChangeDetectorRef,
+    private log: LogService,
   ) {
 
     $(window).bind('beforeunload', (eventObject: any) => {
@@ -155,6 +157,15 @@ export class PlominoTabsComponent implements OnInit {
       index = 0;
     }
 
+    /** detect a cache of content of this tab and flush it */
+    if (tab.editor === 'code') {
+      const codeId = 'editor' + this.generateHash(tab.url);
+      setTimeout(() => {
+        this.tabsManagerService.flushTabContentState(codeId);
+        this.log.info('flushTabContentState', codeId);
+      }, 1);
+    }
+
     /* if active tab removed - set another tab active */
     if (this.activeTab && this.activeTab.id === tab.id 
       && this.activeTab.editor === tab.editor
@@ -219,5 +230,16 @@ export class PlominoTabsComponent implements OnInit {
       'view': 'code',
       'code': 'code'
     }[editor];
+  }
+
+  private generateHash(str: string): number {
+    var hash = 0, i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+      chr   = str.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
   }
 }
