@@ -5168,7 +5168,7 @@
                         "to_be_indexed": false,
                         "helpers": [],
                         "preserve_carriage_returns": false,
-                        "formula": "formId = plominoDocument.getItem(\"formlist\", \"\")\r\ncode = \"\"\"\r\nreturn '%s' \" \r\n\"\"\" % formId\r\nreturn code",
+                        "formula": "formId = plominoDocument.getItem(\"formlist\", \"\")\r\ncode = \"\"\"\r\nreturn '%s' \r\n\"\"\" % formId\r\nreturn code",
                         "size": null,
                         "ajax_load": null,
                         "description": ""
