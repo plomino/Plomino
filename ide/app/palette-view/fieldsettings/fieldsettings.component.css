@@ -25,9 +25,9 @@
     margin-right: 16px;
 }
 
-/deep/.outer-wrapper .select2-container {
+/* /deep/.outer-wrapper .select2-container {
   width: 100% !important;
-}
+} */
 
 /deep/#portal-column-content .select2-container {
   width: 100% !important;

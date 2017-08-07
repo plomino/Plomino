@@ -110,6 +110,14 @@ require([
               self.disabled = true;
             }
 
+            if (
+              select.closest('.plomino-macros-rule').length 
+              && !select.closest('#wf-item-settings-dialog__wd').length
+            ) {
+              select.closest('.plomino-macros-rule')
+                .prepend('<i class="material-icons">more_vert</i>');
+            }
+
             select.change(function(evt) {
                 var macro_select = $(evt.target);
                 if (evt.added != undefined) {
@@ -126,6 +134,7 @@ require([
                     var id = evt.removed.id;
                     self.cleanup_inputs.bind({widget:self})();
                 }
+
                 //evt.stopPropagation();
                 //evt.preventDefault();
                 return false;
@@ -179,6 +188,7 @@ require([
                         selector:'.select2-search-choice',
                         drop: function() {
                             $(el).select2('onSortEnd');
+                            $('.select2-search-choice.item-dragging.dragging').remove();
                         }});
 
 
@@ -192,8 +202,14 @@ require([
                     });
                 }
             });
-            new Sortable(self.$el, {selector:'.plomino-macros-rule'});
-
+            new Sortable(self.$el, {
+              selector:'.plomino-macros-rule',
+              drop: function () {
+                $('.plomino-macros-rule.item-dragging.dragging,#select2-drop-mask,' +
+                  '.select2-drop.select2-drop-multi.select2-display-none.select2-drop-active'
+                ).remove();
+              }
+            });
         },
         formatMacro: function (macro) {
             if (macro.text) {
@@ -208,7 +224,8 @@ require([
             if (formid.startsWith('macro_condition_')) {
                 type = 'if';
             }
-            return '<span class="plomino_edit_macro"><i>' + type + '</i>&nbsp;' +
+            return '<span class="plomino_edit_macro">' + 
+                '<i class="material-icons">more_vert</i><i>' + type + '</i>&nbsp;' +
                 macro.title +
                 '<i class="icon-pencil"></i></span>';
         },

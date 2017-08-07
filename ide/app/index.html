@@ -425,7 +425,51 @@
       font-size: 11px;
     }
 
+    .select2-search-choice.item-dragging.dragging,
+    .plomino-macros-rule.item-dragging.dragging {
+      z-index: 5000;
+      list-style: none;
+    }
 
+    .select2-search-choice.item-dragging.dragging > .select2-search-choice-close,
+    .plomino-macros-rule.item-dragging.dragging > .select2-search-choice-close {
+      visibility: hidden;
+    }
+
+    .plomino-macros .select2-search-choice,
+    .plomino-macros-rule.item-dragging.dragging .select2-search-choice {
+      padding: 3px 18px 3px 5px !important;
+    }
+
+    .plomino-macros .select2-search-choice-close,
+    .plomino-macros-rule.item-dragging.dragging .select2-search-choice-close {
+      left: auto;
+      right: 3px;
+    }
+
+    .plomino-macros .plomino_edit_macro .material-icons {
+      font-size: 12px;
+      float: left;
+      margin-top: 1px;
+    }
+
+    .select2-search-choice.item-dragging.dragging .plomino_edit_macro .material-icons,
+    .plomino-macros-rule.item-dragging.dragging .plomino_edit_macro .material-icons {
+      font-size: 12px;
+      float: left;
+      margin-top: 5px;
+    }
+
+    .plomino-macros-rule > .material-icons {
+      float: left;
+      font-size: 18px;
+      margin-top: 4px;
+      cursor: ns-resize;
+    }
+
+    #fieldset-default .plomino-macros-rule > .select2-container {
+      width: calc(100% - 18px) !important;
+    }
   </style>
 </head>
 
