@@ -543,6 +543,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     patObject.inline = false;
     patObject.tiny.height = 780;
     patObject.tiny.forced_root_block = false;
+    patObject.tiny.force_br_newlines = false;
+    patObject.tiny.force_p_newlines = true;
     patObject.tiny.resize = false;
     patObject.tiny.cleanup = false;
     patObject.tiny.content_css = patObject.tiny.content_css.split(',');
