@@ -188,7 +188,7 @@ require([
                         selector:'.select2-search-choice',
                         drop: function() {
                             $(el).select2('onSortEnd');
-                            $('.select2-search-choice.item-dragging.dragging').remove();
+                            $('.select2-search-choice.item-dragging.dragging,#select2-drop-mask').remove();
                         }});
 
 
