@@ -5312,11 +5312,11 @@
                         "title": "Formula",
                         "edit_template": null,
                         "isDynamicField": false,
-                        "field_mode": "DISPLAY",
+                        "field_mode": "COMPUTEDONSAVE",
                         "to_be_indexed": false,
                         "helpers": [],
                         "preserve_carriage_returns": false,
-                        "formula": "defaultValue = plominoContext.getItem('defaultValue','')\r\ncode = \"\"\"\r\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\r\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\r\nif not plominoContext.getItem(field_id):\r\n    return defaultValue\r\nreturn plominoContext.getItem(field_id)\r\n\"\"\" .format(defaultValue=defaultValue)\r\n\r\nreturn code",
+                        "formula": "defaultvalue = plominoContext.getItem('defaultvalue','')\r\ncode = \"\"\"\r\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\r\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\r\nif not plominoContext.getItem(field_id):\r\n    return '{defaultvalue}'\r\nreturn plominoContext.getItem(field_id)\r\n\"\"\" .format(defaultvalue=defaultvalue)\r\n\r\nreturn code",
                         "size": null,
                         "ajax_load": null,
                         "description": ""
