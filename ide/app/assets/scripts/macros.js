@@ -205,9 +205,10 @@ require([
             new Sortable(self.$el, {
               selector:'.plomino-macros-rule',
               drop: function () {
+                self.$el.select2('onSortEnd');
                 $('.plomino-macros-rule.item-dragging.dragging,#select2-drop-mask,' +
                   '.select2-drop.select2-drop-multi.select2-display-none.select2-drop-active'
-                ).remove();
+                ).hide();
               }
             });
         },
