@@ -91,6 +91,11 @@
         />
 
     <subscriber
+        for="Products.CMFPlomino.contents.view.IPlominoView zope.lifecycleevent.interfaces.IObjectMovedEvent"
+        handler=".events.afterViewMoved"
+        />
+
+    <subscriber
         for="Products.CMFPlomino.contents.column.IPlominoColumn zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".events.afterColumnModified"
         />

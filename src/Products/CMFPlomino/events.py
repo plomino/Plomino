@@ -87,13 +87,25 @@ def afterActionModified(obj, event):
 def afterViewCreated(obj, event):
     """
     """
+    pass # Now handled he afterViewMoved event
+
+
+def afterViewMoved(obj, event):
+    """ We need to ensure the view index name changes when the view name changes
+    """
     db = obj.getParentDatabase()
     refresh = not db.do_not_reindex
-    db.getIndex().createSelectionIndex(
-        'PlominoViewFormula_' + obj.id,
-        refresh=refresh)
-    if refresh:
-        obj.getParentDatabase().getIndex().refresh()
+    if event.oldName is None:
+        db.getIndex().createSelectionIndex(
+            'PlominoViewFormula_' + obj.id,
+            refresh=refresh)
+    elif event.newName is None:
+        db.getIndex().delSelectionIndex(
+            'PlominoViewFormula_' +event.oldName)
+    else:
+        db.getIndex().renameSelectionIndex(
+            'PlominoViewFormula_' +event.oldName,
+            'PlominoViewFormula_' +event.newName)
 
 
 def afterViewModified(obj, event):

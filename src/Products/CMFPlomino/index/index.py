@@ -107,7 +107,6 @@ class PlominoIndex(UniqueObject, CatalogTool):
             self.refresh()
 
     security.declareProtected(DESIGN_PERMISSION, 'createSelectionIndex')
-
     def createSelectionIndex(self, fieldname, refresh=True):
         """
         """
@@ -116,6 +115,32 @@ class PlominoIndex(UniqueObject, CatalogTool):
 
         if refresh:
             self.refresh()
+
+    security.declareProtected(DESIGN_PERMISSION, 'renameSelectionIndex')
+    def renameSelectionIndex(self, oldName, newName):
+        """
+        """
+        if oldName not in self.indexes():
+            raise Exception("Problem when trying to move index")
+        old_index = self._catalog.getIndex(oldName)
+        if old_index is None:
+            raise Exception("Problem when trying to move index")
+
+        old_index = old_index.aq_inner
+        old_index.indexed_attrs = [newName]
+        old_index.id = newName
+        self._catalog.delIndex(oldName)
+        self._catalog.addIndex(newName, old_index)
+
+    security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
+    def delSelectionIndex(self, oldName):
+        """
+        """
+        if oldName not in self.indexes():
+            # should be fine.
+            return
+        self.delIndex(oldName)
+
 
     security.declareProtected(DESIGN_PERMISSION, 'deleteIndex')
 
