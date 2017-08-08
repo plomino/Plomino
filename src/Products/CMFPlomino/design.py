@@ -748,12 +748,24 @@ class DesignManager:
                 formula_str,
                 with_args)
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
+        request_context = context
+        # example script_id field_-_form_test_email_basic_-_fullname_-_formula
+        script_parts = script_id.split('-')
+        if len(script_parts) > 1:
+            form_id = script_parts[1]
+            if form_id[0] == '_':
+                form_id = form_id[1:]
+            if form_id[-1] == '_':
+                form_id = form_id[:-1]
+            form_obj = self.getForm(form_id)
+            if form_obj:
+                request_context = form_obj
 
         # set a context manager in the request so formula can raise
         # it's security level if it wants
         request = getRequest()
-        request['_plomino_run_as_owner_'] = run_as_owner(context)
+        request['_plomino_run_as_owner_'] = run_as_owner(request_context)
 
 
         result = None
