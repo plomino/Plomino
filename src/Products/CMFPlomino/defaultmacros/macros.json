@@ -1364,7 +1364,7 @@
                         "to_be_indexed": false,
                         "helpers": [],
                         "preserve_carriage_returns": false,
-                        "formula": "doc = plominoContext\r\naction_id_ = doc.getItem('action_id')\r\n\r\ncode = \"\"\"\r\naction_id = \\\"\\\"\\\"{action_id}\\\"\\\"\\\"\r\nrequest = plominoContext.REQUEST\r\nif request.get(action_id):\r\n    return True\r\nreturn False\r\n    \"\"\".format(\r\n        action_id=action_id_,\r\n    )\r\nreturn code",
+                        "formula": "doc = plominoContext\r\naction_id_ = doc.getItem('action_id')\r\n\r\ncode = \"\"\"\r\naction_id = \\\"\\\"\\\"{action_id}\\\"\\\"\\\"\r\nimport pdb\r\npdb.set_trace()\r\nrequest = plominoContext.REQUEST\r\nif request.get(action_id):\r\n    return True\r\nreturn False\r\n    \"\"\".format(\r\n        action_id=action_id_,\r\n    )\r\nreturn code",
                         "size": null,
                         "ajax_load": null,
                         "description": ""
@@ -3905,7 +3905,7 @@
                         "to_be_indexed": false,
                         "helpers": [],
                         "preserve_carriage_returns": false,
-                        "formula": "doc = plominoContext\r\nmessage_type_ = doc.getItem('message_type')\r\nmessage_ = doc.getItem('message')\r\ncode = ''\r\nif message_type_ == 'info':\r\n    code = \"\"\"\r\ndb = plominoContext.getParentDatabase()\r\nreq = getattr(plominoContext, 'REQUEST')\r\nmessage = \\\"\\\"\\\"{message}\\\"\\\"\\\"\r\ndb.writeMessageOnPage(message, req)\r\n    \"\"\".format(\r\n    message=message_\r\n)\r\nelif redirect_type_ == 'error':\r\n    code = \"\"\"\r\ndb = plominoContext.getParentDatabase()\r\nreq = getattr(plominoContext, 'REQUEST')\r\nmessage = \\\"\\\"\\\"{message}\\\"\\\"\\\"\r\ndb.writeMessageOnPage(message, req, error=True)\r\n    \"\"\".format(\r\n    message=message_\r\n)\r\nreturn code",
+                        "formula": "doc = plominoContext\r\nmessage_type_ = doc.getItem('message_type')\r\nmessage_ = doc.getItem('message')\r\ncode = ''\r\nif message_type_ == 'info':\r\n    code = \"\"\"\r\ndb = plominoContext.getParentDatabase()\r\nreq = getattr(plominoContext, 'REQUEST')\r\nmessage = \\\"\\\"\\\"{message}\\\"\\\"\\\"\r\ndb.writeMessageOnPage(message, req)\r\n    \"\"\".format(\r\n    message=message_\r\n)\r\nelif message_type_ == 'error':\r\n    code = \"\"\"\r\ndb = plominoContext.getParentDatabase()\r\nreq = getattr(plominoContext, 'REQUEST')\r\nmessage = \\\"\\\"\\\"{message}\\\"\\\"\\\"\r\ndb.writeMessageOnPage(message, req, error=True)\r\n    \"\"\".format(\r\n    message=message_\r\n)\r\nreturn code",
                         "size": null,
                         "ajax_load": null,
                         "description": ""
