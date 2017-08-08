@@ -748,7 +748,6 @@ class DesignManager:
                 formula_str,
                 with_args)
 
-        #import pdb; pdb.set_trace()
         request_context = context
         #logger.info('** script_id ' + script_id)
         # example script_id
