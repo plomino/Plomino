@@ -12,45 +12,28 @@ a logged-in test user
 
 
 
-I open the ide for "${db}"
-  #Go To  ${PLONE_URL}/mydb
-  #Click Element  link=IDE
-  Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
-#  Wait Until Element Is Visible  id=application-loader
-  Wait Until page does not contain element  id=application-loader
-  wait until page contains  ${db}
-
-
-I waiting a little bit
-  sleep  0.5s
-
 
 
 # --- WHEN -------------------------------------------------------------------
-
-
 I open service tab "${tabId}"
   Click Link    Service
   wait until page contains  ${tabId}
   Click Element  jquery=.mdl-button:visible:contains(${tabId})
 
-I
 
 # --- THEN -------------------------------------------------------------------
-
-
+I can see the workflow editor
+    Element Should Be Visible       id=tab_workflow
 
 I can see element Start in the workflow editor
-  wait until page contains element  css=.workflow-node--root
+    Wait Until Page Contains Element    jquery=.plomino-workflow-editor
+    Wait Until Page Contains Element    jquery=.plomino-workflow-editor__branch
+    Element Should Be Visible       jquery=.workflow-node--root .workflow-node__start-text
 
-I can add a Form Task element
-  sleep  0.3s
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  wait until page contains element  css=div.workflow-node--root
-  Selenium2Library.mouse over css=div.workflow-node--root
-  sleep  0.1s
-  wait until element is visible   xpath=//div[contains(@class,'workflow-node--root')]//li[contains(@class,'plomino-workflow-editor__branch--virtual')]
-  Click Element xpath=//div[contains(@class,'workflow-node--root')]//li[contains(@class,'plomino-workflow-editor__branch--virtual')]
-
-
-python: '<a href="%s/@@display-file/file/%s" class="application-pdf" target="_blank" title="Audit report for %s">%s&nbsp;.<span></span></a>' % (item.getURL(), item['id'], item.Title, 'Audit report') if  item.getObject().file.filename.endswith('pdf') else '<a href="%s/@@download/file/%s" class="application-doc" target="_blank" title="Audit report for %s">%s&nbsp;.<span></span></a>' % (item.getURL(), item['id'], item.Title, 'Audit report')
+I can add a Form Task element by dnd
+    Click Element        jquery=.workflow-node--root .workflow-node__start-text
+    Click Element       id=wf-vrt-btn-1
+    Click Element        jquery=li[data-create='workflowFormTask']
+    Wait Until Page Contains Element        id=workflow-node__text--task-2
+    Wait Until Page Contains Element        id=workflow-node__text--form-2
+    Wait Until Page Contains Element        id=workflow-node__text--process-2
