@@ -749,7 +749,6 @@ class DesignManager:
                 with_args)
 
         request_context = context
-        #logger.info('** script_id ' + script_id)
         # example script_id
         # field_-_form_test_email_basic_-_fullname_-_formula
         # hidewhen_-_form_test_email_basic_-_hidewhen_good_-_formula
@@ -1433,7 +1432,6 @@ class run_as_owner():
 
     def __init__(self, context):
         self.context = context
-        #logger.info('** init context ' + self.context.portal_type)
         member = self.context.getParentDatabase().getCurrentMember()
         if member.__class__.__name__ == "SpecialUser":
             self.user = member
@@ -1442,7 +1440,6 @@ class run_as_owner():
 
     def __enter__(self):
         owner = self.context.getOwner()
-        logger.info('enter context ' + self.context.portal_type)
         newSecurityManager(None, owner)
 
     def __exit__(self, exc_type, exc_value, traceback):
