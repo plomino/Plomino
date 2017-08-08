@@ -1,0 +1,188 @@
+Plomino basic maco tests
+=========================
+
+    >>> import zope.event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+
+
+A form may consist of multiple subforms. Set up some simple forms::
+
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
+    >>> db = portal.advdb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+
+
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Field 1',
+    ...         mandatory=False,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.form_layout = '<span class="plominoFieldClass">field1</span>'
+
+Range condition
+
+    >>> range = {"more_field_value":1,
+    ...    "more_field_name":"field1",
+    ...    "less_field_name":"field1",
+    ...    "and_or":"or",
+    ...    "less_field_value":10,
+    ...    "Form":"macro_condition_number_range_in",
+    ...    "_macro_id_":"macro_condition_number_range_in_2"}
+    >>> invalid = {"invalid_message":"Not in range",
+    ...    "Form":"macro_field_validate_invalid",
+    ...    "_macro_id_":"macro_field_validate_invalid_2"}
+
+    >>> db.frm1.field1.helpers = [[range,invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+
+We can see that it generates code
+
+    >>> print db.frm1.field1.validation_formula
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_2 ###
+    def macro_condition_number_range_in_2():
+    ...
+    ### END macro_condition_number_range_in_2 ###
+    ### START macro_field_validate_invalid_2 ###
+    if macro_condition_number_range_in_2():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+
+
+Test if the macro fires::
+
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Not in range'}]
+
+We can reverse the order of the statements in a rule
+
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Not in range'}]
+
+Update the parameters of a "do"
+
+    >>> invalid = {"invalid_message":"Invalid",
+    ...    "Form":"macro_field_validate_invalid",
+    ...    "_macro_id_":"macro_field_validate_invalid_2"}
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'2'})
+    [{'field': 'field1', 'error': 'Invalid'}]
+
+Update the parameters of a "if"
+
+    >>> range["more_field_value"] = 2
+    >>> db.frm1.field1.helpers = [[invalid, range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> db.frm1.validateInputs({'field1':'10'})
+    [{'field': 'field1', 'error': 'Invalid'}]
+
+
+If we remove the condition we get simplier code
+    >>> db.frm1.field1.helpers = [[invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> '### START macro_condition_number_range_in_2 ###' not in db.frm1.field1.validation_formula
+    True
+    >>> 'if macro_condition_number_range_in_2():' not in db.frm1.field1.validation_formula
+    True
+
+If we have just the condition then we get no code
+    >>> db.frm1.field1.helpers = [[range]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> print db.frm1.field1.validation_formula
+
+We can have more than one condition
+
+    >>> range2 = {"more_field_value":100,
+    ...    "more_field_name":"field1",
+    ...    "less_field_name":"field1",
+    ...    "and_or":"or",
+    ...    "less_field_value":200,
+    ...    "Form":"macro_condition_number_range_in",
+    ...    "_macro_id_":"macro_condition_number_range_in_3"}
+
+
+No operator assumes "AND"
+    >>> db.frm1.field1.helpers = [[range, range2, invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> print db.frm1.field1.validation_formula
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_2 ###
+    def macro_condition_number_range_in_2():
+    ...
+    ### END macro_condition_number_range_in_2 ###
+    ### START macro_condition_number_range_in_3 ###
+    def macro_condition_number_range_in_3():
+    ...
+    ### END macro_condition_number_range_in_3 ###
+    ### START macro_field_validate_invalid_2 ###
+    if macro_condition_number_range_in_2() and macro_condition_number_range_in_3():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+
+or we use an explicit 'OR' operator
+
+    >>> db.frm1.field1.helpers = [[range, {'Form':'or'}, range2, invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> print db.frm1.field1.validation_formula
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_2 ###
+    def macro_condition_number_range_in_2():
+    ...
+    ### END macro_condition_number_range_in_2 ###
+    ### START macro_condition_number_range_in_3 ###
+    def macro_condition_number_range_in_3():
+    ...
+    ### END macro_condition_number_range_in_3 ###
+    ### START macro_field_validate_invalid_2 ###
+    if macro_condition_number_range_in_2() or macro_condition_number_range_in_3():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+
+We can use NOT too
+
+    >>> db.frm1.field1.helpers = [[{'Form':'not'}, range, {'Form':'or'}, {'Form':'not'}, range2, invalid]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> print db.frm1.field1.validation_formula
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_2 ###
+    def macro_condition_number_range_in_2():
+    ...
+    ### END macro_condition_number_range_in_2 ###
+    ### START macro_condition_number_range_in_3 ###
+    def macro_condition_number_range_in_3():
+    ...
+    ### END macro_condition_number_range_in_3 ###
+    ### START macro_field_validate_invalid_2 ###
+    if not macro_condition_number_range_in_2() or not macro_condition_number_range_in_3():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+
+If we insert our own custom code, this is preserved
+
+    >>> db.frm1.field1.validation_formula = 'print "hello world"\n'+db.frm1.field1.validation_formula
+    >>> db.frm1.field1.helpers = [[invalid, range2]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm1.field1, []))
+    >>> print db.frm1.field1.validation_formula
+    print "hello world"
+    <BLANKLINE>
+    <BLANKLINE>
+    <BLANKLINE>
+    ### START macro_condition_number_range_in_3 ###
+    def macro_condition_number_range_in_3():
+    ...
+    ### END macro_condition_number_range_in_3 ###
+    ### START macro_field_validate_invalid_2 ###
+    if macro_condition_number_range_in_3():
+    ...
+    ### END macro_field_validate_invalid_2 ###
+

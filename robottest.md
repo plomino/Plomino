@@ -26,7 +26,7 @@ docker exec -ti rtests /bin/bash -c "cd /buildout ;  bin/robot-server Products.C
 In a new terminal window execute the tests:
 
 ```
-docker exec -ti rtests /buildout/bin/robot --variable REMOTE_URL:http://127.0.0.1:24444/wd/hub src/Products/CMFPlomino/tests/robot/test_plominodatabase.robot
+docker exec -ti rtests /buildout/bin/robot --variable REMOTE_URL:http://127.0.0.1:24444/wd/hub --outputdir=/buildout/parts/test /buildout/src/Products/CMFPlomino/tests/robot/test_plominodatabase.robot
 ```
 
 If you mapped your local test dir you will see the output of the tests here
