@@ -748,10 +748,35 @@ class DesignManager:
                 formula_str,
                 with_args)
 
+        request_context = context
+        # example script_id
+        # field_-_form_test_email_basic_-_fullname_-_formula
+        # hidewhen_-_form_test_email_basic_-_hidewhen_good_-_formula
+        # action_-_form_test_email_basic_-_action_redirect_-_script
+        # form_-_form_test_email_basic_-_ondisplay
+        # column_-_allfrmtest_-_ffullname_-_formula
+        # view_-_alltestformonsave_-_selection
+        script_parts = script_id.split('-')
+        if len(script_parts) > 1:
+            parent_type = script_parts[0].strip('_')
+            obj_id = script_parts[1].strip('_')
+            if parent_type == 'field' or \
+                    parent_type == 'hidewhen' or \
+                    parent_type == 'action' or \
+                    parent_type == 'form':
+                form_obj = self.getForm(obj_id)
+                if form_obj:
+                    request_context = form_obj
+            elif parent_type == 'view' or \
+                    parent_type == 'column':
+                view_obj = self.getView(obj_id)
+                if view_obj:
+                    request_context = view_obj
+
         # set a context manager in the request so formula can raise
         # it's security level if it wants
         request = getRequest()
-        request['_plomino_run_as_owner_'] = run_as_owner(context)
+        request['_plomino_run_as_owner_'] = run_as_owner(request_context)
 
 
         result = None
