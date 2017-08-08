@@ -1188,7 +1188,7 @@
                 "onOpenDocument": "",
                 "ajax_load": null,
                 "onDeleteDocument": "",
-                "title": "CSV download from view",
+                "title": "CSV download",
                 "onSaveDocument": "",
                 "onDisplay": "",
                 "resources_js": null,
