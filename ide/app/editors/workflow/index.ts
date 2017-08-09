@@ -1,8 +1,9 @@
+import { Subscription } from 'rxjs/Rx';
 import { PlominoWorkflowItemEditorService } from './workflow.item-editor.service';
 import { WFDragControllerService, DS_TYPE, DS_FROM_PALETTE } from './drag-controller';
 import { TreeStructure } from './tree-structure';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
-import { Component, ElementRef, ViewChild, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder, WF_ITEM_TYPE as WF } from './tree-builder';
@@ -25,10 +26,11 @@ const AUTOUPGRADE = true;
   providers: [PlominoWorkflowItemEditorService, WFDragControllerService],
   encapsulation: ViewEncapsulation.None,
 })
-export class PlominoWorkflowComponent implements OnInit {
+export class PlominoWorkflowComponent implements OnInit, OnDestroy {
   @ViewChild('workflowEditorNode') workflowEditorNode: ElementRef;
   latestTree: TreeStructure = null;
   editorOffset: { top: number, left: number };
+  subscriptions: Subscription[] = [];
 
   constructor(
     private log: LogService,
@@ -47,17 +49,17 @@ export class PlominoWorkflowComponent implements OnInit {
     }
 
     /* listen to forms delete */
-    this.formsService.formRemoved$
+    this.subscriptions.push(this.formsService.formRemoved$
       .subscribe((formId) => {
         const item = this.findWFItemByFormOrViewId(formId.split('/').pop());
         if (item !== null) {
           item[item.type === WF.FORM_TASK ? 'form' : 'view'] = '';
           this.buildWFTree(this.treeService.getActiveTree(), AUTOSAVE, AUTOUPGRADE);
         }
-      });
+      }));
 
     /* listen to forms ids update */
-    this.formsService.formIdChanged$
+    this.subscriptions.push(this.formsService.formIdChanged$
       .subscribe((data: { oldId: string, newId: string }) => {
         const item = this.findWFItemByFormOrViewId(data.oldId.split('/').pop());
         if (item !== null) {
@@ -66,18 +68,20 @@ export class PlominoWorkflowComponent implements OnInit {
           ] = data.newId.split('/').pop();
           this.buildWFTree(this.treeService.getActiveTree(), AUTOSAVE, AUTOUPGRADE);
         }
-      });
+      }));
 
     /* listen to external save trigger */
-    this.workflowChanges.needSave$
+    this.subscriptions.push(this.workflowChanges.needSave$
       .subscribe(() => {
         const tree = this.treeService.getActiveTree();
         this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
-      });
+      }));
 
     /* listen to external add trigger */
-    this.workflowChanges.runAdd$
+    this.subscriptions.push(this.workflowChanges.runAdd$
       .subscribe((wfType) => {
+        this.log.info('external add trigger', wfType);
+        this.log.extra('workflow/index.ts this.workflowChanges.runAdd$');
         let correctId = this.treeService.getActiveTree().getLatestId();
         const dragData = { title: '', type: wfType };
         let $item = $('.workflow-node[data-node-id="' + correctId +'"]');
@@ -92,7 +96,7 @@ export class PlominoWorkflowComponent implements OnInit {
         this.dragInsertPreview(
           $('.workflow-node[data-node-id="' + correctId +'"]'), dragData);
         this.onDrop();
-      });
+      }));
 
     this.itemEditor.init();
   }
@@ -106,6 +110,15 @@ export class PlominoWorkflowComponent implements OnInit {
     setTimeout(() => {
       $('tabset tab.active.tab-pane').css('background', '#fafafa')
     }, 1);
+  }
+
+  ngOnDestroy() {
+    /**
+     * garbage collection + prevent multiple subscribe bugs
+     */
+    for (let subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
   }
 
   parseTreeFromSettings(attempts = 0) {
