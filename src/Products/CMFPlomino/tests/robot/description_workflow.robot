@@ -4,9 +4,6 @@
 
 # --- Given ------------------------------------------------------------------
 
-a logged-in site administrator
-  Enable autologin as  Site Administrator
-
 a logged-in test user
   Enable autologin as  Manager  ##TODO real test user
 
