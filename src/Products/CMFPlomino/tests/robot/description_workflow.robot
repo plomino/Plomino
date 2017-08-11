@@ -6,7 +6,6 @@
 
 
 
-
 # --- WHEN -------------------------------------------------------------------
 I open service tab "${tabId}"
   Click Link    Service

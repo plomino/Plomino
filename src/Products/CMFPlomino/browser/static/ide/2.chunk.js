@@ -1,6 +1,6 @@
 webpackJsonp([2],{/***/
-1381:/***/
-function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(550),__webpack_require__(1292),__webpack_require__(1382),__webpack_require__(1293)],__WEBPACK_AMD_DEFINE_RESULT__=function($,Registry,mockupParser,logger){"use strict";var log=logger.getLogger("Patternslib Base"),initBasePattern=function($el,options,trigger){var name=this.prototype.name,log=logger.getLogger("pat."+name),pattern=$el.data("pattern-"+name);if(void 0===pattern&&Registry.patterns[name]){try{options="mockup"===this.prototype.parser?mockupParser.getOptions($el,name,options):options,pattern=new Registry.patterns[name]($el,options,trigger)}catch(e){log.error("Failed while initializing '"+name+"' pattern.",e)}$el.data("pattern-"+name,pattern)}return pattern},Base=function($el,options,trigger){this.$el=$el,this.options=$.extend(!0,{},this.defaults||{},options||{}),this.init($el,options,trigger),this.emit("init")};return Base.prototype={constructor:Base,on:function(eventName,eventCallback){this.$el.on(eventName+"."+this.name+".patterns",eventCallback)},emit:function(eventName,args){
+1377:/***/
+function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(550),__webpack_require__(1288),__webpack_require__(1378),__webpack_require__(1289)],__WEBPACK_AMD_DEFINE_RESULT__=function($,Registry,mockupParser,logger){"use strict";var log=logger.getLogger("Patternslib Base"),initBasePattern=function($el,options,trigger){var name=this.prototype.name,log=logger.getLogger("pat."+name),pattern=$el.data("pattern-"+name);if(void 0===pattern&&Registry.patterns[name]){try{options="mockup"===this.prototype.parser?mockupParser.getOptions($el,name,options):options,pattern=new Registry.patterns[name]($el,options,trigger)}catch(e){log.error("Failed while initializing '"+name+"' pattern.",e)}$el.data("pattern-"+name,pattern)}return pattern},Base=function($el,options,trigger){this.$el=$el,this.options=$.extend(!0,{},this.defaults||{},options||{}),this.init($el,options,trigger),this.emit("init")};return Base.prototype={constructor:Base,on:function(eventName,eventCallback){this.$el.on(eventName+"."+this.name+".patterns",eventCallback)},emit:function(eventName,args){
 // args should be a list
 void 0===args&&(args=[]),this.$el.trigger(eventName+"."+this.name+".patterns",args)}},Base.extend=function(patternProps){/* Helper function to correctly set up the prototype chain for new patterns.
 	        */
@@ -36,7 +36,7 @@ return Surrogate.prototype=parent.prototype,child.prototype=new Surrogate,$.exte
 	 * all DOM elements.
 	 */
 !(void 0!==__WEBPACK_AMD_DEFINE_RESULT__&&(module.exports=__WEBPACK_AMD_DEFINE_RESULT__))},/***/
-1382:/***/
+1378:/***/
 function(module,exports,__webpack_require__){var __WEBPACK_AMD_DEFINE_ARRAY__,__WEBPACK_AMD_DEFINE_RESULT__;__WEBPACK_AMD_DEFINE_ARRAY__=[__webpack_require__(550)],__WEBPACK_AMD_DEFINE_RESULT__=function($){"use strict";var parser={getOptions:function getOptions($el,patternName,options){/* This is the Mockup parser. An alternative parser for Patternslib
 	             * patterns.
 	             *
