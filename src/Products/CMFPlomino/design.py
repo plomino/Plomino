@@ -13,6 +13,7 @@ from cStringIO import StringIO
 from DateTime import DateTime
 import glob
 import json
+import re
 import logging
 from OFS.Folder import Folder
 from OFS.Image import manage_addImage
@@ -67,6 +68,8 @@ script_id = '%(script_id)s'
 
 %(formula)s
 """
+HTML_PROPERTY = "form_layout"
+
 
 
 class DesignManager:
@@ -937,11 +940,12 @@ class DesignManager:
                     dbsettings=False)
                 zip_file.writestr(filename, jsonstring)
             else:
-                filename = os.path.join(db_id, id + '.json')
-                jsonstring = self.exportDesignAsJSON(
-                    elementids=[id],
-                    dbsettings=False)
-                zip_file.writestr(filename, jsonstring)
+                bundle = self.exportDesignAsBundle(
+                    elementid=id)
+                for contentId, content in bundle.iteritems():
+                    for contentType, contentString in content.iteritems():
+                        filename = os.path.join(db_id, contentId + '.' + contentType)
+                        zip_file.writestr(filename, contentString)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
             jsonstring = self.exportDesignAsJSON(
@@ -1009,7 +1013,73 @@ class DesignManager:
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
                 'content-type', "application/json;charset=utf-8")
-        return json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        # remove trailing space after comma
+        json_string =  json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        return '\n'.join([ re.sub("(\s)*$","",line) for line in json_string.splitlines()])
+
+
+    def getMethods(self, element):
+        """ type comes in the form of ViewAction, FormAction etc
+        """
+        schema = element.getTypeInfo().lookupSchema()
+        assignable = IBehaviorAssignable(element)
+        schemas = [schema] + [behaviour.interface for behaviour in assignable.enumerateBehaviors()]
+        methods = []
+        for schema in schemas:
+            widgets = schema.queryTaggedValue(u'plone.autoform.widgets', {})
+            for name,field in getFieldsInOrder(schema):
+                #field = schema.get(name)
+                widget = widgets.get(name, None)
+                if widget is None:
+                    continue
+                # bit of a HACK
+                if widget.params.get('klass') == 'plomino-formula':
+                    methods.append(name)
+        return methods
+
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsBundle')
+
+    def exportDesignAsBundle(
+            self, elementid
+    ):
+        """
+        """
+        bundle = {}
+        rootElement = getattr(self, elementid)
+        html = getattr(rootElement, HTML_PROPERTY, None)
+        bundle[elementid] = {'json':self.exportDesignAsJSON([elementid])}
+        if html:
+            bundle[elementid]["html"] = html
+        scriptBundle = self.extractScriptFromElement(rootElement)
+        for nodeId, script in scriptBundle.iteritems():
+            if nodeId in bundle:
+                bundle[nodeId]["py"] = script
+            else:
+                bundle[nodeId] = {"py":script}
+        return bundle
+
+
+
+    def extractScriptFromElement(self,element, parentid = ""):
+        scriptDict = {}
+        code = ""
+        nodeid = element.id if not parentid else parentid + '.' + element.id
+        for method in self.getMethods(element):
+            script = getattr(element, method, None)
+            if script:
+                code+= "## START "+method+" {\n"
+                code+= script
+                code+= "\n## END "+method+" }\n\r"
+        if code:
+            scriptDict[nodeid] = code
+        childElementslist = element.objectIds()
+        if childElementslist:
+            for id in childElementslist:
+                childElement = getattr(element, id)
+                scriptDict.update(self.extractScriptFromElement(childElement, element.id))
+        return scriptDict
+
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
 
@@ -1062,6 +1132,8 @@ class DesignManager:
             data['version'] = obj.plomino_version
 
         return data
+
+
 
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsJSON')
 
@@ -1197,7 +1269,7 @@ class DesignManager:
                 list(self.resources.objectIds()))
             logger.info("Current design removed")
         total_elements = None
-        file_names = zip_file.namelist()
+        file_names = [fname for fname in zip_file.namelist() if fname.endswith(".json") ]
         for file_name in file_names:
             json_string = zip_file.open(file_name).read()
             if not json_string:
@@ -1218,7 +1290,7 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
-                    self.importElementFromJSON(self, name, element)
+                    self.importElementFromBundle(self, name, element, zip_file)
                 count = count + 1
                 total = total + 1
                 if count == 10:
@@ -1233,6 +1305,43 @@ class DesignManager:
         self.setStatus("Ready")
         txn.commit()
         self.getIndex().no_refresh = False
+
+    security.declareProtected(DESIGN_PERMISSION, 'importElementFromBundle')
+
+    def importElementFromBundle(self, container, id, element, zip_file):
+        html_files = [fname for fname in zip_file.namelist() if fname.endswith(".html")]
+        python_files = [fname for fname in zip_file.namelist() if fname.endswith(".py")]
+        for file_name in html_files:
+            if file_name == id +".html":
+                element[HTML_PROPERTY] = zip_file.open(file_name).read()
+        for file_name in python_files:
+            if file_name == id +".py":
+                script = zip_file.open(file_name).read()
+                self.loadScriptIntoElement(element, script)
+            if "elements" in element:
+                for childId, child in element["elements"].iteritems():
+                    if file_name == id + '.' + childId + '.py':
+                        script = zip_file.open(file_name).read()
+                        self.loadScriptIntoElement(child, script)
+        self.importElementFromJSON(container, id, element)
+
+    def loadScriptIntoElement(self, element, pythonScript):
+        content = ""
+        inside = False
+        for lineNumber, line in enumerate(pythonScript.split('\n')):
+            start_reg = re.match(r'^##\s*START\s+(.*){$', line)
+            end_reg = re.match(r'^##\s*END\s+(.*)}$',line)
+
+            if start_reg and not inside:
+                methodName = start_reg.group(1).strip()
+                inside = True
+            elif end_reg and inside:
+                setattr(element, methodName, content)
+                inside = False
+                content = ''
+            elif not start_reg and not end_reg and inside:
+                content+= line+"\n"
+
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
