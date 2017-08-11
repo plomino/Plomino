@@ -3,8 +3,8 @@
 Resource  description_plominodatabase.robot
 Resource  description_workflow.robot
 
-Test Setup   Open SauceLabs test browser
-Test Teardown  description_plominodatabase.Plone Test Teardown
+Test Setup   Test Setup
+Test Teardown  Test Tear Down
 
 *** Test Cases ***************************************************************
 

@@ -1,14 +1,11 @@
 *** Settings *****************************************************************
 
-Resource  plone/app/robotframework/saucelabs.robot
 #Resource  plone/app/robotframework/selenium.robot
+Resource  plone/app/robotframework/saucelabs.robot
 Resource  plone/app/robotframework/keywords.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
-
-Test Setup   Open SauceLabs test browser
-Test Teardown  description_workflow.Plone Test Teardown
 
 
 *** Variables ****************************************************************
@@ -16,6 +13,12 @@ Test Teardown  description_workflow.Plone Test Teardown
 ${BROWSER}  Chrome
 
 *** Keywords *****************************************************************
+
+
+Test Setup
+    Open SauceLabs test browser
+Test Teardown
+    description_plominodatabase.Plone Test Teardown
 
 Plone Test Teardown
     Run Keyword If Test Failed  ${SELENIUM_RUN_ON_FAILURE}
