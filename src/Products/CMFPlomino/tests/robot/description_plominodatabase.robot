@@ -239,7 +239,7 @@ I add a macro "${macro}" to "${tab}"
   click element  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
   Press key  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]  \t\t\t\t
 
-  Click element  css=.plomino-macros-rule
+  Click element  css=.plomino-macros-rule .select2-container input
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
   wait until page contains element  css=.plominoSave
 
