@@ -341,6 +341,15 @@ export class FormSettingsComponent implements OnInit {
 
     private updateMacroses() {
       if (this.formSettings) {
+        /** get possible code editor id */
+        const codeId = this.tabsManagerService.generateCodeEditorId(this.tab.url);
+        /** if tab state is not dirty */
+        if (this.tabsManagerService.tabIsNotDirty(codeId)) {
+          /** flush the code cache of this form if needed */
+          this.tabsManagerService.flushTabContentState(codeId);
+          this.log.info('cache of', codeId, 'flushed');
+        }
+
         window['MacroWidgetPromise'].then((MacroWidget: any) => {
           if (this.macrosWidgetTimer !== null) {
             clearTimeout(this.macrosWidgetTimer);
