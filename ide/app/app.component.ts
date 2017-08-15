@@ -419,75 +419,6 @@ export class AppComponent implements OnInit {
     this.resolveData(this.dragData, this.dragData.resolver);
   }
 
-  // closeTab(event: any, tab: any) {
-  //   // const tabUnsaved = this.saveManager.isEditorUnsaved(tab.url);
-    
-  //   // ((): Promise<any> => {
-  //   //   if (tabUnsaved) {
-  //   //     /**
-  //   //      * warn the user of any unsaved changes
-  //   //      */
-  //   //     return this.elementService.awaitForConfirm(
-  //   //       'Do you which to save?'
-  //   //     );
-  //   //   } else {
-  //   //     return Promise.resolve();
-  //   //   }
-  //   // })()/
-  //   this.activeEditorService.setActive(null);
-  //   this.tabsService.closing = true;
-  //   this.tabsService.closeTab(tab);
-
-  //   setTimeout(() => {
-  //     /* detect wrong case */
-  //     const $activeTrigger = $('.tab-trigger[data-active="true"]');
-  //     if ($activeTrigger.length) {
-  //       const url = $activeTrigger.attr('data-url');
-  //       const editor = $activeTrigger.attr('data-editor');
-
-  //       if (editor === 'layout') {
-  //         this.log.info('set active url', url);
-  //         this.log.extra('app.component.ts');
-  //         this.activeEditorService.setActive(url);
-  //       }
-        
-  //       // check that tinymce is broken after 100ms
-  //       if (this.activeEditorService.getActive()) {
-  //         const $iframe = $(this.activeEditorService.getActive()
-  //             .getContainer().querySelector('iframe'));
-  //         let x = $iframe.contents().find('body').html();
-  //         if (
-  //           /* x === '' in case when <p> are missing, why? */
-  //           typeof x === 'undefined' || !x.length
-  //           // typeof x === 'undefined' || (!x.length 
-  //           //   && !$iframe.contents().find('body').length
-  //           // )
-  //         ) {
-  //           // const $tinyTextarea = $iframe.closest('form').find('>textarea');
-  //           try {
-  //             const _url = url.split('/').pop();
-  //             tinymce.EditorManager.execCommand('mceRemoveEditor', true, _url);
-  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
-  //             tinymce.EditorManager.execCommand('mceAddEditor', true, _url);
-  
-  //             /* reset content hooks */
-  //             setTimeout(() => {
-  //               const x = this.contentManager.getContent(
-  //                 this.activeEditorService.editorURL
-  //               );
-  //               this.contentManager.setContent(
-  //                 this.activeEditorService.editorURL, x,
-  //                 this.draggingService
-  //               );
-  //             }, 100);
-  //           }
-  //           catch (e) {}
-  //         }
-  //       }
-  //     }
-  //   }, 100);
-  // }
-
   onModalClose(event: any) {
     this.isModalOpen = false;
     
@@ -505,39 +436,6 @@ export class AppComponent implements OnInit {
     .postElement(event.url,newElement)
     .subscribe(data => this.treeService.updateTree());
   }
-
-  // onTabSelect(tab: any) {
-  //   this.log.info('onTabSelect', tab);
-  //   this.activeEditorService.setActive(
-  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null
-  //   );
-  //   this.activeEditorService.turnActiveEditorToLoadingState(false);
-  //   this.log.info('onTabSelect setActive', 
-  //     tab.path.length && tab.path[0].type === 'Forms' ? tab.url : null);
-  //   this.log.info('onTabSelect getActive', 
-  //     this.activeEditorService.editorURL, this.activeEditorService.getActive());
-  //   this.tabsService.setActiveTab(tab, true);
-  // }
-
-  // setTabzAsDirty(tabz: any, dirty: boolean) {
-  //   this.log.info('setTabzAsDirty', tabz, tabz.url, dirty);
-  //   tabz.isdirty = dirty;
-
-  //   if (!dirty) {
-  //     if (this.getEditor(tabz.url)) {
-  //       this.getEditor(tabz.url).setDirty(false);
-  //       this.activeEditorService.turnActiveEditorToSavedState();
-  //     }
-  //   }
-
-  //   $(window)
-  //   .unbind('beforeunload')
-  //   .bind('beforeunload', (eventObject: any) => {
-  //     if (tabz.isdirty && !window['reloadAccepted']) {
-  //       return confirm('Do you want to close window. The form is unsaved.');
-  //     }
-  //   });
-  // }
 
   private addNewView(event: MouseEvent) {
     event.preventDefault();
