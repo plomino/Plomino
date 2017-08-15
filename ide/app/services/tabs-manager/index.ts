@@ -27,9 +27,12 @@ export class PlominoTabsManagerService {
   private tabContentStates: Map<string, { content: string, pattern?: string }> 
     = new Map<string, { content: string, pattern?: string }>();
 
+  private dirtyTabs: Set<string> = new Set();
+
   constructor() {
     this.getAfterUpdateIdOfTab()
       .subscribe((data) => {
+        this.dirtyTabs.delete(data.prevId);
         if (this.tabContentStates.has(data.prevId)) {
           // const prevState = this.tabContentStates.get(data.prevId);
           // if (prevState.pattern) {
@@ -46,6 +49,21 @@ export class PlominoTabsManagerService {
           this.tabContentStates.delete(data.prevId);
         }
       });
+
+    this.getTabDirty()
+      .subscribe((data) => {
+        const editorId = data.tab.editor === 'code' 
+          ? this.generateCodeEditorId(data.tab.url) : data.tab.id;
+        this.dirtyTabs[data.state ? 'add' : 'delete'](editorId);
+      });
+  }
+
+  isTabDirty(tabId: string) {
+    return this.dirtyTabs.has(tabId);
+  }
+
+  tabIsNotDirty(tabId: string) {
+    return !this.isTabDirty(tabId);
   }
 
   openTab(tab: PlominoTabUnit) {
