@@ -62,13 +62,13 @@ export class PlominoSaveManagerService {
       /**
        * if there were some problems ontop
        * like the state is null and getContent didn't find the editor
-       * we will wait 1 second to be sure that all is ok
+       * we will wait 3 second to be sure that all is ok
        */
       setTimeout(() => {
-        this.nextEditorSavedState(editorId, state);
+        this.savedStates.set(editorId, state || this.contentManager.getContent(editorId));
         this.log.warn('there were some errors prevented');
         this.log.extra('save-manager.service.ts nextEditorSavedState');
-      }, 1000);
+      }, 3000);
     }
   }
 
