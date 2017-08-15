@@ -53,6 +53,8 @@ export class PlominoTabsComponent implements OnInit {
         const index = this.findTabIndex(tab);
         if (index === -1) {
           this.tabsCollection.push(tab);
+          this.changeDetector.markForCheck();
+          this.changeDetector.detectChanges();
           if (tab.editor === 'layout' && this.tabsManagerService.setOpenedTabActive) {
             this.saveManager.nextEditorSavedState(tab.url);
           }
