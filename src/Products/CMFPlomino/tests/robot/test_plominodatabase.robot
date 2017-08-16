@@ -212,6 +212,17 @@ Scenario: I can add hidewhen on email form by click
     and I waiting a little bit
    Then I will see that hidewhen is present
 
+
+Scenario: I can export design from a database
+  Given a logged-in test user
+    and I open the ide for "mydb"
+   and I open service tab "Import/export of data"
+   Then I can see Import/Export dialog open
+    and I click the tab "Design import/export" in Import/Export dialog
+    and click element id="targettype-zipfile"
+    and click button "Export"
+
+
 # View tests
 
 Scenario: I can add a view

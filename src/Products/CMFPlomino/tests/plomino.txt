@@ -743,9 +743,6 @@ Results from views are sorted on the sort column::
 # Import/export design
 # ---------------------
 
-# The database design (forms, views, agents, etc.)
-# can be exported or imported from one database to another,
-# e.g. between two Zope instances over HTTP, using a specific XML format::
 
 # .. TODO:: Fix this
      >>> print db.exportDesignAsJSON(elementids=['frm2'])
@@ -857,3 +854,4 @@ Also check the order of view and form elements
 #     'plomino/test/frmBillet.xml'
 
 # TODO: TEST ALSO IMPORT
+

@@ -3,7 +3,7 @@
 *** Settings *****************************************************************
 
 Resource  description_plominodatabase.robot
-Resource  description_workflow.robot
+#Resource  description_workflow.robot
 
 Test Setup   Open SauceLabs test browser
 Test Teardown  description_plominodatabase.Plone Test Teardown

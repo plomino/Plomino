@@ -58,6 +58,7 @@ from .utils import (
     asUnicode,
     DateToString,
 )
+from collections import defaultdict
 
 logger = logging.getLogger('Plomino')
 
@@ -69,7 +70,7 @@ script_id = '%(script_id)s'
 %(formula)s
 """
 HTML_PROPERTY = "form_layout"
-
+HELPER_PROPERTY = "helpers"
 
 
 class DesignManager:
@@ -942,10 +943,11 @@ class DesignManager:
             else:
                 bundle = self.exportDesignAsBundle(
                     elementid=id)
-                for contentId, content in bundle.iteritems():
-                    for contentType, contentString in content.iteritems():
-                        filename = os.path.join(db_id, contentId + '.' + contentType)
-                        zip_file.writestr(filename, contentString)
+                for contentId, contentObj in bundle.iteritems():
+                    for contentType, content in contentObj.iteritems():
+                        if content:
+                            filename = os.path.join(db_id, contentId + '.' + contentType)
+                            zip_file.writestr(filename, content)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
             jsonstring = self.exportDesignAsJSON(
@@ -1013,7 +1015,8 @@ class DesignManager:
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
                 'content-type', "application/json;charset=utf-8")
-        # remove trailing space after comma
+        # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
+        # Temporary fix by applying regex on json string
         json_string =  json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
         return '\n'.join([ re.sub("(\s)*$","",line) for line in json_string.splitlines()])
 
@@ -1045,45 +1048,47 @@ class DesignManager:
     ):
         """
         """
-        bundle = {}
+        bundle = {elementid:{}}
         rootElement = getattr(self, elementid)
         html = getattr(rootElement, HTML_PROPERTY, None)
-        bundle[elementid] = {'json':self.exportDesignAsJSON([elementid])}
         if html:
             bundle[elementid]["html"] = html
-        scriptBundle = self.extractScriptFromElement(rootElement)
-        for nodeId, script in scriptBundle.iteritems():
-            if nodeId in bundle:
-                bundle[nodeId]["py"] = script
-            else:
-                bundle[nodeId] = {"py":script}
+        bundle[elementid]["py"] = self.extractScriptFromElement(rootElement)
+        childElementslist = rootElement.objectIds()
+        if childElementslist:
+            for id in childElementslist:
+                childElement = getattr(rootElement, id)
+                bundle[rootElement.id +"."+ id] = {"py":self.extractScriptFromElement(childElement) }
+        # export database design elements
+        data = OrderedDict()
+        design = OrderedDict()
+        design['resources'] = OrderedDict()
+        design[rootElement.id] = self.exportElementAsJSON(rootElement, isDatabase = False, stripFlag=True)
+        data['design'] = design
+        data['id'] = self.id
+
+        # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
+        # Temporary fix by applying regex on json string
+        json_string = json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        bundle[elementid]["json"] = '\n'.join([re.sub("(\s)*$", "", line) for line in json_string.splitlines()])
         return bundle
 
 
 
-    def extractScriptFromElement(self,element, parentid = ""):
-        scriptDict = {}
+    def extractScriptFromElement(self,element):
         code = ""
-        nodeid = element.id if not parentid else parentid + '.' + element.id
         for method in self.getMethods(element):
             script = getattr(element, method, None)
             if script:
                 code+= "## START "+method+" {\n"
                 code+= script
                 code+= "\n## END "+method+" }\n\r"
-        if code:
-            scriptDict[nodeid] = code
-        childElementslist = element.objectIds()
-        if childElementslist:
-            for id in childElementslist:
-                childElement = getattr(element, id)
-                scriptDict.update(self.extractScriptFromElement(childElement, element.id))
-        return scriptDict
+        return code
 
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
 
-    def exportElementAsJSON(self, obj, isDatabase=False):
+    def exportElementAsJSON(self, obj, isDatabase=False, stripFlag = False):
         """
         """
         data = {}
@@ -1097,11 +1102,19 @@ class DesignManager:
         params = {}
         def get_data(obj, schema):
             fields = getFieldsInOrder(schema)
+            striplist = []
+            if stripFlag:
+                striplist.append(HTML_PROPERTY)
+                striplist.append(HELPER_PROPERTY)
+                striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
                 if id == 'id':
                     # 'id' is not needed as it is the same as obj.id
                     # it will cause 'CatalogError: The object unique id must
                     #  be a string. ' error when import this exported file.
+                    continue
+                if id in striplist:
+                    params[id] = None
                     continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
@@ -1119,7 +1132,7 @@ class DesignManager:
             if elementslist:
                 elements = OrderedDict({})
                 for id in elementslist:
-                    elements[id] = self.exportElementAsJSON(getattr(obj, id))
+                    elements[id] = self.exportElementAsJSON(getattr(obj, id), isDatabase, stripFlag)
                 data['elements'] = elements
 
         if isDatabase:
@@ -1311,17 +1324,18 @@ class DesignManager:
     def importElementFromBundle(self, container, id, element, zip_file):
         html_files = [fname for fname in zip_file.namelist() if fname.endswith(".html")]
         python_files = [fname for fname in zip_file.namelist() if fname.endswith(".py")]
-        for file_name in html_files:
-            if file_name == id +".html":
-                element[HTML_PROPERTY] = zip_file.open(file_name).read()
-        for file_name in python_files:
-            if file_name == id +".py":
-                script = zip_file.open(file_name).read()
+
+        for fname in html_files:
+            if fname.split(os.sep)[-1] == id +".html":
+                element["params"][HTML_PROPERTY] = zip_file.open(fname).read()
+        for fname in python_files:
+            if fname.split(os.sep)[-1] == id +".py":
+                script = zip_file.open(fname).read()
                 self.loadScriptIntoElement(element, script)
             if "elements" in element:
                 for childId, child in element["elements"].iteritems():
-                    if file_name == id + '.' + childId + '.py':
-                        script = zip_file.open(file_name).read()
+                    if fname.split(os.sep)[-1] == id + '.' + childId + '.py':
+                        script = zip_file.open(fname).read()
                         self.loadScriptIntoElement(child, script)
         self.importElementFromJSON(container, id, element)
 
@@ -1336,7 +1350,7 @@ class DesignManager:
                 methodName = start_reg.group(1).strip()
                 inside = True
             elif end_reg and inside:
-                setattr(element, methodName, content)
+                element["params"][methodName] = content
                 inside = False
                 content = ''
             elif not start_reg and not end_reg and inside:
@@ -1372,7 +1386,6 @@ class DesignManager:
                 # Can only import if the ID is in the params
                 if id in params:
                     setattr(obj, id, params[id])
-
         set_data(obj, schema)
         #HACK to enable the instance behaviour
         if element_type == "PlominoField":
@@ -1390,6 +1403,7 @@ class DesignManager:
         if 'elements' in element:
             for (child_id, child) in element['elements'].items():
                 self.importElementFromJSON(obj, child_id, child)
+
 
     security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromJSON')
 
