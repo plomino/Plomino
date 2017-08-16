@@ -152,6 +152,60 @@ A field can be computed::
     >>> db.frm2.form_layout = """11 <p><span class="plominoFieldClass">welcome</span></p>"""
 
 
+
+
+# Import design from XML::
+
+#     >>> import os
+#     >>> dir, _f = os.path.split(os.path.abspath(__file__))
+#     >>> f1 = open(os.path.join(dir, "filestoimport", "devplomino.xml"))
+#     >>> xmlstring = f1.read()
+#     >>> db.importDesignFromXML(xmlstring)
+#     >>> db.refreshDB()
+#     [...]
+#     >>> f1.close()
+
+# Check whether forms and views are imported::
+
+#     >>> db.frmBillet == portal.test.getForm('frmBillet')
+#     True
+#     >>> db.allArticle == portal.test.getView('allArticle')
+#     True
+
+# Import CSV file (API)::
+
+#     >>> fileToImport = open(
+#     ...         os.path.join(dir, "filestoimport", "allArticle.csv"))
+#     >>> db.processImportAPI(
+#     ...         formName="frmBillet",
+#     ...         separator = "\t",
+#     ...         fileToImport=fileToImport)
+#     >>> fileToImport.close()
+
+# Check the documents imported::
+
+#     >>> allDocuments = db.allArticle.getAllDocuments()
+#     >>> test = [d.editDate.year() for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [2008, 2009]
+#     >>> test = [d.articleTitle for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [u'test1', u'test2']
+
+# Databases marked as template can also be exported to a GenericSetup profile::
+
+#     >>> db.setIsDatabaseTemplate(True)
+#     >>> from Products.GenericSetup.tests.common import DummyExportContext
+#     >>> from Products.CMFPlomino.setuphandlers import export_database_templates
+#     >>> context = DummyExportContext(portal)
+#     >>> export_database_templates(context)
+#     >>> context._wrote[0][0]
+#     'plomino/test/frmBillet.xml'
+
+
+
 # Import/export design
 # ---------------------
 
@@ -163,9 +217,6 @@ A field can be computed::
      ...
      >>> db.frm2.welcome.formula
      'message="Welcome "+plominoDocument.buyer\nreturn message'
-
-# Here we change the 'welcome' formula in the XML string::
-
 
     >>> s = db.exportDesignAsJSON(elementids=['frm2'])
     >>> s = s.replace("Welcome", "No XML welcome here!")
@@ -212,7 +263,36 @@ Also check the order of view and form elements
     True
 
 
-# Export design as zip bundle
+Export design to file system  ( please change the target folder when running the test locally)
+
+    >>> import json
+    >>> from os import listdir
+    >>> from os.path import isfile, join
+    >>> db.exportDesign(targettype='folder', targetfolder='/tmp',)
+    >>> export_files = [f for f in listdir('/tmp/mydb') if isfile(join('/tmp/mydb', f))]
+    >>> print export_files
+    ['frm1.json', 'frm2.json', 'frm3.json', 'frm4.json', 'frm_test.json', 'view1.json', 'view2.json', 'view3.json', 'view4.json']
+    >>> fm2_file = open('/tmp/mydb/frm2.json', 'r')
+    >>> frm2_json = json.loads(fm2_file.read())
+    >>> print frm2_json["design"]["frm2"]["elements"]["welcome"]["params"]["formula"]
+    message="No XML welcome here! "+plominoDocument.buyer
+    return message
+
+Import design from file system
+
+    >>> id = portal.invokeFactory('PlominoDatabase', id='test_import_filesystem')
+    >>> newdb = portal.test_import_filesystem
+    >>> newdb.importDesignFromJSON(from_folder='/tmp/mydb', replace = True)
+    >>> newdb.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
+    >>> newdb.frm1.objectIds() == db.frm1.objectIds()
+    True
+    >>> newdb.frm2.objectIds() == db.frm2.objectIds()
+    True
+    >>> newdb.view1.objectIds() == db.view1.objectIds()
+    True
+
+Export design as zip bundle
 
     >>> from zipfile import ZipFile, ZIP_DEFLATED
     >>> file_string = db.exportDesignAsZip()
@@ -255,12 +335,7 @@ Check if HTML file contains the form layout
     >>> frm1_html = export_zip_file.read('mydb/frm1.html')
     >>> print frm1_html
     2 <p>please enter a value for field1:
-    <span class="plominoLabelClass">field1</span>
-    <span class="plominoFieldClass">field1</span></p><p>Comment:
-    <span class="plominoLabelClass">field2</span>
-    <span class="plominoFieldClass">field2</span></p><p>
-    <span class="plominoFieldClass">field3</span></p><p>
-    <span class="plominoFieldClass">field4</span></p>
+    ...
 
 
 Check if PY file contains the formula for the field
@@ -268,9 +343,7 @@ Check if PY file contains the formula for the field
     >>> field2_py = export_zip_file.read('mydb/frm1.field2.py')
     >>> print field2_py
     ## START formula {
-    plominoDocument.setItem('field4', 'side-effect')
-    return 'My favorite song is '+plominoDocument.field1
-    ## END formula }
+    ...
 
 
 # Import design as zip bundle (new style)
@@ -287,25 +360,18 @@ Check if HTNL layout is restored
 
     >>> print macro_field_number_between.form_layout
     <p><span class="plominoLabelClass">min</span></p>
-    <p><span class="plominoFieldClass">min</span></p>
-    <p><span class="plominoLabelClass">max</span></p>
-    <p><span class="plominoFieldClass">max</span></p>
-    <p><span class="plominoLabelClass">form_error_message</span></p>
-    <p><span class="plominoFieldClass">form_error_message</span></p>
-    <p><span class="plominoFieldClass">validation_formula</span></p>
+    ...
 
 
 Check if Formula is restored
 
     >>> print macro_field_number_between.document_title
     doc = plominoContext
-    min = doc.getItem("min")
-    max = doc.getItem("max")
-    return "Validate number between {min} and {max}".format(min=min, max=max)
+    ...
 
 
 
-# Import design as zip bundle (new style)
+# Import design as zip bundle (old style)
 
     >>> import os
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
@@ -319,15 +385,8 @@ Check if Formula is restored
 
     >>> print macro_field_number_between_old_style.form_layout
     <p><span class="plominoLabelClass">min</span></p>
-    <p><span class="plominoFieldClass">min</span></p>
-    <p><span class="plominoLabelClass">max</span></p>
-    <p><span class="plominoFieldClass">max</span></p>
-    <p><span class="plominoLabelClass">form_error_message</span></p>
-    <p><span class="plominoFieldClass">form_error_message</span></p>
-    <p><span class="plominoFieldClass">validation_formula</span></p>
+    ...
 
     >>> print macro_field_number_between_old_style.document_title
     doc = plominoContext
-    min = doc.getItem("min")
-    max = doc.getItem("max")
-    return "Validate number between {min} and {max}".format(min=min, max=max)
+    ...
