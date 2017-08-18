@@ -1216,6 +1216,7 @@ class DesignManager:
         json_strings = []
         count = 0
         total = 0
+        bundle = None
         if from_folder:
             if not os.path.isdir(from_folder):
                 raise PlominoDesignException('%s does not exist' % from_folder)
@@ -1270,7 +1271,8 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
-                    self.composeJsonElementFromBundle(self, name, element, bundle)
+                    if bundle:
+                        self.composeJsonElementFromBundle(self, name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
