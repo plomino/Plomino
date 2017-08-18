@@ -72,6 +72,34 @@ script_id = '%(script_id)s'
 HTML_PROPERTY = "form_layout"
 HELPER_PROPERTY = "helpers"
 
+class Bundle:
+
+    def __init__(self):
+        self.contentList = []
+
+    def __init__(self, zip_file = None, folder = None):
+        self.contentList = []
+        self.zip_file = zip_file
+        self.folder = folder
+        if zip_file:
+            self.contentList = [('.'.join(fname.split('.')[:-1]), fname.split('.')[-1],  None) for fname in zip_file.namelist()]
+        if folder:
+            self.contentList = [('.'.join(fname.split('.')[:-1]), fname.split('.')[-1],  None) for fname in glob.glob(os.path.join(folder,'*.*'))]
+
+    def contents(self,contentType =  None):
+        for id , type,  content in self.contentList:
+            if contentType and contentType != type:
+                continue
+            if content:
+                yield (id, type, content)
+            if self.folder:
+                fileobj = codecs.open(id +'.' + type, 'r', 'utf-8')
+                yield (id, type, fileobj.read())
+            if self.zip_file:
+                yield (id, type, self.zip_file.open(id +'.' + type).read())
+
+    def addContent(self, id, type, content):
+        self.contentList.append((id, type, content))
 
 class DesignManager:
 
@@ -485,11 +513,12 @@ class DesignManager:
                         dbsettings=False)
                     self.saveFile(path, jsonstring)
                 else:
-                    path = os.path.join(exportpath, (id + '.json'))
-                    jsonstring = self.exportDesignAsJSON(
-                        elementids=[id],
-                        dbsettings=False)
-                    self.saveFile(path, jsonstring)
+                    bundle = self.exportDesignAsBundle(
+                        elementid=id)
+                    for id , type ,  content in bundle.contents():
+                        if content:
+                            path = os.path.join(exportpath, id +"." +type)
+                            self.saveFile(path, content)
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.json'))
                 jsonstring = self.exportDesignAsJSON(
@@ -943,11 +972,10 @@ class DesignManager:
             else:
                 bundle = self.exportDesignAsBundle(
                     elementid=id)
-                for contentId, contentObj in bundle.iteritems():
-                    for contentType, content in contentObj.iteritems():
-                        if content:
-                            filename = os.path.join(db_id, contentId + '.' + contentType)
-                            zip_file.writestr(filename, content)
+                for id , type, content in bundle.contents():
+                    if content:
+                        filename = os.path.join(db_id, id +"."+type)
+                        zip_file.writestr(filename, content)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
             jsonstring = self.exportDesignAsJSON(
@@ -1048,17 +1076,17 @@ class DesignManager:
     ):
         """
         """
-        bundle = {elementid:{}}
+        bundle = Bundle()
         rootElement = getattr(self, elementid)
         html = getattr(rootElement, HTML_PROPERTY, None)
         if html:
-            bundle[elementid]["html"] = html
-        bundle[elementid]["py"] = self.extractScriptFromElement(rootElement)
+            bundle.addContent(elementid , "html", html)
+        bundle.addContent(elementid , "py", self.extractScriptFromElement(rootElement))
         childElementslist = rootElement.objectIds()
         if childElementslist:
             for id in childElementslist:
                 childElement = getattr(rootElement, id)
-                bundle[rootElement.id +"."+ id] = {"py":self.extractScriptFromElement(childElement) }
+                bundle.addContent(elementid + "." + id ,"py", self.extractScriptFromElement(childElement))
         # export database design elements
         data = OrderedDict()
         design = OrderedDict()
@@ -1070,7 +1098,7 @@ class DesignManager:
         # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
         # Temporary fix by applying regex on json string
         json_string = json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
-        bundle[elementid]["json"] = '\n'.join([re.sub("(\s)*$", "", line) for line in json_string.splitlines()])
+        bundle.addContent(elementid ,"json",  '\n'.join([re.sub("(\s)*$", "", line) for line in json_string.splitlines()]))
         return bundle
 
 
@@ -1191,12 +1219,12 @@ class DesignManager:
         if from_folder:
             if not os.path.isdir(from_folder):
                 raise PlominoDesignException('%s does not exist' % from_folder)
-            json_files = (glob.glob(os.path.join(from_folder, '*.json')) +
-                glob.glob(os.path.join(from_folder, 'resources/*.json')))
-            total_elements = len(json_files)
-            for p in json_files:
-                fileobj = codecs.open(p, 'r', 'utf-8')
-                json_strings.append(fileobj.read())
+            bundle = Bundle(folder=from_folder)
+            total_elements = 0
+            for _ ,  _ , jsonstring in bundle.contents('json'):
+                total_elements += 1
+                json_strings.append(jsonstring)
+
         else:
             if REQUEST:
                 filename = REQUEST.get('filename')
@@ -1242,6 +1270,7 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
+                    self.composeJsonElementFromBundle(self, name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
@@ -1282,9 +1311,8 @@ class DesignManager:
                 list(self.resources.objectIds()))
             logger.info("Current design removed")
         total_elements = None
-        file_names = [fname for fname in zip_file.namelist() if fname.endswith(".json") ]
-        for file_name in file_names:
-            json_string = zip_file.open(file_name).read()
+        bundle = Bundle(zip_file = zip_file)
+        for file_name, _, json_string in bundle.contents('json'):
             if not json_string:
                 # E.g. if the zipfile contains entries for directories
                 continue
@@ -1303,7 +1331,8 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
-                    self.importElementFromBundle(self, name, element, zip_file)
+                    self.composeJsonElementFromBundle(self, name, element, bundle)
+                    self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
                 if count == 10:
@@ -1319,25 +1348,18 @@ class DesignManager:
         txn.commit()
         self.getIndex().no_refresh = False
 
-    security.declareProtected(DESIGN_PERMISSION, 'importElementFromBundle')
+    security.declareProtected(DESIGN_PERMISSION, 'composeJsonElementFromBundle')
 
-    def importElementFromBundle(self, container, id, element, zip_file):
-        html_files = [fname for fname in zip_file.namelist() if fname.endswith(".html")]
-        python_files = [fname for fname in zip_file.namelist() if fname.endswith(".py")]
-
-        for fname in html_files:
-            if fname.split(os.sep)[-1] == id +".html":
-                element["params"][HTML_PROPERTY] = zip_file.open(fname).read()
-        for fname in python_files:
-            if fname.split(os.sep)[-1] == id +".py":
-                script = zip_file.open(fname).read()
-                self.loadScriptIntoElement(element, script)
+    def composeJsonElementFromBundle(self, container, id, element, bundle):
+        for contentId, _ , html in bundle.contents("html"):
+            element["params"][HTML_PROPERTY] = html
+        for contentId, _, pythonScript in bundle.contents("py"):
+            if contentId == id:
+                self.loadScriptIntoElement(element, pythonScript)
             if "elements" in element:
                 for childId, child in element["elements"].iteritems():
-                    if fname.split(os.sep)[-1] == id + '.' + childId + '.py':
-                        script = zip_file.open(fname).read()
-                        self.loadScriptIntoElement(child, script)
-        self.importElementFromJSON(container, id, element)
+                    if contentId == id + '.' + childId:
+                        self.loadScriptIntoElement(child, pythonScript)
 
     def loadScriptIntoElement(self, element, pythonScript):
         content = ""
