@@ -271,12 +271,8 @@ Export design to file system  ( please change the target folder when running the
     >>> db.exportDesign(targettype='folder', targetfolder='/tmp',)
     >>> export_files = [f for f in listdir('/tmp/mydb') if isfile(join('/tmp/mydb', f))]
     >>> print export_files
-    ['frm1.json', 'frm2.json', 'frm3.json', 'frm4.json', 'frm_test.json', 'view1.json', 'view2.json', 'view3.json', 'view4.json']
-    >>> fm2_file = open('/tmp/mydb/frm2.json', 'r')
-    >>> frm2_json = json.loads(fm2_file.read())
-    >>> print frm2_json["design"]["frm2"]["elements"]["welcome"]["params"]["formula"]
-    message="No XML welcome here! "+plominoDocument.buyer
-    return message
+    ['frm1.field2.py', 'frm1.field3.py', 'frm1.html', 'frm1.json', 'frm2.guitarist.py', 'frm2.html', 'frm2.json', 'frm2.welcome.py', 'frm3.json', 'frm4.json', 'frm_test.html', 'frm_test.json', 'view1.col1.py', 'view1.json', 'view2.json', 'view2.py', 'view3.json', 'view3.py', 'view4.json', 'view4.py']
+
 
 Import design from file system
 
@@ -355,6 +351,7 @@ Check if PY file contains the formula for the field
     >>> db.refreshDB()
     [...]
     >>> macro_field_number_between = getattr(db, 'macro_field_number_between', None)
+
 
 Check if HTNL layout is restored
 

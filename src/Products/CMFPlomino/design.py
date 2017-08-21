@@ -82,24 +82,30 @@ class Bundle:
         self.zip_file = zip_file
         self.folder = folder
         if zip_file:
-            self.contentList = [('.'.join(fname.split('.')[:-1]), fname.split('.')[-1],  None) for fname in zip_file.namelist()]
+            for file_path in zip_file.namelist():
+                dir, fname = os.path.split(file_path)
+                elementids = fname.split('.')
+                self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1],  None, file_path))
         if folder:
-            self.contentList = [('.'.join(fname.split('.')[:-1]), fname.split('.')[-1],  None) for fname in glob.glob(os.path.join(folder,'*.*'))]
+            for file_path in glob.glob(os.path.join(folder,'*.*')):
+                dir, fname = os.path.split(file_path)
+                elementids = fname.split('.')
+                self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1], None, file_path))
 
     def contents(self,contentType =  None):
-        for id , type,  content in self.contentList:
+        for id , type,  content, file_path in self.contentList:
             if contentType and contentType != type:
                 continue
             if content:
                 yield (id, type, content)
             if self.folder:
-                fileobj = codecs.open(id +'.' + type, 'r', 'utf-8')
+                fileobj = codecs.open(file_path, 'r', 'utf-8')
                 yield (id, type, fileobj.read())
             if self.zip_file:
-                yield (id, type, self.zip_file.open(id +'.' + type).read())
+                yield (id, type, self.zip_file.open(file_path).read())
 
-    def addContent(self, id, type, content):
-        self.contentList.append((id, type, content))
+    def addContent(self, id, type, content, file_path = None):
+        self.contentList.append((id, type, content, file_path))
 
 class DesignManager:
 
@@ -1222,7 +1228,7 @@ class DesignManager:
                 raise PlominoDesignException('%s does not exist' % from_folder)
             bundle = Bundle(folder=from_folder)
             total_elements = 0
-            for _ ,  _ , jsonstring in bundle.contents('json'):
+            for id, type, jsonstring in bundle.contents('json'):
                 total_elements += 1
                 json_strings.append(jsonstring)
 
@@ -1272,7 +1278,7 @@ class DesignManager:
                 else:
                     logger.info("Import " + name)
                     if bundle:
-                        self.composeJsonElementFromBundle(self, name, element, bundle)
+                        self.composeJsonElementFromBundle(name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
@@ -1333,7 +1339,7 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
-                    self.composeJsonElementFromBundle(self, name, element, bundle)
+                    self.composeJsonElementFromBundle( name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
@@ -1352,9 +1358,10 @@ class DesignManager:
 
     security.declareProtected(DESIGN_PERMISSION, 'composeJsonElementFromBundle')
 
-    def composeJsonElementFromBundle(self, container, id, element, bundle):
+    def composeJsonElementFromBundle(self, id, element, bundle):
         for contentId, _ , html in bundle.contents("html"):
-            element["params"][HTML_PROPERTY] = html
+            if contentId == id:
+                element["params"][HTML_PROPERTY] = html
         for contentId, _, pythonScript in bundle.contents("py"):
             if contentId == id:
                 self.loadScriptIntoElement(element, pythonScript)
