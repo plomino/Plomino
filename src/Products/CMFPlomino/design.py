@@ -816,6 +816,11 @@ class DesignManager:
         # set a context manager in the request so formula can raise
         # it's security level if it wants
         request = getRequest()
+        # could be script calling script, so need to capture previous script
+        previous_plomino_run_as_owner = None
+        if '_plomino_run_as_owner_' in request and \
+                request['_plomino_run_as_owner_']:
+            previous_plomino_run_as_owner = request['_plomino_run_as_owner_']
         request['_plomino_run_as_owner_'] = run_as_owner(request_context)
 
 
@@ -851,7 +856,7 @@ class DesignManager:
                 script_id,
                 compilation_errors)
         finally:
-            request['_plomino_run_as_owner_'] = None
+            request['_plomino_run_as_owner_'] = previous_plomino_run_as_owner
         return result
 
     security.declarePublic('runAsOwner')
