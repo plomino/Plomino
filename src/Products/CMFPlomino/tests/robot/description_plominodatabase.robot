@@ -38,16 +38,12 @@ a plominodatabase 'My PlominoDatabase'
   Create content  type=PlominoDatabase  id=my-plominodatabase  title=My PlominoDatabase
 
 I open the ide for "${db}"
-  Wait Until Page Contains Element        id=portaltab-mydb
-  Click Link      jquery=a[href='${PLONE_URL}/mydb']
-  Wait Until Page Contains Element        id=main-container
-  Go To      ${PLONE_URL}/mydb/++resource++Products.CMFPlomino/ide/index.html
-  Wait Until Page Contains Element        jquery=.mdl-layout__content
-  Element Should Be Visible       id=workflowFormTask
-  Element Should Be Visible       id=workflowViewTask
-  Element Should Be Visible       id=workflowExternalTask
-  Element Should Be Visible       id=workflowCondition
-  Element Should Be Visible       id=workflowGoto
+  #Go To  ${PLONE_URL}/mydb
+  #Click Element  link=IDE
+  Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
+#  Wait Until Element Is Visible  id=application-loader
+  Wait Until page does not contain element  id=application-loader
+  wait until page contains  ${db}
 
 
 I have an empty form open
