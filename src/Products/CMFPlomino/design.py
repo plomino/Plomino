@@ -148,6 +148,7 @@ class DesignManager:
         logger.info('Field indexing initialized')
 
         # declare all the view formulas and columns index entries
+
         for v_obj in self.getViews():
             index.createSelectionIndex(
                 'PlominoViewFormula_' + v_obj.id)
