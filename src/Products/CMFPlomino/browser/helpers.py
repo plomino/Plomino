@@ -350,14 +350,9 @@ def generate_all_code(obj, helpers):
 
     return rules
 
-def formulas_to_add_code(obj, rules):
+def formulas_to_add_code(obj, rules, get_code):
 
     for id, field in get_formulas(obj):
-
-        names = ['generate_%s' % id.lower(),
-                 'generate_%s' % id,
-                 '%s' % id,
-                 '%s' % id.lower()]
 
         # find all ids in 'names' list in temp doc and
         # pull new macro code from that temp doc and
@@ -370,9 +365,7 @@ def formulas_to_add_code(obj, rules):
                 if form is None:
                     new_code[macro_id] = None
                     continue
-                value = None
-                for value in (doc.getItem(name) for name in names if doc.hasItem(name)):
-                    break
+                value = get_code(id, doc)
                 if value is None:
                     continue
                 new_code[macro_id] = value
@@ -380,7 +373,22 @@ def formulas_to_add_code(obj, rules):
                 matched_rules.append( (conditions, macros) )
         yield id, field, matched_rules, new_code
 
-def add_conditions_to_code(rules, new_code):
+def to_func(func, code):
+    return "def {macro_id}():\n{code}\n".format(
+        macro_id=func, #TODO: should use title or form.name to make it more readable?
+        code= (' '*4)+('\n'+(' '*4)).join(code.split('\n')), #indent
+    )
+
+def to_op(op):
+    return op
+
+def to_if(expression, code):
+    return "if {expression}:\n{code}\n".format(
+                expression = expression,
+                code = (' '*4)+('\n'+(' '*4)).join(code.split('\n')) #indent
+            )
+
+def add_conditions_to_code(rules, new_code, to_func, to_op, to_if):
     for conditions, macros in rules:
         if not(conditions):
             continue
@@ -393,9 +401,8 @@ def add_conditions_to_code(rules, new_code):
             if not formula:
                 logger.warning('Macro condition id: %s has no value for "formula"' % macro_id)
                 continue
-            code = "def {macro_id}():\n".format(macro_id=macro_id) #TODO: should use title or form.name to make it more readable?
-            code += (' '*4)+('\n'+(' '*4)).join(doc.getItem('formula').split('\n')) #indent
-            new_code[macro_id] = code + '\n'
+            new_code[macro_id] = to_func(macro_id, formula) #TODO: should use title or form.name to make it more readable?
+
         # adjust macros to use conditions
         for macro_id, form, doc in macros:
             if macro_id not in new_code:
@@ -407,13 +414,13 @@ def add_conditions_to_code(rules, new_code):
                 if not is_op(cond_id) and is_op(last_cond):
                     expression.append('{id}()'.format(id=cond_id))
                 elif cond_id in ['and','or'] and not is_op(last_cond):
-                    expression.append('{op}'.format(op=cond_id))
+                    expression.append(to_op(cond_id))
                 elif not is_op(cond_id) and not is_op(last_cond):
                     # if no op then default to and
-                    expression.append('and')
+                    expression.append(to_op('and'))
                     expression.append('{id}()'.format(id=cond_id))
                 elif cond_id == 'not':
-                    expression.append('not')
+                    expression.append(to_op('not'))
                 else:
                     #TODO: need to warn the user
                     # invalid statement
@@ -426,10 +433,7 @@ def add_conditions_to_code(rules, new_code):
             if len(expression) == 0:
                 continue
 
-            new_code[macro_id] = "if {expression}:\n{code}\n".format(
-                expression = (' '.join(expression)),
-                code = (' '*4)+('\n'+(' '*4)).join(new_code[macro_id].split('\n')) #indent
-            )
+            new_code[macro_id] = to_if(' '.join(expression),new_code[macro_id]) #indent
             #TODO: we should add the condition line just once at the first condition
     return new_code
 
@@ -542,8 +546,23 @@ def update_helpers(obj, event):
     helpers = [[rule] if type(rule) != list else rule for rule in helpers]
     rules = generate_all_code(obj, helpers)
 
-    for id, field, matched_rules, new_code in formulas_to_add_code(obj, rules):
-        add_conditions_to_code(matched_rules, new_code)
+    def get_code(formulaid, doc):
+        names = ['generate_%s' % formulaid.lower(),
+                 'generate_%s' % formulaid,
+                 '%s' % formulaid,
+                 '%s' % formulaid.lower()]
+
+        # find all ids in 'names' list in temp doc and
+        # pull new macro code from that temp doc and
+        # put into new_code dict
+        value = None
+        for value in (doc.getItem(name) for name in names if doc.hasItem(name)):
+            break
+        return value
+
+
+    for id, field, matched_rules, new_code in formulas_to_add_code(obj, rules, get_code):
+        add_conditions_to_code(matched_rules, new_code, to_func, to_op, to_if)
 
         # replace old macro code with new macro code
         dm = getMultiAdapter((obj, field), IDataManager)
