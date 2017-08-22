@@ -441,6 +441,7 @@ class PlominoDatabase(
         cache = annotations.get(config.PLOMINO_REQUEST_CACHE_KEY)
         if cache:
             return cache.get(key)
+        return None
 
     def setRequestCache(self, key, value):
         """ Set cached value in an annotation on the current request
