@@ -815,13 +815,19 @@ class DesignManager:
 
         # set a context manager in the request so formula can raise
         # it's security level if it wants
-        request = getRequest()
-        # could be script calling script, so need to capture previous script
+        # use cache request instead of global request as
+        # it causes problems for temp document caching
+        # if alter the request itself.
         previous_plomino_run_as_owner = None
-        if '_plomino_run_as_owner_' in request and \
-                request['_plomino_run_as_owner_']:
-            previous_plomino_run_as_owner = request['_plomino_run_as_owner_']
-        request['_plomino_run_as_owner_'] = run_as_owner(request_context)
+        cache_plomino_run_as_owner = self.getRequestCache(
+            '_plomino_run_as_owner_')
+        if cache_plomino_run_as_owner:
+            # could be script calling script
+            # so need to capture previous script
+            previous_plomino_run_as_owner = cache_plomino_run_as_owner
+        self.setRequestCache(
+            '_plomino_run_as_owner_',
+            run_as_owner(request_context))
 
 
         result = None
@@ -856,7 +862,9 @@ class DesignManager:
                 script_id,
                 compilation_errors)
         finally:
-            request['_plomino_run_as_owner_'] = previous_plomino_run_as_owner
+            self.setRequestCache(
+                '_plomino_run_as_owner_',
+                previous_plomino_run_as_owner)
         return result
 
     security.declarePublic('runAsOwner')
@@ -865,10 +873,7 @@ class DesignManager:
         raise the security context to run apis which require greater
         permission.
         """
-        request = getRequest()
-        if request is None or '_plomino_run_as_owner_' not in request:
-            raise Exception("You can only run as owner from inside a plomino Formula")
-        return request['_plomino_run_as_owner_']
+        return self.getRequestCache('_plomino_run_as_owner_')
 
 
 
