@@ -338,6 +338,8 @@ Views can be exported as CSV::
     >>> db.view1.exportCSV()
     '"A rhythm is love"\r\n"London calling"\r\n"Rhythm is love"\r\n"bonjour"\r\n"hello"\r\n'
 
+
+
 JSON API
 --------
 
@@ -603,10 +605,11 @@ But the parent form shouldn't break with an empty sub-form:
     >>> db.frm1.getForm_layout()
     '<p>Form with empty sub-form</p><span class="plominoSubformClass mceNonEditable" data-plominoid="sub2"></span>'
 
+#TODO: non existant subform should show some kind of error
 Or if there is no sub-form:
     >>> db.frm1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">subDoesNotExist</span>""")
     >>> db.frm1.getForm_layout()
-    '<p>Form with empty sub-form</p><span class="plominoSubformClass mceNonEditable" data-plominoid="subDoesNotExist">None</span>'
+    '<p>Form with empty sub-form</p><div class="plominoSubformClass mceNonEditable" data-plominoid="subDoesNotExist"><h2>Subform</h2><input value="..."></div>'
 
 Clean up:
     >>> del db['sub1']
@@ -737,6 +740,47 @@ Results from views are sorted on the sort column::
     [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello', u'ola']
     >>> [o.getItem('field1') for o in db.view1.getDocumentsByKey('side-effect')]
     [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello']
+
+
+You can rename a view
+
+    >>> db.manage_renameObject('view1', 'view_1')
+    >>> 'PlominoViewColumn_view1_col1' in db.getIndex().indexes()
+    False
+    >>> 'PlominoViewColumn_view__1_col1' in db.getIndex().indexes()
+    True
+    >>> len(db.view_1.getAllDocuments())
+    6
+    >>> len(db.view_1.getDocumentsByKey('side-effect'))
+    5
+
+Ensure it still indexes ok after a rename
+
+    >>> doc2.setItem('field1', 'goodbye')
+    >>> doc2.save()
+    >>> len(db.view_1.getCategoryViewEntries('col1','goodbye'))
+    1
+
+We can also rename a column
+
+    >>> db.view_1.manage_renameObject('col1', 'col_1')
+    >>> 'PlominoViewColumn_view1_col__1' in db.getIndex().indexes()
+    False
+    >>> 'PlominoViewColumn_view__1_col__1' in db.getIndex().indexes()
+    True
+    >>> len(db.view_1.getCategoryViewEntries('col_1','goodbye'))
+    1
+
+    >>> db.view_1.manage_renameObject('col3', 'col_3')
+    >>> 'PlominoViewColumn_view__1_col__3' in db.getIndex().indexes()
+    False
+    >>> len(db.view_1.getDocumentsByKey('side-effect'))
+    5
+    >>> db.view_1.key_column
+    'col_3'
+
+
+    >>> db.manage_renameObject('view_1', 'view1')
 
 
 # TO BE FIXED

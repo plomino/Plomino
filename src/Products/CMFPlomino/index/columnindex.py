@@ -2,6 +2,7 @@
 
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from ZODB.POSException import ConflictError
+from Products.CMFPlomino.contents.view import decode_name
 
 
 class PlominoColumnIndex(UnIndex):
@@ -25,7 +26,7 @@ class PlominoColumnIndex(UnIndex):
         parentdb = self.getParentDatabase()
         doc = obj.__of__(parentdb)
         if self.id.startswith("PlominoViewColumn_"):
-            param = self.id.split('_')
+            param = decode_name(self.id)
             viewname = param[1]
             if not doc.isSelectedInView(viewname):
                 return 0
