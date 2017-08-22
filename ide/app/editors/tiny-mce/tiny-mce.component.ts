@@ -99,6 +99,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   loadedFirstTime: boolean = null;
   registry: any;
   tinyMCEPatData: string = null;
+  beforeSaveScrollTop: number = null;
 
   /**
    * display block preloader
@@ -192,6 +193,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             $body.animate({ scrollTop: $element.offset().top },
               { duration: 'medium', easing: 'swing' });
+            this.log.info('scroll top using $body.animate');
+            this.log.extra('tiny-mce.components.ts line 193');
             
             /* if the $element is not selected - click on it */
             if ($element.hasClass('plominoGroupClass')) {
@@ -918,6 +921,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.zone.run(() => {
         let eventTarget = <any> ev.target;
 
+        if (eventTarget.scrollIntoViewIfNeeded) {
+          eventTarget.scrollIntoViewIfNeeded();
+        }
+
         if (eventTarget.control ||
           (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
           $element = $element.parent();
@@ -1144,6 +1151,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                   catch (e) {}
                 }
               );
+              this.log.info('scroll top using $(editor.getBody()).animate');
+              this.log.extra('tiny-mce.components.ts line 1139');
             }, 100);
           }
   
@@ -1186,16 +1195,32 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (!editor) { return; }
       if (editor) {
         setTimeout(() => {
+          /**
+           * does the previous scroll level exists here?
+           * @type {boolean}
+           */
+          const prevScrollTop = this.beforeSaveScrollTop && 
+            this.beforeSaveScrollTop > 50;
+          /**
+           * setup the next scroll position
+           * @type {number}
+           */
+          const scrollTop = prevScrollTop ? this.beforeSaveScrollTop : 0;
+          if (prevScrollTop) {
+            this.beforeSaveScrollTop = null; // clear for next cases
+          }
           $(editor.getBody()).animate(
-            { scrollTop: 0 }, 'medium', 'swing', () => {
+            { scrollTop }, 'medium', 'swing', () => {
               try {
                 editor.selection.setCursorLocation();
-                this.log.info('cursor relocated at 0,0');
+                this.log.info('cursor relocated at ' + scrollTop + ',0');
                 editor.undoManager.clear();
               }
               catch (e) {}
             }
           );
+          this.log.info('scroll top using $(editor.getBody()).animate');
+          this.log.extra('tiny-mce.components.ts line 1192');
         }, 100);
       }
     }
@@ -1220,6 +1245,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let editor = this.getEditor() || this.getEditor(this.idChanges.oldId);
 
     if (editor !== null) {
+      try {
+        this.beforeSaveScrollTop = (<any> editor.getBody()).scrollTop;
+      } catch (e) {}
       tiny.isLoading.emit(false);
       if (cb) cb();
       this.log.info('onchange not dirty', this.id);
