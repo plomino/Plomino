@@ -20,11 +20,12 @@ I can see the workflow editor
 
 I can see element Start in the workflow editor
     Wait Until Page Contains Element    jquery=plomino-workflow-editor
+    Wait Until Page Contains Element    jquery=.plomino-workflow-editor ul .plomino-workflow-editor__branch     60s
+
     Element Should Be Visible       jquery=plomino-workflow-editor ul li .workflow-node--root .workflow-node__start-text
 
 I can add a Form Task element by dnd
-    Selenium2Library.Drag And Drop          jquery=.mdl-button[draggable='true'][id='workflowFormTask']                  jquery=plomino-workflow-editor .plomino-workflow-editor ul li .workflow-node--root .workflow-node__start-text
-    Capture Page Screenshot         dragndrop.jpg
+    Selenium2Library.Drag And Drop      jquery=.mdl-button[draggable='true'][id='workflowFormTask']         jquery=.plomino-workflow-editor ul .plomino-workflow-editor__branch
     Element Should Be Visible       jquery=.workflow-node__text--task[id='workflow-node__text--task-2']
     Element Should Be Visible       jquery=.workflow-node__text--form[id='workflow-node__text--form-2']
     Element Should Be Visible       jquery=.workflow-node__text--process[id='workflow-node__text--process-2']          
