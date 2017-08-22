@@ -828,15 +828,13 @@ class DesignManager:
         return result
 
     security.declarePublic('runAsOwner')
+
     def runAsOwner(self):
         """ return a context manager for use in formulas which will
         raise the security context to run apis which require greater
         permission.
         """
         return self.getRequestCache('_plomino_run_as_owner_')
-
-
-
 
     security.declarePrivate('traceRenderingErr')
 
