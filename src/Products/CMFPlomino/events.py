@@ -94,18 +94,11 @@ def afterViewMoved(obj, event):
     """ We need to ensure the view index name changes when the view name changes
     """
     db = obj.getParentDatabase()
-    refresh = not db.do_not_reindex
-    if event.oldName is None:
-        db.getIndex().createSelectionIndex(
-            'PlominoViewFormula_' + obj.id,
-            refresh=refresh)
-    elif event.newName is None:
-        db.getIndex().delSelectionIndex(
-            'PlominoViewFormula_' +event.oldName)
-    else:
-        db.getIndex().renameSelectionIndex(
-            'PlominoViewFormula_' +event.oldName,
-            'PlominoViewFormula_' +event.newName)
+    if db != event.newParent:
+        # Event is not for us
+        return
+    obj.onRenameView(event.oldName, event.newName)
+
 
 
 def afterViewModified(obj, event):
@@ -119,12 +112,21 @@ def afterViewModified(obj, event):
     if not db.do_not_reindex:
         obj.getParentDatabase().getIndex().refresh()
 
+def afterColumnMoved(obj, event):
+    """
+    """
+    view = obj.getParentView()
+    if view != event.newParent:
+        # Event is not for us
+        return
+    view.onRenameColumn(obj, event.oldName, event.newName)
+
 
 def afterColumnModified(obj, event):
     """
     """
     view = obj.getParentView()
-    view.declareColumn(obj.id, obj)
+    view.declareColumn(obj.id, obj, refresh=False)
     obj.cleanFormulaScripts(
         SCRIPT_ID_DELIMITER.join(["column", view.id, obj.id, 'formula']))
     db = obj.getParentDatabase()

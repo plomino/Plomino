@@ -116,13 +116,13 @@ class PlominoIndex(UniqueObject, CatalogTool):
         if refresh:
             self.refresh()
 
-    security.declareProtected(DESIGN_PERMISSION, 'renameSelectionIndex')
-    def renameSelectionIndex(self, oldName, newName):
-        """
+    security.declareProtected(DESIGN_PERMISSION, 'renameIndex')
+    def renameIndex(self, oldName, newName):
+        """ return False if can't be moved or deleted
         """
         # if both old and new index not exists, add new one
         if oldName not in self.indexes() and newName not in self.indexes():
-            self._catalog.addIndex(newName, PlominoViewIndex(newName))
+            return False
         # if old index exist and new index not exists, rename the old one
         elif oldName in self.indexes() and newName not in self.indexes():
             old_index = self._catalog.getIndex(oldName)
@@ -134,9 +134,12 @@ class PlominoIndex(UniqueObject, CatalogTool):
             old_index.id = newName
             self._catalog.delIndex(oldName)
             self._catalog.addIndex(newName, old_index)
+            return True
         # if both old and new index  exists, remove the old one
         elif oldName in self.indexes() and newName in self.indexes():
             self._catalog.delIndex(oldName)
+            return True
+        return False
 
     security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
     def delSelectionIndex(self, oldName):

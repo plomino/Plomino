@@ -4,6 +4,7 @@ from Products.ZCatalog.ZCatalog import Catalog
 from Missing import MV
 
 # Plomino
+from Products.CMFPlomino.contents.view import decode_name
 from ..utils import asUnicode
 
 try:
@@ -30,12 +31,17 @@ class PlominoCatalog(Catalog):
         # the unique id is always the first element
         for name in self.names:
             if name.startswith("PlominoViewColumn_"):
-                marker, viewname, columnname = name.split('_')
-                if not obj.isSelectedInView(viewname):
-                    v = None
+                params = decode_name(name)
+                if len(params) == 3:
+                    marker, viewname, columnname = params
+                    if not obj.isSelectedInView(viewname):
+                        v = None
+                    else:
+                        v = asUnicode(
+                            obj.computeColumnValue(viewname, columnname))
                 else:
-                    v = asUnicode(
-                        obj.computeColumnValue(viewname, columnname))
+
+                    v = None
                 record.append(v)
             else:
                 attr = getattr(obj, name, MV)

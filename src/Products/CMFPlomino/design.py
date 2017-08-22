@@ -153,7 +153,7 @@ class DesignManager:
             index.createSelectionIndex(
                 'PlominoViewFormula_' + v_obj.id)
             for c in v_obj.getColumns():
-                v_obj.declareColumn(c.id, c, index=index)
+                v_obj.declareColumn(c.id, c, index=index, refresh=False)
         # add fulltext if needed
         if self.fulltextIndex:
             index.createFieldIndex('SearchableText', 'RICHTEXT')

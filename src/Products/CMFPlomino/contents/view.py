@@ -47,6 +47,14 @@ def get_columns(obj):
 directlyProvides(get_columns, IContextSourceBinder)
 
 
+
+def encode_name(*parts):
+    "indexes are encoded with _ as a seperator. Need to quote '_' with '__'"
+    return '_'.join([part.replace('_','__') for part in parts])
+
+def decode_name(name):
+    return [part.replace('/','_') for part in name.replace('__','/').split('_')]
+
 class IPlominoView(model.Schema):
     """ Plomino view schema
     """
@@ -281,11 +289,12 @@ class PlominoView(Container):
 
     security.declarePublic('declareColumn')
 
-    def declareColumn(self, column_name, column_obj, index=None):
+    def declareColumn(self, column_name, column_obj, index=None, refresh=None):
         """ Declare column
         """
         db = self.getParentDatabase()
-        refresh = not(db.do_not_reindex)
+        if refresh is None:
+            refresh = not(db.do_not_reindex)
 
         if index is None:
             index = db.getIndex()
@@ -313,9 +322,69 @@ class PlominoView(Container):
             if not column_obj.formula:
                 formula = "'To be replaced'"
             index.createIndex(
-                'PlominoViewColumn_%s_%s' % (
-                    self.id, column_name),
+                encode_name('PlominoViewColumn',self.id, column_name),
                 refresh=refresh)
+
+    security.declarePrivate('onRenameView')
+    def onRenameView(self, old_id, new_id):
+        "Need to move all the catalog indexes since they include the name"
+
+        db = self.getParentDatabase()
+        refresh = not db.do_not_reindex
+        index = db.getIndex()
+        need_refresh = False
+        for col in self.getColumns():
+            moved = index.renameIndex(
+                encode_name('PlominoViewColumn',old_id, col.id) if old_id else None,
+                encode_name('PlominoViewColumn',new_id, col.id) if new_id else None,
+                )
+            if not moved:
+                # it might not be moved because its a field column and also field col
+                # might already exist so no need for refresh
+                # TODO: work out if we really need a refresh
+                self.declareColumn(new_id, col, refresh=False)
+                need_refresh = True
+
+        if old_id is None:
+            index.createSelectionIndex(
+                'PlominoViewFormula_' + new_id,
+                refresh=False)
+            need_refresh = True
+        elif new_id is None:
+            index.delSelectionIndex(
+                'PlominoViewFormula_' +old_id)
+        else:
+            moved = index.renameIndex(
+                'PlominoViewFormula_' +old_id,
+                'PlominoViewFormula_' +new_id)
+            if not moved:
+                index.createSelectionIndex(
+                    'PlominoViewFormula_' + new_id,
+                    refresh=False)
+                need_refresh = True
+        if need_refresh and refresh:
+            index.refresh()
+
+
+    security.declarePrivate('onRenameView')
+    def onRenameColumn(self, col, old_id, new_id):
+        "Need to move all the catalog indexes since they include the name"
+
+        db = self.getParentDatabase()
+        index = db.getIndex()
+
+        old_index = encode_name('PlominoViewColumn',self.id, old_id) if old_id else None
+        new_index = encode_name('PlominoViewColumn',self.id, new_id) if new_id else None
+        moved = index.renameIndex(old_index, new_index)
+        if not moved:
+            self.declareColumn(new_id, col)
+
+        # We shouldn't lose our key or sort if we decide to rename a column
+        if self.sort_column == old_id and old_id != None:
+            self.sort_column = new_id
+        if self.key_column == old_id and old_id != None:
+            self.key_column = new_id
+
 
     security.declarePublic('getCategorizedColumnValues')
 
@@ -590,7 +659,7 @@ class PlominoView(Container):
         We try to find a computed index ('PlominoViewColumn_*');
         if not found, we look for a field.
         """
-        key = 'PlominoViewColumn_%s_%s' % (self.id, columnName)
+        key = encode_name('PlominoViewColumn', self.id, columnName)
         if key not in self.getParentDatabase().plomino_index.Indexes:
             fieldPath = self.getColumn(columnName).displayed_field.split('/')
             if len(fieldPath) > 1:
