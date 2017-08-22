@@ -120,17 +120,23 @@ class PlominoIndex(UniqueObject, CatalogTool):
     def renameSelectionIndex(self, oldName, newName):
         """
         """
-        if oldName not in self.indexes():
-            raise Exception("Problem when trying to move index")
-        old_index = self._catalog.getIndex(oldName)
-        if old_index is None:
-            raise Exception("Problem when trying to move index")
+        # if both old and new index not exists, add new one
+        if oldName not in self.indexes() and newName not in self.indexes():
+            self._catalog.addIndex(newName, PlominoViewIndex(newName))
+        # if old index exist and new index not exists, rename the old one
+        elif oldName in self.indexes() and newName not in self.indexes():
+            old_index = self._catalog.getIndex(oldName)
+            if old_index is None:
+                raise Exception("Problem when trying to move index")
 
-        old_index = old_index.aq_inner
-        old_index.indexed_attrs = [newName]
-        old_index.id = newName
-        self._catalog.delIndex(oldName)
-        self._catalog.addIndex(newName, old_index)
+            old_index = old_index.aq_inner
+            old_index.indexed_attrs = [newName]
+            old_index.id = newName
+            self._catalog.delIndex(oldName)
+            self._catalog.addIndex(newName, old_index)
+        # if both old and new index  exists, remove the old one
+        elif oldName in self.indexes() and newName in self.indexes():
+            self._catalog.delIndex(oldName)
 
     security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
     def delSelectionIndex(self, oldName):
