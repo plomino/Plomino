@@ -13,6 +13,7 @@ from cStringIO import StringIO
 from DateTime import DateTime
 import glob
 import json
+import re
 import logging
 from OFS.Folder import Folder
 from OFS.Image import manage_addImage
@@ -57,6 +58,7 @@ from .utils import (
     asUnicode,
     DateToString,
 )
+from collections import defaultdict
 
 logger = logging.getLogger('Plomino')
 
@@ -67,7 +69,43 @@ script_id = '%(script_id)s'
 
 %(formula)s
 """
+HTML_PROPERTY = "form_layout"
+HELPER_PROPERTY = "helpers"
 
+class Bundle:
+
+    def __init__(self):
+        self.contentList = []
+
+    def __init__(self, zip_file = None, folder = None):
+        self.contentList = []
+        self.zip_file = zip_file
+        self.folder = folder
+        if zip_file:
+            for file_path in zip_file.namelist():
+                dir, fname = os.path.split(file_path)
+                elementids = fname.split('.')
+                self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1],  None, file_path))
+        if folder:
+            for file_path in glob.glob(os.path.join(folder,'*.*')):
+                dir, fname = os.path.split(file_path)
+                elementids = fname.split('.')
+                self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1], None, file_path))
+
+    def contents(self,contentType =  None):
+        for id , type,  content, file_path in self.contentList:
+            if contentType and contentType != type:
+                continue
+            if content:
+                yield (id, type, content)
+            if self.folder:
+                fileobj = codecs.open(file_path, 'r', 'utf-8')
+                yield (id, type, fileobj.read())
+            if self.zip_file:
+                yield (id, type, self.zip_file.open(file_path).read())
+
+    def addContent(self, id, type, content, file_path = None):
+        self.contentList.append((id, type, content, file_path))
 
 class DesignManager:
 
@@ -482,11 +520,12 @@ class DesignManager:
                         dbsettings=False)
                     self.saveFile(path, jsonstring)
                 else:
-                    path = os.path.join(exportpath, (id + '.json'))
-                    jsonstring = self.exportDesignAsJSON(
-                        elementids=[id],
-                        dbsettings=False)
-                    self.saveFile(path, jsonstring)
+                    bundle = self.exportDesignAsBundle(
+                        elementid=id)
+                    for id , type ,  content in bundle.contents():
+                        if content:
+                            path = os.path.join(exportpath, id +"." +type)
+                            self.saveFile(path, content)
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.json'))
                 jsonstring = self.exportDesignAsJSON(
@@ -938,11 +977,12 @@ class DesignManager:
                     dbsettings=False)
                 zip_file.writestr(filename, jsonstring)
             else:
-                filename = os.path.join(db_id, id + '.json')
-                jsonstring = self.exportDesignAsJSON(
-                    elementids=[id],
-                    dbsettings=False)
-                zip_file.writestr(filename, jsonstring)
+                bundle = self.exportDesignAsBundle(
+                    elementid=id)
+                for id , type, content in bundle.contents():
+                    if content:
+                        filename = os.path.join(db_id, id +"."+type)
+                        zip_file.writestr(filename, content)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
             jsonstring = self.exportDesignAsJSON(
@@ -1010,11 +1050,80 @@ class DesignManager:
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
                 'content-type', "application/json;charset=utf-8")
-        return json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
+        # Temporary fix by applying regex on json string
+        json_string =  json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        return '\n'.join([ re.sub("(\s)*$","",line) for line in json_string.splitlines()])
+
+
+    def getMethods(self, element):
+        """ type comes in the form of ViewAction, FormAction etc
+        """
+        schema = element.getTypeInfo().lookupSchema()
+        assignable = IBehaviorAssignable(element)
+        schemas = [schema] + [behaviour.interface for behaviour in assignable.enumerateBehaviors()]
+        methods = []
+        for schema in schemas:
+            widgets = schema.queryTaggedValue(u'plone.autoform.widgets', {})
+            for name,field in getFieldsInOrder(schema):
+                #field = schema.get(name)
+                widget = widgets.get(name, None)
+                if widget is None:
+                    continue
+                # bit of a HACK
+                if widget.params.get('klass') == 'plomino-formula':
+                    methods.append(name)
+        return methods
+
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsBundle')
+
+    def exportDesignAsBundle(
+            self, elementid
+    ):
+        """
+        """
+        bundle = Bundle()
+        rootElement = getattr(self, elementid)
+        html = getattr(rootElement, HTML_PROPERTY, None)
+        if html:
+            bundle.addContent(elementid , "html", html)
+        bundle.addContent(elementid , "py", self.extractScriptFromElement(rootElement))
+        childElementslist = rootElement.objectIds()
+        if childElementslist:
+            for id in childElementslist:
+                childElement = getattr(rootElement, id)
+                bundle.addContent(elementid + "." + id ,"py", self.extractScriptFromElement(childElement))
+        # export database design elements
+        data = OrderedDict()
+        design = OrderedDict()
+        design['resources'] = OrderedDict()
+        design[rootElement.id] = self.exportElementAsJSON(rootElement, isDatabase = False, stripFlag=True)
+        data['design'] = design
+        data['id'] = self.id
+
+        # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
+        # Temporary fix by applying regex on json string
+        json_string = json.dumps(data, sort_keys=False, indent=4).encode('utf-8')
+        bundle.addContent(elementid ,"json",  '\n'.join([re.sub("(\s)*$", "", line) for line in json_string.splitlines()]))
+        return bundle
+
+
+
+    def extractScriptFromElement(self,element):
+        code = ""
+        for method in self.getMethods(element):
+            script = getattr(element, method, None)
+            if script:
+                code+= "## START "+method+" {\n"
+                code+= script
+                code+= "\n## END "+method+" }\n\r"
+        return code
+
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')
 
-    def exportElementAsJSON(self, obj, isDatabase=False):
+    def exportElementAsJSON(self, obj, isDatabase=False, stripFlag = False):
         """
         """
         data = {}
@@ -1028,11 +1137,19 @@ class DesignManager:
         params = {}
         def get_data(obj, schema):
             fields = getFieldsInOrder(schema)
+            striplist = []
+            if stripFlag:
+                striplist.append(HTML_PROPERTY)
+                striplist.append(HELPER_PROPERTY)
+                striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
                 if id == 'id':
                     # 'id' is not needed as it is the same as obj.id
                     # it will cause 'CatalogError: The object unique id must
                     #  be a string. ' error when import this exported file.
+                    continue
+                if id in striplist:
+                    params[id] = None
                     continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
@@ -1050,7 +1167,7 @@ class DesignManager:
             if elementslist:
                 elements = OrderedDict({})
                 for id in elementslist:
-                    elements[id] = self.exportElementAsJSON(getattr(obj, id))
+                    elements[id] = self.exportElementAsJSON(getattr(obj, id), isDatabase, stripFlag)
                 data['elements'] = elements
 
         if isDatabase:
@@ -1063,6 +1180,8 @@ class DesignManager:
             data['version'] = obj.plomino_version
 
         return data
+
+
 
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsJSON')
 
@@ -1104,15 +1223,16 @@ class DesignManager:
         json_strings = []
         count = 0
         total = 0
+        bundle = None
         if from_folder:
             if not os.path.isdir(from_folder):
                 raise PlominoDesignException('%s does not exist' % from_folder)
-            json_files = (glob.glob(os.path.join(from_folder, '*.json')) +
-                glob.glob(os.path.join(from_folder, 'resources/*.json')))
-            total_elements = len(json_files)
-            for p in json_files:
-                fileobj = codecs.open(p, 'r', 'utf-8')
-                json_strings.append(fileobj.read())
+            bundle = Bundle(folder=from_folder)
+            total_elements = 0
+            for id, type, jsonstring in bundle.contents('json'):
+                total_elements += 1
+                json_strings.append(jsonstring)
+
         else:
             if REQUEST:
                 filename = REQUEST.get('filename')
@@ -1158,6 +1278,8 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
+                    if bundle:
+                        self.composeJsonElementFromBundle(name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
@@ -1198,9 +1320,8 @@ class DesignManager:
                 list(self.resources.objectIds()))
             logger.info("Current design removed")
         total_elements = None
-        file_names = zip_file.namelist()
-        for file_name in file_names:
-            json_string = zip_file.open(file_name).read()
+        bundle = Bundle(zip_file = zip_file)
+        for file_name, _, json_string in bundle.contents('json'):
             if not json_string:
                 # E.g. if the zipfile contains entries for directories
                 continue
@@ -1219,6 +1340,7 @@ class DesignManager:
                             self.resources, res_id, res)
                 else:
                     logger.info("Import " + name)
+                    self.composeJsonElementFromBundle( name, element, bundle)
                     self.importElementFromJSON(self, name, element)
                 count = count + 1
                 total = total + 1
@@ -1234,6 +1356,38 @@ class DesignManager:
         self.setStatus("Ready")
         txn.commit()
         self.getIndex().no_refresh = False
+
+    security.declareProtected(DESIGN_PERMISSION, 'composeJsonElementFromBundle')
+
+    def composeJsonElementFromBundle(self, id, element, bundle):
+        for contentId, _ , html in bundle.contents("html"):
+            if contentId == id:
+                element["params"][HTML_PROPERTY] = html
+        for contentId, _, pythonScript in bundle.contents("py"):
+            if contentId == id:
+                self.loadScriptIntoElement(element, pythonScript)
+            if "elements" in element:
+                for childId, child in element["elements"].iteritems():
+                    if contentId == id + '.' + childId:
+                        self.loadScriptIntoElement(child, pythonScript)
+
+    def loadScriptIntoElement(self, element, pythonScript):
+        content = ""
+        inside = False
+        for lineNumber, line in enumerate(pythonScript.split('\n')):
+            start_reg = re.match(r'^##\s*START\s+(.*){$', line)
+            end_reg = re.match(r'^##\s*END\s+(.*)}$',line)
+
+            if start_reg and not inside:
+                methodName = start_reg.group(1).strip()
+                inside = True
+            elif end_reg and inside:
+                element["params"][methodName] = content
+                inside = False
+                content = ''
+            elif not start_reg and not end_reg and inside:
+                content+= line+"\n"
+
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
@@ -1264,7 +1418,6 @@ class DesignManager:
                 # Can only import if the ID is in the params
                 if id in params:
                     setattr(obj, id, params[id])
-
         set_data(obj, schema)
         #HACK to enable the instance behaviour
         if element_type == "PlominoField":
@@ -1282,6 +1435,7 @@ class DesignManager:
         if 'elements' in element:
             for (child_id, child) in element['elements'].items():
                 self.importElementFromJSON(obj, child_id, child)
+
 
     security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromJSON')
 

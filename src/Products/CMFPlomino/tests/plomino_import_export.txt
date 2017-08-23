@@ -1,0 +1,391 @@
+Plomino import/export tests
+=========================
+
+
+Create sample Plomino database with form, fields, view and formula
+------------------------------------------------------------------
+
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id = db.invokeFactory('PlominoForm', id='frm2', title='Form 2')
+    >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Search Form')
+    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form Visual')
+    >>> id = db.invokeFactory('PlominoView', id='view1',
+    ...         title='View 1')
+    >>> id = db.view1.invokeFactory('PlominoColumn', id='col1',
+    ...         title='Col 1', formula='plominoDocument.field1')
+    >>> db.view1.sort_column = 'col1'
+    >>> id = db.invokeFactory('PlominoView', id='view2',
+    ...         title='View 2',
+    ...         selection_formula="plominoDocument.field1=='bonjour'")
+    >>> id = db.invokeFactory('PlominoView', id='view3',
+    ...         title='View 3',
+    ...         selection_formula="False")
+    >>> id = db.invokeFactory('PlominoView', id='view4',
+    ...         title='View 4',
+    ...         selection_formula="True")
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.form_layout = """1 <p>please enter a value for field1:
+    ... <span class="plominoFieldClass">field1</span></p>"""
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field2',
+    ...         title='Title for field2',
+    ...         field_type="TEXT",
+    ...         field_mode="COMPUTED",
+    ...         formula="plominoDocument.setItem('field4', 'side-effect')\nreturn 'My favorite song is '+plominoDocument.field1")
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field3',
+    ...         title='Title for field3',
+    ...         field_type="TEXT",
+    ...         field_mode="DISPLAY",
+    ...         formula="return plominoDocument.field1.upper()")
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='field4',
+    ...         title='Title for field4',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE",
+    ...         formula="")
+    >>> db.frm1.form_layout = """2 <p>please enter a value for field1:
+    ... <span class="plominoLabelClass">field1</span>
+    ... <span class="plominoFieldClass">field1</span></p><p>Comment:
+    ... <span class="plominoLabelClass">field2</span>
+    ... <span class="plominoFieldClass">field2</span></p><p>
+    ... <span class="plominoFieldClass">field3</span></p><p>
+    ... <span class="plominoFieldClass">field4</span></p>"""
+
+Text field:
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='guitarist',
+    ...         title='Title for guitarist',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='bassist',
+    ...         title='Title for bassist',
+    ...         mandatory=True,
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='drummer',
+    ...         title='Title for drummer',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """3 <p>Who is the guitarist:
+    ... <span class="plominoLabelClass">guitarist</span></p>
+    ... <span class="plominoFieldClass">guitarist</span></p>
+    ... <span class="plominoLabelClass">bassist: Label for bassist</span></p>
+    ... <span class="plominoFieldClass">bassist</span></p>
+    ... <span class="plominoLabelClass">drummer</span></p>
+    ... <span class="plominoFieldClass">drummer</span></p>
+    ... """
+    >>> db.frm2.bassist.widget = "CHECKBOX"
+    >>> db.frm2.bassist.selectionlist = [u"John Paul Jones", u"Chris Chameleon"]
+    >>> db.frm2.drummer.widget = "RADIO"
+    >>> db.frm2.drummer.selectionlist = [u"John Bonham", u"Princess Leonie"]
+    >>> db.frm2.guitarist.html_attributes_formula = """'placeholder="Enter the name here"'"""
+
+Selection field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='artistsfield',
+    ...         title='artistsfield',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.artistsfield.selectionlist = [u'The Beatles', u'The Doors', u'The Pixies']
+    >>> db.frm2.artistsfield.widget="SELECT"
+    >>> db.frm2.form_layout = """4 <p>choose:<span class="plominoFieldClass">artistsfield</span></p>"""
+    >>> db.frm2.artistsfield.widget = "CHECKBOX"
+
+Date/Time field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='lastalbum',
+    ...         title='lastalbum',
+    ...         field_type="DATETIME",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """5 <p>last album release date:
+    ... <span class="plominoFieldClass">lastalbum</span></p>"""
+
+Number field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='price',
+    ...         title='price',
+    ...         field_type="NUMBER",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """6 <p>Price:<span class="plominoFieldClass">price</span></p>"""
+    >>> db.frm2.price.number_type = u'INTEGER'
+
+Rich-text field::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='comments',
+    ...         title='Comments',
+    ...         field_type="RICHTEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.form_layout = """7 <p>My comments:
+    ...  <span class="plominoFieldClass">comments</span></p>"""
+
+Name field:
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='buyer',
+    ...         title='buyer',
+    ...         field_type="NAME",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.buyer.type = u'MULTI'
+    >>> db.frm2.form_layout = """9 <p>Who: <span class="plominoFieldClass">buyer</span></p>"""
+
+A field can be computed::
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='welcome',
+    ...         title='Welcome message',
+    ...         field_type="TEXT",
+    ...         field_mode="COMPUTED")
+    >>> db.frm2.welcome.formula = """message="Welcome "+plominoDocument.buyer\nreturn message"""
+    >>> db.frm2.form_layout = """11 <p><span class="plominoFieldClass">welcome</span></p>"""
+
+
+
+
+# Import design from XML::
+
+#     >>> import os
+#     >>> dir, _f = os.path.split(os.path.abspath(__file__))
+#     >>> f1 = open(os.path.join(dir, "filestoimport", "devplomino.xml"))
+#     >>> xmlstring = f1.read()
+#     >>> db.importDesignFromXML(xmlstring)
+#     >>> db.refreshDB()
+#     [...]
+#     >>> f1.close()
+
+# Check whether forms and views are imported::
+
+#     >>> db.frmBillet == portal.test.getForm('frmBillet')
+#     True
+#     >>> db.allArticle == portal.test.getView('allArticle')
+#     True
+
+# Import CSV file (API)::
+
+#     >>> fileToImport = open(
+#     ...         os.path.join(dir, "filestoimport", "allArticle.csv"))
+#     >>> db.processImportAPI(
+#     ...         formName="frmBillet",
+#     ...         separator = "\t",
+#     ...         fileToImport=fileToImport)
+#     >>> fileToImport.close()
+
+# Check the documents imported::
+
+#     >>> allDocuments = db.allArticle.getAllDocuments()
+#     >>> test = [d.editDate.year() for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [2008, 2009]
+#     >>> test = [d.articleTitle for d in allDocuments]
+#     >>> test.sort()
+#     >>> test
+#     [u'test1', u'test2']
+
+# Databases marked as template can also be exported to a GenericSetup profile::
+
+#     >>> db.setIsDatabaseTemplate(True)
+#     >>> from Products.GenericSetup.tests.common import DummyExportContext
+#     >>> from Products.CMFPlomino.setuphandlers import export_database_templates
+#     >>> context = DummyExportContext(portal)
+#     >>> export_database_templates(context)
+#     >>> context._wrote[0][0]
+#     'plomino/test/frmBillet.xml'
+
+
+
+# Import/export design
+# ---------------------
+
+
+     >>> print db.exportDesignAsJSON(elementids=['frm2'])
+     {
+        "design": {
+                "dbsettings": {
+     ...
+     >>> db.frm2.welcome.formula
+     'message="Welcome "+plominoDocument.buyer\nreturn message'
+
+    >>> s = db.exportDesignAsJSON(elementids=['frm2'])
+    >>> s = s.replace("Welcome", "No XML welcome here!")
+    >>> db.importDesignFromJSON(s)
+    >>> db.frm2.welcome.formula
+    u'message="No XML welcome here! "+plominoDocument.buyer\nreturn message'
+
+# Ensure the imported order is correct
+
+    >>> db.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    >>> s = db.exportDesignAsJSON()
+
+    >>> print s
+    {
+    ...
+            "frm_test": {
+    ...
+            "frm1": {
+    ...
+            "frm3": {
+    ...
+            "frm2": {
+    ...
+            "view1": {
+    ...
+            "view2": {
+    ...
+    }
+
+
+    >>> id = portal.invokeFactory('PlominoDatabase', id='test')
+    >>> newdb = portal.test
+    >>> newdb.importDesignFromJSON(s)
+    >>> newdb.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'frm2', 'view1', 'view2', 'view3', 'view4']
+
+Also check the order of view and form elements
+    >>> newdb.frm1.objectIds() == db.frm1.objectIds()
+    True
+    >>> newdb.frm2.objectIds() == db.frm2.objectIds()
+    True
+    >>> newdb.view1.objectIds() == db.view1.objectIds()
+    True
+
+
+Export design to file system
+
+    >>> import json, os
+    >>> from os import listdir
+    >>> from os.path import isfile, join
+    >>> dir, _ = os.path.split(os.path.abspath(__file__))
+    >>> dir = os.path.join(dir,'tmp_export/mydb')
+    >>> db.exportDesign(targettype='folder', targetfolder=dir)
+    >>> export_files = [f for f in listdir(dir) if isfile(join(dir, f))]
+    >>> print export_files
+    ['frm1.field2.py', 'frm1.field3.py', 'frm1.html', 'frm1.json', 'frm2.guitarist.py', 'frm2.html', 'frm2.json', 'frm2.welcome.py', 'frm3.json', 'frm4.json', 'frm_test.html', 'frm_test.json', 'view1.col1.py', 'view1.json', 'view2.json', 'view2.py', 'view3.json', 'view3.py', 'view4.json', 'view4.py']
+
+
+Import design from file system
+
+    >>> id = portal.invokeFactory('PlominoDatabase', id='test_import_filesystem')
+    >>> newdb = portal.test_import_filesystem
+    >>> newdb.importDesignFromJSON(from_folder=dir, replace = True)
+    >>> newdb.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
+    >>> newdb.frm1.objectIds() == db.frm1.objectIds()
+    True
+    >>> newdb.frm2.objectIds() == db.frm2.objectIds()
+    True
+    >>> newdb.view1.objectIds() == db.view1.objectIds()
+    True
+
+Export design as zip bundle
+
+    >>> from zipfile import ZipFile, ZIP_DEFLATED
+    >>> file_string = db.exportDesignAsZip()
+    >>> export_zip_file = ZipFile(file_string)
+
+Check if zip bunlde include JSON, HTML, PY files
+
+    >>> json_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.json')]
+    >>> json_files.sort()
+    >>> print json_files
+    ['mydb/dbsettings.json', 'mydb/frm1.json', 'mydb/frm2.json', 'mydb/frm3.json', 'mydb/frm4.json', 'mydb/frm_test.json', 'mydb/view1.json', 'mydb/view2.json',  'mydb/view3.json',  'mydb/view4.json']
+
+    >>> html_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.html')]
+    >>> html_files.sort()
+    >>> print html_files
+    ['mydb/frm1.html', 'mydb/frm2.html', 'mydb/frm_test.html']
+
+    >>> python_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.py')]
+    >>> python_files.sort()
+    >>> print python_files
+    ['mydb/frm1.field2.py', 'mydb/frm1.field3.py', 'mydb/frm2.guitarist.py', 'mydb/frm2.welcome.py', 'mydb/view1.col1.py', 'mydb/view2.py', 'mydb/view3.py',  'mydb/view4.py']
+
+Check if JSON file does not contain HTML and formula
+
+    >>> import json
+    >>> json_string = export_zip_file.read('mydb/frm1.json')
+    >>> frm1_json = json.loads(json_string)
+    >>> print frm1_json['design']['frm1']['params']['form_layout']
+    None
+    >>> print frm1_json['design']['frm1']['elements']['field2']['params']['formula']
+    None
+
+JSON string should not contains space at line end
+    >>> lines = json_string.splitlines()
+    >>> print [ line for line in lines if line.endswith(' ')]
+    []
+
+Check if HTML file contains the form layout
+
+    >>> frm1_html = export_zip_file.read('mydb/frm1.html')
+    >>> print frm1_html
+    2 <p>please enter a value for field1:
+    ...
+
+
+Check if PY file contains the formula for the field
+
+    >>> field2_py = export_zip_file.read('mydb/frm1.field2.py')
+    >>> print field2_py
+    ## START formula {
+    ...
+
+
+# Import design as zip bundle (new style)
+
+    >>> import os, zipfile
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle.zip"), "r")
+    >>> db.importDesignFromZip(import_zip_file,True)
+    >>> db.refreshDB()
+    [...]
+    >>> macro_field_number_between = getattr(db, 'macro_field_number_between', None)
+
+
+Check if HTNL layout is restored
+
+    >>> print macro_field_number_between.form_layout
+    <p><span class="plominoLabelClass">min</span></p>
+    ...
+
+
+Check if Formula is restored
+
+    >>> print macro_field_number_between.document_title
+    doc = plominoContext
+    ...
+
+
+
+# Import design as zip bundle (old style)
+
+    >>> import os
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle_old_style.zip"), "r")
+    >>> db.importDesignFromZip(import_zip_file,True)
+    >>> db.refreshDB()
+    [...]
+    >>> macro_field_number_between_old_style = getattr(db, 'macro_field_number_between', None)
+
+# Verify compatibility by import  old-style bundle
+
+    >>> print macro_field_number_between_old_style.form_layout
+    <p><span class="plominoLabelClass">min</span></p>
+    ...
+
+    >>> print macro_field_number_between_old_style.document_title
+    doc = plominoContext
+    ...

@@ -294,6 +294,11 @@ I open service tab "${tabId}"
   wait until page contains  ${tabId}
   Click Element  jquery=.mdl-button:visible:contains(${tabId})
 
+I can see Import/Export dialog open
+  sleep  0.5s
+  wait until page contains element  jquery=#db-import-export-dialog:visible
+
+
 # --- THEN -------------------------------------------------------------------
 
 a plominodatabase with the title '${title}' has been created
