@@ -250,6 +250,29 @@ Scenario: I can add an action to a view
     and I add an action "my action"
    Then I will see action "my-action" in the view
 
+Scenario: I can rename a form and then create new form
+  Given I have a form open
+   When I enter "new-form" in "Id" in "Form Settings"
+    and I can see "new-form" is open
+    and I enter "new-form-1" in "Id" in "Form Settings"
+    and I can see "new-form-1" is open
+    and I add a form by click
+   Then I can see "new-form" is open
+
+Scenario: I can rename a form and then create new form and then go back and repeat
+  Given I have a form open
+   When I enter "new-form" in "Id" in "Form Settings"
+    and I can see "new-form" is open
+    and I enter "new-form-1" in "Id" in "Form Settings"
+    and I can see "new-form-1" is open
+    and I add a form by click
+    and I can see "new-form" is open
+    and sleep  1s
+    and I open a form "new-form-1"
+    and I enter "new-form" in "Id" in "Form Settings"
+    and I add a form by click
+   Then I can see "new-form-1" is open
+
 #Scenario: I can add filter a view
 #  Given I have a form and some data saved
 #   When I create a view

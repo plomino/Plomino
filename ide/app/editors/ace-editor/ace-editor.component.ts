@@ -66,22 +66,11 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
         });
     }
 
-    private generateHash(str: string): number {
-      var hash = 0, i, chr;
-      if (str.length === 0) return hash;
-      for (i = 0; i < str.length; i++) {
-        chr   = str.charCodeAt(i);
-        hash  = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-    }
-
     ngOnInit() {
       /**
        * after form settings saved the ace cache should be flushed? - no
        */
-        this.id = 'editor' + this.generateHash(this.url);
+        this.id = this.tabsManagerService.generateCodeEditorId(this.url);
         const codeId = this.getCurrentTabId();
         const stateData = this.tabsManagerService.getTabSavedContentState(codeId);
         this._elementService.getElement(this.url).subscribe((data) => {
@@ -131,7 +120,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
 
     ngAfterViewInit() {
       try {
-        this.editor = ace.edit('editor' + this.generateHash(this.url));
+        this.editor = ace.edit(this.tabsManagerService.generateCodeEditorId(this.url));
         this.editor.setTheme("ace/theme/xcode");
         this.editor.getSession().setMode("ace/mode/python");
         this.editor.setOptions({

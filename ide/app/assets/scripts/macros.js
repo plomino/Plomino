@@ -114,8 +114,15 @@ require([
               select.closest('.plomino-macros-rule').length 
               && !select.closest('#wf-item-settings-dialog__wd').length
             ) {
+              var isDisabled = select.closest('.plomino-macros-rule')
+                .get(0).querySelector('.select2-search-choice') === null;
               select.closest('.plomino-macros-rule')
-                .prepend('<i class="material-icons">more_vert</i>');
+                .prepend(
+                  isDisabled 
+                    ? '<i class="material-icons" ' 
+                      + 'style="color: lightgray; cursor: not-allowed">more_vert</i>'
+                    : '<i class="material-icons">more_vert</i>'
+                );
             }
 
             select.change(function(evt) {
@@ -141,6 +148,35 @@ require([
             });
         },
         cleanup_inputs: function() {
+
+          /**
+           * swap 2 html elements and save all bounded data
+           * @param {HTMLElement} obj1 
+           * @param {HTMLElement} obj2 
+           */
+          var swapHTMLElements = function swapHTMLElements(obj1, obj2) {
+            // save the location of obj2
+            var parent2 = obj2.parentNode;
+            var next2 = obj2.nextSibling;
+            // special case for obj1 is the next sibling of obj2
+            if (next2 === obj1) {
+              // just put obj1 before obj2
+              parent2.insertBefore(obj1, obj2);
+            } else {
+              // insert obj2 right before obj1
+              obj1.parentNode.insertBefore(obj2, obj1);
+
+              // now insert obj1 where obj2 was
+              if (next2) {
+                // if there was an element after obj2, then insert obj1 right before that
+                parent2.insertBefore(obj1, next2);
+              } else {
+                // otherwise, just append as last child
+                parent2.appendChild(obj1);
+              }
+            }
+          };
+
             var self = this.widget;
             var count = self.$el.find('.select2-container').size();
             // remove any empty rules
@@ -184,14 +220,60 @@ require([
                           });
                       });
                     }
-                    new Sortable($(el).find(".select2-choices"), {
-                        selector:'.select2-search-choice',
-                        drop: function() {
+                    /* sortable choices */
+                    /**
+                     * @type {HTMLElement}
+                     */
+                    var draggingChoiceElement = null;
+                    var dragChoiceDelayTimer = null;
+                    var dragChoiceAllowed = true;
+                    $(el)
+                    .find(".select2-choices .select2-search-choice")
+                    .each(function () {
+                      /**
+                       * @type {HTMLElement}
+                       */
+                      var element = this;
+                      element.draggable = true;
+                      /**
+                       * @param {DragEvent} dragEvent DragEvent
+                       */
+                      element.ondragstart = function startDragChoice (dragEvent) {
+                        var macro = element.innerText.trim().replace(/^more_vert/, '');
+                        dragEvent.dataTransfer.setData('Text', macro);
+                        draggingChoiceElement = element;
+                        clearTimeout(dragChoiceDelayTimer);
+                        dragChoiceAllowed = true;
+                      };
+                      /**
+                       * @param {DragEvent} dragEvent DragEvent
+                       */
+                      element.ondragover = function overDragChoice (dragEvent) {
+                        dragEvent.preventDefault();
+                      }
+                      /**
+                       * @param {DragEvent} dragEvent DragEvent
+                       */
+                      element.ondragenter = function enterDragChoice (dragEvent) {
+                        /* element - overing element */
+                        if (dragChoiceAllowed) {
+                          var detectorClass = '.select2-search-choice-close';
+                          if (
+                            draggingChoiceElement
+                            && element.innerText !== draggingChoiceElement.innerText
+                            && element.querySelector(detectorClass) !== null
+                            && draggingChoiceElement.querySelector(detectorClass) !== null
+                          ) {
+                            swapHTMLElements(draggingChoiceElement, element);
                             $(el).select2('onSortEnd');
-                            $('.select2-search-choice.item-dragging.dragging,#select2-drop-mask').remove();
-                        }});
-
-
+                            dragChoiceAllowed = false;
+                            dragChoiceDelayTimer = setTimeout(function () {
+                              dragChoiceAllowed = true;
+                            }, 200);
+                          }
+                        }
+                      }
+                    });
                 }
                 // if last one is not empty add a new one
                 if (index == count-1 && values.length > 0) {
@@ -202,13 +284,71 @@ require([
                     });
                 }
             });
-            new Sortable(self.$el, {
-              selector:'.plomino-macros-rule',
-              drop: function () {
-                self.$el.select2('onSortEnd');
-                $('.plomino-macros-rule.item-dragging.dragging,#select2-drop-mask,' +
-                  '.select2-drop.select2-drop-multi.select2-display-none.select2-drop-active'
-                ).hide();
+            /* sortable choices */
+            /**
+             * @type {HTMLElement}
+             */
+            var draggingRuleElement = null;
+            var dragRuleDelayTimer = null;
+            var dragRuleAllowed = true;
+
+            self.$el
+            .find("li.plomino-macros-rule")
+            .each(function () {
+              /**
+               * @type {HTMLElement}
+               */
+              var element = this;
+              var eDragDisabled = element
+                .querySelector('.select2-search-choice') === null;
+              var leftVertDragIcon = element
+                .querySelector('.material-icons:first-child');
+              
+              if (eDragDisabled) {
+                leftVertDragIcon.outerHTML = '<i class="material-icons" ' 
+                  + 'style="color: lightgray; cursor: not-allowed">more_vert</i>';
+                return true;
+              }
+              
+              leftVertDragIcon.outerHTML = '<i class="material-icons">more_vert</i>';
+
+              element.draggable = true;
+              /**
+               * @param {DragEvent} dragEvent DragEvent
+               */
+              element.ondragstart = function startDragRule (dragEvent) {
+                var macro = element.innerText.trim().replace(/more_vert/g, '');
+                dragEvent.dataTransfer.setData('Text', macro);
+                draggingRuleElement = element;
+                clearTimeout(dragRuleDelayTimer);
+                dragRuleAllowed = true;
+              };
+              /**
+               * @param {DragEvent} dragEvent DragEvent
+               */
+              element.ondragover = function overDragRule (dragEvent) {
+                dragEvent.preventDefault();
+              }
+              /**
+               * @param {DragEvent} dragEvent DragEvent
+               */
+              element.ondragenter = function enterDragRule (dragEvent) {
+                /* element - overing element */
+                if (dragRuleAllowed) {
+                  var detectorClass = '.select2-container';
+                  if (
+                    draggingRuleElement
+                    && element.innerText !== draggingRuleElement.innerText
+                    && element.querySelector(detectorClass) !== null
+                    && draggingRuleElement.querySelector(detectorClass) !== null
+                  ) {
+                    swapHTMLElements(draggingRuleElement, element);
+                    dragRuleAllowed = false;
+                    dragRuleDelayTimer = setTimeout(function () {
+                      dragRuleAllowed = true;
+                    }, 200);
+                  }
+                }
               }
             });
         },

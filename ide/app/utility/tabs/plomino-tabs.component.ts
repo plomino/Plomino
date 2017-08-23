@@ -159,7 +159,7 @@ export class PlominoTabsComponent implements OnInit {
 
     /** detect a cache of content of this tab and flush it */
     if (tab.editor === 'code') {
-      const codeId = 'editor' + this.generateHash(tab.url);
+      const codeId = this.tabsManagerService.generateCodeEditorId(tab.url);
       setTimeout(() => {
         this.tabsManagerService.flushTabContentState(codeId);
         this.log.info('flushTabContentState', codeId);
@@ -230,16 +230,5 @@ export class PlominoTabsComponent implements OnInit {
       'view': 'code',
       'code': 'code'
     }[editor];
-  }
-
-  private generateHash(str: string): number {
-    var hash = 0, i, chr;
-    if (str.length === 0) return hash;
-    for (i = 0; i < str.length; i++) {
-      chr   = str.charCodeAt(i);
-      hash  = ((hash << 5) - hash) + chr;
-      hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
   }
 }

@@ -90,9 +90,6 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   idChanges: any;
   editorInstance: any;
 
-  draggingSubscription: Subscription;
-  insertionSubscription: Subscription;
-  templatesSubscription: Subscription;
   subscriptions: Subscription[] = [];
 
   autoSaveTimer: any = null;
@@ -102,6 +99,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   loadedFirstTime: boolean = null;
   registry: any;
   tinyMCEPatData: string = null;
+  beforeSaveScrollTop: number = null;
 
   /**
    * display block preloader
@@ -133,7 +131,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     /**
      * fields, hidewhens, actions, etc
      */
-    this.insertionSubscription = this.fieldsService.getInsertion()
+    this.subscriptions.push(this.fieldsService.getInsertion()
     .subscribe((insertion: InsertFieldEvent) => {
       this.log.info('fieldsService.getInsertion', insertion);
       this.log.extra('tiny-mce.component.ts this.insertionSubscription');
@@ -145,12 +143,12 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (insertionParent === this.id) {
         this.addElement(dataToInsert);
       }
-    });
+    }));
 
     /**
      * form components like text/long text/etc
      */
-    this.templatesSubscription = this.templatesService.getInsertion()
+    this.subscriptions.push(this.templatesService.getInsertion()
     .subscribe((insertion: InsertTemplateEvent) => {
       this.log.info('templatesService.getInsertion', insertion);
       this.log.extra('tiny-mce.component.ts this.templatesSubscription');
@@ -171,16 +169,16 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         // this.saveTheForm(); // was before
         this.saveManager.enqueueNewFormSaveProcess(this.id); // now async
       }
-    });
+    }));
     
-    this.draggingSubscription = this.draggingService.getDragging()
+    this.subscriptions.push(this.draggingService.getDragging()
     .subscribe((dragData: any) => {
       this.dragData = dragData;
       this.isDragged = !!dragData;
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    const activeFieldSubscribtion = this.formFieldsSelection.getActiveField()
+    this.subscriptions.push(this.formFieldsSelection.getActiveField()
     .subscribe((fieldData: any) => {
       if (fieldData && fieldData.type === 'PlominoField'
         && fieldData.id && fieldData.url.replace(`/${ fieldData.id }`, '') === this.id
@@ -195,6 +193,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             $body.animate({ scrollTop: $element.offset().top },
               { duration: 'medium', easing: 'swing' });
+            this.log.info('scroll top using $body.animate');
+            this.log.extra('tiny-mce.components.ts line 193');
             
             /* if the $element is not selected - click on it */
             if ($element.hasClass('plominoGroupClass')) {
@@ -213,9 +213,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           }
         }
       }
-    });
-
-    this.subscriptions.push(activeFieldSubscribtion);
+    }));
 
     this.subscriptions.push(this.fieldsService.listenToUpdates()
     .subscribe((updateData) => { this.updateField(updateData); }));
@@ -231,15 +229,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (this.id === data.oldId) {
         this.id = data.newId;
         /* id is present but no editor here, lets try to find it */
-        tinymce.editors.forEach((editor: any) => {
-          const id = this.id.split('/').pop();
+        const id = this.getCurrentTabId();
+        tinymce.editors.forEach((editor: any, i) => {
           if (editor.targetElm && editor.targetElm.id 
             && editor.targetElm.id === data.oldId.split('/').pop()
           ) {
+            const prevId = editor.settings.id;
             editor.id = id;
             editor.settings.id = id;
             editor.getContainer().firstElementChild
               .children[2].firstElementChild.id = id + '_ifr';
+
+            /** rename key in tinymce.editors */
+            Object.defineProperty(tinymce.editors, id,
+                Object.getOwnPropertyDescriptor(tinymce.editors, prevId));
+            delete tinymce.editors[prevId];
+
             editor.render();
   
             // this.ngAfterViewInit();
@@ -338,9 +343,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     if (this.activeEditorService.editorURL === this.id) {
       this.activeEditorService.setActive(null);
     }
-    this.draggingSubscription.unsubscribe();
-    this.insertionSubscription.unsubscribe();
-    this.templatesSubscription.unsubscribe();
+
     for (let sub of this.subscriptions) {
       sub.unsubscribe();
     }
@@ -348,6 +351,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     try {
       tinymce.EditorManager
         .execCommand('mceRemoveEditor', true, edId);
+      tinymce.editors.forEach((editor, index) => {
+        if (editor.id === edId) {
+          tinymce.editors.splice(index, 1);
+          delete tinymce.editors[edId];
+          return false;
+        }
+      });
     }
     catch (e) {
       tinymce.editors.forEach((editor, index) => {
@@ -401,7 +411,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.registry = registry;
       this.initialize();
 
-      this.draggingService
+      this.subscriptions.push(this.draggingService
       .onPaletteCustomDragEvent()
       .subscribe((eventData: MouseEvent) => {
         this.dragData = this.draggingService.currentDraggingData 
@@ -410,9 +420,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         
         this.contentManager.selectAndRemoveElementById(this.id, 'drag-autopreview');
         this.dropped({ mouseEvent: eventData });
-      });
+      }));
 
-      this.tabsManagerService.getActiveTab()
+      this.subscriptions.push(this.tabsManagerService.getActiveTab()
         .filter((tab) => tab !== null)
         .subscribe((tab) => {
           if (this.item && typeof this.item.formUniqueId === 'undefined') {
@@ -427,7 +437,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
             catch (e) {}
           }
-        });
+        }));
   
       // this.tabsService.getActiveTab()
       //   .subscribe((tab) => {
@@ -438,7 +448,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       //     }
       //   });
   
-      this.labelMarkupEvent.asObservable()
+      this.subscriptions.push(this.labelMarkupEvent.asObservable()
       .subscribe(($element: JQuery) => {
         /**
          * when markup changed on any plominoLabelClass element
@@ -479,9 +489,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             );
           }
         }
-      });
+      }));
   
-      this.activeEditorService.onLoadingPush()
+      this.subscriptions.push(this.activeEditorService.onLoadingPush()
       .subscribe((state: boolean) => {
         this.log.info('onLoadingPush i am', this.id, 
           'this msg to', this.activeEditorService.editorURL);
@@ -499,9 +509,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
           });
         }
-      });
+      }));
   
-      this.activeEditorService.onSavedPush()
+      this.subscriptions.push(this.activeEditorService.onSavedPush()
       .subscribe((state: boolean) => {
         if (this.activeEditorService.editorURL === this.id) {
           const editor = this.getEditor();
@@ -531,7 +541,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             }
           }
         }
-      });
+      }));
     });
   }
 
@@ -608,18 +618,45 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       }
     }
 
+    let initialisedGood = true;
     this.log.info('tinymce initialization started');
     const $el = $('textarea#' + edId);
     $el.attr('data-pat-tinymce', this.tinyMCEPatData);
-    this.zone.runOutsideAngular(() => {
-      this.registry.scan($el);
-    });
+    try {
+      this.zone.runOutsideAngular(() => {
+        this.registry.scan($el);
+      });
+    } catch (e) {
+      initialisedGood = false;
+      this.log.warn('tinymce pattern was failed with', 'textarea#' + edId);
+      this.log.warn('$el', $el, '$el.length', $el.length);
+      this.log.warn('trying again....');
+      setTimeout(() => {
+        const $el = $('textarea#' + edId);
+        this.log.warn('new $el', $el, '$el.length', $el.length);
+        $el.attr('data-pat-tinymce', this.tinyMCEPatData);
+        this.zone.runOutsideAngular(() => {
+          this.registry.scan($el);
+        });
+      }, 1);
+    }
 
     window['save_onsavecallback_' 
       + this.id.split('/').pop()] = this.onSaveCallback.bind(this);
 
     setTimeout(() => {
-      const editor = tinymce.get(edId);
+      let editor = tinymce.get(edId);
+      let patternModuleFailed = false;
+
+      if (editor) {
+        try {
+          editor.getBody();
+        }
+        catch (e) {
+          editor = null;
+          patternModuleFailed = true;
+        }
+      }
       
       if (editor === null) {
         this.log.warn('null editor', edId, tinymce.editors);
@@ -652,8 +689,22 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
         }
 
         this.getFormLayout();
+      } else if (patternModuleFailed) {
+        /**
+         * here we catched extremely rarely bug coming from pattern.js
+         * now we have to remove the tinymce instance and rerun initialization
+         */
+        // tinymce.editors.forEach((editor: any, i) => {
+        //   if (editor && editor.id && editor.id === this.getCurrentTabId()) {
+        //     tinymce.editors.splice(i, 1);
+        //     delete tinymce.editors[editor.id];
+        //   }
+        // });
+        // this.initialize();
+        // this.log.warn('initialization running again...');
+        this.log.error('patternModuleFailed');
       }
-    }, stateData ? 1 : 300);
+    }, stateData && !initialisedGood ? 1 : 300);
   }
 
   /**
@@ -869,6 +920,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.zone.run(() => {
         let eventTarget = <any> ev.target;
+
+        if (eventTarget.scrollIntoViewIfNeeded) {
+          eventTarget.scrollIntoViewIfNeeded();
+        }
 
         if (eventTarget.control ||
           (['radio', 'select-one'].indexOf(eventTarget.type) !== -1)) {
@@ -1096,6 +1151,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
                   catch (e) {}
                 }
               );
+              this.log.info('scroll top using $(editor.getBody()).animate');
+              this.log.extra('tiny-mce.components.ts line 1139');
             }, 100);
           }
   
@@ -1138,16 +1195,32 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       if (!editor) { return; }
       if (editor) {
         setTimeout(() => {
+          /**
+           * does the previous scroll level exists here?
+           * @type {boolean}
+           */
+          const prevScrollTop = this.beforeSaveScrollTop && 
+            this.beforeSaveScrollTop > 50;
+          /**
+           * setup the next scroll position
+           * @type {number}
+           */
+          const scrollTop = prevScrollTop ? this.beforeSaveScrollTop : 0;
+          if (prevScrollTop) {
+            this.beforeSaveScrollTop = null; // clear for next cases
+          }
           $(editor.getBody()).animate(
-            { scrollTop: 0 }, 'medium', 'swing', () => {
+            { scrollTop }, 'medium', 'swing', () => {
               try {
                 editor.selection.setCursorLocation();
-                this.log.info('cursor relocated at 0,0');
+                this.log.info('cursor relocated at ' + scrollTop + ',0');
                 editor.undoManager.clear();
               }
               catch (e) {}
             }
           );
+          this.log.info('scroll top using $(editor.getBody()).animate');
+          this.log.extra('tiny-mce.components.ts line 1192');
         }, 100);
       }
     }
@@ -1172,6 +1245,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let editor = this.getEditor() || this.getEditor(this.idChanges.oldId);
 
     if (editor !== null) {
+      try {
+        this.beforeSaveScrollTop = (<any> editor.getBody()).scrollTop;
+      } catch (e) {}
       tiny.isLoading.emit(false);
       if (cb) cb();
       this.log.info('onchange not dirty', this.id);

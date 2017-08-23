@@ -25,9 +25,10 @@ class PlominoViewIndex(UnIndex):
         parentdb = self.getParentDatabase()
         doc = obj.__of__(parentdb)
         if self.id.startswith("PlominoViewFormula_"):
-            param = self.id.split('_')
+            param = self.id.split('_', 1)
             viewname = param[1]
             newSelection = doc.isSelectedInView(viewname)
+            #import sys; print >> sys.stderr, (viewname, newSelection)
         else:
             return 0
 

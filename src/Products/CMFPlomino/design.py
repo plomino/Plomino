@@ -186,11 +186,12 @@ class DesignManager:
         logger.info('Field indexing initialized')
 
         # declare all the view formulas and columns index entries
+
         for v_obj in self.getViews():
             index.createSelectionIndex(
                 'PlominoViewFormula_' + v_obj.id)
             for c in v_obj.getColumns():
-                v_obj.declareColumn(c.id, c, index=index)
+                v_obj.declareColumn(c.id, c, index=index, refresh=False)
         # add fulltext if needed
         if self.fulltextIndex:
             index.createFieldIndex('SearchableText', 'RICHTEXT')
