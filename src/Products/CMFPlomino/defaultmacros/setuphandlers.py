@@ -21,9 +21,6 @@ def macros_install(context):
 
     context_profile = context._getImportContext(macros_profile_id)
     profile_path = context_profile._profile_path
-    db_path = profile_path + '/../../defaultmacros/macros.json'
-
-    with open(db_path, 'r') as macros_file:
-        db_data = macros_file.read()
-        macros_db = portal.macros
-        macros_db.importDesignFromJSON(jsonstring=db_data)
+    db_path = profile_path + '/../../defaultmacros/macros'
+    macros_db = portal.macros
+    macros_db.importDesignFromJSON(from_folder=db_path, replace=True)

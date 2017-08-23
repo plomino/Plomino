@@ -1,0 +1,93 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_validate_invalid": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Invalid",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "invalid_message": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "TEXT",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Invalid message",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "invalid_message",
+                    "title": "Invalid message"
+                },
+                "validation_formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Validation formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "validation_formula",
+                    "title": "Validation formula"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_field_validate_invalid",
+            "title": "Invalid"
+        }
+    },
+    "id": "macros"
+}

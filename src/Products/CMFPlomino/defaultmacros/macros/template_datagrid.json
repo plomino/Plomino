@@ -1,0 +1,67 @@
+{
+    "design": {
+        "resources": {},
+        "template_datagrid": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Datagrid",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "datagrid": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "DATAGRID",
+                        "widget": "REGULAR",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Untitled",
+                        "edit_template": null,
+                        "field_mapping": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "associated_form": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "datagrid",
+                    "title": "Untitled"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "template_datagrid",
+            "title": "Datagrid"
+        }
+    },
+    "id": "macros"
+}

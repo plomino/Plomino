@@ -1,0 +1,226 @@
+{
+    "design": {
+        "resources": {},
+        "macro_form_redirect_onsave": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Redirect in form on save",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "form_hidewhen": {
+                    "params": {
+                        "description": "",
+                        "title": "Form hidewhen",
+                        "ajax_include_head": null,
+                        "isDynamicHidewhen": true,
+                        "helpers": null,
+                        "formula": null,
+                        "isResetOnHide": false,
+                        "ajax_load": null,
+                        "html_attributes_formula": null
+                    },
+                    "type": "PlominoHidewhen",
+                    "id": "form_hidewhen",
+                    "title": "Form hidewhen"
+                },
+                "form_redirect": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Form redirect",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": null,
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "form_redirect",
+                    "title": "Form redirect"
+                },
+                "onsavedocument": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "onSaveDocument",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "onsavedocument",
+                    "title": "onSaveDocument"
+                },
+                "redirect_type": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "RADIO",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Redirect type",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": [
+                            "Form|form",
+                            "View|view",
+                            "URL|url"
+                        ],
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "redirect_type",
+                    "title": "Redirect type"
+                },
+                "url_hidewhen": {
+                    "params": {
+                        "description": "",
+                        "title": "URL hidewhen",
+                        "ajax_include_head": null,
+                        "isDynamicHidewhen": true,
+                        "helpers": null,
+                        "formula": null,
+                        "isResetOnHide": false,
+                        "ajax_load": null,
+                        "html_attributes_formula": null
+                    },
+                    "type": "PlominoHidewhen",
+                    "id": "url_hidewhen",
+                    "title": "URL hidewhen"
+                },
+                "url_redirect": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "TEXT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "URL redirect",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "url_redirect",
+                    "title": "URL redirect"
+                },
+                "view_hidewhen": {
+                    "params": {
+                        "description": "",
+                        "title": "View hidewhen",
+                        "ajax_include_head": null,
+                        "isDynamicHidewhen": true,
+                        "helpers": null,
+                        "formula": null,
+                        "isResetOnHide": false,
+                        "ajax_load": null,
+                        "html_attributes_formula": null
+                    },
+                    "type": "PlominoHidewhen",
+                    "id": "view_hidewhen",
+                    "title": "View hidewhen"
+                },
+                "view_redirect": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "View redirect",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": null,
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "view_redirect",
+                    "title": "View redirect"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_form_redirect_onsave",
+            "title": "Redirect in form on save"
+        }
+    },
+    "id": "macros"
+}

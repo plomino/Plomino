@@ -1,0 +1,240 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_field_datetime_between": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Is date in range",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "field_name": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Field name",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": null,
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "field_name",
+                    "title": "Field name"
+                },
+                "formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "formula",
+                    "title": "Formula"
+                },
+                "max_datetime": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "DATETIME",
+                        "widget": "JQUERY",
+                        "startingyear": "1900",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "format": "%d %B %Y",
+                        "title": "Pick a maximum date",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "max_datetime",
+                    "title": "Pick a maximum date"
+                },
+                "max_hidewhen": {
+                    "params": {
+                        "description": "",
+                        "title": "max_hidewhen",
+                        "ajax_include_head": null,
+                        "isDynamicHidewhen": true,
+                        "helpers": null,
+                        "formula": null,
+                        "isResetOnHide": false,
+                        "ajax_load": null,
+                        "html_attributes_formula": null
+                    },
+                    "type": "PlominoHidewhen",
+                    "id": "max_hidewhen",
+                    "title": "max_hidewhen"
+                },
+                "max_option": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "RADIO",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Maximum date option",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": [
+                            "Now (value is past)|now",
+                            "Pick a date|pick",
+                            "Any time in the past|any"
+                        ],
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "max_option",
+                    "title": "Maximum date option"
+                },
+                "min_datetime": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "DATETIME",
+                        "widget": "JQUERY",
+                        "startingyear": "1900",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "format": "%d %B %Y",
+                        "title": "Pick a minimum date",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "min_datetime",
+                    "title": "Pick a minimum date"
+                },
+                "min_hidewhen": {
+                    "params": {
+                        "description": "",
+                        "title": "min_hidewhen",
+                        "ajax_include_head": null,
+                        "isDynamicHidewhen": true,
+                        "helpers": null,
+                        "formula": null,
+                        "isResetOnHide": false,
+                        "ajax_load": null,
+                        "html_attributes_formula": null
+                    },
+                    "type": "PlominoHidewhen",
+                    "id": "min_hidewhen",
+                    "title": "min_hidewhen"
+                },
+                "min_option": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "RADIO",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Minimum date option",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": [
+                            "Now (value is future)|now",
+                            "Pick a date|pick",
+                            "Any time in the past|any"
+                        ],
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "min_option",
+                    "title": "Minimum date option"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_condition_field_datetime_between",
+            "title": "Is date in range"
+        }
+    },
+    "id": "macros"
+}
