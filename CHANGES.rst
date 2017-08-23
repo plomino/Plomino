@@ -7,7 +7,19 @@ Changelog
 - Restore View custom template
 - Unquote plus signs when reading input [instification]
 - Add option to send plain text emails [instification]
-- Capture previous context in script when runAsOwner is called [ivanteoh]
+
+- CSV download macro can now be used on ViewA to download data from ViewB [ivanteoh]
+- fixed IDE issues with reordering and adding removing macros [ivanm]
+- Refresh code editor on save if is not dirty [ivanm]
+- Fix "hang when creating new form from editor (+ icon next to tabs)" [ivanm]
+
+- fixed exception caused by unicode in Title when inserted into a label in the final html [ivanteoh]
+- fixed "saving form scrolls to top. Also editing label then clicking field scrolls to the top" [ivanm]
+- fix errors in catalog indexes caused by views or columns containing '_' and also being renamed.
+  Renaming either now updates the indexes [djay]
+- new multi-file import/export format which seperates formulas and layouts into .py and .html files [quang]
+- fix errors caused by runasowner when script is called inside a script [ivanteoh]
+
 
 2.0b4 (2016-05-27)
 ------------------
