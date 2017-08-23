@@ -1,0 +1,153 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_field_text_validate_count": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Chars / words count",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "count_type": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "RADIO",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Count type",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": [
+                            "Characters|chars",
+                            "Words|words"
+                        ],
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "count_type",
+                    "title": "Count type"
+                },
+                "formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "formula",
+                    "title": "Formula"
+                },
+                "length_format": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Length format",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": [
+                            "Fixed length|fixed",
+                            "Variable length up to the total|variable"
+                        ],
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "length_format",
+                    "title": "Length format"
+                },
+                "total_count": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "NUMBER",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "format": null,
+                        "title": "Total",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "number_type": "INTEGER",
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "total_count",
+                    "title": "Total"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_condition_field_text_validate_count",
+            "title": "Chars / words count"
+        }
+    },
+    "id": "macros"
+}

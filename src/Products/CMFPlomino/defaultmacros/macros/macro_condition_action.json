@@ -1,0 +1,94 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_action": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Action matches",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "action_id": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "action_id",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": null,
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "action_id",
+                    "title": "action_id"
+                },
+                "formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "formula",
+                    "title": "Formula"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_condition_action",
+            "title": "Action matches"
+        }
+    },
+    "id": "macros"
+}

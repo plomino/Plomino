@@ -1,0 +1,65 @@
+{
+    "design": {
+        "resources": {},
+        "template_file_attachment": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "File attachment",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "file_attachment": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "ATTACHMENT",
+                        "single_or_multiple": "SINGLE",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Untitled",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "file_attachment",
+                    "title": "Untitled"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "template_file_attachment",
+            "title": "File attachment"
+        }
+    },
+    "id": "macros"
+}

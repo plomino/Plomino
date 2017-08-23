@@ -1,0 +1,93 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_field_text_validate_email": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Is email",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "formula",
+                    "title": "Formula"
+                },
+                "field_id": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "TEXT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Field name",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "field_id",
+                    "title": "Field name"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_condition_field_text_validate_email",
+            "title": "Is email"
+        }
+    },
+    "id": "macros"
+}

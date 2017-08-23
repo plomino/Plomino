@@ -1,0 +1,120 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_text_display": {
+            "params": {
+                "onCreateDocument": null,
+                "resources_css": null,
+                "ajax_include_head": null,
+                "onOpenDocument": null,
+                "ajax_load": null,
+                "onDeleteDocument": null,
+                "title": "Display other field value",
+                "onSaveDocument": null,
+                "onDisplay": null,
+                "resources_js": null,
+                "form_method": "Auto",
+                "document_id": null,
+                "form_layout": null,
+                "description": "",
+                "isPage": false,
+                "store_dynamic_document_title": false,
+                "isSearchForm": false,
+                "beforeCreateDocument": null,
+                "hide_default_actions": false,
+                "document_title": null,
+                "search_formula": null,
+                "search_view": null,
+                "beforeSaveDocument": null,
+                "dynamic_document_title": false,
+                "helpers": null,
+                "onSearch": null
+            },
+            "elements": {
+                "datetime_format": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "TEXT",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Datetime format",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "datetime_format",
+                    "title": "Datetime format"
+                },
+                "field_name": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "SELECTION",
+                        "widget": "SELECT",
+                        "mandatory": true,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "Field name",
+                        "separator": null,
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "EDITABLE",
+                        "to_be_indexed": false,
+                        "selectionlist": null,
+                        "helpers": null,
+                        "selectionlistformula": null,
+                        "formula": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "field_name",
+                    "title": "Field name"
+                },
+                "formula": {
+                    "params": {
+                        "read_template": null,
+                        "field_type": "TEXT",
+                        "widget": "HIDDEN",
+                        "mandatory": false,
+                        "html_attributes_formula": null,
+                        "index_type": "DEFAULT",
+                        "validation_formula": null,
+                        "ajax_include_head": null,
+                        "title": "formula",
+                        "edit_template": null,
+                        "isDynamicField": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "to_be_indexed": false,
+                        "helpers": null,
+                        "preserve_carriage_returns": false,
+                        "formula": null,
+                        "size": null,
+                        "ajax_load": null,
+                        "description": ""
+                    },
+                    "type": "PlominoField",
+                    "id": "formula",
+                    "title": "formula"
+                }
+            },
+            "type": "PlominoForm",
+            "id": "macro_field_text_display",
+            "title": "Display other field value"
+        }
+    },
+    "id": "macros"
+}
