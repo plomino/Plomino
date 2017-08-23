@@ -1171,13 +1171,10 @@ class DesignManager:
                 striplist.append(HELPER_PROPERTY)
                 striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
-                if id == 'id':
+                if id == 'id' or id in striplist:
                     # 'id' is not needed as it is the same as obj.id
                     # it will cause 'CatalogError: The object unique id must
                     #  be a string. ' error when import this exported file.
-                    continue
-                if id in striplist:
-                    params[id] = ''
                     continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)

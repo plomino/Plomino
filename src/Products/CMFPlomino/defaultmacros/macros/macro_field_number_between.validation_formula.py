@@ -26,5 +26,6 @@ elif min_value != False and max_value != False:
 )
 return code
 
+
 ## END formula }
 
