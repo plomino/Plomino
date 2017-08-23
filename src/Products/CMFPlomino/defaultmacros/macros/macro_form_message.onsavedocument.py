@@ -22,5 +22,6 @@ db.writeMessageOnPage(message, req, error=True)
     message=message_
 )
 return code
+
 ## END formula }
 

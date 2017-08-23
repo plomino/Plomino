@@ -25,5 +25,6 @@ else:
     # We shouldn't get here
     code = ''
 return code
+
 ## END formula }
 

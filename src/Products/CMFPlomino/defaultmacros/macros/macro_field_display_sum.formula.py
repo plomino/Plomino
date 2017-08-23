@@ -15,5 +15,6 @@ return str(total)
     fields_name=fields_name_
 )
 return code
+
 ## END formula }
 

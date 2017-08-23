@@ -130,6 +130,6 @@ return items
 """
 else:
     return code + 'return defaultitems'
-## END formula }
+
 ## END formula }
 

@@ -6,5 +6,6 @@ value = plominoContext.getItem(field_id, '')
 return value == ''
 """
 return code
+
 ## END formula }
 

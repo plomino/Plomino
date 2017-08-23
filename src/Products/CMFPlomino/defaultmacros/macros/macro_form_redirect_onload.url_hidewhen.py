@@ -29,5 +29,6 @@ if macro_condition_field_got_substring_1():
 return True
 
 ### END macro_hidewhen_hide_1 ###
+
 ## END formula }
 

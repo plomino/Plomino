@@ -6,5 +6,6 @@ value = plominoContext.getItem(field_id)
 return value is None or value is False or (isinstance(value, basestring) and len(value.strip())==0)
 """
 return code
+
 ## END formula }
 

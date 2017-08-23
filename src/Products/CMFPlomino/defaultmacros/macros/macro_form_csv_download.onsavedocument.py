@@ -10,5 +10,6 @@ if not plominoContext.getForm().isPage:
     req.set('plominoredirecturl', link)
 """.format(view_redirect=view_redirect_)
 return code
+
 ## END formula }
 

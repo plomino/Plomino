@@ -18,5 +18,6 @@ def item(elm):
   return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())
 return [item(f) for f in editdb.getForms()]
 ### END macro_field_selection_db_elements_1 ###
+
 ## END selectionlistformula }
 

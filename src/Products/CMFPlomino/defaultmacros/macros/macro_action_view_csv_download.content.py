@@ -8,5 +8,6 @@ link = "{{db_url}}/{{view_id}}/exportCSV?displayColumnsTitle=True&separator=%2C"
 return link
 """.format(view_redirect=view_redirect_)
 return code
+
 ## END formula }
 

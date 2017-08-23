@@ -55,5 +55,6 @@ for other_form in editdb.getForms():
 return current_form_items + other_form_items
 
 ### END macro_field_selection_db_elements_1 ###
+
 ## END selectionlistformula }
 

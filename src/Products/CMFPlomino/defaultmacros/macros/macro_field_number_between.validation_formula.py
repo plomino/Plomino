@@ -25,5 +25,6 @@ elif min_value != False and max_value != False:
     form_error_message=form_error_message_
 )
 return code
+
 ## END formula }
 

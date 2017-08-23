@@ -11,5 +11,6 @@ if not mt.isAnonymousUser():
         plominoContext.setItem(field_name, current_id)
 """.format(field_name=field_name_)
 return code
+
 ## END formula }
 

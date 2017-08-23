@@ -39,5 +39,6 @@ elif min_datetime and max_datetime:
 else:
     return '{field_name} is any date'.format(
         field_name=field_name_)
+
 ## END document_title }
 

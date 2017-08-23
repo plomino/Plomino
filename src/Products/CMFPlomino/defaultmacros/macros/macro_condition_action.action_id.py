@@ -46,5 +46,6 @@ else:
     return []
 
 ### END macro_field_selection_db_elements_1 ###
+
 ## END selectionlistformula }
 

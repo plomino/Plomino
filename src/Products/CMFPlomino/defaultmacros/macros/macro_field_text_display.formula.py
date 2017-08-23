@@ -18,5 +18,6 @@ return result
     datetime_format=datetime_format_
 )
 return code
+
 ## END formula }
 

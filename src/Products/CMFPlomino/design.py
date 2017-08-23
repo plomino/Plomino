@@ -1177,7 +1177,7 @@ class DesignManager:
                     #  be a string. ' error when import this exported file.
                     continue
                 if id in striplist:
-                    params[id] = None
+                    params[id] = ''
                     continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
@@ -1389,14 +1389,14 @@ class DesignManager:
 
     def composeJsonElementFromBundle(self, id, element, bundle):
         for contentId, _ , html in bundle.contents("html"):
-            if contentId == id:
+            if contentId == id and html:
                 element["params"][HTML_PROPERTY] = html
         for contentId, _, pythonScript in bundle.contents("py"):
-            if contentId == id:
+            if contentId == id and pythonScript:
                 self.loadScriptIntoElement(element, pythonScript)
             if "elements" in element:
                 for childId, child in element["elements"].iteritems():
-                    if contentId == id + '.' + childId:
+                    if contentId == id + '.' + childId and pythonScript:
                         self.loadScriptIntoElement(child, pythonScript)
 
     def loadScriptIntoElement(self, element, pythonScript):

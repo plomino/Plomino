@@ -18,5 +18,6 @@ if field_result == field_value and value == '':
     form_error_message=form_error_message_
 )
 return code
+
 ## END formula }
 
