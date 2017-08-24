@@ -98,11 +98,15 @@ def get_fields(form_element, form_name):
 
 current_form_name = ''
 current_form_items = ['Form ID|Form']
+if ctype == 'PlominoField':
+    current_form_items.append('Current field |%s' % editcontext.id)
 if editform:
     current_form_name = "{title} ({id})".format(
         title=editform.Title(),
         id=editform.id)
     current_form_items = get_fields(editform, current_form_name)
+    if ctype == 'PlominoField':
+        current_form_items.insert(0, 'Current field |%s' % editcontext.id)
 
 other_form_items = []
 for other_form in editdb.getForms():
@@ -120,17 +124,20 @@ return current_form_items + other_form_items
     else:
         return code + """
 items = defaultitems
+if ctype == 'PlominoField':
+    items.append('Current field |%s' % editcontext.id)
 for f in editform.getFormFields():
     try:
         if f.getPortalTypeName() == "PlominoField":
             items.append(item(f))
     except AttributeError:
         continue
+
 return items
 """
 else:
     return code + 'return defaultitems'
 
-
 ## END formula }
-
+
+
