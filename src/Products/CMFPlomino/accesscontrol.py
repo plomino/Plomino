@@ -159,7 +159,10 @@ class AccessControl:
     def getCurrentUserId(self):
         """ Returns the current user id.
         """
-        return self.getCurrentMember().getUserName()
+        user_id = 'Anonymous'
+        if not api.user.is_anonymous():
+            user_id = self.getCurrentMember().getId()
+        return user_id
 
     security.declarePublic('getCurrentUserGroups')
 
@@ -176,7 +179,7 @@ class AccessControl:
         """
         try:
             userid = self.getCurrentUserId()
-            if userid == 'Anonymous User':
+            if userid == 'Anonymous':
                 return [getattr(self, "AnomynousAccessRight", "NoAccess")]
 
             rights = self.get_local_roles_for_userid(userid)
@@ -220,11 +223,12 @@ class AccessControl:
     def getCurrentUserRoles(self):
         """ Get current user roles
         """
-        userid = self.getCurrentMember().getUserName()
+        user_id = self.getCurrentMember().getId()
+        # 'Anonymous User' will have zero/empty user roles
         allroles = self.getUserRoles()
         roles = []
         for r in allroles:
-            if self.hasUserRole(userid, r):
+            if self.hasUserRole(user_id, r):
                 roles.append(r)
         return roles
 
@@ -243,12 +247,12 @@ class AccessControl:
                     self.checkUserPermission(config.ACL_PERMISSION)):
                 isreader = True
             else:
-                username = self.getCurrentMember().getUserName()
-                if username == "Anonymous User":
+                user_id = self.getCurrentMember().getId()
+                if api.user.is_anonymous():
                     user_groups_roles = set(['Anonymous'])
                 else:
                     user_groups_roles = set(
-                        ['Anonymous', username] +
+                        ['Anonymous', user_id] +
                         self.getCurrentUserGroups() +
                         self.getCurrentUserRoles())
                 if allowed_readers.intersection(user_groups_roles):
@@ -301,7 +305,9 @@ class AccessControl:
             if '*' in authors:
                 return True
 
-            name = self.getCurrentMember().getUserName()
+            name = 'Anonymous'
+            if not api.user.is_anonymous():
+                name = self.getCurrentMember().getId()
             if name in authors:
                 return True
 
