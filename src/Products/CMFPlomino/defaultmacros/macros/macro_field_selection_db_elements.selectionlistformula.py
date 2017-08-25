@@ -1,5 +1,4 @@
 ## START formula {
-## START formula {
 doc = plominoContext
 type_ = doc.getItem('element_type')
 include_other_ = doc.getItem('include_other', False)
@@ -139,5 +138,3 @@ else:
     return code + 'return defaultitems'
 
 ## END formula }
-
-
