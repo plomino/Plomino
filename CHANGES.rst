@@ -20,6 +20,12 @@ Changelog
 - new multi-file import/export format which seperates formulas and layouts into .py and .html files [quang]
 - fix errors caused by runasowner when script is called inside a script [ivanteoh]
 
+- Bug fixes to macros [quang]
+- Bug fixes to views [ivanteoh]
+- Test suite improvements [ivanteoh]
+- Bug fix for set permission macro [ivanteoh]
+- Bug fixes to import/export [quang]
+
 
 2.0b4 (2016-05-27)
 ------------------
