@@ -344,7 +344,7 @@ JSON API
 A document can be exported as JSON::
 
     >>> doc11.tojson()
-    '{"field2": "My favorite song is Rhythm is love", "Plomino_Authors": ["test-user"], "field1": "Rhythm is love", "field4": "side-effect", "Form": "frm1"}'
+    '{"field2": "My favorite song is Rhythm is love", "Plomino_Authors": ["test_user_1_"], "field1": "Rhythm is love", "field4": "side-effect", "Form": "frm1"}'
 
 We can export only one field::
 
