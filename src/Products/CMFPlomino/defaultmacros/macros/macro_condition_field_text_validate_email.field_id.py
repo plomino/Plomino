@@ -1,6 +1,6 @@
 ## START selectionlistformula {
 
-### START macro_field_selection_db_elements_3 ###
+### START macro_field_selection_db_elements_2 ###
 
 defaultitems = ['Select...|']
 editpath = plominoContext.REQUEST.get('Plomino_Macro_Context')
@@ -37,6 +37,6 @@ for f in editform.getFormFields():
 
 return items
 
-### END macro_field_selection_db_elements_3 ###
+### END macro_field_selection_db_elements_2 ###
 ## END selectionlistformula }
 
