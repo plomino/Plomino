@@ -1154,7 +1154,7 @@ class DesignManager:
     def exportElementAsJSON(self, obj, isDatabase=False, stripFlag = False):
         """
         """
-        data = {}
+        data = OrderedDict({})
         if not isDatabase:
             data['id'] = obj.id
             data['type'] = obj.portal_type
@@ -1162,7 +1162,7 @@ class DesignManager:
         schema = component.getUtility(
             IDexterityFTI, name=obj.portal_type).lookupSchema()
 
-        params = {}
+        params = OrderedDict({})
         def get_data(obj, schema):
             fields = getFieldsInOrder(schema)
             striplist = []
