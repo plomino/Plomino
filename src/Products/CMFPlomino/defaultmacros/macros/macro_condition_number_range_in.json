@@ -2,161 +2,161 @@
     "design": {
         "resources": {},
         "macro_condition_number_range_in": {
+            "id": "macro_condition_number_range_in",
+            "type": "PlominoForm",
+            "title": "Number in range",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Number in range",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "and_or": {
+                    "id": "and_or",
+                    "type": "PlominoField",
+                    "title": "Combination logic",
                     "params": {
-                        "read_template": null,
                         "field_type": "SELECTION",
-                        "widget": "SELECT",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Combination logic",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Combination logic",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
                         "selectionlist": [
                             "And|and",
                             "Or|or"
                         ],
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
-                    "id": "and_or",
-                    "title": "Combination logic"
+                        "separator": null
+                    }
                 },
                 "formula": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Formula",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "formula",
-                    "title": "Formula"
+                    "type": "PlominoField",
+                    "title": "Formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 },
                 "less_field_name": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "SELECTION",
-                        "widget": "SELECT",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Field name for less than",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "selectionlist": null,
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "less_field_name",
-                    "title": "Field name for less than"
+                    "type": "PlominoField",
+                    "title": "Field name for less than",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field name for less than",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
                 },
                 "less_field_value": {
+                    "id": "less_field_value",
+                    "type": "PlominoField",
+                    "title": "Less than this number",
                     "params": {
-                        "read_template": null,
                         "field_type": "NUMBER",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Less than this number",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "format": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
-                        "number_type": "INTEGER",
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Less than this number",
+                        "description": "",
                         "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
-                    "id": "less_field_value",
-                    "title": "Less than this number"
+                        "ajax_include_head": null,
+                        "number_type": "INTEGER",
+                        "size": null,
+                        "format": null
+                    }
                 },
                 "more_field_name": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "SELECTION",
-                        "widget": "SELECT",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Field name for greater than",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "selectionlist": null,
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "more_field_name",
-                    "title": "Field name for greater than"
+                    "type": "PlominoField",
+                    "title": "Field name for greater than",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field name for greater than",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
                 },
                 "more_field_value": {
+                    "id": "more_field_value",
+                    "type": "PlominoField",
+                    "title": "Greater than this number",
                     "params": {
-                        "read_template": null,
                         "field_type": "NUMBER",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Greater than this number",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "format": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
-                        "number_type": "INTEGER",
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Greater than this number",
+                        "description": "",
                         "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
-                    "id": "more_field_value",
-                    "title": "Greater than this number"
+                        "ajax_include_head": null,
+                        "number_type": "INTEGER",
+                        "size": null,
+                        "format": null
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_condition_number_range_in",
-            "title": "Number in range"
+            }
         }
     },
     "id": "macros"

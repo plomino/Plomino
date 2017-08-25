@@ -20,5 +20,6 @@ return [item(f) for f in editdb.getForms()]
 ### END macro_field_selection_db_elements_1 ###
 
 
+
 ## END selectionlistformula }
 

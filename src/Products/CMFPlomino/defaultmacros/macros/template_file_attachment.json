@@ -2,46 +2,46 @@
     "design": {
         "resources": {},
         "template_file_attachment": {
+            "id": "template_file_attachment",
+            "type": "PlominoForm",
+            "title": "File attachment",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "File attachment",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "file_attachment": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "ATTACHMENT",
-                        "single_or_multiple": "SINGLE",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Untitled",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "file_attachment",
-                    "title": "Untitled"
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "ATTACHMENT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "single_or_multiple": "SINGLE"
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "template_file_attachment",
-            "title": "File attachment"
+            }
         }
     },
     "id": "macros"
