@@ -7,5 +7,6 @@ return value is None or value is False or (isinstance(value, basestring) and len
 """
 return code
 
+
 ## END formula }
 

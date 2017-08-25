@@ -11,5 +11,6 @@ if not plominoContext.getForm().isPage:
 """.format(view_redirect=view_redirect_)
 return code
 
+
 ## END formula }
 

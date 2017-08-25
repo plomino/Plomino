@@ -12,5 +12,6 @@ if not mt.isAnonymousUser():
 """.format(field_name=field_name_)
 return code
 
+
 ## END formula }
 

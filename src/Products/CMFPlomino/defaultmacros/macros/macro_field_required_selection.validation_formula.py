@@ -19,5 +19,6 @@ if field_result == field_value and value == '':
 )
 return code
 
+
 ## END formula }
 
