@@ -2,92 +2,92 @@
     "design": {
         "resources": {},
         "macro_form_csv_download": {
+            "id": "macro_form_csv_download",
+            "type": "PlominoForm",
+            "title": "CSV download",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "CSV download",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "view_redirect": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "SELECTION",
-                        "widget": "SELECT",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Select view",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "selectionlist": null,
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "view_redirect",
-                    "title": "Select view"
+                    "type": "PlominoField",
+                    "title": "Select view",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Select view",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
                 },
                 "beforecreatedocument": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "beforeCreateDocument",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "beforecreatedocument",
-                    "title": "beforeCreateDocument"
+                    "type": "PlominoField",
+                    "title": "beforeCreateDocument",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "beforeCreateDocument",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 },
                 "onsavedocument": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "onSaveDocument",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "onsavedocument",
-                    "title": "onSaveDocument"
+                    "type": "PlominoField",
+                    "title": "onSaveDocument",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "onSaveDocument",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_form_csv_download",
-            "title": "CSV download"
+            }
         }
     },
     "id": "macros"

@@ -2,70 +2,70 @@
     "design": {
         "resources": {},
         "macro_form_add_saved_date": {
+            "id": "macro_form_add_saved_date",
+            "type": "PlominoForm",
+            "title": "Add saved date",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Add saved date",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "field_name": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "TEXT",
-                        "mandatory": true,
-                        "description": "",
-                        "title": "Field name",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "field_name",
-                    "title": "Field name"
+                    "type": "PlominoField",
+                    "title": "Field name",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field name",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 },
                 "onsavedocument": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "onSaveDocument",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "onsavedocument",
-                    "title": "onSaveDocument"
+                    "type": "PlominoField",
+                    "title": "onSaveDocument",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "onSaveDocument",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_form_add_saved_date",
-            "title": "Add saved date"
+            }
         }
     },
     "id": "macros"

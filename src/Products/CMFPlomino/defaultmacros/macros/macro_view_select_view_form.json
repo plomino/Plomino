@@ -2,70 +2,70 @@
     "design": {
         "resources": {},
         "macro_view_select_view_form": {
+            "id": "macro_view_select_view_form",
+            "type": "PlominoForm",
+            "title": "Select form to display",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Select form to display",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "formlist": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "SELECTION",
-                        "widget": "SELECT",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Select form to display",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "selectionlist": null,
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "formlist",
-                    "title": "Select form to display"
+                    "type": "PlominoField",
+                    "title": "Select form to display",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Select form to display",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
                 },
                 "form_formula": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Formula",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "form_formula",
-                    "title": "Formula"
+                    "type": "PlominoField",
+                    "title": "Formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_view_select_view_form",
-            "title": "Select form to display"
+            }
         }
     },
     "id": "macros"

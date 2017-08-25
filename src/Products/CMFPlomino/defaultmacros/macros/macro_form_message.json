@@ -2,95 +2,95 @@
     "design": {
         "resources": {},
         "macro_form_message": {
+            "id": "macro_form_message",
+            "type": "PlominoForm",
+            "title": "Show message",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Show message",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "message": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "TEXT",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Message",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "message",
-                    "title": "Message"
+                    "type": "PlominoField",
+                    "title": "Message",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Message",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 },
                 "message_type": {
+                    "id": "message_type",
+                    "type": "PlominoField",
+                    "title": "Message type",
                     "params": {
-                        "read_template": null,
                         "field_type": "SELECTION",
-                        "widget": "SELECT",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Message type",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Message type",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
                         "selectionlist": [
                             "Info|info",
                             "Error|error"
                         ],
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
-                    "id": "message_type",
-                    "title": "Message type"
+                        "separator": null
+                    }
                 },
                 "onsavedocument": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "onSaveDocument",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "onsavedocument",
-                    "title": "onSaveDocument"
+                    "type": "PlominoField",
+                    "title": "onSaveDocument",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "onSaveDocument",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_form_message",
-            "title": "Show message"
+            }
         }
     },
     "id": "macros"

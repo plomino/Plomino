@@ -2,114 +2,114 @@
     "design": {
         "resources": {},
         "macro_field_number_between": {
+            "id": "macro_field_number_between",
+            "type": "PlominoForm",
+            "title": "Validate number range",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Validate number range",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "form_error_message": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "TEXT",
-                        "mandatory": true,
-                        "description": "",
-                        "title": "Error message",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "form_error_message",
-                    "title": "Error message"
+                    "type": "PlominoField",
+                    "title": "Error message",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Error message",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 },
                 "max": {
+                    "id": "max",
+                    "type": "PlominoField",
+                    "title": "Maximum",
                     "params": {
-                        "read_template": null,
                         "field_type": "NUMBER",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Maximum",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "format": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
-                        "number_type": "INTEGER",
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Maximum",
+                        "description": "",
                         "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
-                    "id": "max",
-                    "title": "Maximum"
+                        "ajax_include_head": null,
+                        "number_type": "INTEGER",
+                        "size": null,
+                        "format": null
+                    }
                 },
                 "min": {
+                    "id": "min",
+                    "type": "PlominoField",
+                    "title": "Minimum",
                     "params": {
-                        "read_template": null,
                         "field_type": "NUMBER",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Minimum",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "format": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
-                        "number_type": "INTEGER",
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Minimum",
+                        "description": "",
                         "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
-                    "id": "min",
-                    "title": "Minimum"
+                        "ajax_include_head": null,
+                        "number_type": "INTEGER",
+                        "size": null,
+                        "format": null
+                    }
                 },
                 "validation_formula": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "validation_formula",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "validation_formula",
-                    "title": "validation_formula"
+                    "type": "PlominoField",
+                    "title": "validation_formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "validation_formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_field_number_between",
-            "title": "Validate number range"
+            }
         }
     },
     "id": "macros"

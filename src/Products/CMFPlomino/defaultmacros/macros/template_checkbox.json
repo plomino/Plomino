@@ -2,52 +2,52 @@
     "design": {
         "resources": {},
         "template_checkbox": {
+            "id": "template_checkbox",
+            "type": "PlominoForm",
+            "title": "Checkboxes",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Checkboxes",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "checkbox": {
+                    "id": "checkbox",
+                    "type": "PlominoField",
+                    "title": "Untitled",
                     "params": {
-                        "read_template": null,
                         "field_type": "SELECTION",
-                        "widget": "CHECKBOX",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Untitled",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "CHECKBOX",
                         "selectionlist": [
                             "Option A|a",
                             "Option B|b",
                             "Option C|c"
                         ],
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
-                    "id": "checkbox",
-                    "title": "Untitled"
+                        "separator": null
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "template_checkbox",
-            "title": "Checkboxes"
+            }
         }
     },
     "id": "macros"

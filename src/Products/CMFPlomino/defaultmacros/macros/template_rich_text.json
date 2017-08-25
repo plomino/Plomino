@@ -2,46 +2,46 @@
     "design": {
         "resources": {},
         "template_rich_text": {
+            "id": "template_rich_text",
+            "type": "PlominoForm",
+            "title": "Rich Text",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Rich Text",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "rich_text": {
+                    "id": "rich_text",
+                    "type": "PlominoField",
+                    "title": "Untitled",
                     "params": {
-                        "read_template": null,
                         "field_type": "RICHTEXT",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Untitled",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
                         "isDynamicField": false,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
-                        "height": "10",
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
-                    "id": "rich_text",
-                    "title": "Untitled"
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "height": "10"
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "template_rich_text",
-            "title": "Rich Text"
+            }
         }
     },
     "id": "macros"

@@ -2,36 +2,43 @@
     "design": {
         "resources": {},
         "macro_field_selection_db_elements": {
+            "id": "macro_field_selection_db_elements",
+            "type": "PlominoForm",
+            "title": "Selection of elements from the current form/field",
             "params": {
-                "resources_css": null,
-                "description": "",
-                "isPage": false,
+                "form_method": "Auto",
+                "dynamic_document_title": false,
                 "store_dynamic_document_title": false,
-                "ajax_include_head": null,
+                "hide_default_actions": false,
+                "isPage": false,
                 "isSearchForm": false,
                 "search_view": null,
-                "dynamic_document_title": false,
                 "resources_js": null,
-                "form_method": "Auto",
+                "resources_css": null,
                 "title": "Selection of elements from the current form/field",
+                "description": "",
                 "ajax_load": null,
-                "hide_default_actions": false
+                "ajax_include_head": null
             },
             "elements": {
                 "element_type": {
+                    "id": "element_type",
+                    "type": "PlominoField",
+                    "title": "Type of element from the local form or field",
                     "params": {
-                        "read_template": null,
                         "field_type": "SELECTION",
-                        "widget": "SELECT",
                         "mandatory": false,
-                        "description": "",
-                        "title": "Type of element from the local form or field",
                         "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
                         "isDynamicField": null,
-                        "index_type": "DEFAULT",
                         "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Type of element from the local form or field",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
                         "selectionlist": [
                             "Forms",
                             "Fields",
@@ -39,72 +46,65 @@
                             "Hidewhens",
                             "Actions"
                         ],
-                        "separator": null,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
-                    "id": "element_type",
-                    "title": "Type of element from the local form or field"
+                        "separator": null
+                    }
                 },
                 "include_other": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "BOOLEAN",
-                        "widget": "CHECKBOX",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "Include those from other forms",
-                        "field_mode": "EDITABLE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoField",
                     "id": "include_other",
-                    "title": "Include those from other forms"
+                    "type": "PlominoField",
+                    "title": "Include those from other forms",
+                    "params": {
+                        "field_type": "BOOLEAN",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Include those from other forms",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "CHECKBOX"
+                    }
                 },
                 "include_other_hidewhen": {
+                    "id": "include_other_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "include_other_hidewhen",
                     "params": {
-                        "description": "",
-                        "title": "include_other_hidewhen",
-                        "ajax_include_head": null,
                         "isDynamicHidewhen": true,
                         "isResetOnHide": false,
-                        "ajax_load": null
-                    },
-                    "type": "PlominoHidewhen",
-                    "id": "include_other_hidewhen",
-                    "title": "include_other_hidewhen"
+                        "title": "include_other_hidewhen",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
                 },
                 "selectionlistformula": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "TEXT",
-                        "widget": "HIDDEN",
-                        "mandatory": false,
-                        "description": "",
-                        "title": "selectionlistformula",
-                        "field_mode": "COMPUTEDONSAVE",
-                        "ajax_include_head": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "index_type": "DEFAULT",
-                        "to_be_indexed": false,
-                        "preserve_carriage_returns": false,
-                        "ajax_load": null,
-                        "size": null
-                    },
-                    "type": "PlominoField",
                     "id": "selectionlistformula",
-                    "title": "selectionlistformula"
+                    "type": "PlominoField",
+                    "title": "selectionlistformula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "selectionlistformula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "macro_field_selection_db_elements",
-            "title": "Selection of elements from the current form/field"
+            }
         }
     },
     "id": "macros"
