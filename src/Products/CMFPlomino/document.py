@@ -492,9 +492,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if asAuthor:
             # getItem('Plomino_Authors', []) might return '' or None
             authors = asList(self.getItem('Plomino_Authors') or [])
-            name = db.getCurrentMember().getUserName()
-            if name not in authors:
-                authors.append(name)
+            user_id = 'Anonymous'
+            if not getToolByName(self, 'portal_membership').isAnonymousUser():
+                user_id = db.getCurrentMember().getId()
+            if user_id not in authors:
+                authors.append(user_id)
             self.setItem('Plomino_Authors', authors)
 
         # execute the onSaveDocument code of the form
