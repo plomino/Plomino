@@ -49,14 +49,12 @@ Scenario: As a site administrator I can view a PlominoDatabase
    Then I can see the plominodatabase title 'My PlominoDatabase'
 
 Scenario: As a site administrator I can open a form
-  Set selenium timeout  100
   Given a logged-in test user
     and I open the ide for "mydb"
    When I open a form "frm_test"
    Then I can see field "field_1" in the editor
 
 Scenario: As a site administrator I can open a form (2 tabs)
-  Set selenium timeout  200
   Given I have an empty form open
    When I open a form "frm_test"
    Then I can see field "field_1" in the editor
@@ -209,7 +207,6 @@ Scenario: I can add hidewhen on email form by click
   Given I have an empty form open
    When I add a "Email" field
     and I add a hidewhen by click
-    and I waiting a little bit
    Then I will see that hidewhen is present
 
 

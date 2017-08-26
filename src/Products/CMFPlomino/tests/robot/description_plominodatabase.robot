@@ -17,6 +17,7 @@ ${BROWSER}  Chrome
 
 Test Setup
     Open SauceLabs test browser
+
 Test Teardown
     description_plominodatabase.Plone Test Teardown
 
@@ -41,10 +42,7 @@ a plominodatabase 'My PlominoDatabase'
   Create content  type=PlominoDatabase  id=my-plominodatabase  title=My PlominoDatabase
 
 I open the ide for "${db}"
-  #Go To  ${PLONE_URL}/mydb
-  #Click Element  link=IDE
   Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
-#  Wait Until Element Is Visible  id=application-loader
   Wait Until page does not contain element  id=application-loader
   wait until page contains  ${db}
 
@@ -54,10 +52,7 @@ I have an empty form open
    and I open the ide for "mydb"
    and I add a form by click
    and I can see "new-form" is open
-   and sleep  0.5s
 
-I waiting a little bit
-  sleep  0.5s
 
 I have an additional empty form open
   Given I add a form by click
@@ -160,7 +155,6 @@ I create a view
   wait until page contains  new-view
 
 I add a form by dnd
-  Set Selenium Timeout  10 seconds
   wait until page contains element  jquery=#PlominoForm
   wait until page contains element  jquery=div.main-app.panel
   Chain Click And Hold  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
