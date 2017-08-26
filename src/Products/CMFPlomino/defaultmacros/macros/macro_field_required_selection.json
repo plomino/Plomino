@@ -1,0 +1,116 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_required_selection": {
+            "id": "macro_field_required_selection",
+            "type": "PlominoForm",
+            "title": "Required field based on selection",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Required field based on selection",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "field_name": {
+                    "id": "field_name",
+                    "type": "PlominoField",
+                    "title": "Selection field name",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Selection field name",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "field_value": {
+                    "id": "field_value",
+                    "type": "PlominoField",
+                    "title": "Selection field value",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Selection field value",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "form_error_message": {
+                    "id": "form_error_message",
+                    "type": "PlominoField",
+                    "title": "Error message",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Error message",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "validation_formula": {
+                    "id": "validation_formula",
+                    "type": "PlominoField",
+                    "title": "Validation formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Validation formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

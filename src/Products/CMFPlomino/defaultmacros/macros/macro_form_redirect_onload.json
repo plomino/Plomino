@@ -1,0 +1,203 @@
+{
+    "design": {
+        "resources": {},
+        "macro_form_redirect_onload": {
+            "id": "macro_form_redirect_onload",
+            "type": "PlominoForm",
+            "title": "Redirect in form on load",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Redirect in form on load",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "beforecreatedocument": {
+                    "id": "beforecreatedocument",
+                    "type": "PlominoField",
+                    "title": "beforeCreateDocument",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "beforeCreateDocument",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "form_hidewhen": {
+                    "id": "form_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "Form hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "Form hidewhen",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "form_redirect": {
+                    "id": "form_redirect",
+                    "type": "PlominoField",
+                    "title": "Form redirect",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Form redirect",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "redirect_type": {
+                    "id": "redirect_type",
+                    "type": "PlominoField",
+                    "title": "Redirect type",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Redirect type",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "RADIO",
+                        "selectionlist": [
+                            "Form|form",
+                            "View|view",
+                            "URL|url"
+                        ],
+                        "separator": null
+                    }
+                },
+                "request_value": {
+                    "id": "request_value",
+                    "type": "PlominoField",
+                    "title": "Submit button",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Submit button",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "url_hidewhen": {
+                    "id": "url_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "URL hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "URL hidewhen",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "url_redirect": {
+                    "id": "url_redirect",
+                    "type": "PlominoField",
+                    "title": "URL redirect",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "URL redirect",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "view_hidewhen": {
+                    "id": "view_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "View hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "View hidewhen",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "view_redirect": {
+                    "id": "view_redirect",
+                    "type": "PlominoField",
+                    "title": "View redirect",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "View redirect",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

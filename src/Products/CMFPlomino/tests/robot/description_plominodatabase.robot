@@ -243,7 +243,7 @@ I add a macro "${macro}" to "${tab}"
   click element  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
   Press key  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]  \t\t\t\t
 
-  Click element  css=.plomino-macros-rule
+  Click element  css=.plomino-macros-rule .select2-container input
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
   wait until page contains element  css=.plominoSave
 
@@ -297,6 +297,11 @@ I open service tab "${tabId}"
   Click Link    Service
   wait until page contains  ${tabId}
   Click Element  jquery=.mdl-button:visible:contains(${tabId})
+
+I can see Import/Export dialog open
+  sleep  0.5s
+  wait until page contains element  jquery=#db-import-export-dialog:visible
+
 
 # --- THEN -------------------------------------------------------------------
 

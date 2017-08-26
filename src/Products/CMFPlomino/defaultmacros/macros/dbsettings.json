@@ -1,0 +1,37 @@
+{
+    "design": {
+        "dbsettings": {
+            "params": {
+                "indexAttachments": false,
+                "fulltextIndex": true,
+                "indexInPortal": false,
+                "debugMode": false,
+                "datetime_format": "%d %B %Y",
+                "start_page": null,
+                "i18n": null,
+                "do_not_list_users": false,
+                "do_not_reindex": false,
+                "isDatabaseTemplate": false,
+                "import_macros": [
+                    "."
+                ],
+                "title": "Macros",
+                "exclude_from_nav": true,
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "acl": {
+                "AnomynousAccessRight": "NoAccess",
+                "AuthenticatedAccessRight": "NoAccess",
+                "UserRoles": {},
+                "SpecificRights": {
+                    "specific_deletedocument": "PlominoAuthor"
+                }
+            },
+            "version": "2.0"
+        },
+        "resources": {}
+    },
+    "id": "macros"
+}

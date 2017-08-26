@@ -1,0 +1,72 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_field_text_validate_email": {
+            "id": "macro_condition_field_text_validate_email",
+            "type": "PlominoForm",
+            "title": "Is email",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Is email",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "formula": {
+                    "id": "formula",
+                    "type": "PlominoField",
+                    "title": "Formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "field_id": {
+                    "id": "field_id",
+                    "type": "PlominoField",
+                    "title": "Field name",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field name",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

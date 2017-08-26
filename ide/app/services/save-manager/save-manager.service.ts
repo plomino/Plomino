@@ -55,7 +55,21 @@ export class PlominoSaveManagerService {
   }
 
   nextEditorSavedState(editorId: string, state: string = null): void {
-    this.savedStates.set(editorId, state || this.contentManager.getContent(editorId));
+    try {
+      this.savedStates.set(editorId, state || this.contentManager.getContent(editorId));
+    }
+    catch (e) {
+      /**
+       * if there were some problems ontop
+       * like the state is null and getContent didn't find the editor
+       * we will wait 3 second to be sure that all is ok
+       */
+      setTimeout(() => {
+        this.savedStates.set(editorId, state || this.contentManager.getContent(editorId));
+        this.log.warn('there were some errors prevented');
+        this.log.extra('save-manager.service.ts nextEditorSavedState');
+      }, 3000);
+    }
   }
 
   isEditorUnsaved(editorId: string): boolean {
@@ -81,6 +95,8 @@ export class PlominoSaveManagerService {
       this.treeService.updateTree().then(() => {
 
         const callCallback = () => {
+          this.log.info('new form created');
+          this.log.extra('save-manager.service.ts createNewForm callCallback');
           if (callback !== null) {
             callback(
               response.parent['@id'] + '/' + response.id, response.title

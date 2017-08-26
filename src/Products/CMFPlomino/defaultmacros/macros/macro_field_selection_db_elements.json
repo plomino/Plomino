@@ -1,0 +1,111 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_selection_db_elements": {
+            "id": "macro_field_selection_db_elements",
+            "type": "PlominoForm",
+            "title": "Selection of elements from the current form/field",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Selection of elements from the current form/field",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "element_type": {
+                    "id": "element_type",
+                    "type": "PlominoField",
+                    "title": "Type of element from the local form or field",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": null,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Type of element from the local form or field",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": [
+                            "Forms",
+                            "Fields",
+                            "Views",
+                            "Hidewhens",
+                            "Actions"
+                        ],
+                        "separator": null
+                    }
+                },
+                "include_other": {
+                    "id": "include_other",
+                    "type": "PlominoField",
+                    "title": "Include those from other forms",
+                    "params": {
+                        "field_type": "BOOLEAN",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Include those from other forms",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "CHECKBOX"
+                    }
+                },
+                "include_other_hidewhen": {
+                    "id": "include_other_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "include_other_hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "include_other_hidewhen",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "selectionlistformula": {
+                    "id": "selectionlistformula",
+                    "type": "PlominoField",
+                    "title": "selectionlistformula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "selectionlistformula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

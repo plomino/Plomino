@@ -21,10 +21,12 @@
           {{ tab.label || tab.id }}
         </div>
     </a>
-    <a class="mdl-tabs__tab" id="add-new-form-tab" href="#add-new" 
-      (click)="$event.preventDefault()">
+    <a class="mdl-tabs__tab" id="add-new-form-tab" href="#add-new">
       <span class="icon material-icons">add</span>
     </a>
+  </div>
+  <div class="mdl-tabs__panel" id="add-new" style="display: none !important">
+    Prevent MDL errors
   </div>
   <plomino-tab *ngIf="activeTab" [id]="'tab-content_' + activeTab.id" 
     [editor]="activeTab.editor" [url]="activeTab.url"

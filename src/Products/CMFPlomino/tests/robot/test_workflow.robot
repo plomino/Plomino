@@ -1,7 +1,7 @@
 *** Settings *****************************************************************
 
 Resource  description_plominodatabase.robot
-Resource  description_workflow.robot
+#Resource  description_workflow.robot
 
 Test Setup   Test Setup
 Test Teardown  Test Tear Down

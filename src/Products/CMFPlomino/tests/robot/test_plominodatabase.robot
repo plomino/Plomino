@@ -212,6 +212,17 @@ Scenario: I can add hidewhen on email form by click
     and I waiting a little bit
    Then I will see that hidewhen is present
 
+
+Scenario: I can export design from a database
+  Given a logged-in test user
+    and I open the ide for "mydb"
+   and I open service tab "Import/export of data"
+   Then I can see Import/Export dialog open
+    and I click the tab "Design import/export" in Import/Export dialog
+    and click element id="targettype-zipfile"
+    and click button "Export"
+
+
 # View tests
 
 Scenario: I can add a view
@@ -238,6 +249,29 @@ Scenario: I can add an action to a view
     and I can see a view editor listing my data
     and I add an action "my action"
    Then I will see action "my-action" in the view
+
+Scenario: I can rename a form and then create new form
+  Given I have a form open
+   When I enter "new-form" in "Id" in "Form Settings"
+    and I can see "new-form" is open
+    and I enter "new-form-1" in "Id" in "Form Settings"
+    and I can see "new-form-1" is open
+    and I add a form by click
+   Then I can see "new-form" is open
+
+Scenario: I can rename a form and then create new form and then go back and repeat
+  Given I have a form open
+   When I enter "new-form" in "Id" in "Form Settings"
+    and I can see "new-form" is open
+    and I enter "new-form-1" in "Id" in "Form Settings"
+    and I can see "new-form-1" is open
+    and I add a form by click
+    and I can see "new-form" is open
+    and sleep  1s
+    and I open a form "new-form-1"
+    and I enter "new-form" in "Id" in "Form Settings"
+    and I add a form by click
+   Then I can see "new-form-1" is open
 
 #Scenario: I can add filter a view
 #  Given I have a form and some data saved

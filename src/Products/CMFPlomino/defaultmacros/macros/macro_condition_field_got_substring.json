@@ -1,0 +1,141 @@
+{
+    "design": {
+        "resources": {},
+        "macro_condition_field_got_substring": {
+            "id": "macro_condition_field_got_substring",
+            "type": "PlominoForm",
+            "title": "Match text",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Match text",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "field_compare": {
+                    "id": "field_compare",
+                    "type": "PlominoField",
+                    "title": "Comparison",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Comparison",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": [
+                            "Contains|in",
+                            "Does not contain|not in"
+                        ],
+                        "separator": null
+                    }
+                },
+                "field_name": {
+                    "id": "field_name",
+                    "type": "PlominoField",
+                    "title": "Field name",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field name",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "field_value": {
+                    "id": "field_value",
+                    "type": "PlominoField",
+                    "title": "Field value",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Field value",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "formula": {
+                    "id": "formula",
+                    "type": "PlominoField",
+                    "title": "Formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Formula",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "value_type": {
+                    "id": "value_type",
+                    "type": "PlominoField",
+                    "title": "Value type",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Value type",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "RADIO",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

@@ -116,21 +116,30 @@ class PlominoIndex(UniqueObject, CatalogTool):
         if refresh:
             self.refresh()
 
-    security.declareProtected(DESIGN_PERMISSION, 'renameSelectionIndex')
-    def renameSelectionIndex(self, oldName, newName):
+    security.declareProtected(DESIGN_PERMISSION, 'renameIndex')
+    def renameIndex(self, oldName, newName):
+        """ return False if can't be moved or deleted
         """
-        """
-        if oldName not in self.indexes():
-            raise Exception("Problem when trying to move index")
-        old_index = self._catalog.getIndex(oldName)
-        if old_index is None:
-            raise Exception("Problem when trying to move index")
+        # if both old and new index not exists, add new one
+        if oldName not in self.indexes() and newName not in self.indexes():
+            return False
+        # if old index exist and new index not exists, rename the old one
+        elif oldName in self.indexes() and newName not in self.indexes():
+            old_index = self._catalog.getIndex(oldName)
+            if old_index is None:
+                raise Exception("Problem when trying to move index")
 
-        old_index = old_index.aq_inner
-        old_index.indexed_attrs = [newName]
-        old_index.id = newName
-        self._catalog.delIndex(oldName)
-        self._catalog.addIndex(newName, old_index)
+            old_index = old_index.aq_inner
+            old_index.indexed_attrs = [newName]
+            old_index.id = newName
+            self._catalog.delIndex(oldName)
+            self._catalog.addIndex(newName, old_index)
+            return True
+        # if both old and new index  exists, remove the old one
+        elif oldName in self.indexes() and newName in self.indexes():
+            self._catalog.delIndex(oldName)
+            return True
+        return False
 
     security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
     def delSelectionIndex(self, oldName):
@@ -186,8 +195,16 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         if only_allowed:
             user_groups_roles = ['Anonymous', '*']
-            user_id = self.getCurrentMember().getUserName()
-            if user_id != "Anonymous User":
+            # when me is < SpecialUser 'Anonymous User' >
+            # then me.id is 'acl_users'
+            # then me.getId() is None
+            # then self.getCurrentUserId() is 'Anonymous User'
+            # when the site is using email as login name
+            # then getUserName() and getCurrentUserId() will return email
+            # instead of id
+            # There is possible username is 'Anonymous'
+            user_id = self.getCurrentMember().getId()
+            if not getToolByName(self, 'portal_membership').isAnonymousUser():
                 user_groups_roles += (
                     [user_id] +
                     self.getCurrentUserGroups() +

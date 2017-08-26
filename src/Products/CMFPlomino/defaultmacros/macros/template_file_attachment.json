@@ -1,0 +1,48 @@
+{
+    "design": {
+        "resources": {},
+        "template_file_attachment": {
+            "id": "template_file_attachment",
+            "type": "PlominoForm",
+            "title": "File attachment",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "File attachment",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "file_attachment": {
+                    "id": "file_attachment",
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "ATTACHMENT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "single_or_multiple": "SINGLE"
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}
