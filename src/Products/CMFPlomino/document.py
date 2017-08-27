@@ -706,10 +706,15 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # The view is not updated. TODO: is this true?
         db = self.getParentDatabase()
         v = db.getView(viewname)
-        if not v:
+        if v is None:
             return None
         try:
             c = v.getColumn(columnname)
+            if c is None:
+                return None
+            formula = getattr(c, 'formula', None)
+            if formula is None:
+                return None
             return self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(['column', v.id, c.id, 'formula']),
                 self,

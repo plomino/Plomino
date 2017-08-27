@@ -703,6 +703,8 @@ An index and a metadata column are created for each view column::
 
     >>> 'PlominoViewColumn_view1_col1' in db.getIndex().indexes()
     True
+    >>> 'PlominoViewColumn_view1_col1' in db.getIndex()._catalog.names
+    True
 
 A column can be a reference to a field.
 In this case, it doesn't create a special index for the already indexed
@@ -733,6 +735,8 @@ Let's create a key column that returns multiple documents::
     ...         title='Col 3',
     ...         displayed_field='frm1/field4')
     >>> db.view1.key_column = 'col3'
+    >>> 'field4' in db.getIndex().indexes()
+    True
 
 Results from views are sorted on the sort column::
 
@@ -740,3 +744,104 @@ Results from views are sorted on the sort column::
     [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello', u'ola']
     >>> [o.getItem('field1') for o in db.view1.getDocumentsByKey('side-effect')]
     [u'A rhythm is love', u'Ho Chi Minh City calling by The Clash', u'Rhythm is love', u'bonjour', u'hello']
+
+
+
+
+
+You can rename a view
+
+    >>> db.manage_renameObject('view1', 'view_1')
+    >>> 'PlominoViewColumn_view1_col1' in db.getIndex().indexes()
+    False
+    >>> 'PlominoViewColumn_view__1_col1' in db.getIndex().indexes()
+    True
+    >>> len(db.view_1.getAllDocuments())
+    6
+    >>> len(db.view_1.getDocumentsByKey('side-effect'))
+    5
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view__1_col1', 'question', 'field2', 'field4')
+
+Ensure it still indexes ok after a rename
+
+    >>> doc2.setItem('field1', 'goodbye')
+    >>> doc2.save()
+    >>> len(db.view_1.getCategoryViewEntries('col1','goodbye'))
+    1
+
+We can also rename a column
+
+    >>> db.view_1.manage_renameObject('col1', 'col_1')
+    >>> 'PlominoViewColumn_view__1_col1' in db.getIndex().indexes()
+    False
+    >>> 'PlominoViewColumn_view__1_col__1' in db.getIndex().indexes()
+    True
+    >>> len(db.view_1.getCategoryViewEntries('col_1','goodbye'))
+    1
+
+    >>> db.view_1.manage_renameObject('col3', 'col_3')
+    >>> len(db.view_1.getDocumentsByKey('side-effect'))
+    5
+    >>> db.view_1.key_column
+    'col_3'
+
+    >>> db.manage_renameObject('view_1', 'view1')
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4')
+
+    >>> doc6 = db.createDocument()
+    >>> doc6.setItem('Form', 'frm2')
+    >>> doc6.setItem('question', u'debaser')
+    >>> doc6.setItem('field1', u'Sawadee')
+    >>> doc6.save()
+    >>> len(db.getIndex().dbsearch({'question': u'debaser'}))
+    1
+
+    >>> len(db.view1.getAllDocuments())
+    7
+
+We can change the type of a column
+
+    >>> db.view1.col_3.formula = "return 'blah'"
+    >>> db.view1.col_3.displayed_field = None
+    >>> from zope.lifecycleevent import modified
+    >>> modified(db.view1.col_3)
+
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
+
+field 4 shouldn't be in the list below since its not in any column #TODO
+    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'PlominoViewColumn_view1_col__3')
+
+    >>> 'PlominoViewColumn_view1_col__3' in db.getIndex().indexes()
+    True
+
+    >>> db.view1.col_3.displayed_field = 'frm1/field4'
+    >>> from zope.lifecycleevent import modified
+    >>> modified(db.view1.col_3)
+
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
+
+Should really be
+    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4')
+
+
+Things shouldn't break if a column indexes a field with the same name as a form.
+    >>> id = db.frm1.invokeFactory('PlominoField',
+    ...         id='frm2',
+    ...         title='Try to break plomino',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+
+    >>> id = db.view1.invokeFactory('PlominoColumn',
+    ...         id='col4',
+    ...         title='Col 4',
+    ...         displayed_field='frm1/frm2')
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3', 'frm2')
+    >>> len(db.view1.getAllDocuments())
+    7
+    >>> db.view1.getAllDocuments(getObject=False)[0]['frm2']
+    Missing.Value

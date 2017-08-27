@@ -37,6 +37,7 @@ class PlominoCatalog(Catalog):
                     if not obj.isSelectedInView(viewname):
                         v = None
                     else:
+                        #TODO: what happens if the view/column no longer exists?
                         v = asUnicode(
                             obj.computeColumnValue(viewname, columnname))
                 else:
@@ -44,9 +45,10 @@ class PlominoCatalog(Catalog):
                     v = None
                 record.append(v)
             else:
-                attr = getattr(obj, name, MV)
+                #in this case we don't want acquired scripts etc. Only direct attributes
+                attr = getattr(obj.aq_explicit, name, MV)
                 if attr is not MV and safe_callable(attr):
-                    attr = attr()
+                    attr = getattr(obj, name)()
                 if isinstance(attr, str):
                     attr = attr.decode('utf-8')
                 elif isinstance(attr, (list, tuple)):

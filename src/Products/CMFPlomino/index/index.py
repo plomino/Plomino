@@ -139,7 +139,36 @@ class PlominoIndex(UniqueObject, CatalogTool):
         elif oldName in self.indexes() and newName in self.indexes():
             self._catalog.delIndex(oldName)
             return True
-        return False
+        return True
+
+    security.declareProtected(DESIGN_PERMISSION, 'renameIndex')
+    def renameColumn(self, oldName, newName):
+        """ return False if can't be moved or deleted
+        """
+        # if both old and new index not exists, add new one
+        schema = self._catalog.schema
+        if oldName not in schema and newName not in schema:
+            return False
+        # if old index exist and new index not exists, rename the old one
+        elif oldName in schema and newName not in schema:
+            if oldName.startswith('PlominoViewColumn'):
+                #special case. We don't need to reindex
+                i = self._catalog.schema[newName] = self._catalog.schema[oldName]
+                del self._catalog.schema[oldName]
+                names = list(self._catalog.names)
+                names[i] = newName
+                self._catalog.names = tuple(names)
+            else:
+                #TODO: this will reindex twice which is not desired
+                self._catalog.delColumn(oldName)
+                self._catalog.addColumn(newName)
+            return True
+        # if both old and new index  exists, remove the old one
+        elif oldName in schema and newName in schema:
+            self._catalog.delColumn(oldName)
+            return True
+        return True
+
 
     security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
     def delSelectionIndex(self, oldName):
@@ -158,6 +187,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         self.delIndex(fieldname)
         self.delColumn(fieldname)
+        #TODO: I think the catalog already does the refresh
         if refresh:
             self.refresh()
 

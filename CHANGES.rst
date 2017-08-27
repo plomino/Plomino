@@ -16,9 +16,11 @@ Changelog
 - fixed exception caused by unicode in Title when inserted into a label in the final html [ivanteoh]
 - fixed "saving form scrolls to top. Also editing label then clicking field scrolls to the top" [ivanm]
 - fix errors in catalog indexes caused by views or columns containing '_' and also being renamed.
-  Renaming either now updates the indexes [djay]
+  Renaming either now updates the indexes. [djay]
 - new multi-file import/export format which seperates formulas and layouts into .py and .html files [quang]
 - fix errors caused by runasowner when script is called inside a script [ivanteoh]
+
+- fields with the same name forms/views no longer cause problems when used in view columns [djay] 
 
 
 2.0b4 (2016-05-27)

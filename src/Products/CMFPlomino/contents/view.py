@@ -263,7 +263,8 @@ class PlominoView(Container):
     def getColumn(self, column_name):
         """ Get a single column
         """
-        return getattr(self, column_name)
+        # need to ensure we just get teh column
+        return getattr(self.aq_inner, column_name).__of__(self)
 
     security.declarePublic('getAction')
 
@@ -334,15 +335,15 @@ class PlominoView(Container):
         index = db.getIndex()
         need_refresh = False
         for col in self.getColumns():
-            moved = index.renameIndex(
-                encode_name('PlominoViewColumn',old_id, col.id) if old_id else None,
-                encode_name('PlominoViewColumn',new_id, col.id) if new_id else None,
-                )
-            if not moved:
+            new_name, old_name = encode_name('PlominoViewColumn',old_id, col.id) if old_id else None,\
+                encode_name('PlominoViewColumn',new_id, col.id) if new_id else None
+            movedIndex = index.renameIndex(new_name,old_name)
+            movedColumn = index.renameColumn(new_name,old_name)
+            if not movedIndex or not movedColumn:
                 # it might not be moved because its a field column and also field col
                 # might already exist so no need for refresh
                 # TODO: work out if we really need a refresh
-                self.declareColumn(new_id, col, refresh=False)
+                self.declareColumn(col.id, col, refresh=False)
                 need_refresh = True
 
         if old_id is None:
@@ -362,6 +363,7 @@ class PlominoView(Container):
                     'PlominoViewFormula_' + new_id,
                     refresh=False)
                 need_refresh = True
+
         if need_refresh and refresh:
             index.refresh()
 
@@ -375,8 +377,9 @@ class PlominoView(Container):
 
         old_index = encode_name('PlominoViewColumn',self.id, old_id) if old_id else None
         new_index = encode_name('PlominoViewColumn',self.id, new_id) if new_id else None
-        moved = index.renameIndex(old_index, new_index)
-        if not moved:
+        movedIndex = index.renameIndex(old_index, new_index)
+        movedColumn = index.renameColumn(old_index, new_index)
+        if not movedIndex or not movedColumn:
             self.declareColumn(new_id, col)
 
         # We shouldn't lose our key or sort if we decide to rename a column

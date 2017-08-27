@@ -125,6 +125,8 @@ def afterColumnMoved(obj, event):
 def afterColumnModified(obj, event):
     """
     """
+    #TODO: if a col changed type, this doesn't remove the unwanted index
+    # should iterate over the indexes and remove any no longer not needed
     view = obj.getParentView()
     view.declareColumn(obj.id, obj, refresh=False)
     obj.cleanFormulaScripts(
