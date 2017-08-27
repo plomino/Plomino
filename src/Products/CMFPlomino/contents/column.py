@@ -77,7 +77,13 @@ class PlominoColumn(Item):
             return translate(self, fieldvalue)
 
         # If there is no formula, there has to be a field
-        form_id, fieldname = self.displayed_field.split('/')
+        try:
+            form_id, fieldname = self.displayed_field.split('/')
+        except AttributeError:
+            # currently only title is mandatory
+            # so it is possible self.displayed_field is None
+            return ""
+
         db = self.getParentDatabase()
         form = db.getForm(form_id)
         field = form.getFormField(fieldname)

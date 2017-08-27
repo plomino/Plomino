@@ -5464,6 +5464,120 @@ function Observable(subscribe){this._isScalar=!1,subscribe&&(this._subscribe=sub
 	     * @return {Observable} a new observable with the Operator applied
 	     */
 /**
+	     * Invokes an execution of an Observable and registers Observer handlers for notifications it will emit.
+	     *
+	     * <span class="informal">Use it when you have all these Observables, but still nothing is happening.</span>
+	     *
+	     * `subscribe` is not a regular operator, but a method that calls Observables internal `subscribe` function. It
+	     * might be for example a function that you passed to a {@link create} static factory, but most of the time it is
+	     * a library implementation, which defines what and when will be emitted by an Observable. This means that calling
+	     * `subscribe` is actually the moment when Observable starts its work, not when it is created, as it is often
+	     * thought.
+	     *
+	     * Apart from starting the execution of an Observable, this method allows you to listen for values
+	     * that an Observable emits, as well as for when it completes or errors. You can achieve this in two
+	     * following ways.
+	     *
+	     * The first way is creating an object that implements {@link Observer} interface. It should have methods
+	     * defined by that interface, but note that it should be just a regular JavaScript object, which you can create
+	     * yourself in any way you want (ES6 class, classic function constructor, object literal etc.). In particular do
+	     * not attempt to use any RxJS implementation details to create Observers - you don't need them. Remember also
+	     * that your object does not have to implement all methods. If you find yourself creating a method that doesn't
+	     * do anything, you can simply omit it. Note however, that if `error` method is not provided, all errors will
+	     * be left uncaught.
+	     *
+	     * The second way is to give up on Observer object altogether and simply provide callback functions in place of its methods.
+	     * This means you can provide three functions as arguments to `subscribe`, where first function is equivalent
+	     * of a `next` method, second of an `error` method and third of a `complete` method. Just as in case of Observer,
+	     * if you do not need to listen for something, you can omit a function, preferably by passing `undefined` or `null`,
+	     * since `subscribe` recognizes these functions by where they were placed in function call. When it comes
+	     * to `error` function, just as before, if not provided, errors emitted by an Observable will be thrown.
+	     *
+	     * Whatever style of calling `subscribe` you use, in both cases it returns a Subscription object.
+	     * This object allows you to call `unsubscribe` on it, which in turn will stop work that an Observable does and will clean
+	     * up all resources that an Observable used. Note that cancelling a subscription will not call `complete` callback
+	     * provided to `subscribe` function, which is reserved for a regular completion signal that comes from an Observable.
+	     *
+	     * Remember that callbacks provided to `subscribe` are not guaranteed to be called asynchronously.
+	     * It is an Observable itself that decides when these functions will be called. For example {@link of}
+	     * by default emits all its values synchronously. Always check documentation for how given Observable
+	     * will behave when subscribed and if its default behavior can be modified with a {@link Scheduler}.
+	     *
+	     * @example <caption>Subscribe with an Observer</caption>
+	     * const sumObserver = {
+	     *   sum: 0,
+	     *   next(value) {
+	     *     console.log('Adding: ' + value);
+	     *     this.sum = this.sum + value;
+	     *   },
+	     *   error() { // We actually could just remote this method,
+	     *   },        // since we do not really care about errors right now.
+	     *   complete() {
+	     *     console.log('Sum equals: ' + this.sum);
+	     *   }
+	     * };
+	     *
+	     * Rx.Observable.of(1, 2, 3) // Synchronously emits 1, 2, 3 and then completes.
+	     * .subscribe(sumObserver);
+	     *
+	     * // Logs:
+	     * // "Adding: 1"
+	     * // "Adding: 2"
+	     * // "Adding: 3"
+	     * // "Sum equals: 6"
+	     *
+	     *
+	     * @example <caption>Subscribe with functions</caption>
+	     * let sum = 0;
+	     *
+	     * Rx.Observable.of(1, 2, 3)
+	     * .subscribe(
+	     *   function(value) {
+	     *     console.log('Adding: ' + value);
+	     *     sum = sum + value;
+	     *   },
+	     *   undefined,
+	     *   function() {
+	     *     console.log('Sum equals: ' + sum);
+	     *   }
+	     * );
+	     *
+	     * // Logs:
+	     * // "Adding: 1"
+	     * // "Adding: 2"
+	     * // "Adding: 3"
+	     * // "Sum equals: 6"
+	     *
+	     *
+	     * @example <caption>Cancel a subscription</caption>
+	     * const subscription = Rx.Observable.interval(1000).subscribe(
+	     *   num => console.log(num),
+	     *   undefined,
+	     *   () => console.log('completed!') // Will not be called, even
+	     * );                                // when cancelling subscription
+	     *
+	     *
+	     * setTimeout(() => {
+	     *   subscription.unsubscribe();
+	     *   console.log('unsubscribed!');
+	     * }, 2500);
+	     *
+	     * // Logs:
+	     * // 0 after 1s
+	     * // 1 after 2s
+	     * // "unsubscribed!" after 2,5s
+	     *
+	     *
+	     * @param {Observer|Function} observerOrNext (optional) Either an observer with methods to be called,
+	     *  or the first of three possible handlers, which is the handler for each value emitted from the subscribed
+	     *  Observable.
+	     * @param {Function} error (optional) A handler for a terminal event resulting from an error. If no error handler is provided,
+	     *  the error will be thrown as unhandled.
+	     * @param {Function} complete (optional) A handler for a terminal event resulting from successful completion.
+	     * @return {ISubscription} a subscription reference to the registered handlers
+	     * @method subscribe
+	     */
+/**
 	     * @method forEach
 	     * @param {Function} next a handler for each value emitted by the observable
 	     * @param {PromiseConstructor} [PromiseCtor] a constructor function used to instantiate the Promise
@@ -5485,7 +5599,7 @@ function Observable(subscribe){this._isScalar=!1,subscribe&&(this._subscribe=sub
 	     * @param {Function} subscribe? the subscriber function to be passed to the Observable constructor
 	     * @return {Observable} a new cold observable
 	     */
-return Observable.prototype.lift=function(operator){var observable=new Observable;return observable.source=this,observable.operator=operator,observable},Observable.prototype.subscribe=function(observerOrNext,error,complete){var operator=this.operator,sink=toSubscriber_1.toSubscriber(observerOrNext,error,complete);if(operator?operator.call(sink,this.source):sink.add(this._trySubscribe(sink)),sink.syncErrorThrowable&&(sink.syncErrorThrowable=!1,sink.syncErrorThrown))throw sink.syncErrorValue;return sink},Observable.prototype._trySubscribe=function(sink){try{return this._subscribe(sink)}catch(err){sink.syncErrorThrown=!0,sink.syncErrorValue=err,sink.error(err)}},Observable.prototype.forEach=function(next,PromiseCtor){var _this=this;if(PromiseCtor||(root_1.root.Rx&&root_1.root.Rx.config&&root_1.root.Rx.config.Promise?PromiseCtor=root_1.root.Rx.config.Promise:root_1.root.Promise&&(PromiseCtor=root_1.root.Promise)),!PromiseCtor)throw new Error("no Promise impl found");return new PromiseCtor(function(resolve,reject){
+return Observable.prototype.lift=function(operator){var observable=new Observable;return observable.source=this,observable.operator=operator,observable},Observable.prototype.subscribe=function(observerOrNext,error,complete){var operator=this.operator,sink=toSubscriber_1.toSubscriber(observerOrNext,error,complete);if(operator?operator.call(sink,this.source):sink.add(this.source?this._subscribe(sink):this._trySubscribe(sink)),sink.syncErrorThrowable&&(sink.syncErrorThrowable=!1,sink.syncErrorThrown))throw sink.syncErrorValue;return sink},Observable.prototype._trySubscribe=function(sink){try{return this._subscribe(sink)}catch(err){sink.syncErrorThrown=!0,sink.syncErrorValue=err,sink.error(err)}},Observable.prototype.forEach=function(next,PromiseCtor){var _this=this;if(PromiseCtor||(root_1.root.Rx&&root_1.root.Rx.config&&root_1.root.Rx.config.Promise?PromiseCtor=root_1.root.Rx.config.Promise:root_1.root.Promise&&(PromiseCtor=root_1.root.Promise)),!PromiseCtor)throw new Error("no Promise impl found");return new PromiseCtor(function(resolve,reject){
 // Must be declared in a separate statement to avoid a RefernceError when
 // accessing subscription below in the closure due to Temporal Dead Zone.
 var subscription;subscription=_this.subscribe(function(value){if(subscription)
@@ -5722,7 +5836,7 @@ function(module,exports,__webpack_require__){"use strict";/* tslint:enable:max-l
 	 * source.then((value) => console.log('Value: %s', value));
 	 * // => Value: 42
 	 *
-	 * @param PromiseCtor promise The constructor of the promise. If not provided,
+	 * @param {PromiseConstructor} [PromiseCtor] The constructor of the promise. If not provided,
 	 * it will look for a constructor first in Rx.config.Promise then fall back to
 	 * the native Promise constructor if available.
 	 * @return {Promise<T>} An ES2015 compatible promise with the last value from
@@ -14819,7 +14933,7 @@ function copyFromBufferString(n,list){var p=list.head,c=1,ret=p.data;for(n-=ret.
 // Copies a specified amount of bytes from the list of buffered data chunks.
 // This function is designed to be inlinable, so please take care when making
 // changes to the function body.
-function copyFromBuffer(n,list){var ret=bufferShim.allocUnsafe(n),p=list.head,c=1;for(p.data.copy(ret),n-=p.data.length;p=p.next;){var buf=p.data,nb=n>buf.length?buf.length:n;if(buf.copy(ret,ret.length-n,0,nb),n-=nb,0===n){nb===buf.length?(++c,p.next?list.head=p.next:list.head=list.tail=null):(list.head=p,p.data=buf.slice(nb));break}++c}return list.length-=c,ret}function endReadable(stream){var state=stream._readableState;
+function copyFromBuffer(n,list){var ret=Buffer.allocUnsafe(n),p=list.head,c=1;for(p.data.copy(ret),n-=p.data.length;p=p.next;){var buf=p.data,nb=n>buf.length?buf.length:n;if(buf.copy(ret,ret.length-n,0,nb),n-=nb,0===n){nb===buf.length?(++c,p.next?list.head=p.next:list.head=list.tail=null):(list.head=p,p.data=buf.slice(nb));break}++c}return list.length-=c,ret}function endReadable(stream){var state=stream._readableState;
 // If we get here before consuming all the bytes, then that is a
 // bug in node.  Should never happen.
 if(state.length>0)throw new Error('"endReadable()" called on non-empty stream');state.endEmitted||(state.ended=!0,processNextTick(endReadableNT,state,stream))}function endReadableNT(state,stream){
@@ -14827,7 +14941,7 @@ if(state.length>0)throw new Error('"endReadable()" called on non-empty stream');
 state.endEmitted||0!==state.length||(state.endEmitted=!0,stream.readable=!1,stream.emit("end"))}function indexOf(xs,x){for(var i=0,l=xs.length;i<l;i++)if(xs[i]===x)return i;return-1}module.exports=Readable;/*<replacement>*/
 var Duplex,processNextTick=__webpack_require__(1431),isArray=__webpack_require__(1432);/*</replacement>*/
 Readable.ReadableState=ReadableState;/*<replacement>*/
-var EElistenerCount=(__webpack_require__(1427).EventEmitter,function(emitter,type){return emitter.listeners(type).length}),Stream=__webpack_require__(1433),Buffer=__webpack_require__(1401).Buffer,bufferShim=__webpack_require__(1434),util=__webpack_require__(1435);util.inherits=__webpack_require__(1428);/*</replacement>*/
+var EElistenerCount=(__webpack_require__(1427).EventEmitter,function(emitter,type){return emitter.listeners(type).length}),Stream=__webpack_require__(1433),Buffer=__webpack_require__(1434).Buffer,util=__webpack_require__(1435);util.inherits=__webpack_require__(1428);/*</replacement>*/
 /*<replacement>*/
 var debugUtil=__webpack_require__(1436),debug=void 0;debug=debugUtil&&debugUtil.debuglog?debugUtil.debuglog("stream"):function(){};/*</replacement>*/
 var StringDecoder,BufferList=__webpack_require__(1437);util.inherits(Readable,Stream);var kProxyEvents=["error","close","destroy","pause","resume"];
@@ -14835,7 +14949,7 @@ var StringDecoder,BufferList=__webpack_require__(1437);util.inherits(Readable,St
 // This returns true if the highWaterMark has not been hit yet,
 // similar to how Writable.write() returns true if you should
 // write() some more.
-Readable.prototype.push=function(chunk,encoding){var state=this._readableState;return state.objectMode||"string"!=typeof chunk||(encoding=encoding||state.defaultEncoding,encoding!==state.encoding&&(chunk=bufferShim.from(chunk,encoding),encoding="")),readableAddChunk(this,state,chunk,encoding,!1)},
+Readable.prototype.push=function(chunk,encoding){var state=this._readableState;return state.objectMode||"string"!=typeof chunk||(encoding=encoding||state.defaultEncoding,encoding!==state.encoding&&(chunk=Buffer.from(chunk,encoding),encoding="")),readableAddChunk(this,state,chunk,encoding,!1)},
 // Unshift should *always* be something directly out of read()
 Readable.prototype.unshift=function(chunk){var state=this._readableState;return readableAddChunk(this,state,chunk,"",!0)},Readable.prototype.isPaused=function(){return this._readableState.flowing===!1},
 // backwards compatibility.
@@ -14895,7 +15009,7 @@ return ret=n>0?fromList(n,state):null,null===ret?(state.needReadable=!0,n=0):sta
 // arbitrary, and perhaps not very meaningful.
 Readable.prototype._read=function(n){this.emit("error",new Error("_read() is not implemented"))},Readable.prototype.pipe=function(dest,pipeOpts){function onunpipe(readable){debug("onunpipe"),readable===src&&cleanup()}function onend(){debug("onend"),dest.end()}function cleanup(){debug("cleanup"),
 // cleanup event handlers once the pipe is broken
-dest.removeListener("close",onclose),dest.removeListener("finish",onfinish),dest.removeListener("drain",ondrain),dest.removeListener("error",onerror),dest.removeListener("unpipe",onunpipe),src.removeListener("end",onend),src.removeListener("end",cleanup),src.removeListener("data",ondata),cleanedUp=!0,
+dest.removeListener("close",onclose),dest.removeListener("finish",onfinish),dest.removeListener("drain",ondrain),dest.removeListener("error",onerror),dest.removeListener("unpipe",onunpipe),src.removeListener("end",onend),src.removeListener("end",unpipe),src.removeListener("data",ondata),cleanedUp=!0,
 // if the reader is waiting for a drain event from this
 // specific writer, then it would cause it to never start
 // flowing again.
@@ -14911,7 +15025,7 @@ dest.removeListener("close",onclose),dest.removeListener("finish",onfinish),dest
 // however, don't suppress the throwing behavior for this.
 function onerror(er){debug("onerror",er),unpipe(),dest.removeListener("error",onerror),0===EElistenerCount(dest,"error")&&dest.emit("error",er)}
 // Both close and finish should trigger unpipe, but only once.
-function onclose(){dest.removeListener("finish",onfinish),unpipe()}function onfinish(){debug("onfinish"),dest.removeListener("close",onclose),unpipe()}function unpipe(){debug("unpipe"),src.unpipe(dest)}var src=this,state=this._readableState;switch(state.pipesCount){case 0:state.pipes=dest;break;case 1:state.pipes=[state.pipes,dest];break;default:state.pipes.push(dest)}state.pipesCount+=1,debug("pipe count=%d opts=%j",state.pipesCount,pipeOpts);var doEnd=(!pipeOpts||pipeOpts.end!==!1)&&dest!==process.stdout&&dest!==process.stderr,endFn=doEnd?onend:cleanup;state.endEmitted?processNextTick(endFn):src.once("end",endFn),dest.on("unpipe",onunpipe);
+function onclose(){dest.removeListener("finish",onfinish),unpipe()}function onfinish(){debug("onfinish"),dest.removeListener("close",onclose),unpipe()}function unpipe(){debug("unpipe"),src.unpipe(dest)}var src=this,state=this._readableState;switch(state.pipesCount){case 0:state.pipes=dest;break;case 1:state.pipes=[state.pipes,dest];break;default:state.pipes.push(dest)}state.pipesCount+=1,debug("pipe count=%d opts=%j",state.pipesCount,pipeOpts);var doEnd=(!pipeOpts||pipeOpts.end!==!1)&&dest!==process.stdout&&dest!==process.stderr,endFn=doEnd?onend:unpipe;state.endEmitted?processNextTick(endFn):src.once("end",endFn),dest.on("unpipe",onunpipe);
 // when the dest drains, it reduces the awaitDrain counter
 // on the source.  This would be more elegant with a .once()
 // handler in flow(), but adding and removing repeatedly is
@@ -14967,8 +15081,7 @@ function(module,exports){var toString={}.toString;module.exports=Array.isArray||
 /***/
 function(module,exports,__webpack_require__){module.exports=__webpack_require__(1427).EventEmitter},/* 1434 */
 /***/
-function(module,exports,__webpack_require__){/* WEBPACK VAR INJECTION */
-(function(global){"use strict";var buffer=__webpack_require__(1401),Buffer=buffer.Buffer,SlowBuffer=buffer.SlowBuffer,MAX_LEN=buffer.kMaxLength||2147483647;exports.alloc=function(size,fill,encoding){if("function"==typeof Buffer.alloc)return Buffer.alloc(size,fill,encoding);if("number"==typeof encoding)throw new TypeError("encoding must not be number");if("number"!=typeof size)throw new TypeError("size must be a number");if(size>MAX_LEN)throw new RangeError("size is too large");var enc=encoding,_fill=fill;void 0===_fill&&(enc=void 0,_fill=0);var buf=new Buffer(size);if("string"==typeof _fill)for(var fillBuf=new Buffer(_fill,enc),flen=fillBuf.length,i=-1;++i<size;)buf[i]=fillBuf[i%flen];else buf.fill(_fill);return buf},exports.allocUnsafe=function(size){if("function"==typeof Buffer.allocUnsafe)return Buffer.allocUnsafe(size);if("number"!=typeof size)throw new TypeError("size must be a number");if(size>MAX_LEN)throw new RangeError("size is too large");return new Buffer(size)},exports.from=function(value,encodingOrOffset,length){if("function"==typeof Buffer.from&&(!global.Uint8Array||Uint8Array.from!==Buffer.from))return Buffer.from(value,encodingOrOffset,length);if("number"==typeof value)throw new TypeError('"value" argument must not be a number');if("string"==typeof value)return new Buffer(value,encodingOrOffset);if("undefined"!=typeof ArrayBuffer&&value instanceof ArrayBuffer){var offset=encodingOrOffset;if(1===arguments.length)return new Buffer(value);"undefined"==typeof offset&&(offset=0);var len=length;if("undefined"==typeof len&&(len=value.byteLength-offset),offset>=value.byteLength)throw new RangeError("'offset' is out of bounds");if(len>value.byteLength-offset)throw new RangeError("'length' is out of bounds");return new Buffer(value.slice(offset,offset+len))}if(Buffer.isBuffer(value)){var out=new Buffer(value.length);return value.copy(out,0,0,value.length),out}if(value){if(Array.isArray(value)||"undefined"!=typeof ArrayBuffer&&value.buffer instanceof ArrayBuffer||"length"in value)return new Buffer(value);if("Buffer"===value.type&&Array.isArray(value.data))return new Buffer(value.data)}throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.")},exports.allocUnsafeSlow=function(size){if("function"==typeof Buffer.allocUnsafeSlow)return Buffer.allocUnsafeSlow(size);if("number"!=typeof size)throw new TypeError("size must be a number");if(size>=MAX_LEN)throw new RangeError("size is too large");return new SlowBuffer(size)}}).call(exports,function(){return this}())},/* 1435 */
+function(module,exports,__webpack_require__){module.exports=__webpack_require__(1401)},/* 1435 */
 /***/
 function(module,exports,__webpack_require__){/* WEBPACK VAR INJECTION */
 (function(Buffer){// Copyright Joyent, Inc. and other Node contributors.
@@ -14998,8 +15111,9 @@ return null===arg||"boolean"==typeof arg||"number"==typeof arg||"string"==typeof
 /***/
 function(module,exports){},/* 1437 */
 /***/
-function(module,exports,__webpack_require__){"use strict";function BufferList(){this.head=null,this.tail=null,this.length=0}var bufferShim=(__webpack_require__(1401).Buffer,__webpack_require__(1434));/*</replacement>*/
-module.exports=BufferList,BufferList.prototype.push=function(v){var entry={data:v,next:null};this.length>0?this.tail.next=entry:this.head=entry,this.tail=entry,++this.length},BufferList.prototype.unshift=function(v){var entry={data:v,next:this.head};0===this.length&&(this.tail=entry),this.head=entry,++this.length},BufferList.prototype.shift=function(){if(0!==this.length){var ret=this.head.data;return 1===this.length?this.head=this.tail=null:this.head=this.head.next,--this.length,ret}},BufferList.prototype.clear=function(){this.head=this.tail=null,this.length=0},BufferList.prototype.join=function(s){if(0===this.length)return"";for(var p=this.head,ret=""+p.data;p=p.next;)ret+=s+p.data;return ret},BufferList.prototype.concat=function(n){if(0===this.length)return bufferShim.alloc(0);if(1===this.length)return this.head.data;for(var ret=bufferShim.allocUnsafe(n>>>0),p=this.head,i=0;p;)p.data.copy(ret,i),i+=p.data.length,p=p.next;return ret}},/* 1438 */
+function(module,exports,__webpack_require__){"use strict";function BufferList(){this.head=null,this.tail=null,this.length=0}/*<replacement>*/
+var Buffer=__webpack_require__(1434).Buffer;/*</replacement>*/
+module.exports=BufferList,BufferList.prototype.push=function(v){var entry={data:v,next:null};this.length>0?this.tail.next=entry:this.head=entry,this.tail=entry,++this.length},BufferList.prototype.unshift=function(v){var entry={data:v,next:this.head};0===this.length&&(this.tail=entry),this.head=entry,++this.length},BufferList.prototype.shift=function(){if(0!==this.length){var ret=this.head.data;return 1===this.length?this.head=this.tail=null:this.head=this.head.next,--this.length,ret}},BufferList.prototype.clear=function(){this.head=this.tail=null,this.length=0},BufferList.prototype.join=function(s){if(0===this.length)return"";for(var p=this.head,ret=""+p.data;p=p.next;)ret+=s+p.data;return ret},BufferList.prototype.concat=function(n){if(0===this.length)return Buffer.alloc(0);if(1===this.length)return this.head.data;for(var ret=Buffer.allocUnsafe(n>>>0),p=this.head,i=0;p;)p.data.copy(ret,i),i+=p.data.length,p=p.next;return ret}},/* 1438 */
 /***/
 function(module,exports,__webpack_require__){
 // a duplex stream is just a stream that is both readable and writable.
@@ -15105,7 +15219,7 @@ stream.emit("error",er),processNextTick(cb,er)}
 // Checks that a user-supplied chunk is valid, especially for the particular
 // mode the stream is in. Currently this means that `null` is never accepted
 // and undefined/non-string values are only allowed in object mode.
-function validChunk(stream,state,chunk,cb){var valid=!0,er=!1;return null===chunk?er=new TypeError("May not write null values to stream"):"string"==typeof chunk||void 0===chunk||state.objectMode||(er=new TypeError("Invalid non-string/buffer chunk")),er&&(stream.emit("error",er),processNextTick(cb,er),valid=!1),valid}function decodeChunk(state,chunk,encoding){return state.objectMode||state.decodeStrings===!1||"string"!=typeof chunk||(chunk=bufferShim.from(chunk,encoding)),chunk}
+function validChunk(stream,state,chunk,cb){var valid=!0,er=!1;return null===chunk?er=new TypeError("May not write null values to stream"):"string"==typeof chunk||void 0===chunk||state.objectMode||(er=new TypeError("Invalid non-string/buffer chunk")),er&&(stream.emit("error",er),processNextTick(cb,er),valid=!1),valid}function decodeChunk(state,chunk,encoding){return state.objectMode||state.decodeStrings===!1||"string"!=typeof chunk||(chunk=Buffer.from(chunk,encoding)),chunk}
 // if we're already writing something, then just put this
 // in the queue, and wait our turn.  Otherwise, call _write
 // If we return false, then we need a drain event, so set that flag.
@@ -15140,7 +15254,7 @@ var Duplex,processNextTick=__webpack_require__(1431),asyncWrite=!process.browser
 Writable.WritableState=WritableState;/*<replacement>*/
 var util=__webpack_require__(1435);util.inherits=__webpack_require__(1428);/*</replacement>*/
 /*<replacement>*/
-var internalUtil={deprecate:__webpack_require__(1440)},Stream=__webpack_require__(1433),Buffer=__webpack_require__(1401).Buffer,bufferShim=__webpack_require__(1434);/*</replacement>*/
+var internalUtil={deprecate:__webpack_require__(1440)},Stream=__webpack_require__(1433),Buffer=__webpack_require__(1434).Buffer;/*</replacement>*/
 util.inherits(Writable,Stream),WritableState.prototype.getBuffer=function(){for(var current=this.bufferedRequest,out=[];current;)out.push(current),current=current.next;return out},function(){try{Object.defineProperty(WritableState.prototype,"buffer",{get:internalUtil.deprecate(function(){return this.getBuffer()},"_writableState.buffer is deprecated. Use _writableState.getBuffer instead.")})}catch(_){}}();
 // Test _writableState for inheritance to account for Duplex streams,
 // whose prototype chain only points to Readable.
@@ -15190,7 +15304,7 @@ function(module,exports,__webpack_require__){"use strict";function _normalizeEnc
 enc=(""+enc).toLowerCase(),retried=!0}}
 // Do not cache `Buffer.isEncoding` when checking encoding names as some
 // modules monkey-patch it to support additional encodings
-function normalizeEncoding(enc){var nenc=_normalizeEncoding(enc);if("string"!=typeof nenc&&(Buffer.isEncoding===isEncoding||!isEncoding(enc)))throw new Error("Unknown encoding: "+enc);return nenc||enc}function StringDecoder(encoding){this.encoding=normalizeEncoding(encoding);var nb;switch(this.encoding){case"utf16le":this.text=utf16Text,this.end=utf16End,nb=4;break;case"utf8":this.fillLast=utf8FillLast,nb=4;break;case"base64":this.text=base64Text,this.end=base64End,nb=3;break;default:return this.write=simpleWrite,void(this.end=simpleEnd)}this.lastNeed=0,this.lastTotal=0,this.lastChar=bufferShim.allocUnsafe(nb)}
+function normalizeEncoding(enc){var nenc=_normalizeEncoding(enc);if("string"!=typeof nenc&&(Buffer.isEncoding===isEncoding||!isEncoding(enc)))throw new Error("Unknown encoding: "+enc);return nenc||enc}function StringDecoder(encoding){this.encoding=normalizeEncoding(encoding);var nb;switch(this.encoding){case"utf16le":this.text=utf16Text,this.end=utf16End,nb=4;break;case"utf8":this.fillLast=utf8FillLast,nb=4;break;case"base64":this.text=base64Text,this.end=base64End,nb=3;break;default:return this.write=simpleWrite,void(this.end=simpleEnd)}this.lastNeed=0,this.lastTotal=0,this.lastChar=Buffer.allocUnsafe(nb)}
 // Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
 // continuation byte.
 function utf8CheckByte(byte){return byte<=127?0:byte>>5===6?2:byte>>4===14?3:byte>>3===30?4:-1}
@@ -15225,7 +15339,7 @@ function utf16Text(buf,i){if((buf.length-i)%2===0){var r=buf.toString("utf16le",
 // end on a partial character, we simply let v8 handle that.
 function utf16End(buf){var r=buf&&buf.length?this.write(buf):"";if(this.lastNeed){var end=this.lastTotal-this.lastNeed;return r+this.lastChar.toString("utf16le",0,end)}return r}function base64Text(buf,i){var n=(buf.length-i)%3;return 0===n?buf.toString("base64",i):(this.lastNeed=3-n,this.lastTotal=3,1===n?this.lastChar[0]=buf[buf.length-1]:(this.lastChar[0]=buf[buf.length-2],this.lastChar[1]=buf[buf.length-1]),buf.toString("base64",i,buf.length-n))}function base64End(buf){var r=buf&&buf.length?this.write(buf):"";return this.lastNeed?r+this.lastChar.toString("base64",0,3-this.lastNeed):r}
 // Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
-function simpleWrite(buf){return buf.toString(this.encoding)}function simpleEnd(buf){return buf&&buf.length?this.write(buf):""}var Buffer=__webpack_require__(1401).Buffer,bufferShim=__webpack_require__(1434),isEncoding=Buffer.isEncoding||function(encoding){switch(encoding=""+encoding,encoding&&encoding.toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":case"raw":return!0;default:return!1}};
+function simpleWrite(buf){return buf.toString(this.encoding)}function simpleEnd(buf){return buf&&buf.length?this.write(buf):""}var Buffer=__webpack_require__(1434).Buffer,isEncoding=Buffer.isEncoding||function(encoding){switch(encoding=""+encoding,encoding&&encoding.toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":case"raw":return!0;default:return!1}};
 // StringDecoder provides an interface for efficiently splitting a series of
 // buffers into a series of JS strings without breaking apart multi-byte
 // characters.

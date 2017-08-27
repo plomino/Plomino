@@ -21,6 +21,11 @@ Changelog
 - fix errors caused by runasowner when script is called inside a script [ivanteoh]
 
 - fields with the same name forms/views no longer cause problems when used in view columns [djay] 
+- Bug fixes to macros [quang]
+- Bug fixes to views [ivanteoh]
+- Test suite improvements [ivanteoh]
+- Bug fix for set permission macro [ivanteoh]
+- Bug fixes to import/export [quang]
 
 
 2.0b4 (2016-05-27)

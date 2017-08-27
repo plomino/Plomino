@@ -1,26 +1,25 @@
 {
     "design": {
         "dbsettings": {
-            "version": "2.0",
             "params": {
+                "indexAttachments": false,
+                "fulltextIndex": true,
+                "indexInPortal": false,
+                "debugMode": false,
                 "datetime_format": "%d %B %Y",
+                "start_page": null,
+                "i18n": null,
+                "do_not_list_users": false,
+                "do_not_reindex": false,
+                "isDatabaseTemplate": false,
                 "import_macros": [
                     "."
                 ],
-                "do_not_reindex": false,
-                "start_page": null,
-                "description": "",
-                "indexInPortal": false,
                 "title": "Macros",
                 "exclude_from_nav": true,
-                "ajax_include_head": null,
-                "indexAttachments": false,
-                "fulltextIndex": true,
-                "do_not_list_users": false,
-                "i18n": null,
-                "debugMode": false,
-                "isDatabaseTemplate": false,
-                "ajax_load": null
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
             },
             "acl": {
                 "AnomynousAccessRight": "NoAccess",
@@ -29,7 +28,8 @@
                 "SpecificRights": {
                     "specific_deletedocument": "PlominoAuthor"
                 }
-            }
+            },
+            "version": "2.0"
         },
         "resources": {}
     },

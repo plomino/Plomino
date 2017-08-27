@@ -2,63 +2,46 @@
     "design": {
         "resources": {},
         "template_file_attachment": {
+            "id": "template_file_attachment",
+            "type": "PlominoForm",
+            "title": "File attachment",
             "params": {
-                "onCreateDocument": "",
-                "resources_css": null,
-                "ajax_include_head": null,
-                "onOpenDocument": "",
-                "ajax_load": null,
-                "onDeleteDocument": "",
-                "title": "File attachment",
-                "onSaveDocument": "",
-                "onDisplay": "",
-                "resources_js": null,
                 "form_method": "Auto",
-                "document_id": "",
-                "form_layout": "",
-                "description": "",
-                "isPage": false,
-                "store_dynamic_document_title": false,
-                "isSearchForm": false,
-                "beforeCreateDocument": "",
-                "hide_default_actions": false,
-                "document_title": "",
-                "search_formula": "",
-                "search_view": null,
-                "beforeSaveDocument": "",
                 "dynamic_document_title": false,
-                "helpers": "",
-                "onSearch": ""
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "File attachment",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
             },
             "elements": {
                 "file_attachment": {
-                    "params": {
-                        "read_template": null,
-                        "field_type": "ATTACHMENT",
-                        "single_or_multiple": "SINGLE",
-                        "mandatory": false,
-                        "html_attributes_formula": "",
-                        "index_type": "DEFAULT",
-                        "validation_formula": "",
-                        "ajax_include_head": null,
-                        "title": "Untitled",
-                        "edit_template": null,
-                        "isDynamicField": false,
-                        "field_mode": "EDITABLE",
-                        "to_be_indexed": false,
-                        "helpers": "",
-                        "formula": "",
-                        "ajax_load": null,
-                        "description": ""
-                    },
-                    "type": "PlominoField",
                     "id": "file_attachment",
-                    "title": "Untitled"
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "ATTACHMENT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "single_or_multiple": "SINGLE"
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "template_file_attachment",
-            "title": "File attachment"
+            }
         }
     },
     "id": "macros"

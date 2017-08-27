@@ -225,8 +225,16 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         if only_allowed:
             user_groups_roles = ['Anonymous', '*']
-            user_id = self.getCurrentMember().getUserName()
-            if user_id != "Anonymous User":
+            # when me is < SpecialUser 'Anonymous User' >
+            # then me.id is 'acl_users'
+            # then me.getId() is None
+            # then self.getCurrentUserId() is 'Anonymous User'
+            # when the site is using email as login name
+            # then getUserName() and getCurrentUserId() will return email
+            # instead of id
+            # There is possible username is 'Anonymous'
+            user_id = self.getCurrentMember().getId()
+            if not getToolByName(self, 'portal_membership').isAnonymousUser():
                 user_groups_roles += (
                     [user_id] +
                     self.getCurrentUserGroups() +

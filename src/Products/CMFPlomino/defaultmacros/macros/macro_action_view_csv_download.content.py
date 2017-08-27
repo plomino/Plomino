@@ -9,5 +9,7 @@ return link
 """.format(view_redirect=view_redirect_)
 return code
 
+
+
 ## END formula }
 

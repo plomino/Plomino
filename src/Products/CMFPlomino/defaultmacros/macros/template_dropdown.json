@@ -2,70 +2,52 @@
     "design": {
         "resources": {},
         "template_dropdown": {
+            "id": "template_dropdown",
+            "type": "PlominoForm",
+            "title": "Dropdown",
             "params": {
-                "onCreateDocument": "",
-                "resources_css": null,
-                "ajax_include_head": null,
-                "onOpenDocument": "",
-                "ajax_load": null,
-                "onDeleteDocument": "",
-                "title": "Dropdown",
-                "onSaveDocument": "",
-                "onDisplay": "",
-                "resources_js": null,
                 "form_method": "Auto",
-                "document_id": "",
-                "form_layout": "",
-                "description": "",
-                "isPage": false,
-                "store_dynamic_document_title": false,
-                "isSearchForm": false,
-                "beforeCreateDocument": "",
-                "hide_default_actions": false,
-                "document_title": "",
-                "search_formula": "",
-                "search_view": null,
-                "beforeSaveDocument": "",
                 "dynamic_document_title": false,
-                "helpers": "",
-                "onSearch": ""
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Dropdown",
+                "description": "",
+                "ajax_load": null,
+                "ajax_include_head": null
             },
             "elements": {
                 "dropdown": {
+                    "id": "dropdown",
+                    "type": "PlominoField",
+                    "title": "Untitled",
                     "params": {
-                        "read_template": null,
                         "field_type": "SELECTION",
-                        "widget": "SELECT",
                         "mandatory": false,
-                        "html_attributes_formula": "",
-                        "index_type": "DEFAULT",
-                        "validation_formula": "",
-                        "ajax_include_head": null,
-                        "title": "Untitled",
-                        "separator": null,
-                        "edit_template": null,
-                        "isDynamicField": false,
                         "field_mode": "EDITABLE",
+                        "isDynamicField": false,
                         "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
                         "selectionlist": [
                             "Option A|a",
                             "Option B|b",
                             "Option C|c"
                         ],
-                        "helpers": "",
-                        "selectionlistformula": "",
-                        "formula": "",
-                        "ajax_load": null,
-                        "description": ""
-                    },
-                    "type": "PlominoField",
-                    "id": "dropdown",
-                    "title": "Untitled"
+                        "separator": null
+                    }
                 }
-            },
-            "type": "PlominoForm",
-            "id": "template_dropdown",
-            "title": "Dropdown"
+            }
         }
     },
     "id": "macros"

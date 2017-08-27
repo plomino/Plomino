@@ -1154,7 +1154,7 @@ class DesignManager:
     def exportElementAsJSON(self, obj, isDatabase=False, stripFlag = False):
         """
         """
-        data = {}
+        data = OrderedDict({})
         if not isDatabase:
             data['id'] = obj.id
             data['type'] = obj.portal_type
@@ -1162,7 +1162,7 @@ class DesignManager:
         schema = component.getUtility(
             IDexterityFTI, name=obj.portal_type).lookupSchema()
 
-        params = {}
+        params = OrderedDict({})
         def get_data(obj, schema):
             fields = getFieldsInOrder(schema)
             striplist = []
@@ -1171,13 +1171,10 @@ class DesignManager:
                 striplist.append(HELPER_PROPERTY)
                 striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
-                if id == 'id':
+                if id == 'id' or id in striplist:
                     # 'id' is not needed as it is the same as obj.id
                     # it will cause 'CatalogError: The object unique id must
                     #  be a string. ' error when import this exported file.
-                    continue
-                if id in striplist:
-                    params[id] = ''
                     continue
                 #params[id] = getattr(obj, id, None)
                 dm = getMultiAdapter((obj, attr), IDataManager)
@@ -1403,9 +1400,8 @@ class DesignManager:
         content = ""
         inside = False
         for lineNumber, line in enumerate(pythonScript.split('\n')):
-            start_reg = re.match(r'^##\s*START\s+(.*){$', line)
-            end_reg = re.match(r'^##\s*END\s+(.*)}$',line)
-
+            start_reg = re.match(r'^##\s*START\s+(.*){(\s*)$', line)
+            end_reg = re.match(r'^##\s*END\s+(.*)}(\s*)$',line)
             if start_reg and not inside:
                 methodName = start_reg.group(1).strip()
                 inside = True
