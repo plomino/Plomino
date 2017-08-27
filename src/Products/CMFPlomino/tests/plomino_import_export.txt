@@ -318,10 +318,10 @@ Check if JSON file does not contain HTML and formula
     >>> import json
     >>> json_string = export_zip_file.read('mydb/frm1.json')
     >>> frm1_json = json.loads(json_string)
-    >>> print frm1_json['design']['frm1']['params']['form_layout']
-    None
-    >>> print frm1_json['design']['frm1']['elements']['field2']['params']['formula']
-    None
+    >>> 'form_layout' in  frm1_json['design']['frm1']['params']
+    False
+    >>> 'formula' in frm1_json['design']['frm1']['elements']['field2']['params']
+    False
 
 JSON string should not contains space at line end
     >>> lines = json_string.splitlines()
