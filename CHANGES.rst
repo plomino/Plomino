@@ -26,6 +26,8 @@ Changelog
 - Test suite improvements [ivanteoh]
 - Bug fix for set permission macro [ivanteoh]
 - Bug fixes to import/export [quang]
+- Display computed value from selection field in a nice wy [quang]
+
 
 
 2.0b4 (2016-05-27)
