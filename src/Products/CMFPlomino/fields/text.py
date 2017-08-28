@@ -61,3 +61,10 @@ class TextField(BaseField):
 
     read_template = PageTemplateFile('text_read.pt')
     edit_template = PageTemplateFile('text_edit.pt')
+
+    def getFieldValue(self, form, doc=None, editmode_obsolete=False,
+                      creation=False, request=None):
+        fieldValue = super(TextField, self).getFieldValue(form,doc,editmode_obsolete, creation, request)
+        if isinstance(fieldValue, (list, tuple)) and not isinstance(fieldValue, basestring):
+            fieldValue = ', '.join(val.encode('ascii', 'ignore') for val in fieldValue)
+        return fieldValue
