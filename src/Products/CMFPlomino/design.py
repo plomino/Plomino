@@ -77,7 +77,13 @@ script_id = '%(script_id)s'
 # form_-_form_test_email_basic_-_ondisplay
 # column_-_allfrmtest_-_ffullname_-_formula
 # view_-_alltestformonsave_-_selection
-FORM_SCRIPT_TYPES = ['field', 'hidewhen', 'action', 'form']
+# action_-_admin_list_-_download_-_hidewhen'
+# action buttons could happen in both form or view
+ALL_SCRIPT_TYPES = ['action']
+# If it begins with script, the script is in resource folder
+# If it begins with agent, it is agent script
+IGNORE_SCRIPT_TYPES = ['script', 'agent']
+FORM_SCRIPT_TYPES = ['field', 'hidewhen', 'form']
 VIEW_SCRIPT_TYPES = ['column', 'view']
 
 HTML_PROPERTY = "form_layout"
@@ -801,7 +807,24 @@ class DesignManager:
 
         request_context = context
         script_type, obj_id, _ = script_id.split(SCRIPT_ID_DELIMITER, 2)
-        if script_type in FORM_SCRIPT_TYPES:
+        add_request_run_as_owner = True
+        if script_type in ALL_SCRIPT_TYPES:
+            any_obj = self.getForm(obj_id)
+            if any_obj:
+                request_context = any_obj
+            else:
+                any_obj = self.getView(obj_id)
+                if any_obj:
+                    request_context = any_obj
+                else:
+                    # should not happen
+                    raise PlominoScriptException(
+                        request_context,
+                        Exception(),
+                        formula_str,
+                        script_id,
+                        compilation_errors)
+        elif script_type in FORM_SCRIPT_TYPES:
             form_obj = self.getForm(obj_id)
             if form_obj:
                 request_context = form_obj
@@ -825,6 +848,10 @@ class DesignManager:
                     formula_str,
                     script_id,
                     compilation_errors)
+        elif script_type in IGNORE_SCRIPT_TYPES:
+            # should remain the same as original for script and agent
+            # run_as_owner in request should not use in these scripts
+            add_request_run_as_owner = False
         else:
             # should not happen
             raise PlominoScriptException(
@@ -840,15 +867,16 @@ class DesignManager:
         # it causes problems for temp document caching
         # if alter the request itself.
         previous_plomino_run_as_owner = None
-        cache_plomino_run_as_owner = self.getRequestCache(
-            '_plomino_run_as_owner_')
-        if cache_plomino_run_as_owner:
-            # could be script calling script
-            # so need to capture previous script
-            previous_plomino_run_as_owner = cache_plomino_run_as_owner
-        self.setRequestCache(
-            '_plomino_run_as_owner_',
-            run_as_owner(request_context))
+        if add_request_run_as_owner:
+            cache_plomino_run_as_owner = self.getRequestCache(
+                '_plomino_run_as_owner_')
+            if cache_plomino_run_as_owner:
+                # could be script calling script
+                # so need to capture previous script
+                previous_plomino_run_as_owner = cache_plomino_run_as_owner
+            self.setRequestCache(
+                '_plomino_run_as_owner_',
+                run_as_owner(request_context))
 
         result = None
         try:
