@@ -27,6 +27,9 @@ Changelog
 - Bug fix for set permission macro [ivanteoh]
 - Bug fixes to import/export [quang]
 
+- Display lists from selection field in a text field in a nice way[quang]
+
+
 
 2.0b4 (2016-05-27)
 ------------------
