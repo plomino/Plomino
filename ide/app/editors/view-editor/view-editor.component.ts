@@ -173,7 +173,7 @@ export class PlominoViewEditorComponent implements OnInit {
     this.subsetIds = [];
     this.loading = true;
 
-    this.api.fetchViewTable(this.item.url)
+    this.api.fetchViewTable(this.item.url, true)
       .subscribe((fetchResult: [string, PlominoVocabularyViewData, PlominoViewData]) => {
         const html = fetchResult[0];
         const columns = fetchResult[1];
