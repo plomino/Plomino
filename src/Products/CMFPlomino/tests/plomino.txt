@@ -126,6 +126,45 @@ Let's set a layout which contains our fields::
     ... <span class="plominoFieldClass">field3</span></p><p>
     ... <span class="plominoFieldClass">field4</span></p>"""
 
+We can render our form
+
+    >>> render =  db.frm1.restrictedTraverse('@@OpenForm')()
+    >>> '<div><input type="hidden" name="Form" value="frm1"/>' in render
+    True
+    >>> '<p>please enter a value for field1:' in render
+    True
+    >>> '<label for="field1">Title for field1</label>' in render
+    True
+    >>> '<input type="text" id="field1" name="field1" value="" />' in render
+    True
+
+    >>> render =  db.frm1.restrictedTraverse('@@OpenBareForm')()
+    >>> '<div><input type="hidden" name="Form" value="frm1"/>' in render
+    True
+    >>> '<p>please enter a value for field1:' in render
+    True
+    >>> '<label for="field1">Title for field1</label>' in render
+    True
+    >>> '<input type="text" id="field1" name="field1" value="" />' in render
+    True
+
+And we can render it in readonly mode
+
+    >>> request = layer['request']
+    >>> request.set('plomino_form_mode','READ')
+    >>> render =  db.frm1.restrictedTraverse('@@OpenBareForm').__of__(db.frm1)()
+    >>> '<div><input type="hidden" name="Form" value="frm1"/>' in render
+    False
+    >>> '<p>please enter a value for field1:' in render
+    True
+    >>> '<label for="field1">Title for field1</label>' in render
+    False
+    >>> 'Title for field1' in render
+    True
+    >>> '<input type="text" id="field1" name="field1" value="" />' in render
+    False
+    >>> request.set('plomino_form_mode','')
+
 
 Formulas can include scripts from resources
 --------------------------------------------
