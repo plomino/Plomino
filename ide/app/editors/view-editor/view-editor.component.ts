@@ -241,11 +241,11 @@ export class PlominoViewEditorComponent implements OnInit {
 //            }
 //          });
 //
-//          const $thead = $(`[data-url="${ this.item.url }"] table thead`);
-//          const $headRow = $(`[data-url="${ this.item.url }"] .header-row:first`);
+          const $thead = $(`[data-url="${ this.item.url }"] table thead`);
+          const $headRow = $(`[data-url="${ this.item.url }"] .header-row:first`);
 //          const totalColumns = $headRow.find('th').length;
 //
-//          $headRow.appendTo($thead);
+          $headRow.appendTo($thead);
 //
 //          rows.rows.forEach((row, rowIndex) => {
 //            if (!row.length) {
