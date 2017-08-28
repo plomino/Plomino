@@ -26,7 +26,7 @@ Changelog
 - Test suite improvements [ivanteoh]
 - Bug fix for set permission macro [ivanteoh]
 - Bug fixes to import/export [quang]
-
+- Fix wonky view table [quang]
 
 2.0b4 (2016-05-27)
 ------------------
