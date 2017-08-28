@@ -845,3 +845,14 @@ Things shouldn't break if a column indexes a field with the same name as a form.
     7
     >>> db.view1.getAllDocuments(getObject=False)[0]['frm2']
     Missing.Value
+
+We can delete columns and have content indexed fine
+
+    >>> id = db.view1.manage_delObjects(['col_3'])
+
+#    >>> db.getIndex()._catalog.names
+#    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'frm2')
+
+    >>> doc6.save()
+    >>> len(db.getIndex().dbsearch({'question': u'debaser'}))
+    1
