@@ -47,9 +47,14 @@ export class PlominoViewsAPIService {
       })
   }
 
-  fetchViewTable(url: string): Observable<[
+  fetchViewTable(url: string, static_rendering: boolean): Observable<[
     string, PlominoVocabularyViewData, PlominoViewData
   ]> {
+    if (static_rendering) {
+      url += url.indexOf("?") === -1 ? "?" : "&";
+      url = url + "static_rendering=true";
+    }
+      
     const html$ = this.fetchViewTableHTML(url);
     const json$ = this.fetchViewTableColumnsJSON(url);
     const jsonData$ = this.fetchViewTableDataJSON(url);

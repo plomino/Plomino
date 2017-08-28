@@ -173,7 +173,7 @@ export class PlominoViewEditorComponent implements OnInit {
     this.subsetIds = [];
     this.loading = true;
 
-    this.api.fetchViewTable(this.item.url)
+    this.api.fetchViewTable(this.item.url, true)
       .subscribe((fetchResult: [string, PlominoVocabularyViewData, PlominoViewData]) => {
         const html = fetchResult[0];
         const columns = fetchResult[1];
@@ -221,91 +221,91 @@ export class PlominoViewEditorComponent implements OnInit {
           // this.log.warn('new html received', $html.html());
 
           /* attach indexes */
-          columns.results.forEach((result, index) => {
-            const element: HTMLElement = (() => {
-              if (result.Type === 'PlominoColumn') {
-                return $(
-                  `[data-url="${ this.item.url }"] th[data-column="${ result.id }"]`
-                );
-              }
-              else if (result.Type === 'PlominoAction') {
-                return $(
-                  `[data-url="${ this.item.url }"] input#${ result.id }`
-                );
-              }
-            })()
-            .get(0);
-            
-            if (element) {
-              element.dataset.index = (index + 1).toString();
-            }
-          });
-
+//          columns.results.forEach((result, index) => {
+//            const element: HTMLElement = (() => {
+//              if (result.Type === 'PlominoColumn') {
+//                return $(
+//                  `[data-url="${ this.item.url }"] th[data-column="${ result.id }"]`
+//                );
+//              }
+//              else if (result.Type === 'PlominoAction') {
+//                return $(
+//                  `[data-url="${ this.item.url }"] input#${ result.id }`
+//                );
+//              }
+//            })()
+//            .get(0);
+//            
+//            if (element) {
+//              element.dataset.index = (index + 1).toString();
+//            }
+//          });
+//
           const $thead = $(`[data-url="${ this.item.url }"] table thead`);
           const $headRow = $(`[data-url="${ this.item.url }"] .header-row:first`);
-          const totalColumns = $headRow.find('th').length;
-
+//          const totalColumns = $headRow.find('th').length;
+//
           $headRow.appendTo($thead);
-
-          rows.rows.forEach((row, rowIndex) => {
-            if (!row.length) {
-              return;
-            }
-
-            const writeId = row[0];
-            
-            if (row.length === 1) {
-              /* should be empty row here? */
-              return;
-            }
-
-            row.slice(1).forEach((cellData, columnIndex) => {
-              let $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-              
-              if (!$cell.length) {
-                /* create new cell */
-                const $column = $(`[data-url="${ this.item.url }"] th:eq(${ columnIndex })`);
-  
-                if (!$column.length) {
-                  /* something wrong here */
-                  return;
-                }
-  
-                const $row = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex })`);
-  
-                if (!$row.length) {
-                  /* create new row here */
-                  $(`[data-url="${ this.item.url }"] tbody`)
-                    .append('<tr class="header-row count"><td></td></tr>');
-                }
-  
-                $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-  
-                if (!$cell.length) {
-                  $row.append('<td></td>');
-                  $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-                }
-              }
-
-              if (columnIndex === 0) {
-                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
-                cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
-              }
-
-              /* write the data to the cell */
-              $cell.html(cellData);
-            });
-          });
-
-          $(`[data-url="${ this.item.url }"] table tbody tr`).each((t, trElement) => {
-            const missed = totalColumns - $(trElement).find('td').length;
-
-            if (missed) {
-              for (let i = 0; i < missed; i++) {
-                $(trElement).append('<td></td>');
-              }
-            }
-          });
+//
+//          rows.rows.forEach((row, rowIndex) => {
+//            if (!row.length) {
+//              return;
+//            }
+//
+//            const writeId = row[0];
+//            
+//            if (row.length === 1) {
+//              /* should be empty row here? */
+//              return;
+//            }
+//
+//            row.slice(1).forEach((cellData, columnIndex) => {
+//              let $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+//              
+//              if (!$cell.length) {
+//                /* create new cell */
+//                const $column = $(`[data-url="${ this.item.url }"] th:eq(${ columnIndex })`);
+//  
+//                if (!$column.length) {
+//                  /* something wrong here */
+//                  return;
+//                }
+//  
+//                const $row = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex })`);
+//  
+//                if (!$row.length) {
+//                  /* create new row here */
+//                  $(`[data-url="${ this.item.url }"] tbody`)
+//                    .append('<tr class="header-row count"><td></td></tr>');
+//                }
+//  
+//                $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+//  
+//                if (!$cell.length) {
+//                  $row.append('<td></td>');
+//                  $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+//                }
+//              }
+//
+//              if (columnIndex === 0) {
+//                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
+//                cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
+//              }
+//
+//              /* write the data to the cell */
+//              $cell.html(cellData);
+//            });
+//          });
+//
+//          $(`[data-url="${ this.item.url }"] table tbody tr`).each((t, trElement) => {
+//            const missed = totalColumns - $(trElement).find('td').length;
+//
+//            if (missed) {
+//              for (let i = 0; i < missed; i++) {
+//                $(trElement).append('<td></td>');
+//              }
+//            }
+//          });
 
           $(`[data-url="${ this.item.url }"] table`)
             .addClass('mdl-data-table mdl-js-data-table ' 
