@@ -582,7 +582,7 @@ A name field allow to select a user in the Plone portal members list::
 #     >>> """<option value="%s">ola</option>""" % (doc4.id) in result
 #     True
 
-A field can be computed::
+A field can be computed:
 
     >>> id = db.frm2.invokeFactory('PlominoField',
     ...         id='welcome',
@@ -596,6 +596,28 @@ A field can be computed::
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(doc4)
     u'<div><p>11 </p><p><span class="TEXTFieldRead-TEXT">\n    \n    \n        Welcome test_user_1_\n    \n</span></p></div>'
+
+A field can be computed from a selection field: and displayed properly
+
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='profilelist',
+    ...         title='User Profile',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm2.profilelist.selectionlist = [u'Admin|admin', u'User|user']
+    >>> db.frm2.profilelist.widget="SELECT"
+    >>> id = db.frm2.invokeFactory('PlominoField',
+    ...         id='user_role',
+    ...         title='User Role',
+    ...         field_type="TEXT",
+    ...         field_mode="COMPUTED")
+    >>> db.frm2.user_role.formula = """plominoDocument.getItem('profilelist')"""
+    >>> db.frm2.form_layout = """<p><span class="plominoFieldClass">user_role</span></p>"""
+    >>> doc4.setItem('profilelist',[u'admin', u'user'])
+    >>> doc4.save()
+    >>> db.cleanRequestCache()
+    >>> db.frm2.displayDocument(doc4)
+    u'<p><span class="TEXTFieldRead-TEXT">\n    \n    \n        admin, user\n    \n</span></p>'
 
 Visual form layouts:
 Convert visual TinyMCE layout back to Plomino::
@@ -884,3 +906,14 @@ Things shouldn't break if a column indexes a field with the same name as a form.
     7
     >>> db.view1.getAllDocuments(getObject=False)[0]['frm2']
     Missing.Value
+
+We can delete columns and have content indexed fine
+
+    >>> id = db.view1.manage_delObjects(['col_3'])
+
+#    >>> db.getIndex()._catalog.names
+#    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'frm2')
+
+    >>> doc6.save()
+    >>> len(db.getIndex().dbsearch({'question': u'debaser'}))
+    1
