@@ -117,6 +117,7 @@ I go to the plominodatabase view
 
 I add a form by click
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Wait Until Element Is Visible     jquery=#add-new-form-tab
   Click Element  jquery=#add-new-form-tab
   wait until page contains element  jquery=#modal-tab-plus[open]
   Click Element  jquery=#modal-tab-plus button[data-create="form"]
@@ -134,9 +135,10 @@ I add a hidewhen by click
 
 I add a "${field}" field
   Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
-  wait until page contains element  jquery=.plomino-block-preloader:visible
-  sleep  0.5s
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Wait Until Element Is Visible     jquery=.mce-tinymce
+  # wait until page contains element  jquery=.plomino-block-preloader:visible
+  # sleep  0.5s
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a "${field}" field by dnd
   sleep  0.3s
@@ -146,13 +148,6 @@ I add a "${field}" field by dnd
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   sleep  0.3s
-
-I create a view
-  Click Link  Add
-  wait until page contains element  jquery=#PlominoView
-  wait until page contains element  jquery=div.main-app.panel
-  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="View"]
-  wait until page contains  new-view
 
 I add a form by dnd
   wait until page contains element  jquery=#PlominoForm
@@ -189,17 +184,15 @@ I change the fieldmode to "${mode}" 
 wait until form is loaded
   wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]
   wait until page contains element   jquery=.mce-edit-area iframe:visible
-  select frame  jquery=.mce-edit-area iframe:visible
-  wait until page contains element   css=.mce-content-body
-  unselect frame
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
+
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
+  Sleep   30s
   Click Element  jquery=.mdl-button:visible:contains("Save")
-  wait until page contains element  jquery=.mdl-button:visible:contains("Save")
+  wait until page contains element   jquery=.mdl-button:visible:contains("Save")   60s
 
 I enter "${value}" in "${field}" in the form
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
@@ -244,38 +237,6 @@ I add a macro "${macro}" to "${tab}"
 I input the text "${text}" inside the field with id "${fieldid}"
   Input Text  jquery=#${fieldid}  ${text}
 
-I add an action "${actionid}"
-  Click Link  Add
-  wait until page contains element  jquery=#action
-  wait until page contains element  jquery=div.main-app.panel
-  Click Element  jquery=#action
-  wait until page contains element  jquery=.plomino-block-preloader:visible
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Click Element  jquery=.actionButtons input[type="button"]:last
-  wait until page contains element  jquery=.actionButtons input[type="button"].view-editor__action--selected
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Input Text  jquery=#form-widgets-IShortName-id  ${actionid}
-  Input Text  jquery=#form-widgets-IBasic-title  ${actionid}
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-
-I add a column "${myfield}"
-  Click Link  Add
-  Click Element  jquery=#column
-  wait until page contains element  jquery=.plomino-block-preloader:visible
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Click Element  jquery=.view-editor__column-header:last
-  wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
-  Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
-  Select From List By Value  jquery=#form-widgets-displayed_field  the-form-is-saved/${myfield}
-  sleep  2s
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-
 I preview "${formid}"
   Click Link  Form Settings
   wait until page contains element  jquery=.mdl-button:visible:contains("Preview")
@@ -287,14 +248,28 @@ I preview "${formid}"
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/view
 
-I open service tab "${tabId}"
+I open service tab for Import/export of data
   Click Link    Service
-  wait until page contains  ${tabId}
-  Click Element  jquery=.mdl-button:visible:contains(${tabId})
+  Wait Until Element Is Visible     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
+  Click Element     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
+  Wait Until Element Is Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']     100s
+  
+    # wait until page contains  ${tabId}
+  # Click Element  jquery=.mdl-button:visible:contains(${tabId})
 
 I can see Import/Export dialog open
-  sleep  0.5s
-  wait until page contains element  jquery=#db-import-export-dialog:visible
+  Element Should Be Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']
+
+I click the tab "Design import/export" in Import/Export dialog
+  Click Element     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div a[href='#design-import-export']
+  Wait Until Element Is Visible     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign']
+
+I select Export To Zip File
+  Click Element     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign'] table tbody tr td label[for='targettype-zipfile']
+
+I click Export button
+  Click Element     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign'] table tbody tr td input[name='submit_export']
+
 
 
 # --- THEN -------------------------------------------------------------------
@@ -313,23 +288,13 @@ I will see that hidewhen is present
    and I will see the "end" hidewhen on the path "/p[2]/span[2]"
 
 I can see "${formid}" is open
-  Set Selenium Timeout  10 seconds
+  Wait Until Element Is Visible     jquery=plomino-tabs .mdl-tabs .mdl-tabs__tab-bar a span:contains('${formid}')     10s
+  Wait Until Element Is Visible     jquery=.mce-tinymce       30s
+  # Wait Until Element Is Visible     jquery=.mce-tinymce       30s
   # Capture Page Screenshot
-  wait until page contains element  css=div.mce-edit-area
-  page should contain   ${formid}
-  page should contain element  css=div.mce-edit-area
-
-I can see a view editor listing my data
-  Wait until page contains element  jquery=.view-editor:contains("New View")
-  Page should contain element  jquery=.view-editor:contains("New View")
-
-I will see column "${columnid}" in the view
-  Wait until page contains element  jquery=.view-editor .view-editor__column-header[data-column="${columnid}"]
-  Page should contain element  jquery=.view-editor .view-editor__column-header[data-column="${columnid}"]
-
-I will see action "${actionid}" in the view
-  Wait until page contains element  jquery=.view-editor .actionButtons input[id="${actionid}"]
-  Page should contain element  jquery=.view-editor .actionButtons input[id="${actionid}"]
+  # wait until page contains element  css=div.mce-edit-area
+  # page should contain   ${formid}
+  # page should contain element  css=div.mce-edit-area
 
 I can see field "${fieldid}" in the editor
   Wait until page contains  Insert
