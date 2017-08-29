@@ -66,19 +66,19 @@ I have a form open
 I have an additional form open
   Given I open the first form   #TODO   When I open a form "frm_test"
 
-I have a form and some data saved
-  Given a logged-in test user
-    and I open the ide for "mydb"
-    and I open the first form
-    sleep  1s
-    and I add a "Text" field
-    and I edit the label "text" to "First name"
-    Click Link  Add
-    and I add a "Text" field
-    and I edit the label "text_1" to "Last name"
-    Click Link  Add
-    and I add a "Date" field
-    and I save the form
+# Given I have a form and some data saved
+#   Given a logged-in test user
+#     and I open the ide for "mydb"
+#     and I open the first form
+#     sleep  1s
+#     and I add a "Text" field
+#     and I edit the label "text" to "First name"
+#     Click Link  Add
+#     and I add a "Text" field
+#     and I edit the label "text_1" to "Last name"
+#     Click Link  Add
+#     and I add a "Date" field
+#     and I save the form
 
 
 # --- WHEN -------------------------------------------------------------------

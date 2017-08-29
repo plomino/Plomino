@@ -11,24 +11,19 @@ Test Teardown  Test Tear Down
 #View tests - Work In Progress
 
 Scenario: I can add a view
-    #Given I have a form TestingOnly
-  #Given I have a form and some data saved
-    Given I have form and I saved some data  #Work In Progress
-
-     When I create a view
+  Given I have a form and some data saved
+   When I create a view
    # Then I can see "new-view" is open
     Then I can see a view editor listing my data
 
 Scenario: I can add a column to a view
-  #Given I have a form and some data saved
-    Given I have form and I saved some data
-     When I create a view
-    # and I can see "new-view" is open
-     and I can see a view editor listing my data
-     and I add a column "text"
-     and I add a column "text_1"
+  Given I have a form and some data saved
+   When I create a view
+    Then I can see a view editor listing my data
+   When I add a column "text"
     Then I will see column "text" in the view
-     and I will see column "text_1" in the view
+   When I add a column "text_1"
+    Then I will see column "text_1" in the view
 
 # Scenario: I can add an action to a view
 #   Given I have a form and some data saved
@@ -61,7 +56,7 @@ Scenario: I can add a column to a view
 #     and I add a form by click
 #    Then I can see "new-form-1" is open
 
-# Scenario: I can add filter a view
+# Scenario: I can add filter a view  ============This one is really disabled scenario
 #  Given I have a form and some data saved
 #   When I create a view
 #    and I see > 2 documents in the view
