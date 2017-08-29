@@ -176,10 +176,10 @@ export class PlominoViewEditorComponent implements OnInit {
     this.api.fetchViewTable(this.item.url, true)
       .subscribe((fetchResult: [string, PlominoVocabularyViewData, PlominoViewData]) => {
         const html = fetchResult[0];
-        const columns = fetchResult[1];
+       // const columns = fetchResult[1];
         const rows = fetchResult[2];
 
-        this.subsetIds = columns.results.map(r => r.id);
+       // this.subsetIds = columns.results.map(r => r.id);
 
         let $html = $(html);
         $html = $html.find('article');
@@ -191,10 +191,15 @@ export class PlominoViewEditorComponent implements OnInit {
           .addClass('view-editor__actions')
           .removeClass('formControls');
 
+        let columns:Array<HTMLElement> = [];
+        let index = 1;
         $html.find('th[data-column]').each((i, columnElement: HTMLElement) => {
           columnElement.classList.add('view-editor__column-header');
           columnElement.draggable = true;
+          columnElement.dataset.index = (index++).toString();
+          columns.push(columnElement);
         });
+        this.subsetIds = columns.map(r => r.dataset.column);
 
         $html.find('.actionButtons input[type="button"]')
           .addClass('mdl-button mdl-js-button mdl-button--primary mdl-button--raised')
@@ -240,62 +245,62 @@ export class PlominoViewEditorComponent implements OnInit {
 //              element.dataset.index = (index + 1).toString();
 //            }
 //          });
-//
+
           const $thead = $(`[data-url="${ this.item.url }"] table thead`);
           const $headRow = $(`[data-url="${ this.item.url }"] .header-row:first`);
-//          const totalColumns = $headRow.find('th').length;
-//
+          const totalColumns = $headRow.find('th').length;
+
           $headRow.appendTo($thead);
-//
-//          rows.rows.forEach((row, rowIndex) => {
-//            if (!row.length) {
-//              return;
-//            }
-//
-//            const writeId = row[0];
-//            
-//            if (row.length === 1) {
-//              /* should be empty row here? */
-//              return;
-//            }
-//
-//            row.slice(1).forEach((cellData, columnIndex) => {
-//              let $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-//              
-//              if (!$cell.length) {
-//                /* create new cell */
-//                const $column = $(`[data-url="${ this.item.url }"] th:eq(${ columnIndex })`);
-//  
-//                if (!$column.length) {
-//                  /* something wrong here */
-//                  return;
-//                }
-//  
-//                const $row = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex })`);
-//  
-//                if (!$row.length) {
-//                  /* create new row here */
-//                  $(`[data-url="${ this.item.url }"] tbody`)
-//                    .append('<tr class="header-row count"><td></td></tr>');
-//                }
-//  
-//                $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-//  
-//                if (!$cell.length) {
-//                  $row.append('<td></td>');
-//                  $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
-//                }
-//              }
-//
-//              if (columnIndex === 0) {
-//                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
-//                cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
-//              }
-//
-//              /* write the data to the cell */
-//              $cell.html(cellData);
-//            });
-//          });
+
+          rows.rows.forEach((row, rowIndex) => {
+            if (!row.length) {
+              return;
+            }
+
+            const writeId = row[0];
+            
+            if (row.length === 1) {
+              /* should be empty row here? */
+              return;
+            }
+
+            row.slice(1).forEach((cellData, columnIndex) => {
+              let $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+              
+              if (!$cell.length) {
+                /* create new cell */
+                const $column = $(`[data-url="${ this.item.url }"] th:eq(${ columnIndex })`);
+  
+                if (!$column.length) {
+                  /* something wrong here */
+                  return;
+                }
+  
+                const $row = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex })`);
+  
+                if (!$row.length) {
+                  /* create new row here */
+                  $(`[data-url="${ this.item.url }"] tbody`)
+                    .append('<tr class="header-row count"><td></td></tr>');
+                }
+  
+                $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+  
+                if (!$cell.length) {
+                  $row.append('<td></td>');
+                  $cell = $(`[data-url="${ this.item.url }"] tbody tr:eq(${ rowIndex }) td:eq(${ columnIndex })`);
+                }
+              }
+
+              if (columnIndex === 0) {
+                const href = `${ this.dbService.getDBLink() }/document/${ writeId }`;
+                cellData = `<a href="${ href }" target="_blank">${ cellData }</a>`;
+              }
+
+              /* write the data to the cell */
+              $cell.html(cellData);
+            });
+          });
 //
 //          $(`[data-url="${ this.item.url }"] table tbody tr`).each((t, trElement) => {
 //            const missed = totalColumns - $(trElement).find('td').length;
@@ -392,8 +397,8 @@ export class PlominoViewEditorComponent implements OnInit {
 
   onDragLeave(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
-      const $tr = $(`[data-url="${ this.item.url }"] table thead tr th`);
-      $tr.remove();
+      const $th = $(`[data-url="${ this.item.url }"] table thead tr th.view-editor__column-header--drop-preview`);
+      $th.remove();
       return true;
     }
     else if (dropData.dragData.type && dropData.dragData.type === 'action') {
