@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "Selection of elements from the current form/field",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,7 @@
                         "edit_template": null,
                         "title": "Type of element from the local form or field",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
@@ -64,6 +66,7 @@
                         "edit_template": null,
                         "title": "Include those from other forms",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "CHECKBOX"
@@ -78,6 +81,34 @@
                         "isResetOnHide": false,
                         "title": "include_other_hidewhen",
                         "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_1",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"element_type\" in Fields ",
+                                    "value_type": "text",
+                                    "field_value": "Fields",
+                                    "formula": "\nfield_name = \"\"\"element_type\"\"\"\nfield_value = \"\"\"Fields\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "element_type",
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_1",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
                         "ajax_load": null,
                         "ajax_include_head": null
                     }
@@ -97,6 +128,7 @@
                         "edit_template": null,
                         "title": "selectionlistformula",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",

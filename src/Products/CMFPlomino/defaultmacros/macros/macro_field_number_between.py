@@ -6,5 +6,6 @@ return "Validate number between {min} and {max}".format(min=min, max=max)
 
 
 
+
 ## END document_title }
 

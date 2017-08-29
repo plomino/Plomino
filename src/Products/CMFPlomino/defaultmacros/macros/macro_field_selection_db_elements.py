@@ -5,5 +5,6 @@ return 'Select from {type}'.format(type=type_)
 
 
 
+
 ## END document_title }
 

@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "Number in range",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,7 @@
                         "edit_template": null,
                         "title": "Combination logic",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
@@ -61,6 +63,7 @@
                         "edit_template": null,
                         "title": "Formula",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",
@@ -83,6 +86,18 @@
                         "edit_template": null,
                         "title": "Field name for less than",
                         "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "Form": "macro_field_selection_db_elements",
+                                    "_macro_id_": "macro_field_selection_db_elements_1",
+                                    "element_type": "Fields",
+                                    "include_other": true,
+                                    "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = None\nif ctype != 'PlominoView':\n    if ctype == 'PlominoForm':\n        editform = editcontext\n    else:\n        editform = editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm, form_name=''):\n    if form_name:\n        return '{title} ({id}) from form: {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)\n    return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\n\ndef get_fields(form_element, form_name):\n    field_items = []\n    for this_form in form_element.getFormFields():\n        try:\n            if this_form.getPortalTypeName() == \"PlominoField\":\n                field_items.append(item(this_form, form_name))\n        except AttributeError:\n            continue\n    return field_items\n\ncurrent_form_name = ''\ncurrent_form_items = ['Form ID|Form']\nif editform:\n    current_form_name = \"{title} ({id})\".format(\n        title=editform.Title(),\n        id=editform.id)\n    current_form_items = get_fields(editform, current_form_name)\n\nother_form_items = []\nfor other_form in editdb.getForms():\n    try:\n        if other_form.getPortalTypeName() == \"PlominoForm\":\n            other_form_name = \"{title} ({id})\".format(\n                title=other_form.Title(),\n                id=other_form.id)\n            if current_form_name != other_form_name:\n                other_form_items += get_fields(other_form, other_form_name)\n    except AttributeError:\n        continue\nreturn current_form_items + other_form_items\n",
+                                    "title": "Select from Fields"
+                                }
+                            ]
+                        ],
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
@@ -105,6 +120,7 @@
                         "edit_template": null,
                         "title": "Less than this number",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "number_type": "INTEGER",
@@ -127,6 +143,18 @@
                         "edit_template": null,
                         "title": "Field name for greater than",
                         "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "Form": "macro_field_selection_db_elements",
+                                    "_macro_id_": "macro_field_selection_db_elements_1",
+                                    "element_type": "Fields",
+                                    "include_other": true,
+                                    "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = None\nif ctype != 'PlominoView':\n    if ctype == 'PlominoForm':\n        editform = editcontext\n    else:\n        editform = editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm, form_name=''):\n    if form_name:\n        return '{title} ({id}) from form: {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)\n    return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\n\ndef get_fields(form_element, form_name):\n    field_items = []\n    for this_form in form_element.getFormFields():\n        try:\n            if this_form.getPortalTypeName() == \"PlominoField\":\n                field_items.append(item(this_form, form_name))\n        except AttributeError:\n            continue\n    return field_items\n\ncurrent_form_name = ''\ncurrent_form_items = ['Form ID|Form']\nif editform:\n    current_form_name = \"{title} ({id})\".format(\n        title=editform.Title(),\n        id=editform.id)\n    current_form_items = get_fields(editform, current_form_name)\n\nother_form_items = []\nfor other_form in editdb.getForms():\n    try:\n        if other_form.getPortalTypeName() == \"PlominoForm\":\n            other_form_name = \"{title} ({id})\".format(\n                title=other_form.Title(),\n                id=other_form.id)\n            if current_form_name != other_form_name:\n                other_form_items += get_fields(other_form, other_form_name)\n    except AttributeError:\n        continue\nreturn current_form_items + other_form_items\n",
+                                    "title": "Select from Fields"
+                                }
+                            ]
+                        ],
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
@@ -149,6 +177,7 @@
                         "edit_template": null,
                         "title": "Greater than this number",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "number_type": "INTEGER",
