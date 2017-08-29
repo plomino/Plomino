@@ -31,6 +31,6 @@ COPY . /buildout/
 RUN chown -R seluser.seluser /buildout
 
 USER seluser
-RUN cd /buildout && bin/buildout -c travis.cfg test resources robot instance
+RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
 RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide && npm install && npm run build"]
 WORKDIR /buildout
