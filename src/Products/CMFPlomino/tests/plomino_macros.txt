@@ -4,15 +4,19 @@ Plomino basic maco tests
     >>> import zope.event
     >>> from zope.lifecycleevent import ObjectModifiedEvent
 
+Import basic macro fo testing
+
+    >>> import os
+    >>> dir = os.path.abspath(os.path.join(__file__ ,"../../defaultmacros/macros"))
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='defaultmacros')
+    >>> db = portal.defaultmacros
+    >>> db.importDesignFromJSON(from_folder=dir, replace = True)
 
 A form may consist of multiple subforms. Set up some simple forms::
 
-    >>> portal = layer['portal']
-    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
-    >>> db = portal.advdb
+
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
-
-
     >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
     ...         title='Field 1',
     ...         mandatory=False,
@@ -186,3 +190,152 @@ If we insert our own custom code, this is preserved
     ...
     ### END macro_field_validate_invalid_2 ###
 
+Check macro helpers
+
+    >>> print db.template_email.email.validation_formula
+    ### START macro_condition_field_text_validate_email_1 ###
+    ...
+
+    >>> print db.macro_action_redirect.form_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_action_redirect.form_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_action_redirect.url_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_action_redirect.view_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_action_redirect.view_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_action_view_csv_download.view_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_condition_action.action_id.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_condition_field_datetime_between.field_name.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_condition_field_datetime_between.max_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_condition_field_datetime_between.min_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_condition_field_got_substring.field_name.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_condition_field_text_validate_email.field_id.selectionlistformula
+    ### START macro_field_selection_db_elements_2 ###
+    ...
+
+    >>> print db.macro_condition_number_range_in.less_field_name.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_condition_number_range_in.more_field_name.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_field_display_sum.fields_name.selectionlistformula
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_field_required_selection.field_name.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_field_selection_db_elements.include_other_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_field_text_display.field_name.selectionlistformula
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_csv_download.view_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.form_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.form_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.request_value.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.url_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.view_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onload.view_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onsave.form_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onsave.form_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onsave.onsavedocument.formula
+    doc = plominoContext
+    ...
+
+    >>> print db.macro_form_redirect_onsave.url_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onsave.view_hidewhen.formula
+    ### START macro_condition_field_got_substring_1 ###
+    ...
+
+    >>> print db.macro_form_redirect_onsave.view_redirect.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...
+
+    >>> print db.macro_view_select_view_form.formlist.selectionlistformula
+    <BLANKLINE>
+    ### START macro_field_selection_db_elements_1 ###
+    ...

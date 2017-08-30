@@ -20,6 +20,7 @@ def test_suite():
         'plomino_accesscontrol.txt',
         'plomino_advanced.txt',
         'plomino_import_export.txt',
+        'plomino_macros.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',
