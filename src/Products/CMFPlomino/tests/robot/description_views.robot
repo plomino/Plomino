@@ -47,9 +47,9 @@ I create a view
 
 I add an action "${actionid}"
   Click Link  Add
-  wait until page contains element  jquery=#action
-  wait until page contains element  jquery=div.main-app.panel
-  Click Element  jquery=#action
+  Wait Until Element Is Visible   jquery=#action
+  Wait Until Element Is Visible   jquery=div.main-app.panel
+  Click Element   jquery=#action
   wait until page contains element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.actionButtons input[type="button"]:last
@@ -57,12 +57,17 @@ I add an action "${actionid}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${actionid}
   Input Text  jquery=#form-widgets-IBasic-title  ${actionid}
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
+  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
+
+  # Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a column "${myfield}"
   Click Link  Add
+  Wait Until Element Is Visible     jquery=#column
   Click Element  jquery=#column
   wait until page contains element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
