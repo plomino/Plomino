@@ -30,6 +30,8 @@ Changelog
 - Fix wonky view table [quang]
 - Display lists from selection field in a text field in a nice way[quang]
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
+- Modify macro select_db_element to allow select field from subform [quang]
+
 
 - Allow select 'current field' from selection field macro [quang]
 - Allow macro condition field to select 'current field' from field list [quang]
@@ -37,6 +39,9 @@ Changelog
 - Modify macro_number_range to use single field [quang]
 - fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
 - Remove macro 'Select user data' to move it outside of basic macros [quang]
+- Allow select field from sub-form [quang]
+- Modify macro select_db_element to allow select field from subform [quang]
+- Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
 
 2.0b4 (2016-05-27)
 ------------------

@@ -1,0 +1,83 @@
+Plomino basic maco tests
+=========================
+
+    >>> import zope.event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+
+Import basic macro fo testing
+
+    >>> import os
+    >>> dir = os.path.abspath(os.path.join(__file__ ,"../../../defaultmacros/macros"))
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='db1')
+    >>> db = portal.db1
+    >>> db.importDesignFromJSON(from_folder=dir, replace = True)
+
+Set up form and sub-form
+    >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
+    >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
+    ...         title='field1',
+    ...         mandatory=True,
+    ...         field_type="SELECTION",
+    ...         widget = "SELECT",
+    ...         selectionlist= None,
+    ...         field_mode="EDITABLE")
+    >>> sub1 = db.invokeFactory('PlominoForm', id='sub1', title='Sub 1')
+    >>> id = db.sub1.invokeFactory('PlominoField', id='field2',
+    ...         title='field2',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.sub1.form_layout = """
+    ... <span class="plominoLabelClass">field1</span></p>
+    ... <p>Form with empty sub-form</p><span class="plominoSubformClass">sub1</span>"""
+
+
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+Post request to field_validation_email macro to get the list of fields in form frm1
+    >>> from urllib import urlencode
+    >>> post_url = '%s/%s/macro_condition_field_text_validate_email/OpenForm' % (portal_url, db.id)
+    >>> query_params = dict(ajax_load = 1, Plomino_Parent_Field ='__dummy__', Plomino_Parent_Form = 'macro_condition_field_text_validate_email', Plomino_Macro_Context='/plone/db1/frm1')
+    >>> post_url =  post_url + '?' + urlencode(query_params)
+    >>> data = urlencode(dict(_macro_id_= 'macro_condition_field_text_validate_email_2'))
+    >>> browser.addHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8')
+    >>> browser.addHeader('Content-Length',len(data))
+    >>> browser.post(post_url,data)
+
+Verify all field of Fomr1 and Sub-form1 in optons
+    >>> 'field1' in browser.getControl(name='field_id').options
+    True
+    >>> 'field2' in browser.getControl(name='field_id').options
+    True
+
+
+
