@@ -109,20 +109,20 @@ class Bundle:
                 elementids = fname.split('.')
                 self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1], None, file_path))
 
-    def contents(self,contentType =  None):
-        for id , type,  content, file_path in self.contentList:
-            if contentType and contentType != type:
+    def contents(self, content_type=None):
+        for obj_id, obj_type,  content, file_path in self.contentList:
+            if content_type and content_type != obj_type:
                 continue
             if content:
-                yield (id, type, content)
+                yield (obj_id, obj_type, content)
             if self.folder:
                 fileobj = codecs.open(file_path, 'r', 'utf-8')
-                yield (id, type, fileobj.read())
+                yield (obj_id, obj_type, fileobj.read())
             if self.zip_file:
-                yield (id, type, self.zip_file.open(file_path).read())
+                yield (obj_id, obj_type, self.zip_file.open(file_path).read())
 
-    def addContent(self, id, type, content, file_path = None):
-        self.contentList.append((id, type, content, file_path))
+    def addContent(self, obj_id, obj_type, content, file_path=None):
+        self.contentList.append((obj_id, obj_type, content, file_path))
 
 class DesignManager:
 
@@ -539,9 +539,11 @@ class DesignManager:
                 else:
                     bundle = self.exportDesignAsBundle(
                         elementid=id)
-                    for id , type ,  content in bundle.contents():
+                    for obj_id, obj_type, content in bundle.contents():
                         if content:
-                            path = os.path.join(exportpath, id +"." +type)
+                            path = os.path.join(
+                                exportpath,
+                                obj_id + "." + obj_type)
                             self.saveFile(path, content)
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.json'))
@@ -1035,9 +1037,9 @@ class DesignManager:
             else:
                 bundle = self.exportDesignAsBundle(
                     elementid=id)
-                for id , type, content in bundle.contents():
+                for obj_id, obj_type, content in bundle.contents():
                     if content:
-                        filename = os.path.join(db_id, id +"."+type)
+                        filename = os.path.join(db_id, obj_id + "." + obj_type)
                         zip_file.writestr(filename, content)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
@@ -1282,7 +1284,7 @@ class DesignManager:
                 raise PlominoDesignException('%s does not exist' % from_folder)
             bundle = Bundle(folder=from_folder)
             total_elements = 0
-            for id, type, jsonstring in bundle.contents('json'):
+            for obj_id, obj_type, jsonstring in bundle.contents('json'):
                 total_elements += 1
                 json_strings.append(jsonstring)
 
