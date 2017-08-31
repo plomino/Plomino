@@ -9,8 +9,6 @@ field_id = '{field_id}'
 if field_id =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_id):
-    return False
 value = plominoContext.getItem(field_id)
 """.format(field_id = field_id)
 word_code = """
@@ -50,4 +48,4 @@ return len(new_strs.split()) < {total_count}
         )
 return code
 ## END formula }
-
+

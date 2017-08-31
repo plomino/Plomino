@@ -10,8 +10,6 @@ field_id = '{field_id}'
 if field_id =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_id):
-    return False
 less_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
 lf_field = getattr(form, field_id)
@@ -32,8 +30,6 @@ field_id = '{field_id}'
 if field_id =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_id):
-    return False
 more_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
 mf_field = getattr(form, field_id)
@@ -54,8 +50,6 @@ field_id = '{field_id}'
 if field_id =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_id):
-    return False
 less_field_result = plominoContext.getItem(field_id)
 more_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
@@ -81,4 +75,4 @@ return result
     )
 return code
 ## END formula }
-
+

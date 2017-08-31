@@ -5,11 +5,9 @@ field_id = '{field_id}'
 if field_id =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_id):
-    return False
 value = plominoDocument.getItem(field_id)
 return is_email(value)
 """ .format(field_id=field_id)
 return code
 ## END formula }
-
+

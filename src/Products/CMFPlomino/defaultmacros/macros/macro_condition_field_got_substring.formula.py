@@ -11,8 +11,6 @@ field_name = \"\"\"{field_name}\"\"\"
 if field_name =='@@CURRENT_FIELD':
     script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
     field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
-if not plominoContext.hasItem(field_name):
-    return False
 field_value = \"\"\"{field_value}\"\"\"
 field_result = plominoContext.getItem(field_name)
 form = plominoContext.getForm()
@@ -66,4 +64,4 @@ return not result
     )
 return code
 ## END formula }
-
+
