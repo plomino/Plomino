@@ -31,6 +31,9 @@ Changelog
 - Display lists from selection field in a text field in a nice way[quang]
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
 - Allow select 'current field' from selection field macro [quang]
+- Allow macro condition field to select 'current field' from field list [quang]
+- Add Match text macro that support platform-dependant regular expression library [quang]
+- Modify macro_number_range to use single field [quang]
 
 2.0b4 (2016-05-27)
 ------------------
