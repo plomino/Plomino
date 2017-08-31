@@ -30,6 +30,7 @@ Changelog
 - Fix wonky view table [quang]
 - Display lists from selection field in a text field in a nice way[quang]
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
+- Allow select 'current field' from selection field macro [quang]
 
 2.0b4 (2016-05-27)
 ------------------
