@@ -7,6 +7,9 @@ min_datetime_ = doc.getItem('min_datetime')
 max_datetime_ = doc.getItem('max_datetime')
 code = """
 field_name = '{field_name}'
+if field_name =='@@CURRENT_FIELD':
+    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)
+    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
 if not plominoContext.hasItem(field_name):
     return False
 field_result = plominoContext.getItem(field_name)
@@ -42,9 +45,5 @@ else:
     max_datetime=max_datetime_
 )
 return code
-
-
-
-
 ## END formula }
 
