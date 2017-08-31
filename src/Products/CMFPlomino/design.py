@@ -87,7 +87,6 @@ FORM_SCRIPT_TYPES = ['field', 'hidewhen', 'form']
 VIEW_SCRIPT_TYPES = ['column', 'view']
 
 HTML_PROPERTY = "form_layout"
-HELPER_PROPERTY = "helpers"
 
 class Bundle:
 
@@ -1198,7 +1197,6 @@ class DesignManager:
             striplist = []
             if stripFlag:
                 striplist.append(HTML_PROPERTY)
-                striplist.append(HELPER_PROPERTY)
                 striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
                 if id == 'id' or id in striplist:

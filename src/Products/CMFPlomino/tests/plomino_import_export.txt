@@ -151,6 +151,19 @@ A field can be computed::
     >>> db.frm2.welcome.formula = """message="Welcome "+plominoDocument.buyer\nreturn message"""
     >>> db.frm2.form_layout = """11 <p><span class="plominoFieldClass">welcome</span></p>"""
 
+A field can contains helpers
+    >>> range = {"more_field_value":1,
+    ...    "more_field_name":"field1",
+    ...    "less_field_name":"field1",
+    ...    "and_or":"or",
+    ...    "less_field_value":10,
+    ...    "Form":"macro_condition_number_range_in",
+    ...    "_macro_id_":"macro_condition_number_range_in_2"}
+    >>> invalid = {"invalid_message":"Not in range",
+    ...    "Form":"macro_field_validate_invalid",
+    ...    "_macro_id_":"macro_field_validate_invalid_2"}
+    >>> db.frm2.welcome.helpers = [[range,invalid]]
+
 
 
 
@@ -223,6 +236,8 @@ A field can be computed::
     >>> db.importDesignFromJSON(s)
     >>> db.frm2.welcome.formula
     u'message="No XML welcome here! "+plominoDocument.buyer\nreturn message'
+    >>> db.frm2.welcome.helpers
+    [[OrderedDict([(u'more_field_value', 1), (u'Form', u'macro_condition_number_range_in'), (u'more_field_name', u'field1'), (u'less_field_name', u'field1'), (u'and_or', u'or'), (u'_macro_id_', u'macro_condition_number_range_in_2'), (u'less_field_value', 10)]), OrderedDict([(u'_macro_id_', u'macro_field_validate_invalid_2'), (u'Form', u'macro_field_validate_invalid'), (u'invalid_message', u'Not in range')])]]
 
 # Ensure the imported order is correct
 

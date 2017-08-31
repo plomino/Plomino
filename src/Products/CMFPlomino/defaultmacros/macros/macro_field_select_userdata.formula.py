@@ -1,5 +1,4 @@
 ## START formula {
-## START formula {
 
 PLONE = """
 
@@ -24,6 +23,7 @@ value_if_empty = doc.getItem('value-if-empty', '')
 code = PLONE.format(field_name=field_name, member_id=member_id, value_if_empty=value_if_empty)
 
 return code
+
 
 ## END formula }
 
