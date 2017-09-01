@@ -15,7 +15,7 @@ Given I have a form TestingOnly
     Click Link  Add
     and I add a "Date" field
 
-Given I have a form and some data saved
+I have a form and some data saved
     Given a logged-in test user
     and I open the ide for "mydb"
     and I open the first form

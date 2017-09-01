@@ -51,12 +51,12 @@ Scenario: I can rename a form and then create new form and then go back and repe
     and I add a form by click
    Then I can see "new-form-1" is open
 
-# Scenario: I can add filter a view   <---- Work in progress
-#  Given I have a form and some data saved
-#   When I create a view
-#    and I see > 2 documents in the view
-#    and I add a macro the the "view settings" called "number range"
-#    and I set the range to <5
-#   Then I will see less than 2 documents in the view
+# Scenario: I can add filter to a view   # Work in progress
+#   Given I have a form and some data saved
+#    When I create a view
+#     and I see > 2 documents in the view
+#     and I add a macro the the "view settings" called "number range"
+#     and I set the range to <5
+#    Then I will see less than 2 documents in the view
 
 
