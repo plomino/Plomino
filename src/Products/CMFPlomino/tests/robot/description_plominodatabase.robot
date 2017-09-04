@@ -134,7 +134,7 @@ I add a hidewhen by click
    # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Hide When"]
 
 I add a "${field}" field
-  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]
+  Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
   Wait Until Element Is Visible     jquery=.mce-tinymce
   # wait until page contains element  jquery=.plomino-block-preloader:visible
   # sleep  0.5s
