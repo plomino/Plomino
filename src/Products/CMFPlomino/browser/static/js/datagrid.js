@@ -102,6 +102,15 @@ require([
                     add_row.attr('href', url).attr('data-formid', formid);
                 });
             });
+            var CustomModal = Modal.extend({
+                      render: function(options) {
+                         var self = this;
+                    self.emit('render');
+                    self.options.render.apply(self, [options]);
+                    self.emit('rendered');
+                    $('.plominoClose').attr('onclick', '$(".plone-modal-close").click()');
+                      }
+               });
             add_row.click(function(evt){
                 evt.stopPropagation();
                 evt.preventDefault();
@@ -110,28 +119,28 @@ require([
                 //var modal_bind = $(window.top.document).contents().find('body');
                 var modal_bind = self.$el.find('.add-row i')
                 var scope = function(window) {
-                var add_modal = new Modal(modal_bind, {
-                    ajaxUrl: add_row.attr('href'),
-                    ajaxType: "POST",
-                    position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
-                    actions: {
-                        'input.plominoSave': {
-                            onSuccess: self.add.bind(
-                                {grid: self,
-                                 formid:add_row.attr('data-formid')
-                                }),
-                            onError: function() {
-                                // TODO: render errors in the form
-                                window.alert(response.responseJSON.errors.join('\n'));
-                                return false;
-                            }
-                        }
-    //                    'input.plominoCancel': {
-    //                        onClick: add_row.hide()
-    //                    }
-                    }
-                }).show();
-                }(window.top);
+                  var add_modal = new CustomModal(modal_bind, {
+                      ajaxUrl: add_row.attr('href'),
+                      ajaxType: "POST",
+                      position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
+                      actions: {
+                          'input.plominoSave': {
+                              onSuccess: self.add.bind(
+                                  {grid: self,
+                                   formid:add_row.attr('data-formid')
+                                  }),
+                              onError: function() {
+                                  // TODO: render errors in the form
+                                  window.alert(response.responseJSON.errors.join('\n'));
+                                  return false;
+                              }
+                          },
+      //                    'input.plominoCancel': {
+      //                        onClick: add_row.hide()
+      //                    }
+                      }
+                  }).show();
+                  }(window.top);
 
             })
 
@@ -146,7 +155,7 @@ require([
                         type: "POST",
                         data: url[1]
                     }).done(function(html) {
-                        var edit_modal = new Modal(self.$el, {
+                        var edit_modal = new CustomModal(self.$el, {
                             html: html,
                             position: 'middle top', // import to be at the top so it doesn't reposition inside the iframe
                             actions: {
