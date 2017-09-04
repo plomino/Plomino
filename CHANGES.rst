@@ -35,6 +35,7 @@ Changelog
 - Allow macro condition field to select 'current field' from field list [quang]
 - Add Match text macro that support platform-dependant regular expression library [quang]
 - Modify macro_number_range to use single field [quang]
+- Remove macro 'Select user data' [quang]
 
 2.0b4 (2016-05-27)
 ------------------
