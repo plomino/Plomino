@@ -911,8 +911,11 @@ We can delete columns and have content indexed fine
 
     >>> id = db.view1.manage_delObjects(['col_3'])
 
-#    >>> db.getIndex()._catalog.names
-#    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'frm2')
+    >>> db.getIndex()._catalog.names
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'frm2')
+
+    >>> 'PlominoViewColumn_view1_col__3' in db.getIndex().indexes()
+    False
 
     >>> doc6.save()
     >>> len(db.getIndex().dbsearch({'question': u'debaser'}))
