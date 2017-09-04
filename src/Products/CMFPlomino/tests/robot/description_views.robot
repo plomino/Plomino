@@ -15,7 +15,7 @@ Given I have a form TestingOnly
     Click Link  Add
     and I add a "Date" field
 
-I have form and I saved some data
+I have a form and some data saved
     Given a logged-in test user
     and I open the ide for "mydb"
     and I open the first form
@@ -32,7 +32,7 @@ I have form and I saved some data
 I save the form
     Click Element       jquery=.mdl-tabs .mdl-tabs__tab-bar a:contains('Form Settings')
     Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .form-settings-wrapper .formsettings--control-buttons
-    Input Text      jquery=#form-widgets-IShortName-id          form-id-saved  
+    Input Text      jquery=#form-widgets-IShortName-id          the-form-is-saved  
     Click Element       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']
     Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']
 
@@ -47,9 +47,9 @@ I create a view
 
 I add an action "${actionid}"
   Click Link  Add
-  wait until page contains element  jquery=#action
-  wait until page contains element  jquery=div.main-app.panel
-  Click Element  jquery=#action
+  Wait Until Element Is Visible   jquery=#action
+  Wait Until Element Is Visible   jquery=div.main-app.panel
+  Click Element   jquery=#action
   wait until page contains element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.actionButtons input[type="button"]:last
@@ -57,12 +57,17 @@ I add an action "${actionid}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${actionid}
   Input Text  jquery=#form-widgets-IBasic-title  ${actionid}
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
+  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
+
+  # Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I add a column "${myfield}"
   Click Link  Add
+  Wait Until Element Is Visible     jquery=#column
   Click Element  jquery=#column
   wait until page contains element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
@@ -71,11 +76,17 @@ I add a column "${myfield}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
   Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
-  Select From List By Value  jquery=#form-widgets-displayed_field  the-form-is-saved/${myfield}
-  sleep  2s
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
+  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
+  # Select From List By Value  jquery=#form-widgets-displayed_field  the-form-is-saved/${myfield}
+  # sleep  2s
+  # Wait Until Element Is Visible     jquery=plomino-tiny-mce .tiny-editor .mce-tinymce
+  # Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-add .add-wrapper
+  # Capture Page Screenshot
+  # Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 
 # --- THEN -------------------------------------------------------------------
