@@ -37,6 +37,7 @@ Changelog
 - Modify macro_number_range to use single field [quang]
 - fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
 - Remove macro 'Select user data' to move it outside of basic macros [quang]
+- Add test case for Plomino Browser, which test on escape characters [quang]
 
 2.0b4 (2016-05-27)
 ------------------
