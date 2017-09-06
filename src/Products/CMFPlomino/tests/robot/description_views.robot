@@ -145,34 +145,64 @@ I add an action "${actionid}"
   Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
   Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
 
-I add a column "${myfield}"
-  Click Link  Add
+I add a column "${col}"
+  #Click Link  Add
+  Set Selenium Timeout      300s
   Wait Until Element Is Visible     jquery=.mdl-button[id='column']
   Focus     jquery=.mdl-button[id='column']
-  #Execute Javascript    $(".mdl-button[id='column']").click()
-  #Click Element     jquery=.mdl-button[id='column']
-  Click Button     jquery=.mdl-button[id='column']  
-  Wait Until Element Is Visible    jquery=.header-row
+  Click Element     jquery=.mdl-button[id='column']
+  Run Keyword And Ignore Error    I click on Column button again
   Capture Page Screenshot     check.jpg
+  Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${col}')   100s
+  Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${col}')    100s
   Wait Until Element Is Visible     jquery=.default form:first      100s
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
-  # Click Element   jquery=#form-widgets-IShortName-id
-  # Input Text  jquery=#form-widgets-IShortName-id  ${colid}
-  # Click Element   jquery=#form-widgets-IBasic-title
-  # Input Text  jquery=#form-widgets-IBasic-title  ${title}
-
-
-  # wait until page contains element  jquery=.plomino-block-preloader:visible
-  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  # Click Element  jquery=.view-editor__column-header:last
-  # wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
-  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Input Text  jquery=#form-widgets-IShortName-id  ${myfield}
-  Input Text  jquery=#form-widgets-IBasic-title  ${myfield}
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    100s
+  Click Element   jquery=#form-widgets-IShortName-id
+  Input Text  jquery=#form-widgets-IShortName-id  ${col}
+  Click Element   jquery=#form-widgets-IBasic-title
+  Input Text  jquery=#form-widgets-IBasic-title  ${col}
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
   Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
   Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
 
+I check the fields after adding a column
+  Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${column}')
+  Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${column}')
+  Wait Until Element Is Visible     jquery=.default form:first      60s
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
+
+I add a column "${col}" with retries
+  Wait Until Element Is Visible     jquery=.mdl-button[id='column']
+  Focus     jquery=.mdl-button[id='column']
+
+  Wait Until Keyword Succeeds   3 min    1 min     I add a column "${col}" only
+  I input column name and title "${col}"
+
+
+I input column name and title "${col}"
+  Focus     jquery=#form-widgets-IShortName-id
+  Wait Until Keyword Succeeds    2 min    30 sec    Click Element   jquery=#form-widgets-IShortName-id
+  Input Text  jquery=#form-widgets-IShortName-id  ${col}
+  Click Element   jquery=#form-widgets-IBasic-title
+  Input Text  jquery=#form-widgets-IBasic-title  ${col}
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
+  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
+  
+
+I add a column "${col}" only
+  Run Keyword and Ignore Error    Click Element     jquery=.mdl-button[id='column']
+  Run Keyword and Ignore Error    Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${col}')
+  Run Keyword and Ignore Error    Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${col}')
+  Run Keyword and Ignore Error    Wait Until Element Is Visible     jquery=.default form:first      60s
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
+  
+
+I click on Column button again
+  Wait Until Page Contains Element    jquery=.mdl-button[id='column']
+  Wait Until Element Is Visible     jquery=.mdl-button[id='column']
+  Focus     jquery=.mdl-button[id='column']
+  Click Element     jquery=.mdl-button[id='column']
 
 I add a column "${colid}" with title "${title}" and field value "${fieldvalue}"
   Wait Until Element Is Visible     jquery=#column
@@ -227,12 +257,9 @@ I will see column header "${header}" and data "${rowdata1}", "${rowdata2}", "${r
   Page Should Contain Element   jquery=tbody tr td a span span:contains('${rowdata2}')  
   Page Should Contain Element   jquery=tbody tr td a span span:contains('${rowdata3}')
 
-I can move "${col_1}" to "${col_2}"  
+I can move column "${col_1}" to column "${col_2}" by offset "${x}" "${y}"
   Chain Click And Hold    jquery=.view-editor__column-header[data-column='${col_1}']
-  Move By Offset  +20  0
-  Chain Move To Element With Offset  jquery=.view-editor__column-header[data-column='${col_2}']  20  0
-  Chain Sleep   5
+  Chain Move To Element With Offset  jquery=.view-editor__column-header[data-column='${col_2}']  ${x}  ${y}
   Chain Release     jquery=.view-editor__column-header[data-column='${col_2}']
   Chains Perform Now
-  Wait Until Element Is Visible   jquery=.view-editor__column-header[data-column='${col_1}']    30s
-  Wait Until Element Is Visible   jquery=.view-editor__column-header[data-column='${col_2}']    30s
+  Sleep     10s
