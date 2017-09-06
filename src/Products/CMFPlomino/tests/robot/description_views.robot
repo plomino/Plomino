@@ -227,7 +227,7 @@ I will see column header "${header}" and data "${rowdata1}", "${rowdata2}", "${r
   Page Should Contain Element   jquery=tbody tr td a span span:contains('${rowdata2}')  
   Page Should Contain Element   jquery=tbody tr td a span span:contains('${rowdata3}')
 
-I can move "col_1" to "col_2"  
+I can move "${col_1}" to "${col_2}"  
   Chain Click And Hold    jquery=.view-editor__column-header[data-column='${col_1}']
   Move By Offset  +20  0
   Chain Move To Element With Offset  jquery=.view-editor__column-header[data-column='${col_2}']  20  0
