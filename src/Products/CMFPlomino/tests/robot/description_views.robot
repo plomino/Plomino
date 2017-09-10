@@ -1,3 +1,7 @@
+*** Setting ******************************************************************
+Library     DragDrop.py
+
+
 *** Keywords *****************************************************************
 
 # --- Test Setup  ------------------------------------------------------------
@@ -175,7 +179,7 @@ I add a column "${col}" with retries
   Wait Until Element Is Visible     jquery=.mdl-button[id='column']
   Focus     jquery=.mdl-button[id='column']
 
-  Wait Until Keyword Succeeds   3 min    1 min     I add a column "${col}" only
+  Wait Until Keyword Succeeds   3 min    30 sec     I add a column "${col}" only
   I input column name and title "${col}"
 
 
@@ -231,9 +235,6 @@ I can see a view editor listing my data
   Wait Until Element Is Visible     jquery=.view-editor:contains("New View")
   Wait Until Element Is Visible     jquery=div[id='content-core'] table         100s
 
-  # Element Should Contain  jquery=.plominoviewform div table tbody tr td     0 documents
-
-
 I will see action "${actionid}" in the view
   Wait until page contains element  jquery=.view-editor .actionButtons input[id="${actionid}"]
   Page should contain element  jquery=.view-editor .actionButtons input[id="${actionid}"]
@@ -263,3 +264,6 @@ I can move column "${col_1}" to column "${col_2}" by offset "${x}" "${y}"
   Chain Release     jquery=.view-editor__column-header[data-column='${col_2}']
   Chains Perform Now
   Sleep     10s
+
+I can move column "${src}" to column "${target}"
+  Drag Drop    jquery=.view-editor__column-header[data-column='${src}']    jquery=.view-editor__column-header[data-column='${target}']
