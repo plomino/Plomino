@@ -10,12 +10,20 @@ Setup For View
   I can create a new form "frm_empdata" and add some fields
   and I can add contents to "frm_empdata"
 
-I can create a new form "frm_empdata" and add some fields
+I can create a new form "${frm_empdata}" and add some fields
   Given a logged-in test user
    and I open the ide for "mydb"
    and I add a form by click
    and I add some fields to the form
-   and I save the form as "frm_empdata"
+   and I save the form as "${frm_empdata}"
+
+a new form "${formid}" is created and some fields are added
+    Given a logged-in test user
+   and I open the ide for "mydb"
+   and I add a form by click
+   and I add some fields to the form
+   and I save the form as "${formid}"
+
 
 I can add contents to "${formid}"
   I open the form "${formid}"
@@ -87,7 +95,6 @@ I save the current field settings
 
 
 # --- Given ------------------------------------------------------------------
-
 I have "$formid" open
   Given a logged-in test user
   and I open the ide for "mydb"
@@ -123,11 +130,39 @@ I select "${formid}" from form tree
   wait until form is loaded
 
 # --- WHEN -------------------------------------------------------------------
+I add a new empty view from '+' button
+  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible    300s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    300s
+  I click on the '+' button
+  I select 'Add New Empty View'
+
+I select 'Add New Empty View'
+  Click Element     jquery=.mdl-button[data-create='view']
+
+I add a new view with form
+  I click on the '+' button
+  I select 'Add new view with form' option
+
+
+I click on the '+' button
+  # wait until page contains element  jquery=.plomino-block-preloader:visible
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible     300s
+  Wait Until Page Contains Element    jquery=#add-new-form-tab    300s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    300s
+  Click Element   jquery=#add-new-form-tab
+  Wait Until Page Contains Element    jquery=.mdl-dialog__actions--full-width   300s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__actions--full-width   300s
+
+I select 'Add new view with form' option
+  Wait Until Element Is Visible     jquery=.mdl-dialog__actions--full-width .mdl-button[data-create='view/custom']    100s
+  Click Element     jquery=.mdl-dialog__actions--full-width .mdl-button[data-create='view/custom']
+
+
 I create a view
   Click Link  Add
   wait until page contains element  jquery=#PlominoView
   wait until page contains element  jquery=div.main-app.panel
-  Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="View"]
+  Click Element   jquery=.mdl-button[id='PlominoView']
 
 I create view
   Wait Until Element Is Visible   jquery=#PlominoView
@@ -267,3 +302,14 @@ I can move column "${col_1}" to column "${col_2}" by offset "${x}" "${y}"
 
 I can move column "${src}" to column "${target}"
   Drag Drop    jquery=.view-editor__column-header[data-column='${src}']    jquery=.view-editor__column-header[data-column='${target}']
+
+I can see that the 'Create view of form' dialog is displayed
+  Wait Until Element Is Visible     jquery=.modal-content .modal-header h4:contains('Create view of form')    300s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__id']   300s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    300s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    300s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   300s
+
+I can see that the 'New View' screen is displayed
+  Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    300s
+  Wait Until Element Is Visible     jquery=div[id='content-core'] table         300s

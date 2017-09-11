@@ -7,7 +7,6 @@ Test Teardown   Test Tear Down
 
 *** Test Cases ***************************************************************
 
-
 Scenario: I can add a view
   Given I have a form and some fields saved
    When I create a view
@@ -72,3 +71,15 @@ Scenario: I can rename a form and then create new form and then go back and repe
     and I enter "new-form" in "Id" in "Form Settings"
     and I add a form by click
    Then I can see "new-form-1" is open
+
+Scenario: I can create a view of form (PR 39)
+  #PR 39 [feature] Generate View from form with selected fields
+  Given a new form "frm_employee" is created and some fields are added
+   When I add a new view with form
+   Then I can see that the 'Create view of form' dialog is displayed
+
+Scenario: I can add a new empty view from '+' button
+  #PR 39 - test for code changes for adding new empty view
+  Given a new form "frm_employee" is created and some fields are added
+   When I add a new empty view from '+' button
+   Then I can see that the 'New View' screen is displayed
