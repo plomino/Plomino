@@ -32,7 +32,6 @@ Changelog
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
 - Modify macro select_db_element to allow select field from subform [quang]
 
-
 - Allow select 'current field' from selection field macro [quang]
 - Allow macro condition field to select 'current field' from field list [quang]
 - Add Match text macro that support platform-dependant regular expression library [quang]
@@ -40,6 +39,7 @@ Changelog
 
 - fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
 - Remove macro 'Select user data' to move it outside of basic macros [quang]
+
 - Allow select field from sub-form [quang]
 - Modify macro select_db_element to allow select field from subform [quang]
 - Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
