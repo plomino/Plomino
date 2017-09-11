@@ -38,6 +38,7 @@ Changelog
 
 - fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
 - Remove macro 'Select user data' to move it outside of basic macros [quang]
+- Add test case for Plomino Browser, which test on escape characters [quang]
 
 - fix handling of empty values in datagrid rendering [instification]
 
