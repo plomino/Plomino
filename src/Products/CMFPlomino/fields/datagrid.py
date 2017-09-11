@@ -66,7 +66,7 @@ class DatagridField(BaseField):
         if len(value) and isinstance(value[0], dict):
             # Need to convert to tuple for storage
             value = [[line[k] for k in mapping if k in line] for line in value]
-        return value
+            return value
 
 
     def tojson(self, value, rendered=False):
@@ -160,6 +160,9 @@ class DatagridField(BaseField):
         # if doc is not a PlominoDocument, no processing needed
         if not doc:
             return fieldValue
+
+        if type(fieldValue) != list:
+            fieldValue = []
 
         rawValue = fieldValue or []
 
