@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "Add saved date",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,7 @@
                         "edit_template": null,
                         "title": "Field name",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "TEXT",
@@ -58,6 +60,7 @@
                         "edit_template": null,
                         "title": "onSaveDocument",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",

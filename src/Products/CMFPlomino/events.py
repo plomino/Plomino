@@ -94,7 +94,7 @@ def afterViewMoved(obj, event):
     """ We need to ensure the view index name changes when the view name changes
     """
     db = obj.getParentDatabase()
-    if db != event.newParent:
+    if event.newName is not None and db != event.newParent:
         # Event is not for us
         return
     obj.onRenameView(event.oldName, event.newName)
@@ -116,7 +116,7 @@ def afterColumnMoved(obj, event):
     """
     """
     view = obj.getParentView()
-    if view != event.newParent:
+    if event.newName is not None and view != event.newParent:
         # Event is not for us
         return
     view.onRenameColumn(obj, event.oldName, event.newName)

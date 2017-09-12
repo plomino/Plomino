@@ -77,11 +77,16 @@ script_id = '%(script_id)s'
 # form_-_form_test_email_basic_-_ondisplay
 # column_-_allfrmtest_-_ffullname_-_formula
 # view_-_alltestformonsave_-_selection
-FORM_SCRIPT_TYPES = ['field', 'hidewhen', 'action', 'form']
+# action_-_admin_list_-_download_-_hidewhen'
+# action buttons could happen in both form or view
+ALL_SCRIPT_TYPES = ['action']
+# If it begins with script, the script is in resource folder
+# If it begins with agent, it is agent script
+IGNORE_SCRIPT_TYPES = ['script', 'agent']
+FORM_SCRIPT_TYPES = ['field', 'hidewhen', 'form']
 VIEW_SCRIPT_TYPES = ['column', 'view']
 
 HTML_PROPERTY = "form_layout"
-HELPER_PROPERTY = "helpers"
 
 class Bundle:
 
@@ -103,20 +108,20 @@ class Bundle:
                 elementids = fname.split('.')
                 self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1], None, file_path))
 
-    def contents(self,contentType =  None):
-        for id , type,  content, file_path in self.contentList:
-            if contentType and contentType != type:
+    def contents(self, content_type=None):
+        for obj_id, obj_type,  content, file_path in self.contentList:
+            if content_type and content_type != obj_type:
                 continue
             if content:
-                yield (id, type, content)
+                yield (obj_id, obj_type, content)
             if self.folder:
                 fileobj = codecs.open(file_path, 'r', 'utf-8')
-                yield (id, type, fileobj.read())
+                yield (obj_id, obj_type, fileobj.read())
             if self.zip_file:
-                yield (id, type, self.zip_file.open(file_path).read())
+                yield (obj_id, obj_type, self.zip_file.open(file_path).read())
 
-    def addContent(self, id, type, content, file_path = None):
-        self.contentList.append((id, type, content, file_path))
+    def addContent(self, obj_id, obj_type, content, file_path=None):
+        self.contentList.append((obj_id, obj_type, content, file_path))
 
 class DesignManager:
 
@@ -533,9 +538,11 @@ class DesignManager:
                 else:
                     bundle = self.exportDesignAsBundle(
                         elementid=id)
-                    for id , type ,  content in bundle.contents():
+                    for obj_id, obj_type, content in bundle.contents():
                         if content:
-                            path = os.path.join(exportpath, id +"." +type)
+                            path = os.path.join(
+                                exportpath,
+                                obj_id + "." + obj_type)
                             self.saveFile(path, content)
             if dbsettings:
                 path = os.path.join(exportpath, ('dbsettings.json'))
@@ -801,7 +808,24 @@ class DesignManager:
 
         request_context = context
         script_type, obj_id, _ = script_id.split(SCRIPT_ID_DELIMITER, 2)
-        if script_type in FORM_SCRIPT_TYPES:
+        add_request_run_as_owner = True
+        if script_type in ALL_SCRIPT_TYPES:
+            any_obj = self.getForm(obj_id)
+            if any_obj:
+                request_context = any_obj
+            else:
+                any_obj = self.getView(obj_id)
+                if any_obj:
+                    request_context = any_obj
+                else:
+                    # should not happen
+                    raise PlominoScriptException(
+                        request_context,
+                        Exception(),
+                        formula_str,
+                        script_id,
+                        compilation_errors)
+        elif script_type in FORM_SCRIPT_TYPES:
             form_obj = self.getForm(obj_id)
             if form_obj:
                 request_context = form_obj
@@ -825,6 +849,10 @@ class DesignManager:
                     formula_str,
                     script_id,
                     compilation_errors)
+        elif script_type in IGNORE_SCRIPT_TYPES:
+            # should remain the same as original for script and agent
+            # run_as_owner in request should not use in these scripts
+            add_request_run_as_owner = False
         else:
             # should not happen
             raise PlominoScriptException(
@@ -840,15 +868,16 @@ class DesignManager:
         # it causes problems for temp document caching
         # if alter the request itself.
         previous_plomino_run_as_owner = None
-        cache_plomino_run_as_owner = self.getRequestCache(
-            '_plomino_run_as_owner_')
-        if cache_plomino_run_as_owner:
-            # could be script calling script
-            # so need to capture previous script
-            previous_plomino_run_as_owner = cache_plomino_run_as_owner
-        self.setRequestCache(
-            '_plomino_run_as_owner_',
-            run_as_owner(request_context))
+        if add_request_run_as_owner:
+            cache_plomino_run_as_owner = self.getRequestCache(
+                '_plomino_run_as_owner_')
+            if cache_plomino_run_as_owner:
+                # could be script calling script
+                # so need to capture previous script
+                previous_plomino_run_as_owner = cache_plomino_run_as_owner
+            self.setRequestCache(
+                '_plomino_run_as_owner_',
+                run_as_owner(request_context))
 
         result = None
         try:
@@ -1007,9 +1036,9 @@ class DesignManager:
             else:
                 bundle = self.exportDesignAsBundle(
                     elementid=id)
-                for id , type, content in bundle.contents():
+                for obj_id, obj_type, content in bundle.contents():
                     if content:
-                        filename = os.path.join(db_id, id +"."+type)
+                        filename = os.path.join(db_id, obj_id + "." + obj_type)
                         zip_file.writestr(filename, content)
         if dbsettings:
             filename = os.path.join(db_id, 'dbsettings.json')
@@ -1168,7 +1197,6 @@ class DesignManager:
             striplist = []
             if stripFlag:
                 striplist.append(HTML_PROPERTY)
-                striplist.append(HELPER_PROPERTY)
                 striplist.extend(self.getMethods(obj))
             for (id, attr) in fields:
                 if id == 'id' or id in striplist:
@@ -1254,7 +1282,7 @@ class DesignManager:
                 raise PlominoDesignException('%s does not exist' % from_folder)
             bundle = Bundle(folder=from_folder)
             total_elements = 0
-            for id, type, jsonstring in bundle.contents('json'):
+            for obj_id, obj_type, jsonstring in bundle.contents('json'):
                 total_elements += 1
                 json_strings.append(jsonstring)
 

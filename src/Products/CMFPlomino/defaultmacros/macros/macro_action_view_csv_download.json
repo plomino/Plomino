@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "CSV download",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,7 @@
                         "edit_template": null,
                         "title": "Content",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",
@@ -58,6 +60,18 @@
                         "edit_template": null,
                         "title": "Select view",
                         "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "Form": "macro_field_selection_db_elements",
+                                    "_macro_id_": "macro_field_selection_db_elements_1",
+                                    "element_type": "Views",
+                                    "include_other": null,
+                                    "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = editcontext if ctype == 'PlominoForm' else editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm, form_name=''):\n    if form_name:\n        return '{title} ({id}) from form: {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)\n    return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\n\nitems = []\nfor f in editdb.getViews():\n    try:\n        if f.getPortalTypeName() == \"PlominoView\":\n            items.append(item(f))\n    except AttributeError:\n        continue\nreturn items\n",
+                                    "title": "Select from Views"
+                                }
+                            ]
+                        ],
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",

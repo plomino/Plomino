@@ -4,15 +4,19 @@ Plomino basic maco tests
     >>> import zope.event
     >>> from zope.lifecycleevent import ObjectModifiedEvent
 
+Import basic macro fo testing
+
+    >>> import os
+    >>> dir = os.path.abspath(os.path.join(__file__ ,"../../defaultmacros/macros"))
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='defaultmacros')
+    >>> db = portal.defaultmacros
+    >>> db.importDesignFromJSON(from_folder=dir, replace = True)
 
 A form may consist of multiple subforms. Set up some simple forms::
 
-    >>> portal = layer['portal']
-    >>> id = portal.invokeFactory('PlominoDatabase', id='advdb')
-    >>> db = portal.advdb
+
     >>> id = db.invokeFactory('PlominoForm', id='frm1', title='Form 1')
-
-
     >>> id = db.frm1.invokeFactory('PlominoField', id='field1',
     ...         title='Field 1',
     ...         mandatory=False,
@@ -23,8 +27,7 @@ A form may consist of multiple subforms. Set up some simple forms::
 Range condition
 
     >>> range = {"more_field_value":1,
-    ...    "more_field_name":"field1",
-    ...    "less_field_name":"field1",
+    ...    "field_id":"field1",
     ...    "and_or":"or",
     ...    "less_field_value":10,
     ...    "Form":"macro_condition_number_range_in",
@@ -185,4 +188,6 @@ If we insert our own custom code, this is preserved
     if macro_condition_number_range_in_3():
     ...
     ### END macro_field_validate_invalid_2 ###
+
+
 

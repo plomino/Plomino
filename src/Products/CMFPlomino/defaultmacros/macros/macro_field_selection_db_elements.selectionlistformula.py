@@ -23,7 +23,7 @@ Log('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformul
 
 def item(elm, form_name=''):
     if form_name:
-        return '{title} ({id}) from form: {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)
+        return '{title} ({id}) from form : {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)
     return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())
 """
 
@@ -86,8 +86,8 @@ elif type_ == 'Fields':
     if include_other_:
         return code + """
 def get_fields(form_element, form_name):
-    field_items = defaultitems
-    for this_form in form_element.getFormFields():
+    field_items = []
+    for this_form in form_element.getFormFields(includesubforms=True):
         try:
             if this_form.getPortalTypeName() == "PlominoField":
                 field_items.append(item(this_form, form_name))
@@ -96,21 +96,20 @@ def get_fields(form_element, form_name):
     return field_items
 
 current_form_name = ''
-current_form_items = ['Form ID|Form']
+current_form_items = defaultitems
 if ctype == 'PlominoField':
-    current_form_items.append('Current field |%s' % editcontext.id)
+    current_form_items.append('Current field |%s' % '@@CURRENT_FIELD')
 if editform:
     current_form_name = "{title} ({id})".format(
         title=editform.Title(),
         id=editform.id)
     current_form_items = get_fields(editform, current_form_name)
-    if ctype == 'PlominoField':
-        current_form_items.insert(0, 'Current field |%s' % editcontext.id)
 
-other_form_items = []
+
+other_form_items = [] 
 for other_form in editdb.getForms():
     try:
-        if other_form.getPortalTypeName() == "PlominoForm":
+        if other_form.getPortalTypeName() == "PlominoForm" and not other_form.id in editform.getSubforms():
             other_form_name = "{title} ({id})".format(
                 title=other_form.Title(),
                 id=other_form.id)
@@ -124,19 +123,17 @@ return current_form_items + other_form_items
         return code + """
 items = defaultitems
 if ctype == 'PlominoField':
-    items.append('Current field |%s' % editcontext.id)
-for f in editform.getFormFields():
+    items.append('Current field |%s' % '@@CURRENT_FIELD')
+for f in editform.getFormFields(includesubforms=True):
     try:
         if f.getPortalTypeName() == "PlominoField":
             items.append(item(f))
     except AttributeError:
         continue
-
 return items
+
 """
 else:
     return code + 'return defaultitems'
 
-
 ## END formula }
-

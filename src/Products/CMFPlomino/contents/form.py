@@ -2043,9 +2043,10 @@ class PlominoForm(Container):
                     if submittedValue == '':
                         doc.removeItem(fieldName)
                     else:
-                        if type(submittedValue) is str:
-                            submittedValue = urllib.unquote_plus(
-                                submittedValue)
+                       # Need not do character unquoting again as Zope already did it
+                       # if type(submittedValue) is str:
+                       #     submittedValue = urllib.unquote_plus(
+                       #         submittedValue)
                         v = f.processInput(
                             submittedValue,
                             doc,

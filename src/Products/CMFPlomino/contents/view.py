@@ -264,7 +264,11 @@ class PlominoView(Container):
         """ Get a single column
         """
         # need to ensure we just get teh column
-        return getattr(self.aq_inner, column_name).__of__(self)
+        col = getattr(self.aq_explicit, column_name, None)
+        if col is not None:
+            return getattr(self, column_name)
+        else:
+            return None
 
     security.declarePublic('getAction')
 
@@ -380,6 +384,7 @@ class PlominoView(Container):
         movedIndex = index.renameIndex(old_index, new_index)
         movedColumn = index.renameColumn(old_index, new_index)
         if not movedIndex or not movedColumn:
+            #TODO: the rename can remove it so this will readd it. Probably not right logic
             self.declareColumn(new_id, col)
 
         # We shouldn't lose our key or sort if we decide to rename a column

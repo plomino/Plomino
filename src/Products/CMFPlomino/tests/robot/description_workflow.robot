@@ -4,53 +4,28 @@
 
 # --- Given ------------------------------------------------------------------
 
-a logged-in site administrator
-  Enable autologin as  Site Administrator
-
-a logged-in test user
-  Enable autologin as  Manager  ##TODO real test user
-
-
-
-I open the ide for "${db}"
-  #Go To  ${PLONE_URL}/mydb
-  #Click Element  link=IDE
-  Go To  ${PLONE_URL}/${db}/++resource++Products.CMFPlomino/ide/index.html
-#  Wait Until Element Is Visible  id=application-loader
-  Wait Until page does not contain element  id=application-loader
-  wait until page contains  ${db}
-
-
-I waiting a little bit
-  sleep  0.5s
-
-
-
 # --- WHEN -------------------------------------------------------------------
-
-
 I open service tab "${tabId}"
   Click Link    Service
   wait until page contains  ${tabId}
   Click Element  jquery=.mdl-button:visible:contains(${tabId})
 
-I
 
 # --- THEN -------------------------------------------------------------------
-
-
+I can see the workflow editor
+    Element Should Be Visible       jquery=.wrap-app .panel plomino-tabs .mdl-js-tabs .mdl-tabs__tab-bar a
+    Element Should Be Visible       jquery=.mdl-button--raised[id='workflowFormTask']
+    Element Should Be Visible       jquery=.mdl-button--raised[id='workflowViewTask']
+    Element Should Be Visible       jquery=.mdl-button--raised[id='workflowExternalTask']
 
 I can see element Start in the workflow editor
-  wait until page contains element  css=.workflow-node--root
+    Wait Until Page Contains Element    jquery=plomino-workflow-editor
+    Wait Until Page Contains Element    jquery=.plomino-workflow-editor ul .plomino-workflow-editor__branch     60s
 
-I can add a Form Task element
-  sleep  0.3s
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  wait until page contains element  css=div.workflow-node--root
-  Selenium2Library.mouse over css=div.workflow-node--root
-  sleep  0.1s
-  wait until element is visible   xpath=//div[contains(@class,'workflow-node--root')]//li[contains(@class,'plomino-workflow-editor__branch--virtual')]
-  Click Element xpath=//div[contains(@class,'workflow-node--root')]//li[contains(@class,'plomino-workflow-editor__branch--virtual')]
+    Element Should Be Visible       jquery=plomino-workflow-editor ul li .workflow-node--root .workflow-node__start-text
 
-
-python: '<a href="%s/@@display-file/file/%s" class="application-pdf" target="_blank" title="Audit report for %s">%s&nbsp;.<span></span></a>' % (item.getURL(), item['id'], item.Title, 'Audit report') if  item.getObject().file.filename.endswith('pdf') else '<a href="%s/@@download/file/%s" class="application-doc" target="_blank" title="Audit report for %s">%s&nbsp;.<span></span></a>' % (item.getURL(), item['id'], item.Title, 'Audit report')
+I can add a Form Task element by dnd
+    Selenium2Library.Drag And Drop      jquery=.mdl-button[draggable='true'][id='workflowFormTask']         jquery=.plomino-workflow-editor ul .plomino-workflow-editor__branch
+    Element Should Be Visible       jquery=.workflow-node__text--task[id='workflow-node__text--task-2']
+    Element Should Be Visible       jquery=.workflow-node__text--form[id='workflow-node__text--form-2']
+    Element Should Be Visible       jquery=.workflow-node__text--process[id='workflow-node__text--process-2']          

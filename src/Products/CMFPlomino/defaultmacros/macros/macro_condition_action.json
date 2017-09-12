@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "Action matches",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,18 @@
                         "edit_template": null,
                         "title": "action_id",
                         "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "selectionlistformula": "\ndefaultitems = ['Select...|']\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return defaultitems # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = None\nif ctype != 'PlominoView':\n    if ctype == 'PlominoForm':\n        editform = editcontext\n    else:\n        editform = editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm, form_name=''):\n    if form_name:\n        return '{title} ({id}) from form: {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)\n    return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\n\nitems = ['Save (save)|plomino_save','Close (close)|plomino_close']\nif editform:\n    for f, method_name in editform.getActions(hide=False):\n        try:\n            if f.getPortalTypeName() == \"PlominoAction\":\n                items.append(item(f))\n        except AttributeError:\n            continue\n    return items\nelif ctype == 'PlominoView':\n    for f, method_name in editcontext.getActions(hide=False):\n        try:\n            if f.getPortalTypeName() == \"PlominoAction\":\n                items.append(item(f))\n        except AttributeError:\n            continue\n    return items\nelse:\n    return []\n",
+                                    "include_other": null,
+                                    "Form": "macro_field_selection_db_elements",
+                                    "title": "Select from Actions",
+                                    "element_type": "Actions",
+                                    "_macro_id_": "macro_field_selection_db_elements_1"
+                                }
+                            ]
+                        ],
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
@@ -58,6 +71,7 @@
                         "edit_template": null,
                         "title": "Formula",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",

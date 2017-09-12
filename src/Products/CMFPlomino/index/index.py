@@ -120,8 +120,12 @@ class PlominoIndex(UniqueObject, CatalogTool):
     def renameIndex(self, oldName, newName):
         """ return False if can't be moved or deleted
         """
+        # We are deleting the index
+        if oldName in self.indexes() and newName is None:
+            self._catalog.delIndex(oldName)
+            return True
         # if both old and new index not exists, add new one
-        if oldName not in self.indexes() and newName not in self.indexes():
+        elif oldName not in self.indexes() and newName not in self.indexes():
             return False
         # if old index exist and new index not exists, rename the old one
         elif oldName in self.indexes() and newName not in self.indexes():
@@ -147,7 +151,10 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         # if both old and new index not exists, add new one
         schema = self._catalog.schema
-        if oldName not in schema and newName not in schema:
+        if oldName in schema and newName is None:
+            self._catalog.delColumn(oldName)
+            return True
+        elif oldName not in schema and newName not in schema:
             return False
         # if old index exist and new index not exists, rename the old one
         elif oldName in schema and newName not in schema:

@@ -1,10 +1,12 @@
 ## START selectionlistformula {
-### START macro_field_selection_db_elements_1 ###
 
+### START macro_field_selection_db_elements_3 ###
+
+defaultitems = ['Select...|']
 editpath = plominoContext.REQUEST.get('Plomino_Macro_Context')
 Log('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')
 if editpath is None:
-    return [] # we aren't being used in a popup
+    return defaultitems # we aren't being used in a popup
 editcontext = plominoContext.restrictedTraverse(editpath)
 Log('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')
 ctype = editcontext.getPortalTypeName()
@@ -24,7 +26,7 @@ def item(elm, form_name=''):
     return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())
 
 def get_fields(form_element, form_name):
-    field_items = []
+    field_items = defaultitems
     for this_form in form_element.getFormFields():
         try:
             if this_form.getPortalTypeName() == "PlominoField":
@@ -35,11 +37,15 @@ def get_fields(form_element, form_name):
 
 current_form_name = ''
 current_form_items = ['Form ID|Form']
+if ctype == 'PlominoField':
+    current_form_items.append('Current field |%s' % '@@CURRENT_FIELD')
 if editform:
     current_form_name = "{title} ({id})".format(
         title=editform.Title(),
         id=editform.id)
     current_form_items = get_fields(editform, current_form_name)
+    if ctype == 'PlominoField':
+        current_form_items.insert(0, 'Current field |%s' % '@@CURRENT_FIELD')
 
 other_form_items = []
 for other_form in editdb.getForms():
@@ -54,9 +60,6 @@ for other_form in editdb.getForms():
         continue
 return current_form_items + other_form_items
 
-### END macro_field_selection_db_elements_1 ###
-
-
-
+### END macro_field_selection_db_elements_3 ###
 ## END selectionlistformula }
 

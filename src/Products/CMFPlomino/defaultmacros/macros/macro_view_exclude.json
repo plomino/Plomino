@@ -17,6 +17,7 @@
                 "resources_css": null,
                 "title": "Exclude",
                 "description": "",
+                "helpers": null,
                 "ajax_load": null,
                 "ajax_include_head": null
             },
@@ -36,6 +37,7 @@
                         "edit_template": null,
                         "title": "Selection Formula",
                         "description": "",
+                        "helpers": null,
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "HIDDEN",
