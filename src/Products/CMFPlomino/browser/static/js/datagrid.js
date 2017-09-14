@@ -24,10 +24,13 @@ require([
             self.values = JSON.parse(self.input.val());
             self.rows = JSON.parse(self.$el.find('table').attr('data-rows'));
             self.col_number = self.fields.length;
+            self.associated_form =  self.$el.attr('data-associated-form');
             if (self.$el.attr('data-form-urls')) {
                 self.form_urls = JSON.parse(self.$el.attr('data-form-urls'));
             } else {
-                self.form_urls = [{'url':self.$el.attr('data-form-url')}];
+                var urlRe = /(.*)\/(.*)\/OpenForm\?(.*)/
+                var formid = urlRe.exec(self.$el.attr('data-form-url'))[2];
+                self.form_urls = [{'url':self.$el.attr('data-form-url'), "id":formid}];
             }
 
             self.render();
@@ -47,7 +50,8 @@ require([
             html += '</tr>';
             for(var j=0;j<self.rows.length;j++) {
                 var edit_url = self.form_url;
-                var formid = self.values[j]['Form'];
+                //var formid = self.values[j]['Form'];
+                var formid = self.associated_form;
                 for (var f=0; f<self.form_urls.length; f++) {
                     if (self.form_urls[f].id == formid) {
                         edit_url = self.form_urls[f].url;
