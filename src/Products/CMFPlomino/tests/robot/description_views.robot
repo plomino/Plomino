@@ -100,6 +100,9 @@ I have "$formid" open
   and I open the ide for "mydb"
   Click Element   jquery=.treeview-wrapper .tree-node .tree-node--collapsible ul li span:contains('$formid')
 
+I added some contents to the form "${formid}"
+  I can add contents to "${formid}"
+
 I have a form and some fields saved
     Given a logged-in test user
     and I open the ide for "mydb"
@@ -309,6 +312,26 @@ I can see that the 'Create view of form' dialog is displayed
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    300s
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    300s
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   300s
+
+I can fill in the fields for 'Create view of form' dialog with id="${viewid}", title="${title}", form="${form}"
+  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']
+  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']      ${viewid}
+  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']
+  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']     ${title}
+
+  Click Element   jquery=.mdl-dialog__content-form-group select[id='new-view-dialog__form']
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group select option[value='${form}']   100s
+  Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
+
+  Click Element     jquery=.mdl-dialog__content-form-group select option[value='name']
+
+  Click Element   jquery=.mdl-dialog__actions .new-view-dialog__create-btn
+
+  Wait Until Page Contains Element    jquery=.plominoviewform
+  Wait Until Element Is Visible     jquery=.plominoviewform h3:contains('${title}')
+
+  Sleep     3s
+  Capture Page Screenshot
 
 I can see that the 'New View' screen is displayed
   Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    300s
