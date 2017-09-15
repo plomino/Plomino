@@ -152,6 +152,8 @@ class DatagridField(BaseField):
             creation=False, request=None):
         """
         """
+        import pdb
+        pdb.set_trace()
         fieldValue = BaseField.getFieldValue(
             self, form, doc, editmode_obsolete, creation, request)
         if not fieldValue:
