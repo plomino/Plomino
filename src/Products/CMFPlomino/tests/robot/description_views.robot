@@ -142,9 +142,52 @@ I add a new empty view from '+' button
 I select 'Add New Empty View'
   Click Element     jquery=.mdl-button[data-create='view']
 
-I add a new view with form
+I add a new view with form from '+' button
   I click on the '+' button
   I select 'Add new view with form' option
+
+I add a new view with form
+  Click Element     jquery=.mdl-button[id='PlominoView/custom']
+
+I fill in the fields with id="${viewid}", title="${title}", form="${form}"
+  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']
+  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']      ${viewid}
+  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']
+  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']     ${title}
+
+  Click Element   jquery=.mdl-dialog__content-form-group select[id='new-view-dialog__form']
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group select option[value='${form}']   100s
+  Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
+
+  Sleep   3s
+  # Click Element     jquery=.mdl-dialog__content-form-group select option[value='name']
+  # Sleep   3s
+
+I can successfully view all fields in the form with title="${title}"
+  Click Element   jquery=.mdl-dialog__actions .new-view-dialog__create-btn
+  Wait Until Page Contains Element    jquery=.plominoviewform
+  Wait Until Element Is Visible     jquery=.plominoviewform h3:contains('${title}')
+  I check all fields in the form
+  I check all contents in the form
+
+
+I check all fields in the form
+  Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='address']
+  Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='contactno']
+  Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='name']
+
+I check all contents in the form
+  Element Should Be Visible     jquery=tr td:contains('123 Main St')
+  Element Should Be Visible     jquery=tr td:contains('1234567890')
+  Element Should Be Visible     jquery=tr td:contains('John Doe')
+
+  Element Should Be Visible     jquery=tr td:contains('123 Chicago St')
+  Element Should Be Visible     jquery=tr td:contains('0987654321')
+  Element Should Be Visible     jquery=tr td:contains('Mary Light')
+
+  Element Should Be Visible     jquery=tr td:contains('123 GOT Avenue')
+  Element Should Be Visible     jquery=tr td:contains('12389098543')
+  Element Should Be Visible     jquery=tr td:contains('John Snow')  
 
 
 I click on the '+' button
@@ -312,26 +355,6 @@ I can see that the 'Create view of form' dialog is displayed
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    300s
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    300s
   Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   300s
-
-I can fill in the fields for 'Create view of form' dialog with id="${viewid}", title="${title}", form="${form}"
-  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']
-  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']      ${viewid}
-  Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']
-  Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']     ${title}
-
-  Click Element   jquery=.mdl-dialog__content-form-group select[id='new-view-dialog__form']
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group select option[value='${form}']   100s
-  Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
-
-  Click Element     jquery=.mdl-dialog__content-form-group select option[value='name']
-
-  Click Element   jquery=.mdl-dialog__actions .new-view-dialog__create-btn
-
-  Wait Until Page Contains Element    jquery=.plominoviewform
-  Wait Until Element Is Visible     jquery=.plominoviewform h3:contains('${title}')
-
-  Sleep     3s
-  Capture Page Screenshot
 
 I can see that the 'New View' screen is displayed
   Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    300s
