@@ -47,6 +47,7 @@ Changelog
 - fix handling of empty values in datagrid rendering [instification]
 - Fix bug that open new form when closing modal input dialog of datagrid [quang]
 - Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
+- Fix datagrid screwing up data when field mapping is set [quang]
 
 2.0b4 (2016-05-27)
 ------------------
