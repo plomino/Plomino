@@ -185,7 +185,7 @@ class DatagridField(BaseField):
                 child_form = db.getForm(child_form_id)
                 # Need to re-order the item_names so that the name order is the same as returned by getFormField
                 item_names_reorder = [f.id for f in child_form.getFormFields(includesubforms=True) if f.id in item_names]
-                item_names_reorder += [id for id in item_names if not id in item_names_reorder]
+                item_names_reorder += [name for name in item_names if not name in item_names_reorder]
                 item_names = item_names_reorder
                 # zip is procrustean: we get the longest of mapped_fields or
                 # fieldValue
