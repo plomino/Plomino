@@ -242,8 +242,10 @@ class DatagridField(BaseField):
         # Alternative is to set it by default, but then if you add more fields
         # you need to go update it manually.
         # TODO: shows all fields, even ones not on the subforms layout
-        if self.context.field_mapping:
-            return self.context.field_mapping
+        context_field_mapping = self.context.field_mapping
+        if context_field_mapping:
+            # remove space as user might enter 'col1, col2'
+            return context_field_mapping.replace(" ", "")
         child_form_id = self.context.associated_form
         if not child_form_id:
             return ""
