@@ -45,7 +45,7 @@ Changelog
 - Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
 - Add test case for Plomino Browser, which test on escape characters [quang]
 - fix handling of empty values in datagrid rendering [instification]
-
+- Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
 
 2.0b4 (2016-05-27)
 ------------------
