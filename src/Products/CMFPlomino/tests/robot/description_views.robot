@@ -80,10 +80,11 @@ I click on Add tab
 I edit the field "${fieldid}" to "${newid}"
   sleep  0.5s
   select frame  jquery=.mce-edit-area iframe:visible
-  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
-  click element  css=.plominoFieldClass[data-plominoid="${fieldid}"]
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     300s
+  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     300s
+  Wait Until Keyword Succeeds   3 min   10 sec    Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
   Unselect Frame
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    300s
   Input Text    jquery=#form-widgets-IShortName-id      ${newid}
 
 I edit the title to "${newtitle}"
@@ -132,7 +133,6 @@ I select "${formid}" from form tree
   Click Element   jquery=plomino-tree .treeview-wrapper .tree-node .tree-node--collapsible ul li span:contains('${formid}')
   wait until form is loaded
 
-# --- WHEN -------------------------------------------------------------------
 I add a datagrid to the form
   Click Element   jquery=.templates button[data-template-id='template_datagrid']
   Wait Until Page Contains Element    css=div.mce-tinymce     100s
@@ -140,6 +140,78 @@ I add a datagrid to the form
   I edit the field "datagrid" to "datagrid1"
   I edit the title to "datagrid1"
   I save the current field settings
+
+I create an unsaved datagrid form
+  I add a form by click
+  Click Element   jquery=.templates button[data-template-id='template_datagrid']
+  Wait Until Page Contains Element    css=div.mce-tinymce     100s
+  Wait Until Element Is Visible     css=div.mce-tinymce     100s
+
+I create main form with some fields
+  I add a form by click
+  I click on Add tab
+  Sleep   5s
+  I add some fields to the form
+
+I associate the datagrid to main form
+  I select "new-form" from form tree
+  select frame  jquery=.mce-edit-area iframe:visible
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="datagrid"]
+  click element  css=.plominoFieldClass[data-plominoid="datagrid"]
+  Unselect Frame
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
+  Click Element     jquery=select[id='form-widgets-IDatagridField-associated_form']
+  Wait Until Element Is Visible     jquery=select option[value='new-form-1']      300s
+  I save the current field settings
+
+# --- WHEN -------------------------------------------------------------------
+I preview the layout in a new tab
+  Click Element     jquery=.mdl-tabs a[href='#palette-tab-2-panel']
+  Wait Until Element Is Visible     jquery=.formsettings--control-buttons a[id='ide-formsettings__preview-button']
+  Click Element     jquery=.formsettings--control-buttons a[id='ide-formsettings__preview-button']
+  Sleep  2s
+  Select Window  url=${PLONE_URL}/mydb/new-form/view
+  #Wait Until Element Is Visible     jquery=.actions a[data-formid='new-form']   300s
+
+I add a row to the datagrid form to display the main form "${mainform}"
+  I click on add row in "${mainform}"
+  Wait Until Element Is Visible     jquery=div[id=content-core] form[name='${mainform}']    300s
+
+
+I click on add row in "${formid}"
+  Wait Until Keyword Succeeds   5 min   5 sec   Click Element   jquery=.actions a[data-formid='${formid}']
+
+I fill in the fields and save the form "${mainform}"
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='address']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='address']      123 Main St
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='contactno']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='contactno']      1234567890
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='name']      Ann
+  Click Element     jquery=form[name='${mainform}'] .formControls .actionButtons input[name='plomino_save']
+
+I update the contents of "${mainform}" and save the form
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='address']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='address']      123 Atlanta, GA
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='contactno']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='contactno']      987-098-987
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
+  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='name']      Nanie
+  Click Element     jquery=form[name='${mainform}'] .formControls .actionButtons input[name='plomino_save']
+
+I can see that the "${datagridform}" is updated
+  Wait Until Element Is Visible     jquery=div[id='content-core'] form[name='${datagridform}']      300s
+  Element Should Be Visible     jquery=.plomino-datagrid:contains('123 Atlanta, GA')
+  Element Should Be Visible     jquery=.plomino-datagrid:contains('987-098-987')
+  Element Should Be Visible     jquery=.plomino-datagrid:contains('Nanie')
+
+I edit the row in the datagrid
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element   jquery=.edit-row
+
+the "${mainform}" is rendered
+  Wait Until Element Is Visible     jquery=form[name='${mainform}']
+
+
 
 I add a field to the newly created form
   I click on Add tab
