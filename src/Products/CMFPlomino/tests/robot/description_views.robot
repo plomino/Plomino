@@ -133,6 +133,40 @@ I select "${formid}" from form tree
   wait until form is loaded
 
 # --- WHEN -------------------------------------------------------------------
+I add a datagrid to the form
+  Click Element   jquery=.templates button[data-template-id='template_datagrid']
+  Wait Until Page Contains Element    css=div.mce-tinymce     100s
+  Wait Until Element Is Visible     css=div.mce-tinymce     100s
+  I edit the field "datagrid" to "datagrid1"
+  I edit the title to "datagrid1"
+  I save the current field settings
+
+I add a field to the newly created form
+  I click on Add tab
+  Sleep   5s
+  I add a "Text" field
+  I edit the field "text" to "contactno"
+  I edit the title to "Contact No"
+  I save the current field settings
+  Sleep   5s
+
+I add a page break to the form
+  I click on Add tab
+  Sleep   5s
+  I add a page break
+
+I add a page break
+  Click Element     jquery=.mdl-button[id='PlominoPagebreak']
+  Wait Until Element Is Visible     jquery=.mce-tinymce     300s
+
+I add a datagrid after the page break
+  Wait Until Keyword Succeeds   2 min   5 sec   Click Element At Coordinates      css=.plominoFieldClass[data-plominoid="contactno"]     0   120
+  Click Element   jquery=.templates button[data-template-id='template_datagrid']
+  Wait Until Page Contains Element    css=div.mce-tinymce     100s
+  Wait Until Element Is Visible     css=div.mce-tinymce     100s
+  I edit the field "datagrid" to "datagrid2"
+  I edit the title to "datagrid2"  
+
 I add a new empty view from '+' button
   Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible    300s
   Wait Until Element Is Visible     jquery=#add-new-form-tab    300s

@@ -88,3 +88,16 @@ Scenario: I can add a new empty view from '+' button
   Given a new form "frm_employee" is created and some fields are added
    When I add a new empty view from '+' button
    Then I can see that the 'New View' screen is displayed
+
+Scenario: I can datagrid to multi-page form
+  #PR 41: fix handling of empty values in datagrid rendering
+  Maximize Browser Window
+  Given a logged-in test user
+   and I open the ide for "mydb"
+   and I add a form by click
+   and I add a datagrid to the form
+   and I add a field to the newly created form
+   and I add a page break to the form
+   #${x}=  Get Horizontal Position     
+   and I add a datagrid after the page break
+   Capture Page Screenshot

@@ -125,8 +125,8 @@ I add a form by click
    # Click Element  jquery=[href="#palette-tab-0-panel"]
    # Click Element  css=button[title="Form"]
    # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
-  wait until page contains  new-form
-  wait until page contains element  css=div.mce-tinymce
+  wait until page contains  new-form    300s
+  wait until page contains element  css=div.mce-tinymce   300s
 
 I add a hidewhen by click
   I add a "Hide When" field
