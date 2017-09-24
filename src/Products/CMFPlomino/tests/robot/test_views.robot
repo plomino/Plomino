@@ -89,20 +89,8 @@ Scenario: I can add a new empty view from '+' button
    When I add a new empty view from '+' button
    Then I can see that the 'New View' screen is displayed
 
-Scenario: I can add a datagrid to multi-page form - Work In Progress
-  #PR 41: fix handling of empty values in datagrid rendering
-  Maximize Browser Window
-  Given a logged-in test user
-   and I open the ide for "mydb"
-   and I add a form by click
-   and I add a datagrid to the form
-   and I add a field to the newly created form
-   and I add a page break to the form
-   #${x}=  Get Horizontal Position     
-   and I add a datagrid after the page break
-   Capture Page Screenshot
-
 Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
+  #PR 47 - [fix] Fix the parsing formid in input sent from server that prevent user from editing datagrid row
   Given a logged-in test user
    and I open the ide for "mydb"
    and I create an unsaved datagrid form
@@ -110,11 +98,23 @@ Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
    and I associate the datagrid to main form
    and I preview the layout in a new tab
    and I add a row to the datagrid form to display the main form "new-form-1"
-   and I fill in the fields and save the form
+   and I fill in the fields and save the form "new-form-1"
   When I edit the row in the datagrid
-  Then the "new-form-1" is rendered
+   Then the "new-form-1" is rendered
   When I update the contents of "new-form-1" and save the form
-  Then I can see that the "new-form" is updated
+   Then I can see that the "new-form" is updated
+
+# Scenario: I can add a datagrid to multi-page form - Work In Progress
+#   #PR 41: fix handling of empty values in datagrid rendering
+#   Maximize Browser Window
+#   Given a logged-in test user
+#    and I open the ide for "mydb"
+#    and I add a form by click
+#    and I add a datagrid to the form
+#    and I add a field to the newly created form
+#    and I add a page break to the form
+#    and I add a datagrid after the page break
+#    Capture Page Screenshot
 
 
 
