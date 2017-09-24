@@ -45,7 +45,7 @@ Changelog
 - Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
 - Add test case for Plomino Browser, which test on escape characters [quang]
 - fix handling of empty values in datagrid rendering [instification]
-
+- Fix bug that open new form when closing modal input dialog of datagrid [quang]
 
 2.0b4 (2016-05-27)
 ------------------
