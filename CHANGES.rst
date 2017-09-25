@@ -26,8 +26,7 @@ Changelog
 - Test suite improvements [ivanteoh]
 - Bug fix for set permission macro [ivanteoh]
 - Bug fixes to import/export [quang]
-
-- Fix wonky view table [quang]
+- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
 - Display lists from selection field in a text field in a nice way[quang]
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
 - Modify macro select_db_element to allow select field from subform [quang]
