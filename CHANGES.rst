@@ -61,6 +61,7 @@ Changelog
 - Fix a bug when closing the input dialog of a datagrid [quang]
 - Fix the parsing of formid preventing users from editing a datagrid row [quang]
 - Fix datagrid field mapping bugs [quang]
+- Add multiple tests [apallar]
 
 2.0b4 (2016-05-27)
 ------------------
