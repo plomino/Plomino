@@ -57,10 +57,10 @@ Changelog
 
 - fix handling of empty values in datagrid rendering [instification]
 
-- Add test case for Plomino Browser, which test on escape characters [quang]
-- Fix bug that open new form when closing modal input dialog of datagrid [quang]
-- Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
-- Fix datagrid screwing up data when field mapping is set [quang]
+- Add test case for Plomino Browser, testing escape characters [quang]
+- Fix a bug when closing the input dialog of a datagrid [quang]
+- Fix the parsing of formid preventing users from editing a datagrid row [quang]
+- Fix datagrid field mapping bugs [quang]
 
 2.0b4 (2016-05-27)
 ------------------
