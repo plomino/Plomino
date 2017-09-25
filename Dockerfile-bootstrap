@@ -1,4 +1,4 @@
-FROM elgalu/selenium:2 as robot_test
+FROM elgalu/selenium:2
 USER root
 RUN apt-get update && apt-get install -y virtualenv git gcc python-dev build-essential autoconf libjpeg-turbo8-dev libxml2-dev libxslt1-dev
 
