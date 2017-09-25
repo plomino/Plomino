@@ -26,8 +26,7 @@ Changelog
 - Test suite improvements [ivanteoh]
 - Bug fix for set permission macro [ivanteoh]
 - Bug fixes to import/export [quang]
-
-- Fix wonky view table [quang]
+- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
 - Display lists from selection field in a text field in a nice way[quang]
 - fixed a bug in openbareform that was preventing pdfs from rendering [djay]
 - Modify macro select_db_element to allow select field from subform [quang]
@@ -45,8 +44,10 @@ Changelog
 - Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
 - Add test case for Plomino Browser, which test on escape characters [quang]
 - fix handling of empty values in datagrid rendering [instification]
+- Fix bug that open new form when closing modal input dialog of datagrid [quang]
 - Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
 - Fix datagrid screwing up data when field mapping is set [quang]
+- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
 
 2.0b4 (2016-05-27)
 ------------------
