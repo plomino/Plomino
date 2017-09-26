@@ -1,26 +1,30 @@
 *** Settings *****************************************************************
-
 Resource  description_plominodatabase.robot
 Resource  description_views.robot
 
 Test Setup   Test Setup
-Test Teardown  Test Tear Down
+Test Teardown   Test Tear Down
 
 *** Test Cases ***************************************************************
 
 Scenario: I can add a view
-  Given I have a form and some data saved
+  Given I have a form and some fields saved
    When I create a view
    Then I can see a view editor listing my data
 
 Scenario: I can add a column to a view
-  Given I have a form and some data saved
-    and I create a view
-    and I can see a view editor listing my data
-    When I add a column "text"
-    Then I will see column "text" in the view
-    and when I add a column "text_1"
-    Then I will see column "text_1" in the view
+  Given I have a form and some fields saved
+   and I create a view
+   and I can see a view editor listing my data
+   When I add a column "text" with retries
+   Then I will see column "text" in the view
+   and I click on Add tab
+   When I add a column "text_1" with retries
+   Then I will see column "text_1" in the view
+   and I click on Add tab
+   When I add a column "text_2" with retries
+   Then I will see column "text_2" in the view
+
 
 Scenario: I can add an action to a view
   Given I have a form and some data saved
@@ -29,6 +33,23 @@ Scenario: I can add an action to a view
    When I add an action "my action"
    Then I will see action "my-action" in the view
 
+Scenario: I can reoder the columns in the view
+  #This tests for PR27
+  Given a logged-in test user
+   and I open the ide for "mydb"
+   and I select "frm_test" from form tree
+   and I create view
+   When I add a column "text" with retries
+   and I click on Add tab
+   and I add a column "text_1" with retries
+   and I click on Add tab
+   and I add a column "text_2" with retries
+   Set selenium timeout     10s
+   Then I can move column "text" to column "text_1" by offset "20" "0"
+   And I can move column "text_2" to column "text" by offset "-20" "0"
+   And I can move column "text_1" to column "text" by offset "40" "0"
+   And I can move column "text_1" to column "text_2" by offset "-20" "0"
+  
 Scenario: I can rename a form and then create new form
   Given I have a form open
    When I enter "new-form" in "Id" in "Form Settings"
@@ -51,12 +72,50 @@ Scenario: I can rename a form and then create new form and then go back and repe
     and I add a form by click
    Then I can see "new-form-1" is open
 
-# Scenario: I can add filter to a view   # Work in progress
-#   Given I have a form and some data saved
-#    When I create a view
-#     and I see > 2 documents in the view
-#     and I add a macro the the "view settings" called "number range"
-#     and I set the range to <5
-#    Then I will see less than 2 documents in the view
+Scenario: I can create a view of form (PR 39)
+  #PR 39 [feature] Generate View from form with selected fields
+  Given a new form "frm_employee" is created and some fields are added
+   And I added some contents to the form "frm_employee"
+   And I open the ide for "mydb"
+   And I select "frm_employee" from form tree
+  When I add a new view with form
+  Then I can see that the 'Create view of form' dialog is displayed
+  And when I fill in the fields with id="view_1", title="view_1", form="frm_employee"
+  Then I can successfully view all fields in the form with title="view_1"
+ 
+Scenario: I can add a new empty view from '+' button
+  #PR 39 - test for code changes for adding new empty view
+  Given a new form "frm_employee" is created and some fields are added
+   When I add a new empty view from '+' button
+   Then I can see that the 'New View' screen is displayed
+
+Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
+  #PR 47 - [fix] Fix the parsing formid in input sent from server that prevent user from editing datagrid row
+  Given a logged-in test user
+   and I open the ide for "mydb"
+   and I create an unsaved datagrid form
+   and I create main form with some fields
+   and I associate the datagrid to main form
+   and I preview the layout in a new tab
+   and I add a row to the datagrid form to display the main form "new-form-1"
+   and I fill in the fields and save the form "new-form-1"
+  When I edit the row in the datagrid
+   Then the "new-form-1" is rendered
+  When I update the contents of "new-form-1" and save the form
+   Then I can see that the "new-form" is updated
+
+# Scenario: I can add a datagrid to multi-page form - Work In Progress
+#   #PR 41: fix handling of empty values in datagrid rendering
+#   Maximize Browser Window
+#   Given a logged-in test user
+#    and I open the ide for "mydb"
+#    and I add a form by click
+#    and I add a datagrid to the form
+#    and I add a field to the newly created form
+#    and I add a page break to the form
+#    and I add a datagrid after the page break
+#    Capture Page Screenshot
+
+
 
 
