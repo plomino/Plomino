@@ -10,5 +10,5 @@ RUN chown -fR seluser.seluser /buildout || exit 0
 
 USER seluser
 RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
-RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide  && npm run build"]
+RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide  && npm install && npm run build"]
 

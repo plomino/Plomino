@@ -27,10 +27,11 @@ RUN printf "[buildout]\nextends=https://raw.githubusercontent.com/collective/bui
 RUN cd /buildout && virtualenv . && bin/pip install zc.buildout==2.2.5 setuptools==8.3 && bin/buildout -c download.cfg install download install
 RUN ls /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
 
-COPY . /buildout/
-RUN chown -R seluser.seluser /buildout
-
-USER seluser
-RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
-RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide && npm install && npm run build"]
 WORKDIR /buildout
+
+#COPY . /buildout/
+#RUN chown -R seluser.seluser /buildout
+
+#USER seluser
+#RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
+#RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide && npm install && npm run build"]
