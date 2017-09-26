@@ -1,4 +1,4 @@
-FROM robot_tests as robot_tests
+FROM robot_tests
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.1
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
