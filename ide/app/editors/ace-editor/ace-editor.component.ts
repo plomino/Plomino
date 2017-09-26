@@ -92,7 +92,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
                 if (stateData) {
                   this.log.info('state restored', codeId);
                 }
-                this.editor.setValue(stateData ? stateData.content : parsed.code, -1);
+                this.editor.setValue(stateData && stateData.content ? stateData.content : parsed.code, -1);
                 this.methodList = parsed.methods;
                 this.editor.getSession().on('change', () => {
                     this.isDirty.emit(true);

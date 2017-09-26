@@ -70,7 +70,7 @@ class DatabaseView(BrowserView):
             methods = self.getMethods(element=element)
             code = ""
 
-            for method in self.getMethodsId(type):
+            for method in self.getMethodsId(element=element):
                 formula = getattr(element, method, None)
                 if formula:
                     code+= "## START "+method+" {\n"
