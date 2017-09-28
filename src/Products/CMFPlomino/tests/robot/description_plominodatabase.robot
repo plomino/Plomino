@@ -78,7 +78,7 @@ I have a form and some data saved
     and I edit the label "text_1" to "Last name"
     Click Link  Add
     and I add a "Date" field
-    and I save the form
+    and description_views.I save the form as "form1"
 
 
 # --- WHEN -------------------------------------------------------------------
@@ -183,8 +183,8 @@ I change the fieldmode to "${mode}" 
   Select From List By Value  jquery=#form-widgets-field_mode  ${mode}
 
 wait until form is loaded
-  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]
-  wait until page contains element   jquery=.mce-edit-area iframe:visible
+  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   300s
+  wait until page contains element   jquery=.mce-edit-area iframe:visible   300s
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
