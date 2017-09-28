@@ -284,9 +284,10 @@ Export design to file system
     >>> from os import listdir
     >>> from os.path import isfile, join
     >>> dir, _ = os.path.split(os.path.abspath(__file__))
-    >>> dir = os.path.join(dir,'tmp_export/mydb')
+    >>> dir = os.path.join(dir,'tmp_export')
+    >>> output_dir = os.path.join(dir,'mydb')
     >>> db.exportDesign(targettype='folder', targetfolder=dir)
-    >>> export_files = [f for f in listdir(dir) if isfile(join(dir, f))]
+    >>> export_files = [f for f in listdir(output_dir) if isfile(join(output_dir, f))]
     >>> print export_files
     ['frm1.field2.py', 'frm1.field3.py', 'frm1.html', 'frm1.json', 'frm2.guitarist.py', 'frm2.html', 'frm2.json', 'frm2.welcome.py', 'frm3.json', 'frm4.json', 'frm_test.html', 'frm_test.json', 'view1.col1.py', 'view1.json', 'view2.json', 'view2.py', 'view3.json', 'view3.py', 'view4.json', 'view4.py']
 
@@ -294,8 +295,9 @@ Export design to file system
 Import design from file system
 
     >>> id = portal.invokeFactory('PlominoDatabase', id='test_import_filesystem')
+    >>> inputdir = os.path.join(dir,'mydb')
     >>> newdb = portal.test_import_filesystem
-    >>> newdb.importDesignFromJSON(from_folder=dir, replace = True)
+    >>> newdb.importDesignFromJSON(from_folder=inputdir, replace = True)
     >>> newdb.objectIds()
     ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
@@ -364,7 +366,7 @@ Check if PY file contains the formula for the field
     >>> import os, zipfile
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
     >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle.zip"), "r")
-    >>> db.importDesignFromZip(import_zip_file,True)
+    >>> db.importDesignFromZip(import_zip_file)
     >>> db.refreshDB()
     [...]
     >>> macro_field_number_between = getattr(db, 'macro_field_number_between', None)
@@ -390,7 +392,7 @@ Check if Formula is restored
     >>> import os
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
     >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle_old_style.zip"), "r")
-    >>> db.importDesignFromZip(import_zip_file,True)
+    >>> db.importDesignFromZip(import_zip_file)
     >>> db.refreshDB()
     [...]
     >>> macro_field_number_between_old_style = getattr(db, 'macro_field_number_between', None)
