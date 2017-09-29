@@ -151,7 +151,7 @@ export class ElementService {
   }
 
   // XXX: Docs for debugging:
-  // http://plonerestapi.readthedocs.io/en/latest/crud.html#creating-a-resource-with-post
+  // http://plonerestapi.readthedocs.io/en/latest/content.html#creating-a-resource-with-post
 
   postElement(url: string, newElement: InsertFieldEvent): Observable<AddFieldResponse> {
     let headers = new Headers();

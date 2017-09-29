@@ -9,5 +9,8 @@ value = plominoContext.getItem(field_id, '')
 return value == ''
 """ .format(field_id = field_id)
 return code
-## END formula }
 
+
+
+## END formula }
+

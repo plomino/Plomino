@@ -194,6 +194,9 @@ export class AppComponent implements OnInit {
           else if (btn.dataset.create === 'view') {
             this.addNewView(evt);
           }
+          else if (btn.dataset.create === 'view/custom') {
+            this.addNewView(evt, true);
+          }
           this.addDialog.close();
         });
       });
@@ -412,7 +415,7 @@ export class AppComponent implements OnInit {
 
   allowDrop() {
     let dataType = this.dragData['@type'];
-    return () => dataType === 'PlominoForm' || dataType === 'PlominoView';
+    return () => dataType === 'PlominoForm' || dataType === 'PlominoView' || dataType === 'PlominoView/custom';
   }
 
   dropped() {
@@ -437,9 +440,12 @@ export class AppComponent implements OnInit {
     .subscribe(data => this.treeService.updateTree());
   }
 
-  private addNewView(event: MouseEvent) {
+  private addNewView(event: MouseEvent, custom: boolean = false) {
     event.preventDefault();
-    this.saveManager.createNewView();
+    if (custom)
+      this.saveManager.createNewCustomView();
+    else
+      this.saveManager.createNewView();
   }
 
   private addNewForm(event: MouseEvent) {

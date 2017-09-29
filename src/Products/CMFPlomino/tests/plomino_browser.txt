@@ -12,8 +12,7 @@ Set up login account
 
 Create plomino database and publish it::
 
-    >>> id = portal.invokeFactory('PlominoDatabase', id='BrowserTestsDB')
-    >>> db = portal.BrowserTestsDB
+    >>> db = portal.mydb
     >>> wf_tool = portal.portal_workflow
     >>> wf_tool.doActionFor(db, 'publish')
 
@@ -85,7 +84,7 @@ Plomino Test
 
 Create new document
 
-    >>> form_url = portal_url +'/BrowserTestsDB' +'/form1'
+    >>> form_url = portal_url +'/mydb' +'/form1'
     >>> browser.open(form_url)
     >>> browser.getControl('field1').value = regex_str
     >>> browser.getControl('Save').click()
@@ -106,3 +105,28 @@ Search document in database to compare, Plomino strip the plus
     False
     >>> regex_str ==  doc.getItem('field1')
     True
+
+=========
+API Test
+=========
+
+Post request to test new API that generate view with given form and fields
+
+    >>> import re
+    >>> from urllib import urlencode
+    >>> regex = r'.*\?_authenticator=(.*)'
+    >>> match = re.search(regex, browser.url)
+    >>> post_url = portal_url +'/mydb' +'/form1/manage_generateView'
+    >>> data = urlencode(dict(id= 'view1', title='View1',form='form1',field='field1', _authenticator=match.group(1)))
+    >>> browser.addHeader('Content-Type','multipart/form-data')
+    >>> browser.post(post_url, data)
+
+Check if view is created with name and column specified in inputed
+    >>> db.view1 != None
+    True
+    >>> db.view1.getColumn('field1') != None
+    True
+    >>> db.view1.title =='View1'
+    True
+    >>> db.view1.helpers
+    [...]

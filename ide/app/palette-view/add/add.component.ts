@@ -31,7 +31,8 @@ import {
     LogService,
     DraggingService,
     TemplatesService,
-    WidgetService
+    WidgetService,
+    PlominoSaveManagerService
 } from '../../services';
 
 interface TemplateClickEvent {
@@ -45,7 +46,7 @@ interface TemplateClickEvent {
     template: require('./add.component.html'),
     styles: [require('./add.component.css')],
     directives: [DND_DIRECTIVES, PlominoBlockPreloaderComponent],
-    providers: [ElementService, PlominoViewsAPIService],
+    providers: [ElementService, PlominoViewsAPIService, PlominoSaveManagerService],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -84,7 +85,8 @@ export class AddComponent implements OnInit, AfterViewInit {
                 private changeDetector: ChangeDetectorRef,
                 private wfChange: PlominoWorkflowChangesNotifyService,
                 private templatesService: TemplatesService,
-                private widgetService: WidgetService) { 
+                private widgetService: WidgetService,
+                private saveManager: PlominoSaveManagerService) {
       this.tClickFlow$.debounceTime(200).subscribe((t: TemplateClickEvent) => {
         this.addTemplate(t.eventData, t.target, t.templateId);
       });
@@ -193,7 +195,8 @@ export class AddComponent implements OnInit, AfterViewInit {
                 title: 'DB', 
                 components: [
                     { title: 'Form', icon: 'th-list', type: 'PlominoForm', addable: true },
-                    { title: 'View', icon: 'list-alt', type: 'PlominoView', addable: true },
+                    { title: 'Empty View', icon: 'list-alt', type: 'PlominoView', addable: true },
+                    { title: 'All Form View', icon: 'list-alt', type: 'PlominoView/custom', addable: true  },
                 ],
                 hidden: () => {
                     return false;
@@ -333,61 +336,13 @@ export class AddComponent implements OnInit, AfterViewInit {
 
       switch (type) {
           case 'PlominoForm':
-              let formElement: InsertFieldEvent = {
-                  '@type': 'PlominoForm',
-                  'title': 'New Form'
-              };
-              this.log.startTimer('create_new_form_hold');
-              this.elementService.postElement(
-                this.getDBOptionsLink(''), formElement)
-              .subscribe((response: AddFieldResponse) => {
-                this.treeService.updateTree().then(() => {
-                  this.log.info('this.tabsService.openTab #a001');
-                  // this.treeService.latestId++;
-                  this.tabsManagerService.openTab({
-                    // formUniqueId: undefined,
-                    editor: 'layout',
-                    label: response.title,
-                    url: response.parent['@id'] + '/' + response.id,
-                    id: response.id,
-                    // path: [{
-                    //     name: response.title,
-                    //     type: 'Forms'
-                    // }]
-                  });
-                  this.log.stopTimer('create_new_form_hold');
-                });
-              });
+              this.saveManager.createNewForm();
               break;
           case 'PlominoView':
-            this.log.startTimer('create_new_view_hold');
-              let viewElement: InsertFieldEvent = {
-                '@type': 'PlominoView',
-                'title': 'New View'
-              };
-              this.elementService.postElement(
-                this.getDBOptionsLink(''), viewElement)
-              .subscribe((response: AddFieldResponse) => {
-                this.log.info('this.tabsService.openTab #a002');
-                
-                this.treeService.updateTree().then(() => {
-                  this.tabsManagerService.openTab({
-                    editor: 'view',
-                    label: response.title,
-                    url: response.parent['@id'] + '/' + response.id,
-                    id: response.id,
-                    // path: [{
-                    //     name: response.title,
-                    //     type: 'Views'
-                    // }]
-                  });
-
-                  this.log.stopTimer('create_new_view_hold');
-                });
-              });
-              // Get the ID of the new element back in the response.
-              // Update the Tree
-              // Open the View in the editor
+            this.saveManager.createNewView();
+              break;
+        case 'PlominoView/custom':
+              this.saveManager.createNewCustomView();
               break;
           case 'PlominoLabel':
             this.log.startTimer('create_new_label_hold');
@@ -673,7 +628,7 @@ export class AddComponent implements OnInit, AfterViewInit {
          * palette, which needs to be populated!
          * @Resolver will be called on drop event in tinymce.component
          */
-        if (type !== 'PlominoForm' && type !== 'PlominoView') {
+        if (type !== 'PlominoForm' && type !== 'PlominoView' && type !== 'PlominoView/custom') {
             draggingData.parent = this.activeTab.url;
         }
 

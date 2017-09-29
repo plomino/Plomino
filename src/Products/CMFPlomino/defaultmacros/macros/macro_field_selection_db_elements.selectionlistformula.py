@@ -25,6 +25,16 @@ def item(elm, form_name=''):
     if form_name:
         return '{title} ({id}) from form : {form_name}|{id}'.format(id=elm.id, title=elm.Title(), form_name=form_name)
     return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())
+
+def get_fields(form_element, form_name):
+    field_items = []
+    for this_form in form_element.getFormFields(includesubforms=True):
+        try:
+            if this_form.getPortalTypeName() == "PlominoField":
+                field_items.append(item(this_form, form_name))
+        except AttributeError:
+            continue
+    return field_items
 """
 
 if type_ == 'Forms':
@@ -85,31 +95,19 @@ else:
 elif type_ == 'Fields':
     if include_other_:
         return code + """
-def get_fields(form_element, form_name):
-    field_items = []
-    for this_form in form_element.getFormFields(includesubforms=True):
-        try:
-            if this_form.getPortalTypeName() == "PlominoField":
-                field_items.append(item(this_form, form_name))
-        except AttributeError:
-            continue
-    return field_items
-
-current_form_name = ''
-current_form_items = defaultitems
-if ctype == 'PlominoField':
-    current_form_items.append('Current field |%s' % '@@CURRENT_FIELD')
-if editform:
-    current_form_name = "{title} ({id})".format(
+current_form_name = "{title} ({id})".format(
         title=editform.Title(),
         id=editform.id)
-    current_form_items = get_fields(editform, current_form_name)
-
-
+if ctype == 'PlominoField':
+    current_form_items = ['Current field |%s' % '@@CURRENT_FIELD']
+else:
+    current_form_items = defaultitems
+current_form_items += get_fields(editform, current_form_name)
+current_forms = editform.getSubforms() +[editform.id]
 other_form_items = [] 
 for other_form in editdb.getForms():
     try:
-        if other_form.getPortalTypeName() == "PlominoForm" and not other_form.id in editform.getSubforms():
+        if other_form.getPortalTypeName() == "PlominoForm" and not other_form.id in current_forms:
             other_form_name = "{title} ({id})".format(
                 title=other_form.Title(),
                 id=other_form.id)
@@ -121,19 +119,19 @@ return current_form_items + other_form_items
 """
     else:
         return code + """
-items = defaultitems
+current_form_name = "{title} ({id})".format(
+        title=editform.Title(),
+        id=editform.id)
 if ctype == 'PlominoField':
-    items.append('Current field |%s' % '@@CURRENT_FIELD')
-for f in editform.getFormFields(includesubforms=True):
-    try:
-        if f.getPortalTypeName() == "PlominoField":
-            items.append(item(f))
-    except AttributeError:
-        continue
-return items
+    current_form_items = ['Current field |%s' % '@@CURRENT_FIELD']
+else:
+    current_form_items = defaultitems
+current_form_items += get_fields(editform, current_form_name)
+return current_form_items
 
 """
 else:
     return code + 'return defaultitems'
-
 ## END formula }
+
+

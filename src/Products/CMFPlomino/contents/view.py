@@ -451,6 +451,13 @@ class PlominoView(Container):
                     column_value = ''
                 elif isinstance(column_value, basestring):
                     column_value = column_value.encode('utf-8')
+                elif isinstance(column_value, list):
+                    # add special chars to existing comma for differentiation
+                    new_value = []
+                    for item in column_value:
+                        # python will change "\," to "\\,"
+                        new_value.append(item.replace(",", "\\,"))
+                    column_value = ", ".join(new_value).encode('utf-8')
                 else:
                     column_value = unicode(column_value).encode('utf-8')
                 row.append(column_value)
