@@ -39,6 +39,7 @@ jobs:
 #      - run:
 #          name: Save Docker image layer cache
 #          command: |
+#            docker rm $(docker ps -a -f status=exited -q) || true
 #            docker rmi $(docker images -f dangling=true -q) || true
 #            mkdir -p /caches
 #            docker save -o /caches/app.tar robot_tests
@@ -56,3 +57,8 @@ jobs:
             docker exec grid_hub_1 wait_all_done 30s
             docker exec grid_chrome_1 wait_all_done 30s
             docker-compose -f docker-compose.test.yml -p grid up --abort-on-container-exit --exit-code-from=plominotest plominotest
+      - run:
+          name: Clean up tests
+          command: |
+            docker-compose -f docker-compose.test.yml -p grid down
+#TODO: get test output into a data volume and copy it out before close down

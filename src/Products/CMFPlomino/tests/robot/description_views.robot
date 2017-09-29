@@ -80,11 +80,11 @@ I click on Add tab
 I edit the field "${fieldid}" to "${newid}"
   sleep  0.5s
   select frame  jquery=.mce-edit-area iframe:visible
-  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     300s
-  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     300s
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
+  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
   Wait Until Keyword Succeeds   3 min   10 sec    Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
   Unselect Frame
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    300s
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
   Input Text    jquery=#form-widgets-IShortName-id      ${newid}
 
 I edit the title to "${newtitle}"
@@ -92,7 +92,7 @@ I edit the title to "${newtitle}"
 
 I save the current field settings
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']
-  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons    300s
+  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons    60s
   Sleep   5s
 
 
@@ -163,7 +163,7 @@ I associate the datagrid to main form
   Unselect Frame
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
   Click Element     jquery=select[id='form-widgets-IDatagridField-associated_form']
-  Wait Until Element Is Visible     jquery=select option[value='new-form-1']      300s
+  Wait Until Element Is Visible     jquery=select option[value='new-form-1']      60s
   Click Element   jquery=select option[value='new-form-1']
   Sleep   3s
   Capture Page Screenshot
@@ -177,11 +177,11 @@ I preview the layout in a new tab
   # Sleep  5s
   # #Select Window  url=${PLONE_URL}/mydb/new-form/view
   # Go To      ${PLONE_URL}/mydb/new-form/view
-  # #Wait Until Element Is Visible     jquery=.actions a[data-formid='new-form-1']   300s
+  # #Wait Until Element Is Visible     jquery=.actions a[data-formid='new-form-1']   60s
   Go To      ${PLONE_URL}/mydb/new-form/view
   Sleep   10s
-  # Run Keyword And Ignore Error     Wait Until Page Contains    Changes saved     300s
-  # Wait Until Element Is Visible           jquery=a.add-row      300s
+  # Run Keyword And Ignore Error     Wait Until Page Contains    Changes saved     60s
+  # Wait Until Element Is Visible           jquery=a.add-row      60s
 
 I add a row to the datagrid form to display the main form "${mainform}"
   Press Key   jquery=.actions .add-row    \\9
@@ -193,7 +193,7 @@ I click on add row in "${formid}"
   #Wait Until Keyword Succeeds   5 min   5 sec   Click Element   jquery=.actions a[data-formid='${formid}']
   Run Keyword And Ignore Error    Focus     jquery=a.add-row
   Run Keyword And Ignore Error    Click Element   jquery=a.add-row
-  Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=div[id=content-core] form[name='${mainform}']    300s
+  Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=div[id=content-core] form[name='${mainform}']    60s
 
 I fill in the fields and save the form "${mainform}"
   Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
@@ -216,7 +216,7 @@ I update the contents of "${mainform}" and save the form
   Click Element     jquery=form[name='${mainform}'] .formControls .actionButtons input[name='plomino_save']
 
 I can see that the "${datagridform}" is updated
-  Wait Until Element Is Visible     jquery=div[id='content-core'] form[name='${datagridform}']      300s
+  Wait Until Element Is Visible     jquery=div[id='content-core'] form[name='${datagridform}']      60s
   Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("123 Atlanta, GA")
   Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("987-098-987")
   Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("Nanie")
@@ -225,7 +225,7 @@ I edit the row in the datagrid
   Wait Until Keyword Succeeds   2 min   5 sec   Click Element   jquery=.edit-row
 
 the "${mainform}" is rendered
-  Wait Until Element Is Visible     jquery=form[name='${mainform}']   300s
+  Wait Until Element Is Visible     jquery=form[name='${mainform}']   60s
 
 
 
@@ -245,7 +245,7 @@ I add a page break to the form
 
 I add a page break
   Click Element     jquery=.mdl-button[id='PlominoPagebreak']
-  Wait Until Element Is Visible     jquery=.mce-tinymce     300s
+  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
 
 I add a datagrid after the page break
   Wait Until Keyword Succeeds   2 min   5 sec   Click Element At Coordinates      css=.plominoFieldClass[data-plominoid="contactno"]     0   120
@@ -256,8 +256,8 @@ I add a datagrid after the page break
   I edit the title to "datagrid2"  
 
 I add a new empty view from '+' button
-  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible    300s
-  Wait Until Element Is Visible     jquery=#add-new-form-tab    300s
+  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible    60s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    60s
   I click on the '+' button
   I select 'Add New Empty View'
 
@@ -314,12 +314,12 @@ I check all contents in the form
 
 I click on the '+' button
   # wait until page contains element  jquery=.plomino-block-preloader:visible
-  # wait until page does not contain element  jquery=.plomino-block-preloader:visible     300s
-  Wait Until Page Contains Element    jquery=#add-new-form-tab    300s
-  Wait Until Element Is Visible     jquery=#add-new-form-tab    300s
+  # wait until page does not contain element  jquery=.plomino-block-preloader:visible     60s
+  Wait Until Page Contains Element    jquery=#add-new-form-tab    60s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    60s
   Click Element   jquery=#add-new-form-tab
-  Wait Until Page Contains Element    jquery=.mdl-dialog__actions--full-width   300s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__actions--full-width   300s
+  Wait Until Page Contains Element    jquery=.mdl-dialog__actions--full-width   60s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__actions--full-width   60s
 
 I select 'Add new view with form' option
   Wait Until Element Is Visible     jquery=.mdl-dialog__actions--full-width .mdl-button[data-create='view/custom']    100s
@@ -354,7 +354,7 @@ I add an action "${actionid}"
 
 I add a column "${col}"
   #Click Link  Add
-  Set Selenium Timeout      300s
+  Set Selenium Timeout      60s
   Wait Until Element Is Visible     jquery=.mdl-button[id='column']
   Focus     jquery=.mdl-button[id='column']
   Click Element     jquery=.mdl-button[id='column']
@@ -379,8 +379,8 @@ I check the fields after adding a column
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
 
 I add a column "${col}" with retries
-  Wait Until Element Is Visible     jquery=.mdl-button--colored[id='column']     300s
-  Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='column']     300s
+  Wait Until Element Is Visible     jquery=.mdl-button--colored[id='column']     60s
+  Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='column']     60s
   Focus     jquery=.mdl-button[id='column']
   Wait Until Keyword Succeeds   30 min   10 sec    I add a column "${col}" only
   #I add column "${col}" using for-loop
@@ -399,8 +399,8 @@ I input column name and title "${col}"
   Click Element   jquery=#form-widgets-IBasic-title
   Input Text  jquery=#form-widgets-IBasic-title  ${col}
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
-  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons   300s
-  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']    300s
+  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons   60s
+  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']    60s
   I can see a view editor listing my data
   # wait until form is loaded
   
@@ -442,10 +442,10 @@ I add a column "${colid}" with title "${title}" and field value "${fieldvalue}"
 
 # --- THEN -------------------------------------------------------------------
 I can see a view editor listing my data
-  Wait until page contains element  jquery=.view-editor:contains("New View")    300s
+  Wait until page contains element  jquery=.view-editor:contains("New View")    60s
   Page should contain element  jquery=.view-editor:contains("New View")
-  Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    300s
-  Wait Until Element Is Visible     jquery=div[id='content-core'] table         300s
+  Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    60s
+  Wait Until Element Is Visible     jquery=div[id='content-core'] table         60s
   Set Selenium Timeout      10s
 
 I will see action "${actionid}" in the view
@@ -459,8 +459,8 @@ I can see columns "${col1}", "${col2}", and "${col3}" in the view
 
 
 I will see column "${columnid}" in the view
-  Wait until page contains element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    300s
-  Wait Until Element Is Visible     jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    300s
+  Wait until page contains element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
+  Wait Until Element Is Visible     jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
   Page should contain element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']
 
 I can rename the form to "${formId}"
@@ -489,12 +489,12 @@ I can move column "${src}" to column "${target}"
   Drag Drop    jquery=.view-editor__column-header[data-column='${src}']    jquery=.view-editor__column-header[data-column='${target}']
 
 I can see that the 'Create view of form' dialog is displayed
-  Wait Until Element Is Visible     jquery=.modal-content .modal-header h4:contains('Create view of form')    300s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__id']   300s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    300s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    300s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   300s
+  Wait Until Element Is Visible     jquery=.modal-content .modal-header h4:contains('Create view of form')    60s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__id']   60s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    60s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    60s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   60s
 
 I can see that the 'New View' screen is displayed
-  Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    300s
-  Wait Until Element Is Visible     jquery=div[id='content-core'] table         300s
+  Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    60s
+  Wait Until Element Is Visible     jquery=div[id='content-core'] table         60s
