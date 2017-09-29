@@ -2004,6 +2004,8 @@ class PlominoForm(Container):
             includesubforms=True,
             doc=doc,
             request=REQUEST)
+        hidden_fields = []
+        reset_fields = []
         if applyhidewhen:
             #displayed_fields = self.getFormFields(
             #    includesubforms=True,

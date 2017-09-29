@@ -38,8 +38,9 @@ class PlominoCatalog(Catalog):
                         v = None
                     else:
                         #TODO: what happens if the view/column no longer exists?
-                        v = asUnicode(
-                            obj.computeColumnValue(viewname, columnname))
+                        # any reason need to covert value 
+                        # from computeColumnValue into string?
+                        v = obj.computeColumnValue(viewname, columnname)
                 else:
 
                     v = None

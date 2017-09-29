@@ -1,0 +1,75 @@
+Plomino view tests
+==================
+
+    >>> portal = layer["portal"]
+    >>> db = portal.mydb
+
+When csv export in view, the multi select data is readable in csv file
+
+    >>> id = db.invokeFactory("PlominoForm", 
+    ...         id="frm1",
+    ...         title="Form 1")
+    >>> id = db.frm1.invokeFactory("PlominoField",
+    ...         id="field1",
+    ...         title="Title for field 1",
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.frm1.invokeFactory("PlominoField",
+    ...         id="field2",
+    ...         title="Title for field 2",
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.field2.widget = "CHECKBOX"
+    >>> db.frm1.field2.selectionlist = [
+    ...         u"John Paul Jones",
+    ...         u"Chris Chameleon",
+    ...         u"Serba, John"]
+    >>> id = db.frm1.invokeFactory("PlominoField",
+    ...         id="field3",
+    ...         title="Title for field 3",
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.frm1.field3.widget = "CHECKBOX"
+    >>> db.frm1.field3.selectionlist = [
+    ...         u"Jones John Paul",
+    ...         u"Chameleon Chris",
+    ...         u"John, Serba"]
+    >>> id = db.invokeFactory("PlominoView",
+    ...         id="view1",
+    ...         title="View 1",
+    ...         selection_formula="plominoDocument.getItem('Form')=='frm1'")
+    >>> id = db.view1.invokeFactory("PlominoColumn",
+    ...         id="col1",
+    ...         title="Col 1",
+    ...         formula="plominoDocument.field1")
+    >>> id = db.view1.invokeFactory("PlominoColumn",
+    ...         id="col2",
+    ...         title="Col 2",
+    ...         displayed_field="frm1/field2")
+    >>> id = db.view1.invokeFactory("PlominoColumn",
+    ...         id="col3",
+    ...         title="Col 3",
+    ...         formula="plominoDocument.field3")
+    >>> db.view1.sort_column = "col1"
+    >>> doc1 = db.createDocument()
+    >>> doc1.setItem("Form", "frm1")
+    >>> doc1.setItem("field1", "sumo")
+    >>> doc1.setItem("field2", [
+    ...         u"John Paul Jones",
+    ...         u"Chris Chameleon"])
+    >>> doc1.setItem("field3", [
+    ...         u"John, Serba"])
+    >>> doc1.save(creation=True)
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem("Form", "frm1")
+    >>> doc2.setItem("field1", "sumi")
+    >>> doc2.setItem("field2", [
+    ...         u"Serba, John"])
+    >>> doc2.setItem("field3", [
+    ...         u"Jones John Paul",
+    ...         u"Chameleon Chris"])
+    >>> doc2.save(creation=True)
+    >>> len(db.view1.getAllDocuments())
+    2
+    >>> db.view1.exportCSV()
+    '"sumi"\t"Serba\\, John"\t"Jones John Paul, Chameleon Chris"\r\n"sumo"\t"John Paul Jones, Chris Chameleon"\t"John\\, Serba"\r\n'
