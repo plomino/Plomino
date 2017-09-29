@@ -48,14 +48,7 @@ Changelog
 - Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
 - Fix datagrid screwing up data when field mapping is set [quang]
 - Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
-- Remove macro 'Select user data' [quang]
-- Remove macro 'Select user data' to move it outside of basic macros [quang]
-
-- Allow select field from sub-form [quang]
-- Modify macro select_db_element to allow select field from subform [quang]
-- Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
-
-- fix handling of empty values in datagrid rendering [instification]
+- Apply macro select_db_element to conditional macro to enable select field from subform [quang]
 
 - Add test case for Plomino Browser, testing escape characters [quang]
 - Fix a bug when closing the input dialog of a datagrid [quang]
