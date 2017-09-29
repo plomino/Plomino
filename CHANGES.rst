@@ -58,6 +58,7 @@ Changelog
 - Fix datagrid screwing up data when field mapping is set [quang]
 - Fix bug that not showing selectionlistformula in IDE in the first-time opening [quang]
 - Display list value nicely during CSV export [ivanteoh]
+- Add feature to generate view from form with selected fields, IDE mode [quang]
 
 2.0b4 (2016-05-27)
 ------------------

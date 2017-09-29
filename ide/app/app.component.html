@@ -52,7 +52,8 @@
           <div class="drop-zone-container"        
             *ngIf="isDragging && 
                   dragData !== null &&
-                  (dragData['@type'] === 'PlominoForm' || 
+                  (dragData['@type'] === 'PlominoForm' ||
+                  dragData['@type'] === 'PlominoView/custom' ||
                     dragData['@type'] === 'PlominoView')"
             dnd-droppable
             [allowDrop]="allowDrop()"

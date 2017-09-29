@@ -1,6 +1,7 @@
 import { ObjService } from './../obj.service';
 import { PlominoTabsManagerService } from './../tabs-manager/index';
 import { LogService } from './../log.service';
+import { PlominoFormsListService } from './../forms-list.service';
 import { PlominoDBService } from './../db.service';
 import { TabsService } from './../tabs.service';
 import { TreeService } from './../tree.service';
@@ -10,9 +11,10 @@ import { Observable, Subject } from 'rxjs/Rx';
 import { PlominoFormSaveProcess } from './form-save-process';
 import { TinyMCEFormContentManagerService } from './../../editors/tiny-mce/content-manager/content-manager.service';
 import { Injectable } from '@angular/core';
-import { PlominoHTTPAPIService, ElementService, 
+import { PlominoHTTPAPIService, ElementService,
   WidgetService, PlominoActiveEditorService } from '../';
 import { LabelsRegistryService } from '../../editors/tiny-mce/services';
+import { Headers, Response, RequestOptions } from '@angular/http';
 
 @Injectable()
 export class PlominoSaveManagerService {
@@ -21,6 +23,10 @@ export class PlominoSaveManagerService {
   private saveStack: Array<Observable<any>> = [];
   private saveNotifier: Subject<string> = new Subject<string>();
   private currentFormIsUnsaved: boolean = false;
+  private createCustomViewDialog: HTMLDialogElement;
+  private $createCustomViewDialog: JQuery;
+  private addCustomView : Subject<any> = new Subject<any>();
+  private addCustomView$: Observable<any> = this.addCustomView.asObservable();
 
   constructor(
     private contentManager: TinyMCEFormContentManagerService,
@@ -35,10 +41,12 @@ export class PlominoSaveManagerService {
     private activeEditorService: PlominoActiveEditorService,
     private dbService: PlominoDBService,
     private log: LogService,
+    private formsList: PlominoFormsListService,
+
   ) {
     Observable
       .interval(500)
-      .flatMap(() => this.saveStack.length 
+      .flatMap(() => this.saveStack.length
         ? this.saveStack.pop() : Observable.of(null))
       .subscribe((data) => {
         if (data) {
@@ -48,6 +56,7 @@ export class PlominoSaveManagerService {
 
     this.listenDocumentClicks();
     this.listenFormInnerChangeProcesses();
+
   }
 
   onBackgroundSaveProcessComplete() {
@@ -114,7 +123,7 @@ export class PlominoSaveManagerService {
           id: response.id,
           url: response.parent['@id'] + '/' + response.id,
         });
-  
+
         if (!callbackBeforeOpeningTab) {
           setTimeout(() => callCallback(), 100);
         }
@@ -159,12 +168,142 @@ export class PlominoSaveManagerService {
     });
   }
 
+
+  createNewCustomView(
+    callback: (url: string, label: string) => void = null,
+    callbackBeforeOpeningTab: boolean = false
+  ) {
+    this.setupCreateCustomViewDialog();
+    var error  = this.createCustomViewDialog.querySelector('span.mdl-dialog__error');
+    var formSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__form');
+    var fieldSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__field');
+    var viewIdInput = this.createCustomViewDialog.querySelector('#new-view-dialog__id');
+    var viewTitleInput = this.createCustomViewDialog.querySelector('#new-view-dialog__title');
+    formSelect.innerHTML =  this.formsList.getFiltered()
+        .map((form: any) => `<option value="${ form.url.split('/').pop() }">${form.label}</option>`)
+        .join('');
+
+    $(error).attr('display', 'none');
+    // bind event to select input
+    $(formSelect).change( (evt) => {
+      $(fieldSelect).val([]);
+      var formId = $(formSelect).val();
+       this.formsList.getFiltered().forEach((form) => {
+        if (form.url.split('/').pop() == formId ) {
+          // select all field of that form
+          fieldSelect.innerHTML =  form.children
+          .map((field: any) => `<option value="${ field.url.split('/').pop()}">${field.label}  </option>` )
+        .join('');
+
+          $(fieldSelect.querySelectorAll('option')).attr("selected","selected");
+          // update viewId and view title
+          $(viewIdInput).val("all" + formId.replace('_', '').replace('-', ''));
+          $(viewTitleInput).val(form.label);
+        }
+      });
+    });
+    // select the first form
+    $(formSelect.querySelector('option:first-child')).attr("selected","selected");
+    $(formSelect).change();
+
+    this.$createCustomViewDialog.modal({
+      show: true, backdrop: false
+    });
+    this.addCustomView$.subscribe(()=> {
+      let formData = new FormData();
+      formData.append('_authenticator',  this.getCSRFToken());
+      Array.from(this.createCustomViewDialog
+        .querySelectorAll('[data-key]'))
+        .forEach((input: HTMLInputElement) => {
+            formData.append(input.dataset.key, $(input).val());
+        });
+      this.http
+        .postWithOptions(`${this.dbService.getDBLink()}/${$(formSelect).val()}/manage_generateView`, formData, {})
+        .subscribe((response: Response) => {
+            let resp = response.json();
+            console.log(resp);
+            if (!resp.success) {
+              $(error).attr('display', 'block');
+              error.innerHTML = `<span>${resp.message}</span>`;
+              return;
+            }
+            this.treeService.updateTree().then(() => {
+            const callCallback = () => {
+              if (callback !== null) {
+                callback(
+                  `${this.dbService.getDBLink()}/${$(formSelect).val()}/${resp.id}`, resp.title
+                );
+              }
+            };
+
+            if (callbackBeforeOpeningTab) {
+              callCallback();
+            }
+
+            this.tabsManagerService.openTab({
+              editor: 'view',
+              label: resp.title,
+              url: `${this.dbService.getDBLink()}/${$(formSelect).val()}/${resp.id}`,
+              id: resp.id,
+            });
+
+            if (!callbackBeforeOpeningTab) {
+              setTimeout(() => callCallback(), 100);
+            }
+            this.$createCustomViewDialog.modal('hide');
+          });
+      });
+     });
+  }
+
+ getCSRFToken() {
+    const script = document.getElementById('protect-script');
+    const token = script.getAttribute('data-token');
+
+    return token;
+  }
+
+  setupCreateCustomViewDialog() {
+    var self = this;
+    self.createCustomViewDialog = <HTMLDialogElement>
+      document.querySelector('#new-view-dialog');
+    self.$createCustomViewDialog = $(self.createCustomViewDialog);
+
+    Array.from(
+      self.createCustomViewDialog
+        .querySelectorAll('input[type="text"], select')
+    )
+    .forEach((input: HTMLInputElement|HTMLSelectElement) => {
+      $(input).keyup((evd) => {
+        if (evd.keyCode === 13) {
+          self.addCustomView.next();
+        }
+      });
+    });
+
+    Array.from(
+      self.createCustomViewDialog
+        .querySelectorAll('button')
+    )
+    .forEach((btn: HTMLElement) => {
+        $(btn).unbind('click').bind('click', (evt) => {
+          if (btn.classList.contains('new-view-dialog__create-btn')) {
+             self.addCustomView.next();
+          } else
+            self.$createCustomViewDialog.modal('hide');
+         });
+    });
+    var error  = self.createCustomViewDialog.querySelector('span.mdl-dialog__error');
+    $(error).attr('display', 'none');
+  }
+
+
   createViewSaveProcess(viewURL: string, formData: FakeFormData = null) {
     viewURL = viewURL.replace(/^(.+?)\/?$/, '$1');
 
     if (formData === null) {
       const $form = $('form[action="' + viewURL + '/@@edit"]');
-      
+
       if (!$form.length) {
         return null;
       }
@@ -193,7 +332,7 @@ export class PlominoSaveManagerService {
 
     if (formData === null) {
       const $form = $('form[action="' + formURL + '/@@edit"]');
-      
+
       if (!$form.length) {
         return null;
       }
@@ -248,14 +387,14 @@ export class PlominoSaveManagerService {
   }
 
   private listenFormInnerChangeProcesses() {
-    $('body').delegate('form[id!="plomino_form"]', 
+    $('body').delegate('form[id!="plomino_form"]',
     'keydown input change paste', ($event) => {
       const isFormInnerEvent = $($event.currentTarget)
         .is('form:visible[data-pat-autotoc]');
       const isFieldTypeChange = $event.target.id === 'form-widgets-field_type';
       $event.stopPropagation();
       if (
-        !isFieldTypeChange && isFormInnerEvent 
+        !isFieldTypeChange && isFormInnerEvent
         && !($event.type === 'keydown' && $event.keyCode === 9)
         && !this.currentFormIsUnsaved
       ) {
@@ -334,7 +473,7 @@ export class PlominoSaveManagerService {
         this.cleanOutsideArea();
         if (!iframe) {
           try {
-            const elementFromPoint = 
+            const elementFromPoint =
               <HTMLElement> document.elementFromPoint($event.pageX, $event.pageY);
             elementFromPoint.click();
           }
@@ -363,7 +502,7 @@ export class PlominoSaveManagerService {
      * 1. check that current form has got some edit processes
      * 2. if true -> in all touch points prevent it before confirmation
      * 3. on confirmation -> throw event
-     * 
+     *
      * touch points:
      * 1. iframe inner mousedown
      * - prevent test: OK
