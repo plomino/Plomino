@@ -288,9 +288,8 @@ Export design to file system
     >>> output_dir = os.path.join(dir,'mydb')
     >>> db.exportDesign(targettype='folder', targetfolder=dir)
     >>> export_files = [f for f in listdir(output_dir) if isfile(join(output_dir, f))]
-    >>> print export_files
+    >>> print sorted(export_files)
     ['frm1.field2.py', 'frm1.field3.py', 'frm1.html', 'frm1.json', 'frm2.guitarist.py', 'frm2.html', 'frm2.json', 'frm2.welcome.py', 'frm3.json', 'frm4.json', 'frm_test.html', 'frm_test.json', 'view1.col1.py', 'view1.json', 'view2.json', 'view2.py', 'view3.json', 'view3.py', 'view4.json', 'view4.py']
-
 
 Import design from file system
 
