@@ -1016,9 +1016,10 @@ class DesignManager:
         db_id = self.id
         if not designelements:
             designelements = (
-                [o.id for o in self.getForms(sortbyid=False)] +
-                [o.id for o in self.getViews(sortbyid=False)] +
-                [o.id for o in self.getAgents(sortbyid=False)] +
+#                [o.id for o in self.getForms(sortbyid=False)] +
+#                [o.id for o in self.getViews(sortbyid=False)] +
+#                [o.id for o in self.getAgents(sortbyid=False)] +
+                 [id for id in self.objectIds(['Dexterity Container'])] +
                 ["resources/" + id for id in self.resources.objectIds()]
             )
         file_string = StringIO()

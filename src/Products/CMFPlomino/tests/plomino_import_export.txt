@@ -313,21 +313,26 @@ Export design as zip bundle
     >>> export_zip_file = ZipFile(file_string)
 
 Check if zip bunlde include JSON, HTML, PY files
+    >>> namelist = [o.filename for o in export_zip_file.infolist()]
 
-    >>> json_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.json')]
-    >>> json_files.sort()
+    >>> json_files = [fname for fname in namelist if fname.endswith('.json')]
     >>> print json_files
-    ['mydb/dbsettings.json', 'mydb/frm1.json', 'mydb/frm2.json', 'mydb/frm3.json', 'mydb/frm4.json', 'mydb/frm_test.json', 'mydb/view1.json', 'mydb/view2.json',  'mydb/view3.json',  'mydb/view4.json']
+    ['mydb/frm_test.json', 'mydb/frm1.json', 'mydb/frm3.json', 'mydb/frm4.json', 'mydb/view1.json', 'mydb/view2.json', 'mydb/view3.json', 'mydb/view4.json', 'mydb/frm2.json', 'mydb/dbsettings.json']
 
-    >>> html_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.html')]
-    >>> html_files.sort()
+Test contents is in the same order as the db
+    >>> print [f for f in db.objectIds() if 'frm' in f or 'view' in f]
+    ['frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    >>> print [f.split('/')[1].split('.')[0] for f in json_files if 'frm' in f or 'view' in f]
+    ['frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+
+
+    >>> html_files = [fname for fname in namelist if fname.endswith('.html')]
     >>> print html_files
-    ['mydb/frm1.html', 'mydb/frm2.html', 'mydb/frm_test.html']
+    ['mydb/frm_test.html', 'mydb/frm1.html', 'mydb/frm2.html']
 
-    >>> python_files = [fname for fname in export_zip_file.namelist() if fname.endswith('.py')]
-    >>> python_files.sort()
+    >>> python_files = [fname for fname in namelist if fname.endswith('.py')]
     >>> print python_files
-    ['mydb/frm1.field2.py', 'mydb/frm1.field3.py', 'mydb/frm2.guitarist.py', 'mydb/frm2.welcome.py', 'mydb/view1.col1.py', 'mydb/view2.py', 'mydb/view3.py',  'mydb/view4.py']
+    ['mydb/frm1.field2.py', 'mydb/frm1.field3.py', 'mydb/view1.col1.py', 'mydb/view2.py', 'mydb/view3.py', 'mydb/view4.py', 'mydb/frm2.guitarist.py', 'mydb/frm2.welcome.py']
 
 Check if JSON file does not contain HTML and formula
 
@@ -362,27 +367,30 @@ Check if PY file contains the formula for the field
 
 # Import design as zip bundle (new style)
 
-    >>> import os, zipfile
-    >>> dir, _f = os.path.split(os.path.abspath(__file__))
-    >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle.zip"), "r")
-    >>> db.importDesignFromZip(import_zip_file)
-    >>> db.refreshDB()
-    [...]
-    >>> macro_field_number_between = getattr(db, 'macro_field_number_between', None)
+    >>> old_contents = db.objectIds()
+    >>> print old_contents
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
 
+#    >>> import os, zipfile
+#    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+#    >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle.zip"), "r")
+    >>> db.importDesignFromZip(export_zip_file, replace=True)
 
-Check if HTNL layout is restored
+#    >>> db.refreshDB()
+#    [...]
 
-    >>> print macro_field_number_between.form_layout
-    <p><span class="plominoLabelClass">min</span></p>
-    ...
+    >>> print db.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    >>> db.objectIds() == old_contents
+    True
+
+    >>> frm1_html == db.frm1.form_layout
+    True
 
 
 Check if Formula is restored
-
-    >>> print macro_field_number_between.document_title
-    doc = plominoContext
-    ...
+   >>> db.frm1.field2.formula in field2_py
+   True
 
 
 

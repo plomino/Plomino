@@ -383,7 +383,7 @@ class PlominoView(Container):
         new_index = encode_name('PlominoViewColumn',self.id, new_id) if new_id else None
         movedIndex = index.renameIndex(old_index, new_index)
         movedColumn = index.renameColumn(old_index, new_index)
-        if not movedIndex or not movedColumn:
+        if (not movedIndex or not movedColumn) and new_id:
             #TODO: the rename can remove it so this will readd it. Probably not right logic
             self.declareColumn(new_id, col)
 
