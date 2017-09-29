@@ -63,9 +63,18 @@ class DatagridField(BaseField):
         """
         value = json.loads(submittedValue)
         mapping = self.getFieldMapping().split(',')
+
         if len(value) and isinstance(value[0], dict):
             # Need to convert to tuple for storage
-            value = [[line[k] for k in mapping if k in line] for line in value]
+            child_form_id = self.context.associated_form
+            if not child_form_id:
+                value = [[line[k] for k in mapping if k in line] for line in value]
+            else:
+                # Process the input so that we maintian the input order as the form field order
+                db = self.context.getParentDatabase()
+                child_form = db.getForm(child_form_id)
+                field_ids = [f.id for f in child_form.getFormFields(includesubforms=True)]
+                value = [[line[f_id] for f_id in field_ids if f_id in line and f_id in mapping] for line in value]
             return value
 
 

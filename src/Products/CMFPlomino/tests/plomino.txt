@@ -678,6 +678,50 @@ Clean up:
 
 
 
+Datagrid field:
+    >>> id = db.invokeFactory('PlominoForm', id='grid_form', title='Grid Form')
+    >>> id = db.grid_form.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='Field 1',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.grid_form.invokeFactory('PlominoField',
+    ...         id='field2',
+    ...         title='Field 2',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.grid_form.invokeFactory('PlominoField',
+    ...         id='field3',
+    ...         title='Field 3',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.invokeFactory('PlominoForm', id='main_form', title='Grid Form')
+    >>> id = db.main_form.invokeFactory('PlominoField',
+    ...         id='datagrid',
+    ...         title='Field datagrid',
+    ...         field_type="DATAGRID",
+    ...         associated_form = 'grid_form',
+    ...         field_mapping = 'field3, field2, field1')
+    >>> db.main_form.form_layout = """<p><span class="plominoFieldClass">datagrid</span></p>"""
+    >>> doc_grid = db.createDocument()
+    >>> doc_grid.setItem('datagrid',[['val1','val2','val3']] )
+    >>> doc_grid.save()
+
+
+Expect the field appear in the order of field mapping
+    >>> content = db.main_form.displayDocument(doc_grid)
+    >>> import re
+    >>> regex = r'(.*)val3(.*)val2(.*)val1(.*)'
+    >>> re.search(regex, content,re.DOTALL) != None
+    True
+
+Change the field mapping
+    >>> db.main_form.datagrid.field_mapping = ('field1, field2')
+    >>> content = db.main_form.displayDocument(doc_grid)
+    >>> regex = r'(.*)val1(.*)val2(.*)'
+    >>> re.search(regex, content,re.DOTALL) != None
+    True
+
 Events
 -------
 

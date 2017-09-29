@@ -62,6 +62,7 @@ Changelog
 - Fix the parsing of formid preventing users from editing a datagrid row [quang]
 - Fix datagrid field mapping bugs [quang]
 - Add multiple tests [apallar]
+- Fix datagrid screwing up data when field mapping is set [quang]
 - Fix bug that not showing selectionlistformula in IDE in the first-time opening [quang]
 
 2.0b4 (2016-05-27)
