@@ -1016,9 +1016,6 @@ class DesignManager:
         db_id = self.id
         if not designelements:
             designelements = (
-#                [o.id for o in self.getForms(sortbyid=False)] +
-#                [o.id for o in self.getViews(sortbyid=False)] +
-#                [o.id for o in self.getAgents(sortbyid=False)] +
                  [id for id in self.objectIds(['Dexterity Container'])] +
                 ["resources/" + id for id in self.resources.objectIds()]
             )
@@ -1169,14 +1166,15 @@ class DesignManager:
 
 
     def extractScriptFromElement(self,element):
-        code = ""
+        codes = []
         for method in self.getMethods(element):
             script = getattr(element, method, None)
             if script:
-                code+= "## START "+method+" {\n"
-                code+= script
-                code+= "\n## END "+method+" }\n\r"
-        return code
+                code = ["## START "+method+" {"] +\
+                    script.splitlines() +\
+                    ["## END "+method+" }"]
+                codes.append('\n'.join(code))
+        return '\n'.join(codes)
 
 
     security.declareProtected(DESIGN_PERMISSION, 'exportElementAsJSON')

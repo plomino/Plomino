@@ -389,8 +389,29 @@ Check if PY file contains the formula for the field
 
 
 Check if Formula is restored
-   >>> db.frm1.field2.formula in field2_py
-   True
+    >>> db.frm1.field2.formula in field2_py
+    True
+    >>> import difflib
+    >>> print ''.join(difflib.ndiff(db.frm1.field2.formula.splitlines(1), field2_py.splitlines(1)))
+    + ## START formula {
+      plominoDocument.setItem('field4', 'side-effect')
+      return 'My favorite song is '+plominoDocument.field1
+    + ## END formula }
+
+Check that that if we export again, no extra lines etc are added.
+
+    >>> export_zip_file2 = ZipFile(db.exportDesignAsZip())
+    >>> frm1_html == export_zip_file2.read('mydb/frm1.html')
+    True
+
+    >>> print ''.join(difflib.ndiff(db.frm1.field2.formula.splitlines(1), export_zip_file2.read('mydb/frm1.field2.py').splitlines(1)))
+    + ## START formula {
+      plominoDocument.setItem('field4', 'side-effect')
+      return 'My favorite song is '+plominoDocument.field1
+    + ## END formula }
+
+    >>> for fn in [fn for fn in export_zip_file.namelist() if export_zip_file2.read(fn) != export_zip_file.read(fn)]:
+    ...    print ''.join(difflib.unified_diff(export_zip_file.read(fn).splitlines(1), export_zip_file2.read(fn).splitlines(1),fn,fn))
 
 
 
