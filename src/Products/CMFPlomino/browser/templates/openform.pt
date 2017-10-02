@@ -32,16 +32,16 @@
     </tal:block_hascssresources>
 </metal:css>
 
+
 <metal:content fill-slot="main">
-
     <h1 class="documentFirstHeading" tal:content="view/form/Title">Title</h1>
-
     <div id="content-core"
         tal:define="
             ispage view/form/isPage;
+            searchform view/form/isSearchForm;
             form_method python:view.form.getFormMethod();
             macro_context python:request.get('Plomino_Macro_Context', None);">
-        <form tal:condition="not:ispage"
+        <form tal:condition="python:not(searchform or ispage)"
             id="plomino_form"
             tal:define="hasCreatePermissionOnDatabase python:view.form.hasCreatePermission(view.form.getParentDatabase());
                 hasCreatePermissionOnForm python:view.form.hasCreatePermission(context);
@@ -133,6 +133,125 @@
 
             <span metal:use-macro="view/form/plomino_actions/macros/OpenFormActionBar">display form actions</span><br/>
         </form>
+
+        <form tal:condition="searchform"
+            enctype="multipart/form-data"
+            id="plomino_form"
+            tal:define="hasReadPermissionOnDatabase python:view.form.hasReadPermission(view.form.getParentDatabase());
+                hasReadPermissionOnForm python:view.form.hasReadPermission(context);
+                enctype python:(form_method == 'POST') and 'multipart/form-data'"
+             tal:attributes="
+                name view/form/id;
+                action string:${view/form/absolute_url}/OpenForm;
+                method python:view.form.getFormMethod();
+                enctype enctype|nothing
+                ">
+                    <div tal:replace="structure provider:plone.abovecontenttitle" />
+                    <tal:block_has_readpermission
+                        condition="python:(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
+                        <tal:block_actionbar_top
+                            define="owner python:view.form">
+                            <span metal:use-macro="view/form/plomino_actions/macros/SearchFormActionBar">display form actions</span><br/>
+                        </tal:block_actionbar_top>
+                    </tal:block_has_readpermission>
+
+                    <h1 class="documentFirstHeading" tal:content="here/Title">Title</h1>
+                    <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+                    <div tal:replace="structure provider:plone.abovecontentbody" />
+
+                    <tal:block_no_readpermission
+                        condition="python:not(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
+                        <p i18n:domain="CMFPlomino" i18n:translate="Please log in">Please log in</p>
+                    </tal:block_no_readpermission>
+
+                    <tal:block_has_readpermission
+                        condition="python:(hasReadPermissionOnDatabase and hasReadPermissionOnForm)">
+
+                        <span tal:content="structure python:here.formLayout(request)" />
+                        <tal:results
+                            define="searchviewname python:here.search_view;
+                                    searchviewobj python:here.getParentDatabase().getView(searchviewname);
+                                    searchviewfound python: searchviewobj is not None;
+                                    ">
+                            <tal:block_no_view_found
+                                condition="not:searchviewfound">
+                                <span tal:define="error python:here.writeMessageOnPage(searchviewname+' view does not exist.', here.REQUEST, error=True);" />
+                            </tal:block_no_view_found>
+
+                            <tal:block_view_found condition="searchviewfound">
+                                <table
+                                    tal:define="results python:view.form.searchDocuments(request);
+                                                count python:len(results) if results else 0;
+                                                paramstart request/start|python:'1';
+                                                paramlimit request/limit|python:'100';
+                                                start python:int(paramstart);
+                                                limit python:int(paramlimit);
+                                                overlimit python:count>limit;
+                                                nextstart python:start+limit;
+                                                previousstart python:max(1,start-limit);
+                                                query_string python:request['QUERY_STRING'].replace('start=', '').replace('limit=', '');
+                                                columns python:searchviewobj.getColumns()"
+                                    id="sortable"
+                                    class="listing"
+                                    summary="Content listing"
+                                    i18n:attributes="summary summary_content_listing;">
+                                    <tr>
+                                        <th>&nbsp;&nbsp;</th>
+                                        <tal:block_column_titles repeat="c columns">
+                                            <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+                                                tal:content="c/Title">Title</span>&nbsp;</th>
+                                        </tal:block_column_titles>
+                                    </tr>
+                                    <tal:block_result_rows
+                                        condition="results"
+                                        repeat="doc python:results[start-1:start-1+limit]">
+
+                                        <tr tal:define="
+                                                oddrow repeat/doc/odd;
+                                                docurl python:'../'+searchviewname+'/document/'+doc.getPath().split('/')[-1]"
+                                            tal:attributes="class python:'odd' if oddrow else 'even';">
+                                            <td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+                                            <tal:block_column_values repeat="c columns">
+                                                <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
+                                                    tal:define="
+                                                            cname c/id;
+                                                            vname searchviewobj/id;
+                                                            cvalue python:getattr(doc, searchviewobj.getIndexKey(cname), '');
+                                                            "
+                                                    tal:content="structure cvalue" ></span></a></td>
+                                            </tal:block_column_values>
+                                        </tr>
+                                    </tal:block_result_rows>
+
+                                    <!-- DOC COUNTING -->
+                                    <tal:block_result_pagination condition="results">
+                                        <tr>
+                                            <th tal:attributes="colspan python:len(columns)+1"><tal:previous
+                                                condition="python:start>1">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:'/'.join(context.getPhysicalPath())+'/OpenForm?'+query_string+'&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
+                                            </tal:previous>
+                                            <tal:count i18n:translate="documents_count">
+                                                 Document(s) <span i18n:name="start" tal:content="python:str(start)">start</span> to
+                                                 <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
+                                                 of <span i18n:name="total" tal:content="count">count</span>
+                                            </tal:count>
+                                            <tal:next condition="python:count>start+limit">
+                                                <a i18n:translate=""
+                                                    tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'/OpenForm?'+query_string+'&start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
+                                            </tal:next></th>
+                                        </tr>
+                                    </tal:block_result_pagination>
+
+                                </table>
+                            </tal:block_view_found>
+                        </tal:results>
+                    </tal:block_has_readpermission>
+
+                    <div tal:replace="structure provider:plone.belowcontentbody" />
+                </form>
+
     </div>
 </metal:content>
 </body>

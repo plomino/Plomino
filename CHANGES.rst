@@ -60,6 +60,7 @@ Changelog
 - Display list value nicely during CSV export [ivanteoh]
 - Add feature to generate view from form with selected fields, IDE mode [quang]
 - fix addition lines added to exported .py which caused problems in source control [djay]
+- Enable search form functionality [quang]
 
 2.0b4 (2016-05-27)
 ------------------
