@@ -219,6 +219,43 @@ And scripts can include scripts that include scripts ...::
 When formulas fail, and the database is in debug mode, the error is logged
 --------------------------------------------------------------------------
 
+
+Search form
+-------------
+    >>> db.frm3.isSearchForm = True
+    >>> db.frm3.search_view = 'search_view'
+    >>> id = db.frm3.invokeFactory('PlominoField', id='field1',
+    ...         title='Title for field1',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> id = db.invokeFactory('PlominoView', id='search_view',
+    ...         title='View 1')
+    >>> id = db.search_view.invokeFactory('PlominoColumn', id='col1',
+    ...         title='Col 1', displayed_field = 'frm3/field1')
+
+    >>> doc_search1 = db.createDocument()
+    >>> doc_search1.setItem('field1','val1')
+    >>> doc_search1.save()
+    >>> doc_search2 = db.createDocument()
+    >>> doc_search2.setItem('field1','val2')
+    >>> doc_search2.save()
+
+Simulate a search request, with no paramter, return all documents
+    >>> REQUEST = {}
+    >>> results = db.frm3.searchDocuments(REQUEST)
+    >>> len(results) == 2
+    True
+
+Simulate a search request, searching for field1
+    >>> REQUEST = dict(field1='val2')
+    >>> results = db.frm3.searchDocuments(REQUEST)
+    >>> len(results) == 1
+    True
+    >>> db.deleteDocument(doc_search1)
+    >>> db.deleteDocument(doc_search2)
+
+
 TODO
 
 Documents
@@ -866,7 +903,7 @@ You can rename a view
     >>> len(db.view_1.getDocumentsByKey('side-effect'))
     5
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view__1_col1', 'question', 'field2', 'field4')
+    ('id', 'SearchableText', 'PlominoViewColumn_view__1_col1', 'field1', 'question', 'field2', 'field4')
 
 Ensure it still indexes ok after a rename
 
@@ -893,7 +930,7 @@ We can also rename a column
 
     >>> db.manage_renameObject('view_1', 'view1')
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4')
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4')
 
     >>> doc6 = db.createDocument()
     >>> doc6.setItem('Form', 'frm2')
@@ -914,10 +951,10 @@ We can change the type of a column
     >>> modified(db.view1.col_3)
 
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
 
 field 4 shouldn't be in the list below since its not in any column #TODO
-    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'PlominoViewColumn_view1_col__3')
+    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'PlominoViewColumn_view1_col__3')
 
     >>> 'PlominoViewColumn_view1_col__3' in db.getIndex().indexes()
     True
@@ -927,10 +964,10 @@ field 4 shouldn't be in the list below since its not in any column #TODO
     >>> modified(db.view1.col_3)
 
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3')
 
 Should really be
-    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4')
+    #('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4')
 
 
 Things shouldn't break if a column indexes a field with the same name as a form.
@@ -945,7 +982,7 @@ Things shouldn't break if a column indexes a field with the same name as a form.
     ...         title='Col 4',
     ...         displayed_field='frm1/frm2')
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3', 'frm2')
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4', 'PlominoViewColumn_view1_col__3', 'frm2')
     >>> len(db.view1.getAllDocuments())
     7
     >>> db.view1.getAllDocuments(getObject=False)[0]['frm2']
@@ -956,7 +993,7 @@ We can delete columns and have content indexed fine
     >>> id = db.view1.manage_delObjects(['col_3'])
 
     >>> db.getIndex()._catalog.names
-    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'question', 'field2', 'field4', 'frm2')
+    ('id', 'SearchableText', 'PlominoViewColumn_view1_col__1', 'field1', 'question', 'field2', 'field4', 'frm2')
 
     >>> 'PlominoViewColumn_view1_col__3' in db.getIndex().indexes()
     False

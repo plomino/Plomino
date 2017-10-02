@@ -2091,11 +2091,11 @@ class PlominoForm(Container):
             except PlominoScriptException, e:
                 if self.REQUEST:
                     e.reportError('Search event failed.')
-                    return self.OpenForm(searchresults=[])
+                    return []
         else:
             # Allow Plomino to filter by view, default query, and formula
             db = self.getParentDatabase()
-            searchview = db.getView(self.getSearchView())
+            searchview = db.getView(self.search_view)
 
             # index search
             index = db.getIndex()
@@ -2130,7 +2130,6 @@ class PlominoForm(Container):
                     if fieldname == "Plomino_SearchableText":
                         fieldname = "SearchableText"
                     query[fieldname] = v
-
             sortindex = searchview.sort_column
             if not sortindex:
                 sortindex = None
@@ -2138,7 +2137,6 @@ class PlominoForm(Container):
                 query,
                 sortindex=sortindex,
                 reverse=searchview.reverse_sorting)
-
             # filter search with searchformula
             searchformula = self.search_formula
             if searchformula:
@@ -2155,8 +2153,7 @@ class PlominoForm(Container):
                 except PlominoScriptException, e:
                     e.reportError('Search formula failed')
                 results = filteredResults
-
-        return self.OpenForm(searchresults=results)
+        return results
 
     security.declarePublic('validation_errors')
 
