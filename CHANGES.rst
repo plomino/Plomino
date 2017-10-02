@@ -56,12 +56,12 @@ Changelog
 - Fix datagrid field mapping bugs [quang]
 - Add multiple tests [apallar]
 
-- Fix datagrid screwing up data when field mapping is set [quang]
-- Fix bug that not showing selectionlistformula in IDE in the first-time opening [quang]
-- Display list value nicely during CSV export [ivanteoh]
-- Add feature to generate view from form with selected fields, IDE mode [quang]
-- fix addition lines added to exported .py which caused problems in source control [djay]
-- Enable search form functionality [quang]
+- Further fixes to datagrid field mapping bugs [quang]
+- Fix but where selection list formula is not showing in the IDE [quang]
+- Display list values nicely during CSV export [ivanteoh]
+- Add IDE feature to generate view from form with selected fields [quang]
+- Fix to export function, causing additional lines in exported python [djay]
+- Add search form functionality [quang]
 
 2.0b4 (2016-05-27)
 ------------------
