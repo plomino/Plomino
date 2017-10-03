@@ -1,11 +1,10 @@
 
-Build the base image. You only need to do this if there is a big change to the buildout
-
+Build the base image first. 
 ```
 docker build --tag robot_tests -f Dockerfile-bootstrap .
 ```
 
-Subsequent builds you can do
+Then build buildout and npm build. If the code changes you need to redo this step.
 
 ```
 docker build --tag robot_tests .
@@ -54,6 +53,12 @@ To interact with the robot-server use http://localhost:55001/plone
 
 The robot-server tests users are 'test-user' or 'admin' with password of 'secret'
 
+Another way to run the tests is using docker-compose, which will launch both selenium and pretaform togeather and then run
+the tests. You can also look in .circleci/config.yml to see how that uses compose to run the tests
+
+```
+docker-compose -f docker-compose.test.yml up
+```
 
 
 To interact with the running application. Below you can start a server which is available on port 8080. user admin:admin.
