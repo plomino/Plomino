@@ -6,4 +6,3 @@ return [''] + ids
 
 
 ## END selectionlistformula }
-

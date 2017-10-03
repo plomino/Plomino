@@ -22,4 +22,3 @@ return [item(f) for f, method_name in editform.getActions(hide=False)]
 
 
 ## END selectionlistformula }
-

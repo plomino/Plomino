@@ -23,4 +23,3 @@ return [item(f) for f in editform.getFormFields()]
 
 
 ## END selectionlistformula }
-

@@ -133,5 +133,3 @@ return current_form_items
 else:
     return code + 'return defaultitems'
 ## END formula }
-
-

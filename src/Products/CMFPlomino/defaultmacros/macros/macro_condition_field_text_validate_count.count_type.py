@@ -8,4 +8,3 @@ return 'chars'
 
 
 ## END formula }
-

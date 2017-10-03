@@ -5,4 +5,3 @@ return 'none'
 
 
 ## END formula }
-

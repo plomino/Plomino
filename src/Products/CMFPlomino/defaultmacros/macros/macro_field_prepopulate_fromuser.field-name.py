@@ -8,4 +8,3 @@ return [''] + ids
 
 
 ## END selectionlistformula }
-

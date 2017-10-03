@@ -5,4 +5,3 @@ return 'plone'
 
 
 ## END formula }
-

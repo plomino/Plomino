@@ -26,4 +26,3 @@ return '''This email address is not valid.'''
 
 
 ## END validation_formula }
-

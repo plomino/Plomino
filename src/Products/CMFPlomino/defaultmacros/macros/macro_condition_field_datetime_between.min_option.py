@@ -9,4 +9,3 @@ return 'pick'
 
 
 ## END formula }
-

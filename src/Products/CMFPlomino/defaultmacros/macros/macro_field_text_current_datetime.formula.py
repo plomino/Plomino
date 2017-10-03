@@ -15,4 +15,3 @@ return code
 
 
 ## END formula }
-
