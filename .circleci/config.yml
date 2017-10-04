@@ -60,5 +60,6 @@ jobs:
       - run:
           name: Clean up tests
           command: |
+            docker cp  grid_plominotest_1:/buildout/parts/test test/
             docker-compose -f docker-compose.test.yml -p grid down
 #TODO: get test output into a data volume and copy it out before close down
