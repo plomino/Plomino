@@ -1,10 +1,9 @@
+version: 2
 general:
   branches:
     ignore:
       - master # list of branches to ignore
       - /release\/.*/ # or ignore regexes
-  artifacts:
-      - "test"
 jobs:
   build:
     working_directory: /app
@@ -61,6 +60,8 @@ jobs:
           name: Clean up tests
           when: always
           command: |
-            docker cp  grid_plominotest_1:/buildout/parts/test test/
+            docker cp  grid_plominotest_1:/buildout/parts/test /app
+            ls -al /app/test
             docker-compose -f docker-compose.test.yml -p grid down
-#TODO: get test output into a data volume and copy it out before close down
+      - store_artifacts:
+          path: /app/test
