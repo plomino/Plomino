@@ -59,6 +59,7 @@ jobs:
             docker-compose -f docker-compose.test.yml -p grid up --abort-on-container-exit --exit-code-from=plominotest plominotest
       - run:
           name: Clean up tests
+          when: always
           command: |
             docker cp  grid_plominotest_1:/buildout/parts/test test/
             docker-compose -f docker-compose.test.yml -p grid down
