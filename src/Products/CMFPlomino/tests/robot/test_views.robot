@@ -23,9 +23,9 @@ Scenario: I can add columns to a view
    and I click on Add tab
    and I add a column "text_2" with retries
    Set selenium timeout     10s
+  Capture Page Screenshot 
   Then I can see columns "text", "text_1", and "text_2" in the view
 
-#FIX - OK
 Scenario: I can add an action to a view
   Given I have a form and some data saved
    and I create a view
@@ -67,7 +67,7 @@ Scenario: I can rename a form and then create new form and then go back and repe
     and I can see "new-form-1" is open
     and I add a form by click
     and I can see "new-form" is open
-    and I open a form "new-form-1"
+    and I open the 'new-form-1' form
     and I enter "new-form" in "Id" in "Form Settings"
     and I add a form by click
    Then I can see "new-form-1" is open
@@ -107,19 +107,15 @@ Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
   When I update the contents of "new-form-1" and save the form
    Then I can see that the "new-form" is updated
 
-#---------Work In Progress-------
-# Scenario: I can add a datagrid to multi-page form
-#   #PR 41: fix handling of empty values in datagrid rendering
-#   Maximize Browser Window
-#   Given a logged-in test user
-#    and I open the ide for "mydb"
-#    and I add a form by click
-#    and I add a datagrid to the form
-#    and I add a field to the newly created form
-#    and I add a page break to the form
-#    and I add a datagrid after the page break
-#    Capture Page Screenshot
-
-
-
-
+# #---------Work In Progress-------
+# # Scenario: I can add a datagrid to multi-page form
+# #   #PR 41: fix handling of empty values in datagrid rendering
+# #   Maximize Browser Window
+# #   Given a logged-in test user
+# #    and I open the ide for "mydb"
+# #    and I add a form by click
+# #    and I add a datagrid to the form
+# #    and I add a field to the newly created form
+# #    and I add a page break to the form
+# #    and I add a datagrid after the page break
+# #    Capture Page Screenshot

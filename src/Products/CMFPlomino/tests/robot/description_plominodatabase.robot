@@ -89,21 +89,41 @@ I type '${title}' into the title field
 I submit the form
   Click Button  Save
 
-I save the macro
-  Wait until page contains element  css=.plominoSave
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  sleep  0.5s
-  Click Button  jquery=.plominoSave:visible
-  sleep  0.5s
-  wait until page does not contain element  jquery=.plominoSave:visible
+I submit the plominodatabase form
+  Wait Until Element Is Visible     jquery=.formControls input[id='form-buttons-save']    60s
+  Wait Until Element Is Enabled     jquery=.formControls input[id='form-buttons-save']    60s
+  Execute Javascript    $(".formControls input[id='form-buttons-save']").click()
+
+
+I save the macro and the form
+  Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    60s
+  Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    60s
+  Execute Javascript    $(".actionButtons input[name='plomino_save']").click()
+  # Wait Until Element Is Not Visible     jquery=.plone-modal-dialog    60s
+  Sleep   5s
+  wait until form is loaded
+  I save the fieldsettings
+
+I select current field
+  # Click Element     jquery=.select2-container[id='s2id_field_name']     #input Click on the search box
+  Click Element     jquery=#s2id_field_name
+  Capture Page Screenshot
+  # Sleep   3s
+  Wait Until Element Is Visible     jquery=.select2-results li div:contains('Current field')      100s
+  Capture Page Screenshot
+  Click Element     jquery=.select2-results li div:contains('Current field')
+  Capture Page Screenshot
+  Sleep   3s
 
 I save the settings
   Click link  link=SAVE
 
 I save the fieldsettings
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
+  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")   60s
+  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a:contains("Save")   60s
+  Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a:contains("Save")   60s
+  Wait Until Keyword Succeeds     100 sec    5 sec   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
   sleep  0.5s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
@@ -116,36 +136,28 @@ I go to the plominodatabase view
 
 
 I add a form by click
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Wait Until Element Is Visible     jquery=#add-new-form-tab
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible   60s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    60s
   Click Element  jquery=#add-new-form-tab
-  wait until page contains element  jquery=#modal-tab-plus[open]
+  wait until page contains element  jquery=#modal-tab-plus[open]    60s
   Click Element  jquery=#modal-tab-plus button[data-create="form"]
-   # wait until page contains  Form
-   # Click Element  jquery=[href="#palette-tab-0-panel"]
-   # Click Element  css=button[title="Form"]
-   # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Form"]
-  #wait until page contains  new-form    300s
-  wait until page contains element  css=div.mce-tinymce   300s
-  Wait Until Element Is Visible     css=div.mce-tinymce   300s
+  wait until page contains element  css=div.mce-tinymce   60s
+  Wait Until Element Is Visible     css=div.mce-tinymce   60s
 
 I add a hidewhen by click
-  I add a "Hide When" field
-   # Wait until page contains  Hide When
-   # Click Element  xpath=//div[@class="palette-wrapper"]//*[@title="Hide When"]
+  Wait Until Element Is Visible     jquery=.mdl-button[title='Hide When']   60s
+  Wait Until Element Is Enabled     jquery=.mdl-button[title='Hide When']   60s
+  Execute Javascript    $(".mdl-button[title='Hide When']").click()
+
 
 I add a "${field}" field
   Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
-  Wait Until Element Is Visible     jquery=.mce-tinymce     300s
-  # wait until page contains element  jquery=.plomino-block-preloader:visible
-  # sleep  0.5s
-  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
 
 I add a "${field}" field by dnd
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Selenium2Library.drag and drop  xpath=//div[@class="palette-wrapper"]//*[@title="${field}"]  css=.mce-edit-area iframe
-  # wait until page contains element  css=.plomino-block-preloader
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   sleep  0.3s
@@ -162,12 +174,10 @@ I add a form by dnd
   wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("new-form")
   wait until page contains element  jquery=div.mce-edit-area
 
-I open a form "${formid}"
-  # Capture Page Screenshot
+ I open a form "${formid}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
   Click Element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
-  #Click Element  xpath=//span[contains(@class,"tree-node--name")][normalize-space(text())="${formid}"]
   wait until form is loaded
 
 I open the first form
@@ -183,21 +193,27 @@ I change the fieldmode to "${mode}" 
   Select From List By Value  jquery=#form-widgets-field_mode  ${mode}
 
 wait until form is loaded
-  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   300s
-  wait until page contains element   jquery=.mce-edit-area iframe:visible   300s
+  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   100s
+  wait until page contains element   jquery=.mce-edit-area iframe:visible   60s
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
-
-  Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
-  Sleep   30s
+  Wait Until Keyword Succeeds   100 sec  5 sec   Click Element   xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
+  Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]   ${value}
+  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Save")     60s
+  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Save")     60s
   Click Element  jquery=.mdl-button:visible:contains("Save")
   wait until page contains element   jquery=.mdl-button:visible:contains("Save")   60s
 
 I enter "${value}" in "${field}" in the form
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]  ${value}
+
+I select Text as value type
+  Execute Javascript    window.document.getElementById("value_type-text").scrollIntoView(true);
+  Sleep     3s
+  Execute Javascript    $(".value_type-selectionfield span input[value='text']").click()
 
 
 Double Click On Label "${plominoid}"
@@ -233,7 +249,9 @@ I add a macro "${macro}" to "${tab}"
 
   Click element  css=.plomino-macros-rule .select2-container input
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
-  wait until page contains element  css=.plominoSave
+  wait until page contains element  css=.plominoSave    60s
+  Sleep     5s
+  Capture Page Screenshot
 
 I input the text "${text}" inside the field with id "${fieldid}"
   Input Text  jquery=#${fieldid}  ${text}
@@ -244,8 +262,6 @@ I preview "${formid}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Click Element  jquery=.mdl-button:visible:contains("Preview")
-  # Run keyword if  page contains element  jquery=.mdl-button.agree:visible
-  #   Click Element  jquery=.mdl-button.agree:visible
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/${formid}/view
 
@@ -254,9 +270,6 @@ I open service tab for Import/export of data
   Wait Until Element Is Visible     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
   Click Element     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
   Wait Until Element Is Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']     100s
-  
-    # wait until page contains  ${tabId}
-  # Click Element  jquery=.mdl-button:visible:contains(${tabId})
 
 I can see Import/Export dialog open
   Element Should Be Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']
@@ -266,9 +279,10 @@ I click the tab "Design import/export" in Import/Export dialog
   Wait Until Element Is Visible     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign']
 
 I select Export To Zip File
-  Click Element     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign'] table tbody tr td label[for='targettype-zipfile']
+  Execute Javascript    window.document.getElementById("targettype-zipfile").scrollIntoView(true);
+  Click Element     jquery=#targettype-zipfile
 
-I click Export button
+I can click Export button
   Click Element     jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div form[name='ExportDesign'] table tbody tr td input[name='submit_export']
 
 
@@ -291,11 +305,6 @@ I will see that hidewhen is present
 I can see "${formid}" is open
   Wait Until Element Is Visible     jquery=plomino-tabs .mdl-tabs .mdl-tabs__tab-bar a span:contains('${formid}')     10s
   Wait Until Element Is Visible     jquery=.mce-tinymce       30s
-  # Wait Until Element Is Visible     jquery=.mce-tinymce       30s
-  # Capture Page Screenshot
-  # wait until page contains element  css=div.mce-edit-area
-  # page should contain   ${formid}
-  # page should contain element  css=div.mce-edit-area
 
 I can see field "${fieldid}" in the editor
   Wait until page contains  Insert
@@ -314,15 +323,14 @@ I will see the "${position}" hidewhen on the path "${xpath}"
   unselect frame
 
 I see "${value}" in "${field}" in "${tab}"
-  # capture page screenshot
   Click Link  ${tab}
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   sleep  0.3s
   ${text} =  get value  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   should be equal  ${text}  ${value}
 
-I will see the validation error "${error}" for field "${field}"
-  wait until page contains element  jquery=#validation_failed
+I will see the validation error "${error}"
+  Wait Until Page Contains      ${error}      60s
 
 I will see the preview form saved
   page should contain button  Close

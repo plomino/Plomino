@@ -282,8 +282,12 @@ I fill in the fields with id="${viewid}", title="${title}", form="${form}"
   Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
 
   Sleep   3s
-  # Click Element     jquery=.mdl-dialog__content-form-group select option[value='name']
-  # Sleep   3s
+
+I open the 'new-form-1' form
+  Wait Until Element Is Visible     jquery=.tree-node--collapsible span:contains('new-form-1')    100s
+  Wait Until Keyword Succeeds   2 min   5 sec     Click Element   jquery=.tree-node--collapsible span:contains('new-form-1')
+  wait until form is loaded
+  Sleep   5s
 
 I can successfully view all fields in the form with title="${title}"
   Click Element   jquery=.mdl-dialog__actions .new-view-dialog__create-btn
@@ -379,11 +383,10 @@ I check the fields after adding a column
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
 
 I add a column "${col}" with retries
-  Wait Until Element Is Visible     jquery=.mdl-button--colored[id='column']     60s
-  Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='column']     60s
-  Focus     jquery=.mdl-button[id='column']
-  Wait Until Keyword Succeeds   30 min   10 sec    I add a column "${col}" only
-  #I add column "${col}" using for-loop
+  Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=.mdl-button--colored[id='${col}']     60s
+  Run Keyword And Ignore Error    Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='${col}']     60s
+  Wait Until Keyword Succeeds   7 min   10 sec    I add a column "${col}" only
+  Capture Page Screenshot
   I input column name and title "${col}"
   Set Selenium Timeout    60s
 
@@ -398,12 +401,13 @@ I input column name and title "${col}"
   Input Text  jquery=#form-widgets-IShortName-id  ${col}
   Click Element   jquery=#form-widgets-IBasic-title
   Input Text  jquery=#form-widgets-IBasic-title  ${col}
-  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
-  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons   60s
-  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']    60s
-  I can see a view editor listing my data
-  # wait until form is loaded
-  
+  Capture Page Screenshot
+  Wait Until Keyword Succeeds   3 min   30 s    Save the column properties for "${col}"
+
+Save the column properties for "${col}"
+  Run Keyword and Ignore Error    Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  I will see column "${col}" in the view
+  Capture Page Screenshot
 
 I add a column "${col}" only
   Run Keyword and Ignore Error    Execute Javascript    $(".mdl-button--colored[id='column']").click()
@@ -459,7 +463,6 @@ I can see columns "${col1}", "${col2}", and "${col3}" in the view
 
 
 I will see column "${columnid}" in the view
-  Wait until page contains element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
   Wait Until Element Is Visible     jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
   Page should contain element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']
 

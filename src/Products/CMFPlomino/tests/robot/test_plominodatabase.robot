@@ -39,7 +39,7 @@ Scenario: As a site administrator I can add a PlominoDatabase
   Given a logged-in site administrator
     and an add plominodatabase form
    When I type 'My PlominoDatabase' into the title field
-    and I submit the form
+    and I submit the plominodatabase form
    Then a plominodatabase with the title 'My PlominoDatabase' has been created
 
 Scenario: As a site administrator I can view a PlominoDatabase
@@ -133,18 +133,20 @@ Scenario: I can add a validation rule to a field
   Given I have a form open
    When I add a "Text" field
     and I select the field "text"
-    and I add a macro "Field contains text" to "Field Settings"
+    # "Field contains text" macro is no longer in the options, changed to "Match text" instead
+    and I add a macro "Match text" to "Field Settings"
+    and I select current field
     and I enter "blah" in "Field value" in the form
-    and I save the macro
+    and I select Text as value type
+    and I save the macro and the form
     and I add a macro "Invalid" to "Field Settings"
     and I enter "You can't say blah" in "Invalid message" in the form
-    and I save the macro
+    and I save the macro and the form
     and I save the fieldsettings
     and I preview "frm_test"
-    # if you want to enter blah in the Untitled - select field Untitled in the macro modal
-    and I input the text "blah" inside the field with id "field_1"
+    and I input the text "blah" inside the field with id "text"
     and I submit the form
-   Then I will see the validation error "You can't say blah" for field "field_1"
+    Then I will see the validation error "You can't say blah"
 
 Scenario: I can change to computed and select the date
   Given I have a form open
@@ -211,9 +213,8 @@ Scenario: I can add hidewhen on email form by click
 Scenario: I can export design from a database
   Given a logged-in test user
     and I open the ide for "mydb"
-    and I open service tab for Import/export of data
+   When I open service tab for Import/export of data
    Then I can see Import/Export dialog open
-    and I click the tab "Design import/export" in Import/Export dialog
+   When I click the tab "Design import/export" in Import/Export dialog
     and I select Export To Zip File
-    and I click Export button
-
+   Then I can click Export button
