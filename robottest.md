@@ -10,6 +10,54 @@ Then build buildout and npm build. If the code changes you need to redo this ste
 docker build --tag robot_tests .
 ```
 
+# Using docker-compose
+
+
+Run docker hub in the background
+
+
+```
+docker-compose -f docker-compose.test.yml up -d hub chrome
+```
+
+
+```
+docker-compose -f docker-compose.test.yml run plominotest -e bin/test --all
+```
+
+Run a test
+
+```
+docker-compose -f docker-compose.test.yml run --name "plominotest" plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
+```
+
+if you are modifying tests and also want to see the test output
+
+```
+docker-compose -f docker-compose.test.yml run --name "plominotest" -v ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v ./test:/buildout/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
+```
+
+OR you can use robot directly. First start robot-server
+
+```
+docker-compose -f docker-compose.test.yml up -d hub chrome robot-server
+```
+
+followed by a test run
+
+```
+docker-compose -f docker-compose.test.yml up robot
+```
+
+or just to run a single test
+
+```
+docker-compose -f docker-compose.test.yml run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
+```
+
+# Using docker
+
+
 Start the selenium server
 
 ```

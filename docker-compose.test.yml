@@ -68,7 +68,7 @@ services:
   plominotest:
     image: robot_tests
     ports:
-      - 55001:55001
+#      - 55001:55001
       - 8080:8080
     environment:
       - ROBOT_REMOTE_URL=http://hub:4444/wd/hub
@@ -82,5 +82,37 @@ services:
     depends_on:
       - "hub"
 
+  robot-server:
+    image: robot_tests
+    depends_on:
+       - hub
+    command: bin/robot-server -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
+    volumes:
+      - /dev/shm:/dev/shm
+#      - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
+    privileged: true
+    environment:
+      - ZSERVER_HOST=robot-server
+      - ZSERVER_PORT=55001
+      - LISTENER_PORT=49999
+      - LISTENER_HOST=robot-server
+#    ports:
+#      - 49999:49999
+#      - 55001:55001
 
-
+  robot:
+    image: robot_tests
+    depends_on:
+       - hub
+       - robot-server
+    environment:
+       - ROBOT_OPTIONS="--outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone "
+       - LISTENER_PORT=49999
+       - LISTENER_HOST=robot-server
+    command: bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
+    volumes:
+      - /dev/shm:/dev/shm
+# doesn't work with remote docker
+      - ./test/testoutput:/buildout/parts/test
+      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
+    privileged: true
