@@ -29,9 +29,10 @@ import plone.api
 logger = logging.getLogger('Plomino')
 
 __author__ = 'dylanjay'
-
-
-
+SINGLE_QUOTE = "'''"
+DOUBLE_QUOTE = '"""'
+SPACE = ' '
+NEWLINE = '\n'
 
 ###########################################
 # A multi line rule widget based on select2
@@ -382,10 +383,43 @@ def to_func(func, code):
 def to_op(op):
     return op
 
+
 def to_if(expression, code):
+    """Generate block of if code.
+
+    :param expression: expression method name
+    :param code: multi-line code that is going to insert under if statement
+    :return: block of if code include both if statement and code under it
+    """
+    # code need to handler triple quote statement without extra space
+    # handler indent code inside if expression
+    # old code: new_code = (' '*4)+('\n'+(' '*4)).join(code.split('\n'))
+    inside_single_triple_quote = False
+    inside_double_triple_quote = False
+    new_code = []
+    for each_line in code.splitlines():
+        if each_line:
+            if not (inside_single_triple_quote or inside_double_triple_quote):
+                new_code.append((SPACE * 4) + each_line)
+            else:
+                new_code.append(each_line)
+            # single quote
+            left_single = each_line.find(SINGLE_QUOTE)
+            right_single = each_line.rfind(SINGLE_QUOTE)
+            if right_single == left_single > 0:
+                inside_single_triple_quote = not inside_single_triple_quote
+            # double quote
+            left_double = each_line.find(DOUBLE_QUOTE)
+            right_double = each_line.rfind(DOUBLE_QUOTE)
+            if right_double == left_double > 0:
+                inside_double_triple_quote = not inside_double_triple_quote
+        else:
+            new_code.append(each_line)
+
+
     return "if {expression}:\n{code}\n".format(
-                expression = expression,
-                code = (' '*4)+('\n'+(' '*4)).join(code.split('\n')) #indent
+                expression=expression,
+                code=NEWLINE.join(new_code)
             )
 
 def add_conditions_to_code(rules, new_code, to_func, to_op, to_if):

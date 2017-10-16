@@ -189,5 +189,14 @@ If we insert our own custom code, this is preserved
     ...
     ### END macro_field_validate_invalid_2 ###
 
+Test macro helpers methods
 
-
+    >>> from Products.CMFPlomino.browser.helpers import to_if
+    >>> to_if("macro_condition_action_2()", "\nnote = '''False'''\nitem = 'Happy'\n")
+    "if macro_condition_action_2():\n\n    note = '''False'''\n    item = 'Happy'\n"
+    >>> to_if("macro_condition_action_2()", '\nnote = """False"""\nitem = "Happy"\n')
+    'if macro_condition_action_2():\n\n    note = """False"""\n    item = "Happy"\n'
+    >>> to_if("macro_condition_action_2()", "\nnote = '''Hi friend,\n\nThank you.'''\nitem = 'Happy'\n")
+    "if macro_condition_action_2():\n\n    note = '''Hi friend,\n\nThank you.'''\n    item = 'Happy'\n"
+    >>> to_if("macro_condition_action_2()", '\nnote = """Hi friend,\n\nThank you."""\nitem = "Happy"\n')
+    'if macro_condition_action_2():\n\n    note = """Hi friend,\n\nThank you."""\n    item = "Happy"\n'
