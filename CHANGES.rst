@@ -38,6 +38,7 @@ Changelog
 
 - fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
 - Remove macro 'Select user data' to move it outside of basic macros [quang]
+- Add dynamic title for macro 'Match text' that will display as 'Field-name contains expression-value'
 
 - Allow select field from sub-form [quang]
 - Modify macro select_db_element to allow select field from subform [quang]
