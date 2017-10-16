@@ -72,6 +72,7 @@ Changelog
 
 - Fix dynamic rendering computed on display text broken [ivanteoh]
 - Fix hide checkbox in search view based from view [ivanteoh]
+- fix for when you create view from form, or re-oder the view column and a custom theme hides the authenticator then these requests will fail. [quang]
 
 2.0b4 (2016-05-27)
 ------------------
