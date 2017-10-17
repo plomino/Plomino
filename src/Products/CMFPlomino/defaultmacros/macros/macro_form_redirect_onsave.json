@@ -276,8 +276,43 @@
                         "ajax_load": null,
                         "ajax_include_head": null,
                         "widget": "SELECT",
-                        "selectionlist": null,
+                        "selectionlist": [],
                         "separator": null
+                    }
+                },
+                "enable_attach_doc_id": {
+                    "id": "enable_attach_doc_id",
+                    "type": "PlominoField",
+                    "title": "Enable access document in target form",
+                    "params": {
+                        "field_type": "BOOLEAN",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Enable access document in target form",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "CHECKBOX"
+                    }
+                },
+                "doc_hidewhen": {
+                    "id": "doc_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "defaultHidewhen",
+                    "params": {
+                        "isDynamicHidewhen": false,
+                        "isResetOnHide": false,
+                        "title": "defaultHidewhen",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null
                     }
                 }
             }
