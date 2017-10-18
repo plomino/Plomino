@@ -63,6 +63,7 @@ Changelog
 - Add IDE feature to generate view from form with selected fields [quang]
 - Fix to export function, causing additional lines in exported python [djay]
 - Add search form functionality [quang]
+
 - Bug fix for extra space on triple quote statement [ivanteoh]
 - Allow user to submit document, redirect to another form and access the document in that form [quang]
 - Fix only last item in array is passed to dynamic_evaluation URL [ivanteoh]
