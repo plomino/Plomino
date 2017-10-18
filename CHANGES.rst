@@ -65,6 +65,8 @@ Changelog
 - Add search form functionality [quang]
 - Bug fix for extra space on triple quote statement [ivanteoh]
 - Allow user to submit document, redirect to another form and access the document in that form [quang]
+- Fix refresh macro bug [quang]
+
 
 2.0b4 (2016-05-27)
 ------------------

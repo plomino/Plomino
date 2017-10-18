@@ -365,7 +365,7 @@ class DesignManager:
             #TODO: more things than fields have macros on them
             #TODO: modified events might have other consequences?
             for item in list(items) + [form]:
-                helpers = getattr(item, 'helpers', []) #TODO should use a DM
+                helpers = getattr(item, 'helpers', None) or []#TODO should use a DM
 
                 changed = False
                 for helper in helpers:
