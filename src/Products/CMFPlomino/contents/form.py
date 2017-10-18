@@ -1536,7 +1536,7 @@ class PlominoForm(Container):
         }
 
         # Only evaluate hidewhens if there is something to evaluate
-        hidewhens = asList(REQUEST.get('_hidewhens[]', []))
+        hidewhens = asList(REQUEST.get('_hidewhens', []))
         if hidewhens:
             results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp, dynamic=True)
         else:
@@ -1599,7 +1599,7 @@ class PlominoForm(Container):
         hidewhens_results = []
 
         if dynamic:
-            hidewhens = asList(REQUEST.get('_hidewhens[]', []))
+            hidewhens = asList(REQUEST.get('_hidewhens', []))
             for token in hidewhens:
                 (formid, hwid) = token.split('/')
                 if formid == self.id:
