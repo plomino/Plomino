@@ -39,7 +39,7 @@ require([
                         self.applyHidewhens(response.hidewhens);
                         self.applyDynamicFields(response.fields);
                     },
-                    'text');
+                    'json');
             }
         },
         getCurrentInputs: function() {
