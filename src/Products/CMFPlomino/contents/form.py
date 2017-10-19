@@ -1542,7 +1542,7 @@ class PlominoForm(Container):
         else:
             results['hidewhens'] = []
 
-        fields = asList(REQUEST.get('_fields[]', []))
+        fields = asList(REQUEST.get('_fields', []))
         fields_results = []
         for token in fields:
             (formid, fieldid) = token.split('/')

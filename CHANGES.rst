@@ -70,6 +70,8 @@ Changelog
 - Fix missing code in IDE dynamic.js for reseting data in a hidewhen [ivanteoh]
 - Fix refresh macro bug [quang]
 
+- Fix dynamic rendering computed on display text broken [ivanteoh]
+
 2.0b4 (2016-05-27)
 ------------------
 

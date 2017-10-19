@@ -32,6 +32,7 @@ require([
             // important to serialize the object to string using param and
             // set traditional to true so no additional [] is appear in
             // Plone HTTPRequest variable
+            // TODO(ivanteoh): Remove getCurrentInputs and use $("form").serialize() + '&' + $.param(extra_data_obj, true)
             if (data._hidewhens.length > 0 || data._fields.length > 0) {
                 $.post(self.options.url + '/dynamic_evaluation',
                     $.param(data, true),
