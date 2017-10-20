@@ -31,7 +31,7 @@
                     string:source:${context/absolute_url}/tojson;;
                     hideCheckboxes:${context/hide_checkboxes};">
                 <tr class="header-row">
-                    <th></th>
+                    <th tal:condition="python:not context.hide_checkboxes"></th>
                     <tal:headers tal:repeat="column columns">
                         <th tal:condition="not: column/hidden_column|nothing"
                             tal:attributes="data-column column/id;"
@@ -56,9 +56,8 @@
                         <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
                             <tal:row
                                 tal:define="docurl python:baseurl+'/document/'+brain.id">
-                                <td>
+                                <td tal:condition="python:not context.hide_checkboxes">
                                     <input
-                                        tal:condition="python:not context.hide_checkboxes"
                                         type="checkbox"
                                         name="sdoc"
                                         tal:attributes="value python:brain.getPath().split('/')[-1]" />
@@ -80,8 +79,9 @@
                         </tr>
                     </tal:rows>
                 </tal:static>
-                <tr class="header-row count">
-                    <td tal:attributes="colspan python:len(columns)+1">
+                <tr tal:define="total_col python:len(columns) if context.hide_checkboxes else len(columns)+1;"
+                    class="header-row count">
+                    <td tal:attributes="colspan total_col">
                         <tal:static tal:condition="static">
                             <tal:block
                                 tal:define="listdocuments python:context.getAllDocuments(getObject=False);

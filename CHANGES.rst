@@ -71,6 +71,7 @@ Changelog
 - Fix refresh macro bug [quang]
 
 - Fix dynamic rendering computed on display text broken [ivanteoh]
+- Fix hide checkbox in search view based from view [ivanteoh]
 
 2.0b4 (2016-05-27)
 ------------------

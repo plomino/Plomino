@@ -197,7 +197,7 @@
                                     summary="Content listing"
                                     i18n:attributes="summary summary_content_listing;">
                                     <tr>
-                                        <th>&nbsp;&nbsp;</th>
+                                        <th tal:condition="python:not searchviewobj.hide_checkboxes">&nbsp;&nbsp;</th>
                                         <tal:block_column_titles repeat="c columns">
                                             <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
                                                 tal:content="c/Title">Title</span>&nbsp;</th>
@@ -211,7 +211,12 @@
                                                 oddrow repeat/doc/odd;
                                                 docurl python:'../'+searchviewname+'/document/'+doc.getPath().split('/')[-1]"
                                             tal:attributes="class python:'odd' if oddrow else 'even';">
-                                            <td><input type="checkbox" name="sdoc" tal:attributes="value python:doc.getPath().split('/')[-1]" /></td>
+                                            <td tal:condition="python:not searchviewobj.hide_checkboxes">
+                                                <input
+                                                    type="checkbox"
+                                                    name="sdoc"
+                                                    tal:attributes="value python:doc.getPath().split('/')[-1]" />
+                                            </td>
                                             <tal:block_column_values repeat="c columns">
                                                 <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
                                                     tal:define="
@@ -226,8 +231,8 @@
 
                                     <!-- DOC COUNTING -->
                                     <tal:block_result_pagination condition="results">
-                                        <tr>
-                                            <th tal:attributes="colspan python:len(columns)+1"><tal:previous
+                                        <tr tal:define="total_col python:len(columns) if searchviewobj.hide_checkboxes else len(columns)+1;">
+                                            <th tal:attributes="colspan total_col"><tal:previous
                                                 condition="python:start>1">
                                                 <a i18n:translate=""
                                                     tal:attributes="href python:'/'.join(context.getPhysicalPath())+'/OpenForm?'+query_string+'&start='+str(previousstart)+'&limit='+str(limit)">&lt;&lt; Previous</a>
