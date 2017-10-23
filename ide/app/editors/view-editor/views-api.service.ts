@@ -117,7 +117,7 @@ export class PlominoViewsAPIService {
 
   getCSRFToken() {
     const authenticator = document.getElementsByName('_authenticator');
-    const token = authenticator[0].value;
+    const token = (<HTMLInputElement>authenticator[0]).value;
     return token;
   }
 
