@@ -257,9 +257,8 @@ export class PlominoSaveManagerService {
   }
 
  getCSRFToken() {
-    const script = document.getElementById('protect-script');
-    const token = script.getAttribute('data-token');
-
+    const authenticator = document.getElementsByName('_authenticator');
+    const token = (<HTMLInputElement>authenticator[0]).value;
     return token;
   }
 

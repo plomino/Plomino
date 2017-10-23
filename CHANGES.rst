@@ -72,6 +72,8 @@ Changelog
 
 - Fix dynamic rendering computed on display text broken [ivanteoh]
 - Fix hide checkbox in search view based from view [ivanteoh]
+- Fix to view from form when custom theme is used [quang]
+- Fix to re-ordering columns when custom theme is used [quang]
 
 2.0b4 (2016-05-27)
 ------------------
