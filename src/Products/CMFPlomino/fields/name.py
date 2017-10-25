@@ -8,10 +8,14 @@ from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
-
+from Acquisition import aq_inner
+from zope.component import getAdapter
+from Products.CMFPlone.interfaces import IUserGroupsSettingsSchema
+from plone import api
+from Products.CMFCore.utils import getToolByName
 from .. import _
 from base import BaseField
-
+from ..utils import PlominoTranslate
 
 @provider(IFormFieldProvider)
 class INameField(model.Schema):
@@ -73,6 +77,7 @@ class NameField(BaseField):
         Honor the restricttogroup field and the portal's do_not_list_users
         property.
         """
+        many_users = getAdapter(aq_inner(api.portal.get()), IUserGroupsSettingsSchema).many_users
         if self.context.restricttogroup:
             group = self.context.portal_groups.getGroupById(
                 self.context.restricttogroup)
@@ -82,13 +87,12 @@ class NameField(BaseField):
                     for m in group.getGroupMembers()]
             else:
                 return []
-        elif self.context.getParentDatabase().do_not_list_users:
-            return None
+        elif many_users or self.context.getParentDatabase().do_not_list_users:
+            return []
         else:
             names_ids = [
                 (m.getProperty("fullname"), m.getId())
                 for m in self.context.getPortalMembers()]
-
         names_ids.sort(key=lambda (username, userid): username.lower())
         return names_ids
 
@@ -143,3 +147,16 @@ class NameField(BaseField):
         elif isinstance(values, basestring):
             values = [values]
         return ["%s:%s" % (id, self.getFullname(id)) for id in values]
+
+    def validate(self, strValue):
+        """
+        """
+        errors = []
+        mt = getToolByName(self.context, 'portal_membership')
+        if mt:
+            member = mt.getMemberById(strValue)
+            if not member:
+                errors.append(PlominoTranslate('User not found', self.context))
+        else:
+            errors.append(PlominoTranslate('Member tool not found', self.context))
+        return errors

@@ -7,7 +7,7 @@ Set up login account
     ...         memberName,
     ...         ('Member', 'Manager',),
     ...         '',
-    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
     ...         )
     >>> memberName = 'userManager'
     >>> portal.portal_membership.addMember(
@@ -15,7 +15,7 @@ Set up login account
     ...         memberName,
     ...         ('Member',),
     ...         '',
-    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
     ...         )
 
 Create plomino database and publish it::
@@ -188,3 +188,71 @@ Now fill in search criteria for field1 and search again
     True
 
 
+==================
+Name Field Search
+=================
+
+Createa form with name field
+
+    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form 4')
+    >>> id = db.frm4.invokeFactory('PlominoField', id='field1',
+    ...         title='Field1',
+    ...         mandatory=True,
+    ...         field_type="NAME",
+    ...         type="SINGLE",
+    ...         selector="FIELD",
+    ...         field_mode="EDITABLE")
+    >>> db.frm4.form_layout = """<p><label for="field1">Field1</label><span class="plominoFieldClass">field1</span></p>"""
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open the form and make input user id in the name field
+    >>> form_url = portal_url +'/mydb' +'/frm4'
+    >>> browser.open(form_url)
+    >>> browser.getControl('Field1').value = 'site'
+    >>> browser.getControl('Save').click()
+    >>> 'User not found' in browser.contents
+    True
+    >>> browser.getControl('Field1').value = 'siteManager'
+    >>> browser.getControl('Save').click()
+    >>> 'Site Manager' in browser.contents
+    True
+
+Open the form and search the name on-the-fly
+    >>> from urllib import urlencode
+    >>> import json
+    >>> search_url = portal_url +'/mydb' +'/frm4/field1/filterusers?'
+    >>> query = urlencode(dict(query= 'Manager', page_limit='10',page='1'))
+    >>> browser.open(search_url + query)
+    >>> search_result = json.loads(browser.contents)
+
+Should display two resutls, siteManager and userManager
+    >>> search_result['total'] == 2
+    True
+
+Now, turn off the feature listing database user, search result will be empty
+    >>> db.do_not_list_users =  True
+    >>> transaction.commit()
+    >>> browser.open(search_url + query)
+    >>> search_result = json.loads(browser.contents)
+    >>> search_result['total'] == 0
+    True
+
+Turn on the feature listing database user again, but enable Plone many_user feature, the search result will also return nothing
+    >>> db.do_not_list_users =  False
+    >>> transaction.commit()
+    >>> browser.open(search_url + query)
+    >>> search_result = json.loads(browser.contents)
+    >>> search_result['total'] == 2
+    True
+
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Site Setup').click()
+    >>> browser.getLink('Users and Groups').click()
+    >>> browser.getLink('Settings').click()
+    >>> browser.getControl('Many users').click()
+    >>> browser.getControl('Save').click()
+
+    >>> browser.open(search_url + query)
+    >>> search_result = json.loads(browser.contents)
+    >>> search_result['total'] == 0
+    True
