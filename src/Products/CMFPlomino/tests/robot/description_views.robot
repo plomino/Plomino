@@ -171,17 +171,8 @@ I associate the datagrid to main form
 
 # --- WHEN -------------------------------------------------------------------
 I preview the layout in a new tab
-  # Click Element     jquery=.mdl-tabs a[href='#palette-tab-2-panel']
-  # Wait Until Element Is Visible     jquery=.formsettings--control-buttons a[id='ide-formsettings__preview-button']
-  # Click Element     jquery=.formsettings--control-buttons a[id='ide-formsettings__preview-button']
-  # Sleep  5s
-  # #Select Window  url=${PLONE_URL}/mydb/new-form/view
-  # Go To      ${PLONE_URL}/mydb/new-form/view
-  # #Wait Until Element Is Visible     jquery=.actions a[data-formid='new-form-1']   60s
   Go To      ${PLONE_URL}/mydb/new-form/view
   Sleep   10s
-  # Run Keyword And Ignore Error     Wait Until Page Contains    Changes saved     60s
-  # Wait Until Element Is Visible           jquery=a.add-row      60s
 
 I add a row to the datagrid form to display the main form "${mainform}"
   Press Key   jquery=.actions .add-row    \\9

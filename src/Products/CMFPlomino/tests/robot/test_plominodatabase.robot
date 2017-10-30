@@ -218,3 +218,50 @@ Scenario: I can export design from a database
    When I click the tab "Design import/export" in Import/Export dialog
     and I select Export To Zip File
    Then I can click Export button
+
+Scenario: I can add a dynamic calculated field (field mode = Computed) that displays the total amount of two number fields
+  Given I have an empty form open
+   and I add some number fields
+   and I add a dynamic computed field "Total Amount": with field mode "COMPUTED"
+   and I preview "new-form"
+  When I input a value "1000" on the Library Fee field and move to the next field
+  Then I can see that the Total Amount value is updated with "1000"
+  And when I input a value "500" on the Misc Fee and move to the next field
+  Then I can see that the Total Amount value is updated with "1500"
+
+Scenario: I can add a dynamic calculated field (field mode = Display) that displays the total amount of two number fields
+  Given I have an empty form open
+   and I add some number fields
+   and I add a dynamic computed field "Total Amount": with field mode "DISPLAY"
+   and I preview "new-form"
+  When I input a value "1000" on the Library Fee field and move to the next field
+  Then I can see that the Total Amount value is updated with "1000"
+  And when I input a value "500" on the Misc Fee and move to the next field
+  Then I can see that the Total Amount value is updated with "1500"
+
+Scenario: I can add a dynamic calculated field (field mode = Computed On Save) that displays the total amount of two number fields
+  Given I have an empty form open
+   and I add some number fields
+   and I add a dynamic computed field "Total Amount": with field mode "COMPUTEDONSAVE"
+   and I preview "new-form"
+  When I input a value "1000" on the Library Fee field and move to the next field
+  Then I can see that the Total Amount value is updated with "1000"
+  And when I input a value "500" on the Misc Fee and move to the next field
+  Then I can see that the Total Amount value is updated with "1500"
+
+Scenario: I can add a dynamic text computed for display
+  #PR 71
+  Given I have an empty form open
+   and I add a dynamic text with field mode = computed for display
+   and I show the code of the current field
+   and I insert formula that displays text
+  When I render the form "new-form"
+  Then I can see the text created for the dynamic text field
+
+#---Work In Progress---
+# Scenario: I can add a dynamic hidewhen
+#   Given I have an empty form open
+#    and I add a dropdown field "hometype"
+#    I click on Add tab
+#    I add a hidewhen by click
+#    I add a field after the hidewhen

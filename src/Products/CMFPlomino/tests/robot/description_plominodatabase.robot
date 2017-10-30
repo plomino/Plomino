@@ -3,6 +3,7 @@
 #Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/saucelabs.robot
 Resource  plone/app/robotframework/keywords.robot
+Resource  description_views.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
 Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
@@ -80,6 +81,182 @@ I have a form and some data saved
     and I add a "Date" field
     and description_views.I save the form as "form1"
 
+I add a dropdown field "${fieldname}"
+  I add a "Dropdown" field
+  I edit the field "dropdown" to "${fieldname}"
+  I edit the title to "Home Type:"
+  Execute Javascript    $("#form-widgets-ISelectionField-selectionlist").click()
+  Clear Element Text    jquery=#form-widgets-ISelectionField-selectionlist
+  Input Text       jquery=#form-widgets-ISelectionField-selectionlist     Rental|a \n New Construction|b \n Home For Sale|c
+  I save the current field settings
+
+I add a field after the hidewhen
+  wait until form is loaded
+  Sleep     5s
+  Capture Page Screenshot
+  select frame  jquery=.mce-edit-area iframe:visible
+  Click Element     css=.plominoHidewhenClass[data-plominoid='defaulthidewhen']
+  Wait Until Keyword Succeeds     30 sec    5 sec     Click Element At Coordinates    css=.plominoHidewhenClass[data-plominoid='defaulthidewhen']    15     0
+  # Press Key       
+  Capture Page Screenshot
+
+I add some number fields
+  I add a "Text" field
+  I edit the number field "text" to "amount1"
+  I edit the title to "Library Fee:"
+  and I save the current field settings
+  and I click on Add tab
+  Sleep   5s
+  and I add a "Text" field
+  I edit the number field "text" to "amount2"
+  I edit the title to "Misc Fee:"
+  and I save the current field settings
+  and I click on Add tab
+
+I add a dynamic computed field "${fieldid}": with field mode "${fieldmode}"
+  I add a "Text" field
+  I edit the number field "text" to "total"
+  I edit the title to "${fieldid}"
+  Click Element     jquery=.mdl-tabs__tab-bar a:contains('Advanced'):first
+  Wait Until Element Is Visible     jquery=#form-widgets-field_mode
+  I select field mode "${fieldmode}"   
+  I select dynamic rendering
+  I save the current field settings
+  Add macro "Display total"
+  I fill in the fields name for Display Total screen with "amount1"
+  I fill in the fields name for Display Total screen with "amount2"
+  I save the macro and the form
+
+
+I fill in the fields name for Display Total screen with "${field}"
+  Click Element     jquery=#s2id_fields_name
+  Capture Page Screenshot
+  Wait Until Element Is Visible     jquery=.pat-select2 option[value='${field}']
+  Click Element     jquery=.pat-select2 option[value='${field}']
+  Capture Page Screenshot
+  Sleep   2s
+
+I select field mode "${fieldmode}"
+  Press Key     jquery=#form-widgets-field_mode   \9
+  Click Element     jquery=#form-widgets-field_mode
+  Wait Until Element Is Visible     jquery=select option[value='${fieldmode}']
+  Click Element     jquery=select option[value='${fieldmode}']
+
+I select dynamic rendering
+  Click Element     jquery=#form-widgets-isDynamicField-0
+
+I add a dynamic text with field mode = computed for display
+  I add a "Text" field
+  I edit the field "text" to "message"
+  I edit the title to "message"
+  Click Element     jquery=.mdl-tabs__tab-bar a:contains('Advanced'):first
+  Wait Until Element Is Visible     jquery=#form-widgets-field_mode
+  I select field mode "DISPLAY"
+  I select dynamic rendering
+  I save the current field settings
+
+I show the code of the current field
+  Sleep   2s
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__code-button']
+  Wait Until Element Is Visible     jquery=.ace-editor .ace_content     60s
+
+I insert formula that displays text
+  Wait Until Element Is Visible     jquery=button:contains('Insert formula')    60s
+  Click Element     jquery=button:contains('Insert formula')
+  Wait Until Element Is Visible     jquery=.dropdown-menu li a:eq(1)
+  Sleep   5s
+  Capture Page Screenshot
+  Click Element     jquery=.dropdown-menu li a:eq(1)
+  Capture Page Screenshot
+  Wait Until Element Is Visible     jquery=.ace_line:eq(3)
+
+  Click Element     jquery=.ace_content
+  Capture Page Screenshot
+  Execute Javascript         $(".ace_text-input").click();
+  Capture Page Screenshot
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8  
+  Press Key     jquery=.ace_text-input      \\8 
+
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8  
+  Press Key     jquery=.ace_text-input      \\8
+
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8
+  Press Key     jquery=.ace_text-input      \\8  
+  Press Key     jquery=.ace_text-input      \\8
+
+  Press Key     jquery=.ace_text-input      \\8  
+  Press Key     jquery=.ace_text-input      \\8  
+
+
+  Press Key     jquery=.ace_text-input    return 'Display This Text'\n
+  Capture Page Screenshot
+  Enter formula "## END formula }"
+  Capture Page Screenshot
+  I save the formula
+  Sleep   5s
+
+Enter formula "${formula}"
+  Input Text    jquery=.ace_text-input    ${formula}
+
+
+I save the formula
+  Click Element   jquery=button[title='Save']
+
+I render the form "${formid}"
+  I select "${formid}" from form tree
+  I preview "${formid}"
+
+I can see the text created for the dynamic text field
+  Wait Until Page Contains Element    jquery=.plominoFieldGroup p span:contains('Display This Text')    60s
+
+I edit the number field "${fieldid}" to "${newid}"
+  sleep  0.5s
+  select frame  jquery=.mce-edit-area iframe:visible
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
+  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
+  Wait Until Keyword Succeeds   1 min   5 sec    Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
+  Unselect Frame
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
+  I edit the field as Number type
+  Sleep     3s
+  Click Element     jquery=#form-widgets-IShortName-id
+  Capture Page Screenshot
+  Input Text    jquery=#form-widgets-IShortName-id      ${newid}
+  Capture Page Screenshot
+
+I edit the field as Number type
+  Press Key     jquery=#form-widgets-field_type     \9
+  Capture Page Screenshot
+  Click Element     jquery=#form-widgets-field_type
+  Capture Page Screenshot
+  Wait Until Element Is Visible     jquery=select option[value='NUMBER']
+  Click Element     jquery=select option[value='NUMBER']
+  Capture Page Screenshot
+
+I input a value "${value}" on the Library Fee field and move to the next field
+  Wait Until Element Is Visible     jquery=h1:contains('New Form')
+  Click Element   jquery=#amount1
+  Input Text    jquery=#amount1     ${value}
+  Click Element   jquery=#amount2
+
+I can see that the Total Amount value is updated with "${updatedvalue}"
+  Wait Until Page Contains   ${updatedvalue}
+  Wait Until Element Contains   jquery=#total      ${updatedvalue}
+
+I input a value "${value}" on the Misc Fee and move to the next field
+  Click Element   jquery=#amount2
+  Input Text    jquery=#amount2     ${value}
+  Press Key     jquery=.actionButtons input[value='Close']    \9
+
+
 
 # --- WHEN -------------------------------------------------------------------
 
@@ -96,13 +273,16 @@ I submit the plominodatabase form
 
 
 I save the macro and the form
+  I save the macro
+  Sleep   5s
+  wait until form is loaded
+  I save the fieldsettings
+
+I save the macro
   Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    60s
   Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    60s
   Execute Javascript    $(".actionButtons input[name='plomino_save']").click()
   # Wait Until Element Is Not Visible     jquery=.plone-modal-dialog    60s
-  Sleep   5s
-  wait until form is loaded
-  I save the fieldsettings
 
 I select current field
   # Click Element     jquery=.select2-container[id='s2id_field_name']     #input Click on the search box
@@ -242,6 +422,9 @@ I select the field "${fieldid}"
 
 I add a macro "${macro}" to "${tab}"
   Click Link  ${tab}
+  Add macro "${macro}"
+
+Add macro "${macro}"
   wait until element is visible  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
   # Hacky way to scroll down the settings
   click element  xpath=//input[@id=//label[normalize-space(text())="Id"]/@for]
