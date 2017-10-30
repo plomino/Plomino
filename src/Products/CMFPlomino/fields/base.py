@@ -81,6 +81,7 @@ class BaseField(object):
         """
         # XXX: The editmode_obsolete parameter is unused.
         fieldName = self.context.id
+        fieldType = self.context.field_type
         mode = self.context.field_mode
 
         if doc:
@@ -93,7 +94,9 @@ class BaseField(object):
             # if (not doc) or creation:
             if doc:
                 fieldValue = doc.getItem(fieldName)
-
+                db = doc.getParentDatabase()
+                if fieldType == 'ATTACHMENT' and doc.id =='TEMPDOC' and db.getRequestCache(fieldName+"@@ATTACHMENT"):
+                    fieldValue = db.getRequestCache(fieldName+"@@ATTACHMENT")
             if (not fieldValue) and self.context.formula:
                 # This implies that if a falsy fieldValue is possible,
                 # Formula needs to take it into account, e.g. using hasItem

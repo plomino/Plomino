@@ -19,6 +19,11 @@
         title="CMFPlomino: Control Database ACL"
         />
 
+     <permission
+        id="plomino.READ_PERMISSION"
+        title="CMFPlomino: Read documents"
+        />
+
     <browser:resourceDirectory
         name="Products.CMFPlomino"
         directory="static"
@@ -109,6 +114,22 @@
         class=".form.FormView"
         attribute="addField"
         permission="plomino.DESIGN_PERMISSION"
+        />
+
+      <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="getfile"
+        class=".form.FormView"
+        attribute="getfile"
+        permission="plomino.READ_PERMISSION"
+        />
+
+      <browser:page
+        for="Products.CMFPlomino.contents.form.IPlominoForm"
+        name="deleteAttachment"
+        class=".form.FormView"
+        attribute="deleteAttachment"
+        permission="zope.Public"
         />
 
     <browser:page

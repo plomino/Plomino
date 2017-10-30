@@ -29,6 +29,8 @@ def afterDatabaseCreated(obj, event):
     # Add permission to avoid manual confirmation dialog
     if not hasattr(obj, 'specific_rights'):
         obj.specific_rights = {'specific_deletedocument': 'PlominoAuthor'}
+    # Create temporary file for attachment
+    manage_addCMFBTreeFolder(obj, id='temporary_files')
 
     # Due to plone.protect we need to ensure the resource directory is created
     write_on_read = get_resource_directory()

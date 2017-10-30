@@ -240,7 +240,6 @@ class PlominoField(Item):
                                     doc.deletefile(filename)
                             current_files = {}
                         current_files[new_file] = contenttype
-
             v = current_files
 
         else:
@@ -287,7 +286,7 @@ class PlominoField(Item):
 
         show_upload = True
         if self.field_type == 'ATTACHMENT' \
-           and self.getForm().isPage or target.id == 'TEMPDOC':
+           and self.getForm().isPage:
             show_upload = False
 
         try:

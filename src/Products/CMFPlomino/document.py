@@ -35,6 +35,8 @@ from zope.container.contained import Contained
 from zope.interface import implements
 from ZPublisher.HTTPRequest import FileUpload
 
+from App.config import getConfiguration
+
 from . import _
 from .config import (
     EDIT_PERMISSION,
@@ -43,6 +45,7 @@ from .config import (
     RENAME_AFTER_CREATION_ATTEMPTS,
     SCRIPT_ID_DELIMITER,
     TIMEZONE,
+    DEFAULT_SESSION_TIME_OUT,
 )
 from .exceptions import PlominoScriptException
 from .interfaces import IPlominoDocument
@@ -55,7 +58,7 @@ from .utils import (
     sendMail
 )
 from .index.index import DISPLAY_INDEXED_ATTR_PREFIX
-
+import time
 
 class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     """ These represent the contents in a Plomino database.
@@ -402,10 +405,12 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return form.notifyErrors(errors)
 
         self.setItem('Form', form.id)
-
         # process editable fields (we read the submitted value in the request)
         form.readInputs(self, REQUEST, process_attachments=True)
-
+        # As it happend only during POST request, we save temporary files and clean it
+        self.saveTempAttachment(form, REQUEST)
+        # clean tempporary files
+        self.cleanExpiredAttachment()
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
 
@@ -420,6 +425,43 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not redirect:
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(addTokenToUrl(redirect))
+
+    def saveTempAttachment(self, form, REQUEST):
+        db = self.getParentDatabase()
+        tempStorage = getattr(self.getParentDatabase(), 'temporary_files', None)
+        if not tempStorage:
+            return
+        tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
+        for f in form.getFormFields(includesubforms=True, request=REQUEST):
+            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
+                temp_files = db.getRequestCache(f.id+"@@ATTACHMENT")
+                for filename, contentytpe in temp_files.iteritems():
+                    filename = filename.encode('ascii','ignore')
+                    temp_blob = tempStorageWrapper.getfile(REQUEST, filename)
+                    blob = BlobWrapper(contentytpe)
+                    file_obj = blob.getBlob().open('w')
+                    file_obj.write(temp_blob.data)
+                    file_obj.close()
+                    blob.setFilename(filename)
+                    blob.setContentType(contentytpe)
+                    self._setObject(filename, blob)
+                    tempStorageWrapper.deletefile(REQUEST, filename)
+                self.setItem(f.id, temp_files)
+                db.cleanRequestCache(f.id + "@@ATTACHMENT")
+
+    def cleanExpiredAttachment(self):
+        tempStorage = getattr(self.getParentDatabase(), 'temporary_files', None)
+        tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
+        current_timestamp = time.time()
+        config = getConfiguration()
+        timeout = getattr(config, "session_timeout_minutes", DEFAULT_SESSION_TIME_OUT) * 60 * 1000
+        for objetItem in tempStorage.objectItems():
+            blob = objetItem[1]
+            if blob._p_mtime and current_timestamp - blob._p_mtime >= timeout:
+                filename = objetItem[0]
+                tempStorageWrapper.deletefile(None, filename)
+
+
 
     security.declareProtected(EDIT_PERMISSION, 'refresh')
 
@@ -1068,7 +1110,10 @@ class TemporaryDocument(PlominoDocument):
         validation_mode=False
     ):
         self._parent = parent
+        self.form = form
         self.REQUEST = REQUEST
+        self.storage = getattr(parent,'temporary_files',None)
+        self.storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
         if real_doc:
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.id)
@@ -1086,6 +1131,109 @@ class TemporaryDocument(PlominoDocument):
             else:
                 form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
+
+    security.declareProtected(READ_PERMISSION, 'getfile')
+
+    def getfile(self, filename=None, REQUEST=None, asFile=False):
+        """ Return an attribute named `filename`, assumed to be a file object.
+
+        If `filename` is found on request, it overrides the parameter.
+        """
+        if not self.isReader():
+            raise Unauthorized("You cannot read this content")
+
+        # Check access based on doc's current form. Plomino may be busy
+        # rendering a different doc, using some requested form, which
+        # probably doesn't apply to this document.
+        form = self.getParentDatabase().getForm(self.Form)
+        onOpenDocument_error = self._onOpenDocument(form=form)
+        if onOpenDocument_error:
+            raise Unauthorized(onOpenDocument_error)
+        if REQUEST.get('filename') and not filename:
+            filename = REQUEST.get('filename')
+        file_obj = self.storageWrapper.getfile(REQUEST, filename)
+        if not file_obj:
+            return None
+        # Do not return file object if expired
+        current_timestamp = time.time()
+        config = getConfiguration()
+        timeout = getattr(config, "session_timeout_minutes", 12 * 60) * 60 * 1000
+        if file_obj._p_mtime and current_timestamp - file_obj._p_mtime >= timeout:
+            return None
+
+        if asFile:
+            return file_obj
+        if REQUEST:
+            REQUEST.RESPONSE.setHeader(
+                'content-type', file_obj.getContentType())
+            REQUEST.RESPONSE.setHeader(
+                "Content-Disposition", "inline; filename=" + filename)
+        return file_obj.data
+
+    def getFilenames(self):
+        """ Return names of items that are File or Blob.
+        """
+        return self.storageWrapper.getFilenames(self, self.REQUEST)
+
+
+    def setfile(
+            self,
+            submittedValue,
+            filename='',
+            overwrite=False,
+            contenttype=''
+    ):
+        """ Store `submittedValue` (assumed to be a file) as a blob (or FSS).
+
+        The name is normalized before storing. Return the normalized name and
+        the guessed content type. (The `contenttype` parameter is ignored.)
+        """
+        if filename == '':
+            filename = submittedValue.filename
+        if filename:
+            if (isinstance(submittedValue, FileUpload) or
+                        type(submittedValue) == file):
+                submittedValue.seek(0)
+                contenttype = guessMimetype(submittedValue, filename)
+                submittedValue = submittedValue.read()
+            elif submittedValue.__class__.__name__ == '_fileobject':
+                submittedValue = submittedValue.read()
+            return self.storageWrapper.setfile(self.REQUEST, filename, submittedValue, contenttype)
+        else:
+            return (None, "")
+
+
+    def deletefile(self, filename):
+        """ Delete blob or FSS obj.
+        """
+        self.storageWrapper.deletefile(self.REQUEST, filename)
+
+    security.declareProtected(EDIT_PERMISSION, 'deleteAttachment')
+
+    def deleteAttachment(self, REQUEST=None, fieldname=None, filename=None):
+        """ Remove file object and update corresponding item value.
+        """
+        if REQUEST:
+            fieldname = REQUEST.get('field')
+            filename = REQUEST.get('filename')
+        if fieldname and filename:
+            # if it is the only file attached, we need to make sure
+            # the field is not mandatory, to allow deletion
+            form = self.getForm()
+            if form:
+                field = form.getFormField(fieldname)
+                if field and field.mandatory:
+                    error = "%s %s" % (
+                        fieldname,
+                        PlominoTranslate(_("is mandatory"), self))
+                    return form.notifyErrors([error])
+            self.deletefile(filename)
+
+
+    def doc_path(self):
+        db_path = self._parent.getPhysicalPath()
+        return list(db_path) + [self.form.id]
+
 
     security.declarePublic('getParentDatabase')
 
@@ -1161,3 +1309,72 @@ class PlominoIndexableObjectWrapper(IndexableObjectWrapper):
         # Finally see if the object provides the attribute directly. This
         # is allowed to raise AttributeError.
         return getattr(self.__object, name)
+
+class PlominoTemporaryFileStorageWrapper:
+
+    def __init__(self, storage):
+        self.storage = storage
+
+    def setfile(
+            self,
+            REQUEST,
+            filename,
+            filedata,
+            contenttype
+    ):
+        """ Store `filedata as a blob (or FSS).
+        The name is normalized before storing. Return the normalized name and
+        the guessed content type. (The `contenttype` parameter is ignored.)
+        """
+        if """\\""" in filename:
+            filename = filename.split("\\")[-1]
+        filename = '.'.join(
+            [normalizeString(s, encoding='utf-8')
+             for s in filename.split('.')])
+        # Make file name unique with timestamp
+        filename =  str(int(time.time())) + '-' + filename
+        # Make the file accessible only by author
+        store_filename = REQUEST.SESSION.getBrowserIdManager().getBrowserId() + '-' + filename
+        blob = BlobWrapper(contenttype)
+        file_obj = blob.getBlob().open('w')
+        file_obj.write(filedata)
+        file_obj.close()
+        blob.setFilename(filename)
+        blob.setContentType(contenttype)
+        self.storage._setObject(store_filename, blob)
+        return (filename, contenttype)
+
+
+    def getFilenames(self, doc,REQUEST):
+        """ Return names of items that are File or Blob.
+        """
+        db = doc.getParentDatabase()
+        sessionid = REQUEST.SESSION.getBrowserIdManager().getBrowserId()
+        fieldnames = []
+        for field_id in REQUEST.form:
+            if db.getRequestCache(field_id+'@@ATTACHMENT'):
+                field_value = db.getRequestCache(field_id+'@@ATTACHMENT')
+                fieldnames = [ filename for filename in field_value]
+        sessionid = REQUEST.SESSION.getBrowserIdManager().getBrowserId()
+        return [filename for filename in fieldnames
+            if sessionid + '-' + filename in self.storage.objectIds() and isinstance(self.storage[sessionid + '-' + filename], BlobWrapper)]
+
+
+    def deletefile(self, REQUEST, filename):
+        """ Delete blob or FSS obj.
+        """
+        if REQUEST:
+            store_filename = REQUEST.SESSION.getBrowserIdManager().getBrowserId() + '-' + filename
+        else:
+            store_filename = filename
+        current_files = [o[0] for o in self.storage.objectItems()]
+        if store_filename in current_files:
+            self.storage.manage_delObjects(store_filename)
+
+
+    def getfile(self, REQUEST, filename):
+        if REQUEST.get('filename') and not filename:
+            filename = REQUEST.get('filename')
+        store_filename = REQUEST.SESSION.getBrowserIdManager().getBrowserId() +'-'+filename
+        file_obj = self.storage.get(store_filename, None)
+        return file_obj

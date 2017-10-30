@@ -21,6 +21,8 @@ class FormView(BrowserView):
         self.request = request
         self.form = self.context
         self.target = self.context
+        if not getattr(self.request, 'SESSION', None):
+            setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
     def _process_form(self, template):
         if (hasattr(self.context, 'onDisplay') and
@@ -42,7 +44,7 @@ class FormView(BrowserView):
         self.page_errors = []
 
         if self.request['REQUEST_METHOD'] == 'POST':
-            errors = self.form.validateInputs(self.request)
+            errors = self.form.validateInputs(self.request, process_attachment=True)
             # We can't continue if there are errors
             if errors:
                 # inject these into the form
@@ -76,6 +78,18 @@ class FormView(BrowserView):
             return json.dumps({'created': newfield.id})
 
 
+    def getfile(self):
+        temp_doc = self.form.getTemporaryDocument()
+        return temp_doc.getfile(REQUEST=self.request)
+
+    def deleteAttachment(self):
+        temp_doc = self.form.getTemporaryDocument()
+        temp_doc.deleteAttachment(REQUEST=self.request)
+        return self.openform()
+
+
+
+
 @implementer(IPublishTraverse)
 class PageView(BrowserView):
 
@@ -95,6 +109,8 @@ class PageView(BrowserView):
         self.request = request
         self.form = self.context
         self.target = self.context
+        if not getattr(self.request, 'SESSION', None):
+            setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
         # Default page is page 1
         self.page = 1
@@ -125,21 +141,29 @@ class PageView(BrowserView):
 
     def render(self):
         self.page_errors = []
-
         # Set the current page
         self.request['plomino_current_page'] = self.page
 
         form = self.context.getForm()
-
         # Get multi page information
         current_page = form._get_current_page()
         num_pages = form._get_num_pages()
 
         if self.request['REQUEST_METHOD'] == 'POST':
+
             # If back or previous is in the form, page backwards
             if 'plomino_previous' in self.request.form or 'back' in self.request.form or 'previous' in self.request.form:
                 self.request['plomino_current_page'] = form._get_next_page(self.request, action='back')
                 # return form.OpenForm(request=self.request)
+                return self.openform()
+
+            # Need to validate the input first before any navigation
+            errors = form.validateInputs(self.request, process_attachment=True)
+
+            # We can't continue if there are errors
+            if errors:
+                # inject these into the form
+                self.page_errors = errors
                 return self.openform()
 
             # Handle linking
@@ -148,14 +172,6 @@ class PageView(BrowserView):
                     linkto = key.replace('plominolinkto-', '')
                     self.request['plomino_current_page'] = form._get_next_page(self.request, action='linkto', target=linkto)
                     return self.openform()
-
-            errors = form.validateInputs(self.request)
-
-            # We can't continue if there are errors
-            if errors:
-                # inject these into the form
-                self.page_errors = errors
-                return self.openform()
 
             # If next or continue is the form, page forwards if the form is valid
             if 'plomino_next' in self.request.form or 'next' in self.request.form or 'continue' in self.request.form:
@@ -166,8 +182,8 @@ class PageView(BrowserView):
             # Create the document if it's not a page
             if not form.isPage:
                 return form.createDocument(self.request)
-
         return self.openform()
 
     def openform(self):
         return self.template()
+

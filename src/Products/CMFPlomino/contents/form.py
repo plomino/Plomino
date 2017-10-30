@@ -466,6 +466,8 @@ class PlominoForm(Container):
             doc = getTemporaryDocument(db, self, REQUEST).__of__(db)
         else:
             doc = db.createDocument()
+
+
         doc.setItem('Form', self.id)
 
         # execute the onCreateDocument code of the form
@@ -845,7 +847,6 @@ class PlominoForm(Container):
                 tempdoc_form = parent_form
         else:
             use_request = False
-
         # remove the hidden content
         if doc and use_request:
             hidewhen_target = getTemporaryDocument(
@@ -866,7 +867,6 @@ class PlominoForm(Container):
 
         html_content = self.applyHideWhen(hidewhen_target, silent_error=False, cache_key='displayDocument')
         hidden_fields, reset_fields = self._get_hidden_fields(request, hidewhen_target, validation_mode=False)
-
         if request:
             parent_form_ids = request.get('parent_form_ids', [])
             if parent_form_id:
@@ -897,6 +897,18 @@ class PlominoForm(Container):
                         "value='%s' />%s" % (
                             field_id,
                             asUnicode(request.get(field_id, '')),
+                            html_content)
+                    )
+
+            for field_id in request.form:
+                if db.getRequestCache(field_id+"@@ATTACHMENT"):
+                    temp_files = db.getRequestCache(field_id+"@@ATTACHMENT")
+                    html_content = (
+                        "<input type='hidden' "
+                        "name='%s' "
+                        "value='%s' />%s" % (
+                            field_id + "@@ATTACHMENT",
+                            asUnicode(json.dumps(temp_files)),
                             html_content)
                     )
 
@@ -1996,6 +2008,7 @@ class PlominoForm(Container):
         """ Read submitted values in REQUEST and store them in document
         according to fields definition.
         """
+        db = self.getParentDatabase()
         all_fields = self.getFormFields(
             includesubforms=True,
             doc=doc,
@@ -2011,12 +2024,11 @@ class PlominoForm(Container):
             hidden_fields, reset_fields = \
                 self._get_hidden_fields(REQUEST, doc,
                                         validation_mode=validation_mode)
-
         for f in all_fields:
             mode = f.field_mode
             fieldName = f.id
             # TODO: if its in a hidewhen that resets we don't read it.
-            if fieldName in reset_fields:
+            if fieldName in reset_fields :
                 continue
 
             if mode == "EDITABLE":
@@ -2045,11 +2057,15 @@ class PlominoForm(Container):
                         # if type(submittedValue) is str:
                         #     submittedValue = urllib.unquote_plus(
                         #         submittedValue)
-                        v = f.processInput(
-                            submittedValue,
-                            doc,
-                            process_attachments,
-                            validation_mode=validation_mode)
+                        if f.field_type == 'ATTACHMENT':
+                            # if field type is ATTACHMENT, it is already read at validation steps, and saved to request cache
+                            v = db.getRequestCache(fieldName + "@@ATTACHMENT")
+                        else:
+                            v = f.processInput(
+                                submittedValue,
+                                doc,
+                                process_attachments,
+                                validation_mode=validation_mode)
                         if f.field_type == 'SELECTION':
                             if f.widget in [
                                 'MULTISELECT', 'CHECKBOX', 'PICKLIST'
@@ -2057,6 +2073,7 @@ class PlominoForm(Container):
                                 v = asList(v)
                         # logger.debug(u'Method: form readInputs {} value {'
                         #             '}'.format(fieldName, v))
+
                         doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
@@ -2174,7 +2191,7 @@ class PlominoForm(Container):
 
     security.declarePublic('validateInputs')
 
-    def validateInputs(self, REQUEST, doc=None, tmp=None):
+    def validateInputs(self, REQUEST, doc=None, tmp=None, process_attachment=False):
         """
         """
         db = self.getParentDatabase()
@@ -2209,14 +2226,12 @@ class PlominoForm(Container):
 
         fields = [field for field in fields
                   if field.getId() not in hidden_fields]
-
         errors = []
         for f in fields:
             field_errors = []
             fieldname = f.id
             fieldtype = f.field_type
             submittedValue = REQUEST.get(fieldname)
-
             # Check for empty records
             if isinstance(submittedValue, record):
                 if not filter(None, submittedValue.values()):
@@ -2268,6 +2283,28 @@ class PlominoForm(Container):
                 else:
                     errors.append(field_error)
 
+
+        # Save attachment to temporary so that user does not have to re-upload upon validation failure
+        if process_attachment:
+            for f in self.getFormFields(includesubforms=True):
+                fieldname = f.id
+                fieldtype = f.field_type
+                submittedValue = REQUEST.get(fieldname)
+                if submittedValue != None and fieldtype == "ATTACHMENT":
+                    v = f.processInput(
+                        submittedValue,
+                        tmp,
+                        process_attachment,
+                        validation_mode=False)
+                    # Replace the old attachment with new ones
+                    temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT")) if REQUEST.form.get(f.id + "@@ATTACHMENT") else {}
+                    if v:
+                        for filename, contentytpe in temp_files.iteritems():
+                            filename = filename.encode('ascii', 'ignore')
+                            tmp.deletefile(filename)
+                        db.setRequestCache(f.id + "@@ATTACHMENT", v)
+                    else:
+                        db.setRequestCache(f.id + "@@ATTACHMENT", temp_files)
         return errors
 
     security.declarePublic('notifyErrors')
@@ -2440,6 +2477,7 @@ class PlominoForm(Container):
 
         return json.dumps(result)
 
+
     security.declarePublic('getTemporaryDocument')
 
     def getTemporaryDocument(self, doc=None, validation_mode=False):
@@ -2451,8 +2489,7 @@ class PlominoForm(Container):
             self,
             request,
             doc=doc,
-            validation_mode=validation_mode
-        ).__of__(db)
+            validation_mode=validation_mode,).__of__(db)
 
 
 class GetterSetterAttributeField(AttributeField):

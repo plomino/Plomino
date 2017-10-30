@@ -11,7 +11,15 @@ from plone.testing import z2, Layer
 import logging, sys
 
 import Products.CMFPlomino
+from Products.Sessions.SessionDataManager import SessionDataManager
+from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
+from Products.Transience.Transience import TransientObjectContainer
+from Products.Sessions.BrowserIdManager import BrowserIdManager
 
+tf_name = 'temp_folder'
+idmgr_name = 'browser_id_manager'
+toc_name = 'temp_transient_container'
+sdm_name = 'session_data_manager'
 
 class ProductsCmfplominoLayer(PloneSandboxLayer):
 
@@ -20,6 +28,18 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         self.loadZCML(package=Products.CMFPlomino)
         z2.installProduct(app, 'Products.CMFPlomino')
+
+        # Enable session data management with the site
+        bidmgr = BrowserIdManager(idmgr_name)
+        tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
+        toc = TransientObjectContainer(toc_name, title='Temporary Transient Object Container', timeout_mins=20)
+        session_data_manager = SessionDataManager(id=sdm_name,
+                                                  path='/' + tf_name + '/' + toc_name, title='Session Data Manager',
+                                                  requestName='TESTOFSESSION')
+        app._setObject(idmgr_name, bidmgr)
+        app._setObject(sdm_name, session_data_manager)
+        app._setObject(tf_name, tf)
+        app.temp_folder._setObject(toc_name, toc)
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'Products.CMFPlomino:default')

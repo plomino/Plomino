@@ -40,6 +40,7 @@ Add some minimal content to test access (view 1 displays all documents)::
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
     >>> transaction.commit()  # enable the browser to see our changes
 
 
@@ -57,6 +58,7 @@ Log in with ``Site Manager`` access rights::
 
 The string of special characters we want to check the quoting
     >>> regex_str = 'This field contains \^${}[]{}.*+?<>-&'
+
 
 ===========
 Plone Test
@@ -256,3 +258,169 @@ Turn on the feature listing database user again, but enable Plone many_user feat
     >>> search_result = json.loads(browser.contents)
     >>> search_result['total'] == 0
     True
+
+================================
+Multi-page File Attachment Test
+===============================
+
+Create single-page form with file attachment and test backward compatibility
+    >>> import os
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm1', title='Single-page Form 1')
+    >>> id = db.sp_frm1.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="MULTI")
+    >>> id = db.sp_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1 1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE",
+    ...             mandatory=True)
+    >>> db.sp_frm1.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> transaction.commit()
+
+Single-page form can save successully
+
+    >>> form_url = portal_url +'/mydb' +'/sp_frm1'
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> len(temp_storage.objectItems())
+    0
+
+In case of unsuccessful validatation, the attachment is still in the server (i.e user need not to re-upload the attachment)
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Save').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> len(temp_storage.objectItems())
+    1
+
+Then save again
+    >>> browser.getControl(name='text_1').value = 'Input text 2'
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> len(temp_storage.objectItems())
+    0
+
+Createa multi-page form with file attachment
+
+    >>> import os
+    >>> id = db.invokeFactory('PlominoForm', id='mp_frm1', title='Multi-page Form 1')
+    >>> id = db.mp_frm1.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="MULTI")
+    >>> db.mp_frm1.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> transaction.commit()
+
+
+Test as if single page file upload (Save the document right at the first page)
+    >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+
+#   Multiple file upload testing not work with browser test due to variation of implementation of file uploads
+#   - Browser test store multiple file as list of FileStorage object
+#   - Plomino stored mutiple files as list of FileUpload object
+
+
+Open the multi-page form and upload single files
+    >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+
+Go back and forth to see if the file is saved
+    >>> len(temp_storage.objectItems())
+    0
+    >>> browser.getControl('Next').click()
+    >>> len(temp_storage.objectItems())
+    1
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> len(temp_storage.objectItems())
+    1
+
+Check if we can delete the file
+    >>> browser.getLink(url='deleteAttachment').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    False
+    >>> len(temp_storage.objectItems())
+    0
+
+Add the file again to the form
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Next').click()
+    >>> len(temp_storage.objectItems())
+    1
+
+Save the form and the file is saved into the document, and removed from temp storage
+
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> len(temp_storage.objectItems())
+    0
+
+Test the clearance of expired attachment by mocking up the time in future
+#    >>> import time, sys
+#    >>> browser.open(form_url)
+#    >>> file_upload_ctl = browser.getControl(name='attach_1')
+#    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+#    >>> browser.getControl('Next').click()
+#    >>> len(temp_storage.objectItems())
+#    1
+#    >>> browser.open(form_url)
+#    >>> time_orig = time.time
+#    >>> time.time = lambda : time_orig() + 60*1000
+#    >>> file_upload_ctl = browser.getControl(name='attach_1')
+#    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+#    >>> browser.getControl('Save').click()
+#    >>> time.time = time_orig
+#    >>> len(temp_storage.objectItems())
+#    0
+
+
+Check if another anonymous user cannot view your temporary file
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> temp_file_url = browser.getLink(text='plomino_browser.txt').url
+    >>> browser.open(temp_file_url)
+    >>> 'Check if another anonymous user cannot view your temporary file' in browser.contents
+    True
+    >>> second_browser = Browser(layer['app'])
+    >>> second_browser.open(temp_file_url)
+    >>> 'Check if another anonymous user cannot view your temporary file' in second_browser.contents
+    False

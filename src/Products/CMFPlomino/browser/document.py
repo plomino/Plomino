@@ -9,7 +9,6 @@ from ..config import DESIGN_PERMISSION
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 
-
 class DocumentView(BrowserView):
     implements(IPublishTraverse)
 
@@ -72,6 +71,7 @@ class DocumentView(BrowserView):
         if name == "deleteAttachment":
             self.action = "deleteAttachment"
             return self
+
 
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
