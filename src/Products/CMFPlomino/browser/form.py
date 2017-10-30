@@ -44,9 +44,11 @@ class FormView(BrowserView):
         self.page_errors = []
 
         if self.request['REQUEST_METHOD'] == 'POST':
-            errors = self.form.validateInputs(self.request, process_attachment=True)
+            errors = self.form.validateInputs(self.request)
             # We can't continue if there are errors
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request)
                 # inject these into the form
                 self.page_errors = errors
             else:
@@ -143,7 +145,6 @@ class PageView(BrowserView):
         self.page_errors = []
         # Set the current page
         self.request['plomino_current_page'] = self.page
-
         form = self.context.getForm()
         # Get multi page information
         current_page = form._get_current_page()
@@ -158,10 +159,12 @@ class PageView(BrowserView):
                 return self.openform()
 
             # Need to validate the input first before any navigation
-            errors = form.validateInputs(self.request, process_attachment=True)
+            errors = form.validateInputs(self.request)
 
             # We can't continue if there are errors
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request)
                 # inject these into the form
                 self.page_errors = errors
                 return self.openform()

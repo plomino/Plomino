@@ -385,6 +385,8 @@ class PlominoForm(Container):
 
         # Create a temp doc and calculate hidewhens
         db = self.getParentDatabase()
+        # save attachment
+        self.processAttachment(REQUEST, doc)
         tmp = getTemporaryDocument(db, self, REQUEST, doc=doc, validation_mode=True).__of__(db)
         # Make sure we don't split the multipage up
         html = pq(self.applyHideWhen(tmp, split_multipage=False))
@@ -2024,6 +2026,8 @@ class PlominoForm(Container):
             hidden_fields, reset_fields = \
                 self._get_hidden_fields(REQUEST, doc,
                                         validation_mode=validation_mode)
+        if process_attachments:
+            self.processAttachment(REQUEST, doc)
         for f in all_fields:
             mode = f.field_mode
             fieldName = f.id
@@ -2058,7 +2062,7 @@ class PlominoForm(Container):
                         #     submittedValue = urllib.unquote_plus(
                         #         submittedValue)
                         if f.field_type == 'ATTACHMENT':
-                            # if field type is ATTACHMENT, it is already read at validation steps, and saved to request cache
+                            # if field type is ATTACHMENT, it is already read at process attachment, and saved to request cache
                             v = db.getRequestCache(fieldName + "@@ATTACHMENT")
                         else:
                             v = f.processInput(
@@ -2283,29 +2287,36 @@ class PlominoForm(Container):
                 else:
                     errors.append(field_error)
 
-
-        # Save attachment to temporary so that user does not have to re-upload upon validation failure
-        if process_attachment:
-            for f in self.getFormFields(includesubforms=True):
-                fieldname = f.id
-                fieldtype = f.field_type
-                submittedValue = REQUEST.get(fieldname)
-                if submittedValue != None and fieldtype == "ATTACHMENT":
-                    v = f.processInput(
-                        submittedValue,
-                        tmp,
-                        process_attachment,
-                        validation_mode=False)
-                    # Replace the old attachment with new ones
-                    temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT")) if REQUEST.form.get(f.id + "@@ATTACHMENT") else {}
-                    if v:
-                        for filename, contentytpe in temp_files.iteritems():
-                            filename = filename.encode('ascii', 'ignore')
-                            tmp.deletefile(filename)
-                        db.setRequestCache(f.id + "@@ATTACHMENT", v)
-                    else:
-                        db.setRequestCache(f.id + "@@ATTACHMENT", temp_files)
         return errors
+
+    def processAttachment(self, REQUEST, doc=None):
+        db = self.getParentDatabase()
+        tmp = getTemporaryDocument(
+            db,
+            self,
+            REQUEST,
+            doc,
+            validation_mode=True).__of__(db)
+        for f in self.getFormFields(includesubforms=True):
+            fieldname = f.id
+            fieldtype = f.field_type
+            submittedValue = REQUEST.get(fieldname)
+            if submittedValue != None and fieldtype == "ATTACHMENT":
+                v = f.processInput(
+                    submittedValue,
+                    tmp,
+                    True,
+                    validation_mode=False)
+                # Replace the old attachment with new ones
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT")) if REQUEST.form.get(
+                    f.id + "@@ATTACHMENT") else {}
+                if v:
+                    for filename, contentytpe in temp_files.iteritems():
+                        filename = filename.encode('ascii', 'ignore')
+                        tmp.deletefile(filename)
+                    db.setRequestCache(f.id + "@@ATTACHMENT", v)
+                else:
+                    db.setRequestCache(f.id + "@@ATTACHMENT", temp_files)
 
     security.declarePublic('notifyErrors')
 
