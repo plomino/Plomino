@@ -23,7 +23,7 @@ ENV ZSERVER_HOST  0.0.0.0
 
 RUN mkdir -p /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
 RUN chown -R seluser.seluser /buildout
-RUN printf "[buildout]\nextends=https://raw.githubusercontent.com/collective/buildout.plonetest/master/buildout-cache.cfg\nplone-series=5.0\nparts=\n[versions]\nPlone=5.0.8" > /buildout/download.cfg
+RUN printf "[buildout]\nextends=https://raw.githubusercontent.com/collective/buildout.plonetest/master/buildout-cache.cfg\nindex=https://pypi.python.org/simple/\nplone-series=5.0\nparts=\n[versions]\nPlone=5.0.8" > /buildout/download.cfg
 RUN cd /buildout && virtualenv . && bin/pip install zc.buildout==2.2.5 setuptools==8.3 && bin/buildout -c download.cfg install download install
 RUN ls /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
 
