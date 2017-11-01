@@ -84,13 +84,6 @@ class FormView(BrowserView):
         temp_doc = self.form.getTemporaryDocument()
         return temp_doc.getfile(REQUEST=self.request)
 
-    def deleteAttachment(self):
-        temp_doc = self.form.getTemporaryDocument()
-        temp_doc.deleteAttachment(REQUEST=self.request)
-        return self.openform()
-
-
-
 
 @implementer(IPublishTraverse)
 class PageView(BrowserView):
