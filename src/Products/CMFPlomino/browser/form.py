@@ -44,11 +44,13 @@ class FormView(BrowserView):
         self.page_errors = []
 
         if self.request['REQUEST_METHOD'] == 'POST':
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc=None)
             errors = self.form.validateInputs(self.request)
             # We can't continue if there are errors
             if errors:
                 # save file attachment
-                self.form.processAttachment(self.request)
+                self.form.processAttachment(self.request, doc=None, creation=False)
                 # inject these into the form
                 self.page_errors = errors
             else:
@@ -151,13 +153,15 @@ class PageView(BrowserView):
                 # return form.OpenForm(request=self.request)
                 return self.openform()
 
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc=None)
             # Need to validate the input first before any navigation
             errors = form.validateInputs(self.request)
 
             # We can't continue if there are errors
             if errors:
                 # save file attachment
-                self.form.processAttachment(self.request)
+                self.form.processAttachment(self.request, doc=None, creation=False)
                 # inject these into the form
                 self.page_errors = errors
                 return self.openform()
@@ -178,6 +182,9 @@ class PageView(BrowserView):
             # Create the document if it's not a page
             if not form.isPage:
                 return form.createDocument(self.request)
+            else:
+                # Process the temporary attachment
+                self.form.processAttachment(self.request, doc=None, creation=False)
         return self.openform()
 
     def openform(self):

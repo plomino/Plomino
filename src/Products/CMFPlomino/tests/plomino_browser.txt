@@ -318,6 +318,17 @@ Then save again
     >>> len(temp_storage.objectItems())
     0
 
+Test existing document of single-page form can update attachment
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('?')[0] + '/EditDocument'
+    >>> browser.open(edit_doc_url)
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> alt_file = os.path.join(os.path.dirname(__file__), "plomino_macros.txt")
+    >>> file_upload_ctl.add_file(open(alt_file), 'text/html',  'plomino_macros.txt')
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_macros.txt' in browser.contents
+    True
+
 Createa multi-page form with file attachment
 
     >>> import os
@@ -398,7 +409,7 @@ Save the form and the file is saved into the document, and removed from temp sto
     0
 
 
-Test existing document can update attachment
+Test existing document of multi-page can update attachment
     >>> doc_url = browser.url
     >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
     >>> browser.open(edit_doc_url)
@@ -437,7 +448,22 @@ Test the clearance of expired attachment by mocking up the time in future
 
 Test file attachment in sub-form
     >>> parent1 = db.invokeFactory('PlominoForm', id='parent1', title='Parent Form 1')
-    >>> db.parent1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sp_frm1</span>""")
+    >>> sub1 = db.invokeFactory('PlominoForm', id='sub1', title='Sub Form 1')
+    >>> id = db.sub1.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="MULTI")
+    >>> id = db.sub1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1 1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE",
+    ...             mandatory=True)
+    >>> db.sub1.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> db.parent1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sub1</span>""")
     >>> transaction.commit()
     >>> parent_form_url = portal_url +'/mydb' +'/parent1'
     >>> browser.open(parent_form_url)
@@ -452,7 +478,120 @@ Test file attachment in sub-form
     >>> len(temp_storage.objectItems())
     0
 
+
+Test if page form (multi-page) show attachment
+    >>> id = db.invokeFactory('PlominoForm', id='mp_frm2', title='Multi-page Form 2', isPage=True)
+    >>> id = db.mp_frm2.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="MULTI")
+    >>> db.mp_frm2.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_frm2/page/1'
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+
+
+Test on validation on mandatory attachment field after deletion
+    >>> id = db.invokeFactory('PlominoForm', id='mp_frm3', title='Multi-page Form 3')
+    >>> id = db.mp_frm3.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             mandatory=True,
+    ...             single_or_multiple="MULTI")
+    >>> db.mp_frm3.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_frm3/page/1'
+    >>> browser.open(form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> browser.getControl(name='attachment-delete').value = [browser.getLink('plomino_browser.txt').text]
+    >>> browser.getControl('Save').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Save').click()
+    >>> 'Validation failed' not in browser.contents
+    True
+
+
+Test on validation on mandatory attachment field on page form (single-page)
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm2', title='Single-page Form 2', isPage = True, form_method='POST')
+    >>> id = db.sp_frm2.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             mandatory=True,
+    ...             single_or_multiple="MULTI")
+    >>> db.sp_frm2.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/sp_frm2'
+    >>> browser.open(form_url)
+    >>> browser.getControl('Save').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+
+Create multiple file attachment and with multiple fields
+    >>> test_file1 = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> test_file2 = os.path.join(os.path.dirname(__file__), "plomino_macros.txt")
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_frm4', title='Multi-page Form 4')
+    >>> id = db.mp_frm4.invokeFactory('PlominoField',
+    ...             id='attach_1',
+    ...             title='Field Attachment 1',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="SINGLE")
+    >>> id = db.mp_frm4.invokeFactory('PlominoField',
+    ...             id='attach_2',
+    ...             title='Field Attachment 2',
+    ...             field_type="ATTACHMENT",
+    ...             field_mode="EDITABLE",
+    ...             single_or_multiple="SINGLE")
+    >>> db.mp_frm4.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
+    ...     <hr class="plominoPagebreakClass">
+    ...     <p><label for="attach_2">Attach 2</label><span class="plominoFieldClass">attach_2</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_frm4/page/1'
+    >>> browser.open(form_url)
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file1), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl('Next').click()
+    >>> file_upload_ctl = browser.getControl(name='attach_2')
+    >>> file_upload_ctl.add_file(open(test_file2), 'text/html',  'plomino_macros.txt')
+    >>> browser.getControl('Save').click()
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
+    >>> browser.open(edit_doc_url)
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> browser.getControl('Next').click()
+    >>> 'plomino_macros.txt' in browser.contents
+    True
+
+
 Check if another anonymous user cannot view your temporary file
+    >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
     >>> browser.open(form_url)
     >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
     >>> file_upload_ctl = browser.getControl(name='attach_1')

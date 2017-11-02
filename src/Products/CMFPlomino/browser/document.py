@@ -173,9 +173,13 @@ class DocumentView(BrowserView):
 
             # Pass in the current doc as well. This ensures that fields on other
             # pages are included (possibly needed for calculations)
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc = self.target)
             errors = form.validateInputs(self.request, doc=self.target)
 
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return self.edit_template()
 

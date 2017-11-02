@@ -225,8 +225,7 @@ class PlominoField(Item):
 
             if isinstance(submittedValue, FileUpload):
                 submittedValue = asList(submittedValue)
-
-            current_files = doc.getItem(fieldname)
+            current_files = doc.getItem(fieldname) if doc else {}
             if not current_files:
                 current_files = {}
 
@@ -237,6 +236,7 @@ class PlominoField(Item):
                         if self.single_or_multiple == "SINGLE":
                             for filename in current_files.keys():
                                 if filename != new_file:
+                                    filename = filename.encode('ascii', 'ignore')
                                     doc.deletefile(filename)
                             current_files = {}
                         current_files[new_file] = contenttype
@@ -285,9 +285,11 @@ class PlominoField(Item):
         selection = self.getSelectionList(target)
 
         show_upload = True
-        if self.field_type == 'ATTACHMENT' \
-           and self.getForm().isPage:
-            show_upload = False
+
+        # Allow displaying attachment in page form
+        #if self.field_type == 'ATTACHMENT' \
+        #   and self.getForm().isPage:
+        #    show_upload = False
 
         try:
             html = renderer(

@@ -406,12 +406,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return form.notifyErrors(errors)
 
         self.setItem('Form', form.id)
+        form.processAttachment(REQUEST, doc=self, creation=creation)
         # process editable fields (we read the submitted value in the request)
-        form.readInputs(self, REQUEST, process_attachments=True)
-        # As it happend only during POST request, we save temporary files and clean it
-        self.saveTempAttachment(form, REQUEST)
-        # clean tempporary files
-        self.cleanExpiredAttachment()
+        form.readInputs(self, REQUEST)
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
 
@@ -494,7 +491,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     def save(self, form=None, creation=False, refresh_index=True,
             asAuthor=True, onSaveEvent=True):
         """ Refresh values according to form, and reindex the document.
-
+        # clean tempporary files
+        self.cleanExpiredAttachment()
         Computed fields are processed.
         """
         if not form:
@@ -541,6 +539,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 if new_id:
                     transaction.savepoint(optimistic=True)
                     db.documents.manage_renameObject(self.id, new_id)
+
+            # As it happend only during creation request, we save temporary files and clean it
+            if creation:
+                self.saveTempAttachment(form, self.REQUEST)
+
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:
