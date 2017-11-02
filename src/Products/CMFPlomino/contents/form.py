@@ -1084,7 +1084,7 @@ class PlominoForm(Container):
     def getForm_layout(self):
         # update all teh example widgets
         # TODO: called twice during setter to check if changed
-        d = pq(self.form_layout, parser='html_fragments')
+        d = pq(self.form_layout if self.form_layout else "", parser='html_fragments')
         root = d[0].getparent() if d else d
         s = ".plominoActionClass,.plominoSubformClass,.plominoFieldClass"
         for element in d.find(s) + d.filter(s):

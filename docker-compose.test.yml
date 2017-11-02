@@ -85,7 +85,7 @@ services:
     image: robot_tests
     depends_on:
        - hub
-    command: bin/robot-server -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
+    command: bin/robot-server --no-reload -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
     volumes:
       - /dev/shm:/dev/shm
 #      - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
