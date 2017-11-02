@@ -280,11 +280,10 @@ Create single-page form with file attachment and test backward compatibility
     ...             mandatory=True)
     >>> db.sp_frm1.form_layout = """<p><label for="attach_1">Attach 1</label><span class="plominoFieldClass">attach_1</span></p>
     ...     <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
-    >>> temp_storage = getattr(db,'temporary_files',None)
     >>> transaction.commit()
 
-Single-page form can save successully
-
+Artificially remove temporary folder and single-page form can save successully
+    >>> db.manage_delObjects('temporary_files')
     >>> form_url = portal_url +'/mydb' +'/sp_frm1'
     >>> browser.open(form_url)
     >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
@@ -294,6 +293,7 @@ Single-page form can save successully
     >>> browser.getControl('Save').click()
     >>> 'plomino_browser.txt' in browser.contents
     True
+    >>> temp_storage = getattr(db,'temporary_files',None)
     >>> len(temp_storage.objectItems())
     0
 
@@ -368,19 +368,26 @@ Go back and forth to see if the file is saved
     >>> len(temp_storage.objectItems())
     1
 
-Check if we can delete the file
-    >>> browser.getLink(url='deleteAttachment').click()
-    >>> 'plomino_browser.txt' in browser.contents
-    False
-    >>> len(temp_storage.objectItems())
-    0
-
-Add the file again to the form
+Add one more file and check if the old file is still there
     >>> file_upload_ctl = browser.getControl(name='attach_1')
-    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> alt_file = os.path.join(os.path.dirname(__file__), "plomino_import_export.txt")
+    >>> file_upload_ctl.add_file(open(alt_file), 'text/html',  'plomino_import_export.txt')
+    >>> browser.getControl('Next').click()
+    >>> len(temp_storage.objectItems())
+    2
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> 'plomino_import_export.txt' in browser.contents
+    True
+
+Try to delete a file
+    >>> browser.getControl(name='attachment-delete').value = [browser.getLink('plomino_import_export.txt').text]
     >>> browser.getControl('Next').click()
     >>> len(temp_storage.objectItems())
     1
+    >>> 'plomino_import_export.txt' in browser.contents
+    False
 
 Save the form and the file is saved into the document, and removed from temp storage
 
@@ -389,6 +396,26 @@ Save the form and the file is saved into the document, and removed from temp sto
     True
     >>> len(temp_storage.objectItems())
     0
+
+
+Test existing document can update attachment
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
+    >>> browser.open(edit_doc_url)
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> alt_file = os.path.join(os.path.dirname(__file__), "plomino_macros.txt")
+    >>> file_upload_ctl.add_file(open(alt_file), 'text/html',  'plomino_macros.txt')
+    >>> browser.getControl('Save').click()
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_macros.txt' in browser.contents
+    True
+
+Try to delete a file from document
+    >>> browser.open(edit_doc_url)
+    >>> browser.getControl(name='attachment-delete').value = [browser.getLink('plomino_macros.txt').text]
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_macros.txt' in browser.contents
+    False
 
 Test the clearance of expired attachment by mocking up the time in future
 #    >>> import time, sys
@@ -408,6 +435,22 @@ Test the clearance of expired attachment by mocking up the time in future
 #    >>> len(temp_storage.objectItems())
 #    0
 
+Test file attachment in sub-form
+    >>> parent1 = db.invokeFactory('PlominoForm', id='parent1', title='Parent Form 1')
+    >>> db.parent1.setForm_layout("""<p>Form with empty sub-form</p><span class="plominoSubformClass">sp_frm1</span>""")
+    >>> transaction.commit()
+    >>> parent_form_url = portal_url +'/mydb' +'/parent1'
+    >>> browser.open(parent_form_url)
+    >>> test_file = os.path.join(os.path.dirname(__file__), "plomino_browser.txt")
+    >>> file_upload_ctl = browser.getControl(name='attach_1')
+    >>> file_upload_ctl.add_file(open(test_file), 'text/html',  'plomino_browser.txt')
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl('Save').click()
+    >>> 'plomino_browser.txt' in browser.contents
+    True
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> len(temp_storage.objectItems())
+    0
 
 Check if another anonymous user cannot view your temporary file
     >>> browser.open(form_url)
@@ -424,3 +467,7 @@ Check if another anonymous user cannot view your temporary file
     >>> second_browser.open(temp_file_url)
     >>> 'Check if another anonymous user cannot view your temporary file' in second_browser.contents
     False
+
+
+
+

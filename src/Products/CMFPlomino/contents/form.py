@@ -19,6 +19,7 @@ from zope import schema
 from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
 from ZPublisher.HTTPRequest import record
+from itertools import chain
 
 from .. import _, plomino_profiler
 from ..config import (
@@ -901,15 +902,14 @@ class PlominoForm(Container):
                             asUnicode(request.get(field_id, '')),
                             html_content)
                     )
-
-            for field_id in request.form:
-                if db.getRequestCache(field_id+"@@ATTACHMENT"):
-                    temp_files = db.getRequestCache(field_id+"@@ATTACHMENT")
+            for f in self.getFormFields():
+                if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
+                    temp_files = db.getRequestCache(f.id+"@@ATTACHMENT")
                     html_content = (
                         "<input type='hidden' "
                         "name='%s' "
                         "value='%s' />%s" % (
-                            field_id + "@@ATTACHMENT",
+                            f.id + "@@ATTACHMENT",
                             asUnicode(json.dumps(temp_files)),
                             html_content)
                     )
@@ -924,6 +924,18 @@ class PlominoForm(Container):
                             "value='%s' />%s" % (
                                 self.id,
                                 html_content))
+
+        if editmode and doc and doc.id!="TEMPDOC":
+            for f in self.getFormFields():
+                if f.field_type =='ATTACHMENT' and doc.getItem(f.id):
+                    html_content = (
+                        "<input type='hidden' "
+                        "name='%s' "
+                        "value='%s' />%s" % (
+                            f.id + "@@ATTACHMENT",
+                            asUnicode(json.dumps(doc.getItem(f.id))),
+                            html_content)
+                    )
 
         # Handle legends and labels
         html_content = self._handleLabels(html_content, editmode)
@@ -2297,6 +2309,7 @@ class PlominoForm(Container):
             REQUEST,
             doc,
             validation_mode=True).__of__(db)
+        deleteFiles = REQUEST.get("attachment-delete") or {}
         for f in self.getFormFields(includesubforms=True):
             fieldname = f.id
             fieldtype = f.field_type
@@ -2307,14 +2320,24 @@ class PlominoForm(Container):
                     tmp,
                     True,
                     validation_mode=False)
-                # Replace the old attachment with new ones
-                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT")) if REQUEST.form.get(
-                    f.id + "@@ATTACHMENT") else {}
-                if v:
-                    for filename, contentytpe in temp_files.iteritems():
-                        filename = filename.encode('ascii', 'ignore')
+                # TODO: there is likely a crash if user include multiple attachment fields with same ids, perhaps by using subforms
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT")) if REQUEST.get(f.id + "@@ATTACHMENT") else {}
+                for filename, contentytpe in temp_files.items():
+                    filename = filename.encode('ascii', 'ignore')
+                    if filename in deleteFiles:
                         tmp.deletefile(filename)
-                    db.setRequestCache(f.id + "@@ATTACHMENT", v)
+                        del temp_files[filename]
+                if v:
+                    if f.single_or_multiple =='SINGLE':
+                        for filename, contentytpe in temp_files.iteritems():
+                            filename = filename.encode('ascii', 'ignore')
+                            tmp.deletefile(filename)
+                        db.setRequestCache(f.id + "@@ATTACHMENT", v)
+                    if f.single_or_multiple =='MULTI':
+                        temp_files = dict(chain(temp_files.iteritems(), v.iteritems()))
+                        if doc and doc.id !='TEMPDOC' and doc.getItem(fieldname):
+                            temp_files = dict(chain(temp_files.iteritems(), doc.getItem(fieldname).iteritems()))
+                        db.setRequestCache(f.id + "@@ATTACHMENT", temp_files)
                 else:
                     db.setRequestCache(f.id + "@@ATTACHMENT", temp_files)
 

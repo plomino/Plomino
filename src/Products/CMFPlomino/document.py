@@ -34,6 +34,7 @@ from zope.component.factory import Factory
 from zope.container.contained import Contained
 from zope.interface import implements
 from ZPublisher.HTTPRequest import FileUpload
+from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 
 from App.config import getConfiguration
 
@@ -426,11 +427,20 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             redirect = self.absolute_url()
         REQUEST.RESPONSE.redirect(addTokenToUrl(redirect))
 
+    def getTemporaryFolder(self):
+        return getattr(self.getParentDatabase(), 'temporary_files', None)
+
+    def createTemporaryFolder(self):
+        # Add backward compatibility by checking if temporary_files folder is created, if not create it
+        if not self.getTemporaryFolder():
+            manage_addCMFBTreeFolder(self.getParentDatabase(), id='temporary_files')
+        return getattr(self.getParentDatabase(), 'temporary_files')
+
     def saveTempAttachment(self, form, REQUEST):
         db = self.getParentDatabase()
-        tempStorage = getattr(self.getParentDatabase(), 'temporary_files', None)
+        tempStorage = self.getTemporaryFolder()
         if not tempStorage:
-            return
+            tempStorage = self.createTemporaryFolder()
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
             if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
@@ -450,7 +460,9 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 db.cleanRequestCache(f.id + "@@ATTACHMENT")
 
     def cleanExpiredAttachment(self):
-        tempStorage = getattr(self.getParentDatabase(), 'temporary_files', None)
+        tempStorage = self.getTemporaryFolder()
+        if not tempStorage:
+            tempStorage = self.createTemporaryFolder()
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         current_timestamp = time.time()
         config = getConfiguration()
@@ -1112,8 +1124,8 @@ class TemporaryDocument(PlominoDocument):
         self._parent = parent
         self.form = form
         self.REQUEST = REQUEST
-        self.storage = getattr(parent,'temporary_files',None)
-        self.storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
+        self.items = {}
+        self.storage = self.getTemporaryFolder()
         if real_doc:
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.id)
@@ -1141,7 +1153,9 @@ class TemporaryDocument(PlominoDocument):
         """
         if not self.isReader():
             raise Unauthorized("You cannot read this content")
-
+        if not self.storage:
+            return None
+        storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
         # Check access based on doc's current form. Plomino may be busy
         # rendering a different doc, using some requested form, which
         # probably doesn't apply to this document.
@@ -1151,7 +1165,7 @@ class TemporaryDocument(PlominoDocument):
             raise Unauthorized(onOpenDocument_error)
         if REQUEST.get('filename') and not filename:
             filename = REQUEST.get('filename')
-        file_obj = self.storageWrapper.getfile(REQUEST, filename)
+        file_obj = storageWrapper.getfile(REQUEST, filename)
         if not file_obj:
             return None
         # Do not return file object if expired
@@ -1173,7 +1187,10 @@ class TemporaryDocument(PlominoDocument):
     def getFilenames(self):
         """ Return names of items that are File or Blob.
         """
-        return self.storageWrapper.getFilenames(self, self.REQUEST)
+        if not self.storage:
+            return []
+        storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
+        return storageWrapper.getFilenames(self, self.REQUEST)
 
 
     def setfile(
@@ -1188,6 +1205,9 @@ class TemporaryDocument(PlominoDocument):
         The name is normalized before storing. Return the normalized name and
         the guessed content type. (The `contenttype` parameter is ignored.)
         """
+        if not self.storage:
+            self.storage = self.createTemporaryFolder()
+        storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
         if filename == '':
             filename = submittedValue.filename
         if filename:
@@ -1198,7 +1218,7 @@ class TemporaryDocument(PlominoDocument):
                 submittedValue = submittedValue.read()
             elif submittedValue.__class__.__name__ == '_fileobject':
                 submittedValue = submittedValue.read()
-            return self.storageWrapper.setfile(self.REQUEST, filename, submittedValue, contenttype)
+            return storageWrapper.setfile(self.REQUEST, filename, submittedValue, contenttype)
         else:
             return (None, "")
 
@@ -1206,7 +1226,10 @@ class TemporaryDocument(PlominoDocument):
     def deletefile(self, filename):
         """ Delete blob or FSS obj.
         """
-        self.storageWrapper.deletefile(self.REQUEST, filename)
+        if not self.storage:
+            self.storage = self.createTemporaryFolder()
+        storageWrapper = PlominoTemporaryFileStorageWrapper(self.storage)
+        storageWrapper.deletefile(self.REQUEST, filename)
 
     security.declareProtected(EDIT_PERMISSION, 'deleteAttachment')
 
@@ -1228,7 +1251,8 @@ class TemporaryDocument(PlominoDocument):
                         PlominoTranslate(_("is mandatory"), self))
                     return form.notifyErrors([error])
             self.deletefile(filename)
-
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(self.absolute_url() )
 
     def doc_path(self):
         db_path = self._parent.getPhysicalPath()
@@ -1349,7 +1373,6 @@ class PlominoTemporaryFileStorageWrapper:
         """ Return names of items that are File or Blob.
         """
         db = doc.getParentDatabase()
-        sessionid = REQUEST.SESSION.getBrowserIdManager().getBrowserId()
         fieldnames = []
         for field_id in REQUEST.form:
             if db.getRequestCache(field_id+'@@ATTACHMENT'):

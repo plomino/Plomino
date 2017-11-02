@@ -141,6 +141,11 @@
     <value key="js">++resource++Products.CMFPlomino/js/refresh.js</value>
   </records>
 
+    <records prefix="plone.resources/plominoattachment"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/attachment.js</value>
+  </records>
+
 
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
@@ -153,6 +158,7 @@
       <element>plominomultipage</element>
       <element>plominomacros</element>
       <element>plominorefresh</element>
+        <element>plominoattachment</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>

@@ -124,13 +124,6 @@
         permission="plomino.READ_PERMISSION"
         />
 
-      <browser:page
-        for="Products.CMFPlomino.contents.form.IPlominoForm"
-        name="deleteAttachment"
-        class=".form.FormView"
-        attribute="deleteAttachment"
-        permission="zope.Public"
-        />
 
     <browser:page
         for="Products.CMFPlomino.contents.form.IPlominoForm"

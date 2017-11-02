@@ -25,6 +25,8 @@ class DocumentView(BrowserView):
         self.doc = None
         self.action = None
         self.form = None
+        if not getattr(self.request, 'SESSION', None):
+            setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
     def publishTraverse(self, request, name):
         if name == "page" or name == "pageview":
@@ -205,7 +207,7 @@ class DocumentView(BrowserView):
             self.target.setItem('Form', form.id)
 
             # process editable fields (we read the submitted value in the request)
-            form.readInputs(self.target, self.request, process_attachments=True)
+            form.readInputs(self.target, self.request, process_attachments=False)
 
             # refresh computed values, run onSave, reindex. Should never be creation.
             self.target.save(form, False)
@@ -268,6 +270,7 @@ class DocumentView(BrowserView):
             return self.redirect('pageview', next_page)
 
         return self.view_template()
+
 
     def redirect(self, view, page):
         url = '%s/%s/%s' % (self.target.absolute_url(), view, page)

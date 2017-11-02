@@ -2,9 +2,10 @@
     doc python:options['doc'];
     token python:doc.restrictedTraverse('@@authenticator').token();">
     <tal:block tal:condition="options/show_upload" tal:repeat="attachment options/fieldvalue">
-        <a href="#" tal:attributes="href python:doc.doc_url()+'/getfile?filename='+attachment"
+        <a href="#" class="file-attachment"  tal:attributes="href python:doc.doc_url()+'/getfile?filename='+attachment;data-filename python:attachment"
             tal:content="attachment">filename</a>
-         <a href="#" class="btn btn-danger" tal:attributes="href string:${doc/doc_url}/deleteAttachment?_authenticator=${token}&field=${field/id}&filename=$attachment">Delete</a>
+         <a  class="btn btn-danger delete-attachment" tal:attributes="data-filename python:attachment;data-field string:${field/id}">Delete</a>
+            <input type="checkbox" name="attachment-delete" tal:attributes="data-filename python:attachment;value python:attachment">
         <br/>
 
     </tal:block>
