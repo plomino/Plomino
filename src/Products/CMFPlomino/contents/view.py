@@ -226,6 +226,7 @@ class PlominoView(Container):
                 pagenumber=pagenumber,
             )
         if getObject:
+            #TODO: very inefficient. should be a generator
             return [r.getObject() for r in results]
         else:
             return results

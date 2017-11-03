@@ -231,6 +231,8 @@ A field can contains helpers
      >>> db.frm2.welcome.formula
      'message="Welcome "+plominoDocument.buyer\nreturn message'
 
+    >>> db.objectIds()
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> s = db.exportDesignAsJSON(elementids=['frm2'])
     >>> s = s.replace("Welcome", "No XML welcome here!")
     >>> db.importDesignFromJSON(s)
@@ -239,10 +241,10 @@ A field can contains helpers
     >>> db.frm2.welcome.helpers
     [[OrderedDict([(u'more_field_value', 1), (u'Form', u'macro_condition_number_range_in'), (u'more_field_name', u'field1'), (u'less_field_name', u'field1'), (u'and_or', u'or'), (u'_macro_id_', u'macro_condition_number_range_in_2'), (u'less_field_value', 10)]), OrderedDict([(u'_macro_id_', u'macro_field_validate_invalid_2'), (u'Form', u'macro_field_validate_invalid'), (u'invalid_message', u'Not in range')])]]
 
-# Ensure the imported order is correct
+# Ensure the imported order is correct and the same as before
 
     >>> db.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> s = db.exportDesignAsJSON()
 
     >>> print s
@@ -252,9 +254,9 @@ A field can contains helpers
     ...
             "frm1": {
     ...
-            "frm3": {
-    ...
             "frm2": {
+    ...
+            "frm3": {
     ...
             "view1": {
     ...
@@ -267,7 +269,7 @@ A field can contains helpers
     >>> newdb = portal.test
     >>> newdb.importDesignFromJSON(s)
     >>> newdb.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'frm2', 'view1', 'view2', 'view3', 'view4']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
 
 Also check the order of view and form elements
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
@@ -298,7 +300,7 @@ Import design from file system
     >>> newdb = portal.test_import_filesystem
     >>> newdb.importDesignFromJSON(from_folder=inputdir, replace = True)
     >>> newdb.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
     True
     >>> newdb.frm2.objectIds() == db.frm2.objectIds()
@@ -317,13 +319,13 @@ Check if zip bunlde include JSON, HTML, PY files
 
     >>> json_files = [fname for fname in namelist if fname.endswith('.json')]
     >>> print json_files
-    ['mydb/frm_test.json', 'mydb/frm1.json', 'mydb/frm3.json', 'mydb/frm4.json', 'mydb/view1.json', 'mydb/view2.json', 'mydb/view3.json', 'mydb/view4.json', 'mydb/frm2.json', 'mydb/dbsettings.json']
+    ['mydb/frm_test.json', 'mydb/frm1.json', 'mydb/frm2.json', 'mydb/frm3.json', 'mydb/frm4.json', 'mydb/view1.json', 'mydb/view2.json', 'mydb/view3.json', 'mydb/view4.json', 'mydb/dbsettings.json']
 
 Test contents is in the same order as the db
     >>> print [f for f in db.objectIds() if 'frm' in f or 'view' in f]
-    ['frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    ['frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> print [f.split('/')[1].split('.')[0] for f in json_files if 'frm' in f or 'view' in f]
-    ['frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    ['frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
 
 
     >>> html_files = [fname for fname in namelist if fname.endswith('.html')]
@@ -332,7 +334,7 @@ Test contents is in the same order as the db
 
     >>> python_files = [fname for fname in namelist if fname.endswith('.py')]
     >>> print python_files
-    ['mydb/frm1.field2.py', 'mydb/frm1.field3.py', 'mydb/view1.col1.py', 'mydb/view2.py', 'mydb/view3.py', 'mydb/view4.py', 'mydb/frm2.guitarist.py', 'mydb/frm2.welcome.py']
+    ['mydb/frm1.field2.py', 'mydb/frm1.field3.py', 'mydb/frm2.guitarist.py', 'mydb/frm2.welcome.py', 'mydb/view1.col1.py', 'mydb/view2.py', 'mydb/view3.py', 'mydb/view4.py']
 
 Check if JSON file does not contain HTML and formula
 
@@ -369,7 +371,7 @@ Check if PY file contains the formula for the field
 
     >>> old_contents = db.objectIds()
     >>> print old_contents
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
 
 #    >>> import os, zipfile
 #    >>> dir, _f = os.path.split(os.path.abspath(__file__))
@@ -380,7 +382,7 @@ Check if PY file contains the formula for the field
 #    [...]
 
     >>> print db.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'frm_test', 'frm1', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4', 'frm2']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> db.objectIds() == old_contents
     True
 

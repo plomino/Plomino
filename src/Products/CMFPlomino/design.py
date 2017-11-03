@@ -1446,14 +1446,20 @@ class DesignManager:
     def importElementFromJSON(self, container, id, element):
         """
         """
+        #TODO: security problem. Shouldn't allow any type to be created
         element_type = element['type']
+        pos = None
         if id in container.objectIds():
             ob = getattr(container, id)
             if wl_isLocked(ob):
                 ob.wl_clearLocks()
+            pos = container.getObjectPosition(id)
             container.manage_delObjects([id])
         params = element['params']
         container.invokeFactory(element_type, id=id)
+        if pos is not None:
+            container.moveObject(id, pos)
+            #TODO above line seems to turn id into unicode for some reason
         obj = getattr(container, id)
         obj.title = element['title']
 
