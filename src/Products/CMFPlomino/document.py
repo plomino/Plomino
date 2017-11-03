@@ -39,6 +39,7 @@ from Products.CMFCore.CMFBTreeFolder import manage_addCMFBTreeFolder
 from App.config import getConfiguration
 
 from . import _
+import random, string
 from .config import (
     EDIT_PERMISSION,
     READ_PERMISSION,
@@ -47,6 +48,7 @@ from .config import (
     SCRIPT_ID_DELIMITER,
     TIMEZONE,
     DEFAULT_SESSION_TIME_OUT,
+    TEMP_FILE_TOKEN_LENGTH
 )
 from .exceptions import PlominoScriptException
 from .interfaces import IPlominoDocument
@@ -1359,7 +1361,8 @@ class PlominoTemporaryFileStorageWrapper:
             [normalizeString(s, encoding='utf-8')
              for s in filename.split('.')])
         # Make file name unique with timestamp
-        filename =  str(int(time.time())) + '-' + filename
+        letters = string.ascii_lowercase
+        filename = ''.join(random.choice(letters) for i in range(TEMP_FILE_TOKEN_LENGTH)) + '-' + filename
         # Make the file accessible only by author
         store_filename = REQUEST.SESSION.getBrowserIdManager().getBrowserId() + '-' + filename
         blob = BlobWrapper(contenttype)

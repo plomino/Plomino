@@ -131,10 +131,13 @@ class DocumentView(BrowserView):
         self.page_errors = []
         if self.request['REQUEST_METHOD'] == 'POST':
             form = self.target.getForm()
-
+            if 'attachment-delete' in self.request.form:
+                form.deleteAttachment(self.request, doc=self.target)
             # Try to validate the form
             errors = form.validateInputs(self.request, doc=self.target)
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return template()
             else:

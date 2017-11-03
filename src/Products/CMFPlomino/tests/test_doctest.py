@@ -23,6 +23,7 @@ def test_suite():
         'plomino_macros.txt',
         'defaultmacros/plomino_macro_field_selection_db_elements.txt',
         'plomino_browser.txt',
+        'plomino_file_attachment.txt',
         'plomino_view.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
