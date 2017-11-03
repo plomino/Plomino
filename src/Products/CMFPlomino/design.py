@@ -1,9 +1,11 @@
 from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
 from collections import OrderedDict
+from dircache import listdir
 from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
 import base64
+from os.path import isfile
 from plone.behavior.interfaces import IBehaviorAssignable
 from z3c.form.interfaces import IDataManager
 from zope.component import getMultiAdapter
@@ -104,8 +106,12 @@ class Bundle:
                 elementids = fname.split('.')
                 self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1],  None, file_path))
         if folder:
-            for file_path in glob.glob(os.path.join(folder,'*.*')):
+            for file_path in [os.path.join(folder, f) for f in listdir(folder)]:
+                if not isfile(file_path):
+                    continue
                 dir, fname = os.path.split(file_path)
+                if not '.' in fname:
+                    continue
                 elementids = fname.split('.')
                 self.contentList.append(( '.'.join(elementids[:-1]), elementids[-1], None, file_path))
 
