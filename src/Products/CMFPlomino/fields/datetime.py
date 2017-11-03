@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import #Needed for caseinsensitive file systems. DateTime import below
 import json
 import logging
 
-from base import BaseField
+from Products.CMFPlomino.fields.base import BaseField
 from DateTime import DateTime
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.autoform.interfaces import ORDER_KEY

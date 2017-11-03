@@ -1,3 +1,4 @@
+from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
 from collections import OrderedDict
 from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
@@ -41,19 +42,19 @@ from ZPublisher.HTTPRequest import FileUpload
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 
-from .config import (
+from Products.CMFPlomino.config import (
     DESIGN_PERMISSION,
     MSG_SEPARATOR,
     TIMEZONE,
 )
-from . import plomino_profiler, get_utils, get_resource_directory
-from .config import SCRIPT_ID_DELIMITER
-import contents
-from .exceptions import PlominoDesignException, PlominoScriptException
-from .HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
-from .index.index import PlominoIndex
-from .migration import migrate
-from .utils import (
+from Products.CMFPlomino import plomino_profiler, get_utils, get_resource_directory
+from Products.CMFPlomino.config import SCRIPT_ID_DELIMITER
+from Products.CMFPlomino import contents
+from Products.CMFPlomino.exceptions import PlominoDesignException, PlominoScriptException
+from Products.CMFPlomino.HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
+from Products.CMFPlomino.index.index import PlominoIndex
+from Products.CMFPlomino.migration import migrate
+from Products.CMFPlomino.utils import (
     _expandIncludes,
     asUnicode,
     DateToString,

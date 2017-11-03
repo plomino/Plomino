@@ -1,3 +1,5 @@
+from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
+
 from AccessControl import ClassSecurityInfo
 from AccessControl.requestmethod import postonly
 import base64
@@ -11,15 +13,15 @@ import os
 import transaction
 from ZPublisher.HTTPRequest import FileUpload
 
-from .config import (
+from Products.CMFPlomino.config import (
     CREATE_PERMISSION,
     EDIT_PERMISSION,
     READ_PERMISSION,
     REMOVE_PERMISSION,
     MSG_SEPARATOR,
 )
-from .exceptions import PlominoReplicationException
-from .utils import StringToDate, DateToString
+from Products.CMFPlomino.exceptions import PlominoReplicationException
+from Products.CMFPlomino.utils import StringToDate, DateToString
 
 logger = logging.getLogger("Replication")
 

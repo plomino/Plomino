@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
@@ -8,8 +9,8 @@ from Products.CMFCore import permissions
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
 import warnings
 
-import config
-from utils import asList
+from Products.CMFPlomino import config
+from Products.CMFPlomino.utils import asList
 
 
 class AccessControl:

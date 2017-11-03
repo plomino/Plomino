@@ -20,12 +20,12 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 
 from .. import _, config
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from ..accesscontrol import AccessControl
-from ..exceptions import PlominoCacheException, PlominoScriptException
-from ..interfaces import IPlominoContext
-from ..design import DesignManager
-from ..replication import ReplicationManager
-from ..document import addPlominoDocument
+from Products.CMFPlomino.accesscontrol_ import AccessControl
+from Products.CMFPlomino.exceptions import PlominoCacheException, PlominoScriptException
+from Products.CMFPlomino.interfaces import IPlominoContext
+from Products.CMFPlomino.design import DesignManager
+from Products.CMFPlomino.replication import ReplicationManager
+from Products.CMFPlomino.document import addPlominoDocument
 
 
 security = ClassSecurityInfo()

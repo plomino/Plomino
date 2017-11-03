@@ -120,6 +120,13 @@
         handler=".events.afterHidewhenModified"
         />
 
+
+    <utility
+        name="Products.CMFPlomino.PlominoCoreUtils"
+        provides="Products.CMFPlomino.interfaces.IPlominoUtils"
+        component="Products.CMFPlomino.PlominoCoreUtils"
+    />
+
     <utility
         name="Products.CMFPlomino.fields.vocabularies.get_views"
         provides="zope.schema.interfaces.IVocabularyFactory"

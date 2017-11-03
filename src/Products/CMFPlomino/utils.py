@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
+
 import cgi
 import csv
 import decimal as std_decimal

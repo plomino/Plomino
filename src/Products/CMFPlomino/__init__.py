@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Init and utils."""
+from __future__ import absolute_import #Needed for caseinsensitive file systems. Due to accesscontrol.py
 
 from AccessControl.Permission import registerPermissions
 from DateTime import DateTime
@@ -16,8 +17,8 @@ from zope.i18nmessageid import MessageFactory
 from zope import component
 from zope.interface import implements
 
-import interfaces
-from config import (
+import Products.CMFPlomino.interfaces
+from Products.CMFPlomino.config import (
     ADD_DESIGN_PERMISSION,
     ADD_CONTENT_PERMISSION,
     READ_PERMISSION,
@@ -28,7 +29,7 @@ from config import (
     ACL_PERMISSION,
     PLOMINO_RESOURCE_NAME,
 )
-from utils import StringToDate
+from Products.CMFPlomino.utils import StringToDate
 
 _ = MessageFactory('Products.CMFPlomino')
 
