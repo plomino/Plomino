@@ -279,6 +279,16 @@ class PlominoDatabase(
             agent_list.sort(key=lambda agent: agent.id.lower())
         return agent_list
 
+
+    def getDesignElements(self, sortbyid=True):
+        """ return agents, views and forms
+        """
+        element_list = [obj for obj in self.objectValues()
+            if obj.__class__.__name__ in ['PlominoAgent','PlominoView','PlominoForm']]
+        if sortbyid:
+            element_list.sort(key=lambda x: x.id.lower())
+        return element_list
+
     security.declareProtected(config.CREATE_PERMISSION, 'createDocument')
 
     def createDocument(self, docid=None):

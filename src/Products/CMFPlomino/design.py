@@ -512,9 +512,7 @@ class DesignManager:
         elif targettype == "folder":
             if not designelements:
                 designelements = (
-                    [o.id for o in self.getForms()] +
-                    [o.id for o in self.getViews()] +
-                    [o.id for o in self.getAgents()] +
+                    [o.id for o in self.getDesignElements(sortbyid=False)] +
                     ["resources/" + id for id in self.resources.objectIds()]
                 )
             exportpath = os.path.join(targetfolder, self.id)
@@ -1069,9 +1067,7 @@ class DesignManager:
                 elementids = str_elementids.split("@")
 
         if elementids is None:
-            elements = (self.getForms(sortbyid=False)
-                + self.getViews(sortbyid=False)
-                + self.getAgents(sortbyid=False)
+            elements = (self.getDesignElements(sortbyid=False)
                 + [o for o in self.resources.getChildNodes()]
             )
         else:
@@ -1309,9 +1305,7 @@ class DesignManager:
         if replace:
             logger.info("Replace mode: removing current design")
             designelements = [o.id for o in
-                    self.getForms() +
-                    self.getViews() +
-                    self.getAgents()]
+                    self.getDesignElements(sortbyid=False)]
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(
                 self.resources,
@@ -1370,9 +1364,7 @@ class DesignManager:
         if replace:
             logger.info("Replace mode: removing current design")
             designelements = (
-                [o.id for o in self.getForms()] +
-                [o.id for o in self.getViews()] +
-                [o.id for o in self.getAgents()])
+                [o.id for o in self.getDesignElements(sortbyid=False)])
             ObjectManager.manage_delObjects(self, designelements)
             ObjectManager.manage_delObjects(
                 self.resources,
