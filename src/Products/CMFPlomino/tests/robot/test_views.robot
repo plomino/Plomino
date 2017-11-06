@@ -45,7 +45,7 @@ Scenario: I can reoder the columns in the view
    and I click on Add tab
    and I add a column "text_2" with retries
    Set selenium timeout     10s
-   Then I can move the column "text" to column "text_1" by offset "20" "0"
+  Then I can move the column "text" to column "text_1" by offset "20" "0"
    And I can move the column "text_2" to column "text" by offset "-20" "0"
    And I can move the column "text_1" to column "text" by offset "40" "0"
    And I can move the column "text_1" to column "text_2" by offset "-20" "0"
@@ -72,20 +72,6 @@ Scenario: I can rename a form and then create new form and then go back and repe
     and I add a form by click
    Then I can see "new-form-1" is open
 
-# PR 39 is not yet implemented. As per the pull request, PR 39 is closed but not yet merged
-# and dev's branch is already deleted.
-# Also the changes for this is not in advanced_ide_workflow branch.
-# Scenario: I can create a view of form (PR 39)
-#   #PR 39 [feature] Generate View from form with selected fields
-#   Given a new form "frm_employee" is created and some fields are added
-#    And I added some contents to the form "frm_employee"
-#    And I open the ide for "mydb"
-#    And I select "frm_employee" from form tree
-#   When I add a new view with form
-#   Then I can see that the 'Create view of form' dialog is displayed
-#   And when I fill in the fields with id="view_1", title="view_1", form="frm_employee"
-#   Then I can successfully view all fields in the form with title="view_1"
- 
 Scenario: I can add a new empty view from '+' button
   #PR 39 - test for code changes for adding new empty view
   Given a new form "frm_employee" is created and some fields are added
@@ -106,6 +92,22 @@ Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
    Then the "new-form-1" is rendered
   When I update the contents of "new-form-1" and save the form
    Then I can see that the "new-form" is updated
+
+Scenario: I can create a view of form with all fields (PR 60) from tab (+) button
+  #PR 39, 60 [feature] Generate View from form with selected fields
+  Given a new form "frm_employee" is created and some fields are added
+  When I add a new view with form from '+' button
+  Then I can see that the 'Create view of form' dialog is displayed
+  And when I fill in the fields with id="mainform_all_view_id", title="mainform_view", form="frm_employee"
+  Then I can successfully view all fields in the form with title="mainform_view"
+
+Scenario: I can create a view of form with all fields from the Add Panel
+  #PR 39, 60 [feature] Generate View from form with selected fields
+  Given a new form "frm_employee" is created and some fields are added
+  And when I add a new view with form from the Add panel
+  Then I can see that the 'Create view of form' dialog is displayed
+  And when I fill in the fields with id="mainform_all_view_id", title="mainform_view", form="frm_employee"
+  Then I can successfully view all fields in the form with title="mainform_view"   
 
 # #---------Work In Progress-------
 # # Scenario: I can add a datagrid to multi-page form

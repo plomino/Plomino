@@ -18,7 +18,7 @@ I can create a new form "${frm_empdata}" and add some fields
    and I save the form as "${frm_empdata}"
 
 a new form "${formid}" is created and some fields are added
-    Given a logged-in test user
+  Given a logged-in test user
    and I open the ide for "mydb"
    and I add a form by click
    and I add some fields to the form
@@ -259,18 +259,20 @@ I add a new view with form from '+' button
   I click on the '+' button
   I select 'Add new view with form' option
 
-I add a new view with form
-  Click Element     jquery=.mdl-button[id='PlominoView/custom']
-
+I add a new view with form from the Add panel
+  I click on Add tab
+  Execute Javascript    $(".mdl-button[id='PlominoView/custom']").click();
+  
 I fill in the fields with id="${viewid}", title="${title}", form="${form}"
+  Click Element   jquery=.mdl-dialog__content-form-group select[id='new-view-dialog__form']
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group select option[value='${form}']
+  Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
+
   Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']
   Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__id']      ${viewid}
   Click Element     jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']
   Input Text    jquery=.mdl-dialog__content-form-group input[id='new-view-dialog__title']     ${title}
 
-  Click Element   jquery=.mdl-dialog__content-form-group select[id='new-view-dialog__form']
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group select option[value='${form}']   100s
-  Click Element   jquery=.mdl-dialog__content-form-group select option[value='${form}']
 
   Sleep   3s
 
@@ -281,12 +283,11 @@ I open the 'new-form-1' form
   Sleep   5s
 
 I can successfully view all fields in the form with title="${title}"
-  Click Element   jquery=.mdl-dialog__actions .new-view-dialog__create-btn
+  Wait Until Element Is Enabled     jquery=.mdl-dialog__actions button:contains('Create')
+  Click Element   jquery=.mdl-dialog__actions button:contains('Create')
   Wait Until Page Contains Element    jquery=.plominoviewform
   Wait Until Element Is Visible     jquery=.plominoviewform h3:contains('${title}')
   I check all fields in the form
-  I check all contents in the form
-
 
 I check all fields in the form
   Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='address']
@@ -473,6 +474,8 @@ I will see column header "${header}" and data "${rowdata1}", "${rowdata2}", "${r
   Page Should Contain Element   jquery=tbody tr td a span span:contains('${rowdata3}')
 
 I can move the column "${col_1}" to column "${col_2}" by offset "${x}" "${y}"
+  Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='${col_1}']    60s
+  Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='${col_2}']    60s
   Chain Click And Hold    jquery=.view-editor__column-header[data-column='${col_1}']
   Chain Move To Element With Offset  jquery=.view-editor__column-header[data-column='${col_2}']  ${x}  ${y}
   Chain Release     jquery=.view-editor__column-header[data-column='${col_2}']
@@ -483,11 +486,11 @@ I can move column "${src}" to column "${target}"
   Drag Drop    jquery=.view-editor__column-header[data-column='${src}']    jquery=.view-editor__column-header[data-column='${target}']
 
 I can see that the 'Create view of form' dialog is displayed
-  Wait Until Element Is Visible     jquery=.modal-content .modal-header h4:contains('Create view of form')    60s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__id']   60s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']    60s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']    60s
-  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']   60s
+  Wait Until Element Is Visible     jquery=.modal-content .modal-header h4:contains('Create view of form')      30s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__form']     30s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__field']      30s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__id']     30s
+  Wait Until Element Is Visible     jquery=.mdl-dialog__content-form-group label[for='new-view-dialog__title']      30s
 
 I can see that the 'New View' screen is displayed
   Wait Until Element Is Visible     jquery=.view-editor:contains("New View")    60s
