@@ -74,6 +74,7 @@ I add some fields to the form
   Sleep   5s
 
 I click on Add tab
+  Wait Until Element Is Visible     jquery=a:contains('Add')
   Click Link  Add
   Wait Until Element Is Visible     jquery=plomino-palette-add .add-wrapper
 
@@ -455,6 +456,7 @@ I can see columns "${col1}", "${col2}", and "${col3}" in the view
 
 
 I will see column "${columnid}" in the view
+  Wait Until Page Contains Element    jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
   Wait Until Element Is Visible     jquery=.view-editor .view-editor__column-header[data-column='${columnid}']    60s
   Page should contain element  jquery=.view-editor .view-editor__column-header[data-column='${columnid}']
 

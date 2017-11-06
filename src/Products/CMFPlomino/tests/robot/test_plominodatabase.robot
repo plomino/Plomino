@@ -258,10 +258,39 @@ Scenario: I can add a dynamic text computed for display
   When I render the form "new-form"
   Then I can see the text created for the dynamic text field
 
-#---Work In Progress---
-# Scenario: I can add a dynamic hidewhen
-#   Given I have an empty form open
-#    and I add a dropdown field "hometype"
-#    I click on Add tab
-#    I add a hidewhen by click
-#    I add a field after the hidewhen
+Scenario: I can add a dynamic hidewhen on text field
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add a text field in the hidewhen
+
+Scenario: I can add a dynamic hidewhen for dropdown field
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add a dropdown field in the hidewhen
+
+Scenario: I can add a dynamic hidewhen for radio buttons
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add radio buttons in the hidewhen
+
+Scenario: I can add a dynamic hidewhen for multi-selection field
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add a multi-selection field in the hidewhen
+
+Scenario: I can add a dynamic hidewhen for checkboxes
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add checkboxes in the hidewhen
+
+Scenario: I can add a dynamic hidewhen for datagrid
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add datagrid in the hidewhen
+
+Scenario: I can add two dynamic hidewhen fields
+  Given I have an empty form open
+  When I add a dynamic hidewhen by click
+  Then I can add a text field in the hidewhen
+  And when I add another dynamic hidewhen by click
+  Then I can add a text field in the second hidewhen
