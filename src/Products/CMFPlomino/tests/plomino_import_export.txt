@@ -290,7 +290,7 @@ Export design to file system
     >>> output_dir = os.path.join(dir,'mydb')
     >>> db.exportDesign(targettype='folder', targetfolder=dir)
     >>> export_files = [f for f in listdir(output_dir) if isfile(join(output_dir, f))]
-    >>> print export_files
+    >>> print sorted(export_files) # linux doesn't store order. osx does.
     ['frm1.field2.py', 'frm1.field3.py', 'frm1.html', 'frm1.json', 'frm2.guitarist.py', 'frm2.html', 'frm2.json', 'frm2.welcome.py', 'frm3.json', 'frm4.json', 'frm_test.html', 'frm_test.json', 'view1.col1.py', 'view1.json', 'view2.json', 'view2.py', 'view3.json', 'view3.py', 'view4.json', 'view4.py']
 
 Import design from file system
@@ -299,8 +299,8 @@ Import design from file system
     >>> inputdir = os.path.join(dir,'mydb')
     >>> newdb = portal.test_import_filesystem
     >>> newdb.importDesignFromJSON(from_folder=inputdir, replace = True)
-    >>> newdb.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'view1', 'view2', 'view3', 'view4']
+    >>> sorted(newdb.objectIds()) # linux doesn't store order. osx does.
+    ['frm1', 'frm2', 'frm3', 'frm4', 'frm_test', 'plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'view1', 'view2', 'view3', 'view4']
     >>> newdb.frm1.objectIds() == db.frm1.objectIds()
     True
     >>> newdb.frm2.objectIds() == db.frm2.objectIds()
