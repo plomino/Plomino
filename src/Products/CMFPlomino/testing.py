@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from plone import api
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
@@ -104,7 +105,41 @@ class ProductsMacrosLayer(Layer):
         # SiteErrorLog.raising = raising
 
 
+class TestDBsLayer(Layer):
+
+    defaultBases = (PRODUCTS_CMFPLOMINO_FIXTURE,)
+
+    def setUp(self):
+
+
+        # data structure is
+        # - tests/robot/test_dbs/myservice/*.json (design)
+        # - tests/robot/test_dbs/myservice_data.json (data)
+        with ploneSite() as portal:
+            dir = os.path.abspath(os.path.join(__file__ ,"../tests/robot/test_dbs"))
+            datas = []
+            dbs = []
+            for id in os.listdir(dir):
+                if id.endswith('_data.json'):
+                    datas.append(id)
+                    continue
+                elif not os.path.isdir(os.path.join(dir,id)):
+                    continue
+                oid = portal.invokeFactory('PlominoDatabase', id=id)
+                db = getattr(portal, oid)
+                db.importDesignFromJSON(from_folder=os.path.join(dir,id), replace = True)
+                dbs.append( (id,db) )
+            for id,db in dbs:
+                data_import = "%s_data.json" % id
+                if data_import not in datas:
+                    continue
+                db.importFromJSON(from_file=os.path.join(dir,data_import))
+
+
+
 PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
+
+TEST_DBS_FIXTURE = TestDBsLayer()
 
 PRODUCTS_CMFPLOMINO_INTEGRATION_TESTING = IntegrationTesting(
     bases=(PRODUCTS_CMFPLOMINO_FIXTURE,),
@@ -120,6 +155,7 @@ PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(
 
 PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(
+        TEST_DBS_FIXTURE,
         PRODUCTS_MACROS_FIXTURE,
         PRODUCTS_CMFPLOMINO_FIXTURE,
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
