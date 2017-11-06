@@ -90,16 +90,6 @@ I add a dropdown field "${fieldname}"
   Input Text       jquery=#form-widgets-ISelectionField-selectionlist     Rental|a \n New Construction|b \n Home For Sale|c
   I save the current field settings
 
-I add a field after the hidewhen
-  wait until form is loaded
-  Sleep     5s
-  Capture Page Screenshot
-  select frame  jquery=.mce-edit-area iframe:visible
-  Click Element     css=.plominoHidewhenClass[data-plominoid='defaulthidewhen']
-  Wait Until Keyword Succeeds     30 sec    5 sec     Click Element At Coordinates    css=.plominoHidewhenClass[data-plominoid='defaulthidewhen']    15     0
-  # Press Key       
-  Capture Page Screenshot
-
 I add some number fields
   I add a "Text" field
   I edit the number field "text" to "amount1"
@@ -328,7 +318,126 @@ I add a hidewhen by click
   Wait Until Element Is Visible     jquery=.mdl-button[title='Hide When']   60s
   Wait Until Element Is Enabled     jquery=.mdl-button[title='Hide When']   60s
   Execute Javascript    $(".mdl-button[title='Hide When']").click()
+  wait until form is loaded
 
+I add a dynamic hidewhen by click
+  I add a hidewhen by click
+  I select dynamic hide-when checkbox
+  Add macro "Hide"
+  I save the macro
+  I save the hidewhen settings
+  Capture Page Screenshot
+
+I add another dynamic hidewhen by click
+  I click on Add tab
+  Sleep   5s
+  I add a hidewhen by click
+  Capture Page Screenshot
+  I select dynamic hide-when checkbox
+  Add macro "Hide"
+  I save the macro
+  I save the hidewhen settings
+  Capture Page Screenshot
+
+I select dynamic hide-when checkbox
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
+  Press Key     id=form-widgets-isDynamicHidewhen-0     \\9
+  Click Element     id=form-widgets-isDynamicHidewhen-0
+
+I can add a text field in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Text" field
+  Capture Page Screenshot
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add a text field in the second hidewhen
+  I select the second hidewhen start
+  I click on Add tab
+  I add a "Text" field
+  Capture Page Screenshot
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add a dropdown field in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Dropdown" field
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add radio buttons in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Radio buttons" field
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add a multi-selection field in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Multi selection" field
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add checkboxes in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Checkboxes" field
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I can add datagrid in the hidewhen
+  I select the hidewhen start
+  I click on Add tab
+  I add a "Datagrid" field
+  Click Link  Form Settings
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Click Element     jquery=#ide-formsettings__save-button
+  wait until form is loaded
+
+I select the hidewhen start
+  wait until form is loaded
+  Sleep     5s
+  Capture Page Screenshot
+  select frame  jquery=.mce-edit-area iframe:visible
+  Click Element     css=.plominoHidewhenClass[data-plomino-position='start']
+  Sleep   3s  
+  Capture Page Screenshot
+  unselect frame
+  Capture Page Screenshot
+
+I select the second hidewhen start
+  wait until form is loaded
+  Sleep     5s
+  Capture Page Screenshot
+  select frame  jquery=.mce-edit-area iframe:visible
+  Click Element     css=.plominoHidewhenClass[data-plomino-position='start'][data-plominoid='defaulthidewhen-1']
+  Sleep   3s  
+  Capture Page Screenshot
+  unselect frame
+  Capture Page Screenshot
+
+I save the hidewhen settings
+  Wait Until Element Is Visible     jquery=.mdl-button[id='ide-fieldsettings__save-button']    60s
+  Wait Until Keyword Succeeds     1 min   5 sec     Click Element     jquery=.mdl-button[id='ide-fieldsettings__save-button']
+
+
+I click on HideWhen Settings tab
+  Click Element     jquery=a:contains('Hidewhen Settings')
 
 I add a "${field}" field
   Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
@@ -375,6 +484,7 @@ I change the fieldmode to "${mode}" 
 wait until form is loaded
   wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   100s
   wait until page contains element   jquery=.mce-edit-area iframe:visible   60s
+  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible   60s
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}

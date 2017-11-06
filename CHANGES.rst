@@ -74,9 +74,10 @@ Changelog
 - Fix hide checkbox in search view based from view [ivanteoh]
 - Fix to view from form when custom theme is used [quang]
 - Fix to re-ordering columns when custom theme is used [quang]
-- Modify name field to not querying all user ids when either Plone Setting many_user or DB setting do_not_list_users enabled [quang]
-- Handle file attachments being cleared during validation errors in single and multipage forms [quang]
 
+- Fix to respect Plone Setting many_user or service setting do_not_list_users enabled [quang]
+- Handle file attachments being cleared during validation errors in single and multipage forms [quang]
+- Recompile Plomino for attachment script [quang]
 
 2.0b4 (2016-05-27)
 ------------------
