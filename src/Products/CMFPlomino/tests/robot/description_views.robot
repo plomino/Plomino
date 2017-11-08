@@ -181,12 +181,6 @@ I add a row to the datagrid form to display the main form "${mainform}"
   Sleep   5s
   Capture Page Screenshot
 
-I click on add row in "${formid}"
-  #Wait Until Keyword Succeeds   5 min   5 sec   Click Element   jquery=.actions a[data-formid='${formid}']
-  Run Keyword And Ignore Error    Focus     jquery=a.add-row
-  Run Keyword And Ignore Error    Click Element   jquery=a.add-row
-  Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=div[id=content-core] form[name='${mainform}']    60s
-
 I fill in the fields and save the form "${mainform}"
   Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
   Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='name']      Ann
@@ -278,7 +272,8 @@ I fill in the fields with id="${viewid}", title="${title}", form="${form}"
   Sleep   3s
 
 I open the 'new-form-1' form
-  Wait Until Element Is Visible     jquery=.tree-node--collapsible span:contains('new-form-1')    100s
+  Wait Until Page Contains Element     jquery=.tree-node--collapsible span:contains('new-form-1')    150s
+  Wait Until Element Is Visible     jquery=.tree-node--collapsible span:contains('new-form-1')    150s
   Wait Until Keyword Succeeds   2 min   5 sec     Click Element   jquery=.tree-node--collapsible span:contains('new-form-1')
   wait until form is loaded
   Sleep   5s
@@ -349,26 +344,6 @@ I add an action "${actionid}"
   Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
   Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
 
-I add a column "${col}"
-  #Click Link  Add
-  Set Selenium Timeout      60s
-  Wait Until Element Is Visible     jquery=.mdl-button[id='column']
-  Focus     jquery=.mdl-button[id='column']
-  Click Element     jquery=.mdl-button[id='column']
-  Run Keyword And Ignore Error    I click on Column button again
-  Capture Page Screenshot     check.jpg
-  Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${col}')   100s
-  Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${col}')    100s
-  Wait Until Element Is Visible     jquery=.default form:first      100s
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    100s
-  Click Element   jquery=#form-widgets-IShortName-id
-  Input Text  jquery=#form-widgets-IShortName-id  ${col}
-  Click Element   jquery=#form-widgets-IBasic-title
-  Input Text  jquery=#form-widgets-IBasic-title  ${col}
-  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
-  Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
-  Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
-
 I check the fields after adding a column
   Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${column}')
   Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${column}')
@@ -376,8 +351,8 @@ I check the fields after adding a column
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
 
 I add a column "${col}" with retries
-  Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=.mdl-button--colored[id='${col}']     60s
-  Run Keyword And Ignore Error    Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='${col}']     60s
+  # Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=.mdl-button--colored[id='${col}']     60s
+  # Run Keyword And Ignore Error    Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='${col}']     60s
   Wait Until Keyword Succeeds   7 min   10 sec    I add a column "${col}" only
   Capture Page Screenshot
   I input column name and title "${col}"
@@ -398,18 +373,16 @@ I input column name and title "${col}"
   Wait Until Keyword Succeeds   3 min   30 s    Save the column properties for "${col}"
 
 Save the column properties for "${col}"
-  Run Keyword and Ignore Error    Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
+  Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
   I will see column "${col}" in the view
   Capture Page Screenshot
 
 I add a column "${col}" only
-  Run Keyword and Ignore Error    Execute Javascript    $(".mdl-button--colored[id='column']").click()
-  Run Keyword and Ignore Error    Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${col}')
-  Run Keyword and Ignore Error    Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${col}')
-  Run Keyword and Ignore Error    Wait Until Element Is Visible     jquery=.default form:first      60s
+  Execute Javascript    $(".mdl-button--colored[id='column']").click()
+  Wait Until Page Contains Element   jquery=table thead .header-row th:contains('${col}')
+  Wait Until Element Is Visible     jquery=table thead .header-row th:contains('${col}')
+  Wait Until Element Is Visible     jquery=.default form:first      60s
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
-
-
 
 I click on Column button again
   Wait Until Page Contains Element    jquery=.mdl-button[id='column']
@@ -421,9 +394,6 @@ I add a column "${colid}" with title "${title}" and field value "${fieldvalue}"
   Wait Until Element Is Visible     jquery=#column
   Click Element  jquery=#column
   Wait Until Page Contains Element    jquery=.header-row
-  # Click Element  jquery=.view-editor__column-header:last
-  # wait until page contains element  jquery=.view-editor__column-header.view-editor__column-header--selected
-  # wait until page does not contain element  jquery=.plomino-block-preloader:visible
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id
   Click Element   jquery=#form-widgets-IShortName-id
   Input Text  jquery=#form-widgets-IShortName-id  ${colid}
@@ -435,9 +405,39 @@ I add a column "${colid}" with title "${title}" and field value "${fieldvalue}"
   Wait Until Element Is Visible     jquery=.mdl-tabs .mdl-tabs__panel plomino-palette-fieldsettings div .fieldsettings--control-buttons
   Wait Until Element Is Visible     jquery=plomino-tab .mdl-tabs__panel plomino-view-editor .view-editor .view-editor__inner form[id='plomino-view']
 
+I add a column "${column}"
+  Wait Until Element Is Visible     jquery=#column    60s
+  Wait Until Element Is Enabled     jquery=#column    60s
+  Click Element     jquery=#column
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
+  Capture Page Screenshot
+  Click Element     jquery=#form-widgets-IShortName-id
+  Input Text      jquery=#form-widgets-IShortName-id    ${column}
+  Click Element     jquery=#form-widgets-IBasic-title
+  Input Text      jquery=#form-widgets-IBasic-title     ${column}
+  Wait Until Element Is Visible     jquery=#ide-fieldsettings__save-button
+  Wait Until Element Is Enabled     jquery=#ide-fieldsettings__save-button
+  Click Element     jquery=#ide-fieldsettings__save-button
+  Sleep     10s
+  Capture Page Screenshot
 
+I add a second column "${column}"
+  I click on Add tab
+  I add a column "${column}"
 
-# --- THEN -------------------------------------------------------------------
+I add a third column "${column}"
+  I click on Add tab
+  I add a column "${column}"  
+
+I can add a column "${column}"
+  I add a column "${column}"
+
+I can add a second column "${column}"
+  I add a second column "${column}"
+
+I can add a third column "${column}"
+  I add a third column "${column}"
+
 I can see a view editor listing my data
   Wait until page contains element  jquery=.view-editor:contains("New View")    60s
   Page should contain element  jquery=.view-editor:contains("New View")
