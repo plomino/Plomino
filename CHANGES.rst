@@ -78,6 +78,7 @@ Changelog
 - Fix to respect Plone Setting many_user or service setting do_not_list_users enabled [quang]
 - Handle file attachments being cleared during validation errors in single and multipage forms [quang]
 - Recompile Plomino for attachment script [quang]
+- IDE hung when loading very large forms. due to too large GET request from IDE when selecting example widgets [quang]
 
 - Remove select user macro [ivanteoh]
 

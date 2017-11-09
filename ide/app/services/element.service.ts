@@ -196,8 +196,8 @@ export class ElementService {
           ${ id ? `data-plominoid="${ id }"` : '' }>${ newTitle || 'Untitled' }</span>`
       ));
     }
-    return this.http.get(
-      `${base}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
+    return this.http.post(
+      `${base}/@@tinyform/example_widget`, JSON.stringify({widget_type:type, id: id ? id : '' }),
       'element.service.ts getWidget')
       .map((response: any) => response.json());
   }

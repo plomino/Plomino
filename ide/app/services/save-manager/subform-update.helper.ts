@@ -28,7 +28,7 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
           .replace('++resource++Products.CMFPlomino/ide/', '')
           .replace('/index.html', '')
         }/${ cachedTabId }`;
-        updatedSubformURL += '/@@tinyform/example_widget?widget_type=subform&id=';
+        updatedSubformURL += '/@@tinyform/example_widget';
         updatedSubformURL += saveProcess.nextFormID;
 
         /** flush the data in the cache to prevent problems */
@@ -104,10 +104,10 @@ export function updateRelatedSubformsAfterFormSave(saveProcess: any) {
           .replace('++resource++Products.CMFPlomino/ide/', '')
           .replace('/index.html', '')
         }/${ editor.id }`;
-        updatedSubformURL += '/@@tinyform/example_widget?widget_type=subform&id=';
+        updatedSubformURL += '/@@tinyform/example_widget';
         updatedSubformURL += saveProcess.nextFormID;
         
-        updates$.push(saveProcess.http.get(updatedSubformURL)
+        updates$.push(saveProcess.http.post(updatedSubformURL, JSON.stringify({widget_type:'subform',id:''}))
           .map((response: Response) => {
             return saveProcess.widgetService.getGroupLayout(editor.id, {
               id: Math.floor(Math.random() * 1e10 + 1e10).toString(),

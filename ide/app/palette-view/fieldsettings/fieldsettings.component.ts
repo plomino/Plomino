@@ -845,10 +845,10 @@ export class FieldSettingsComponent implements OnInit {
                 const activeURL = `${ this.dbService.getDBLink() }/${ 
                   this.activeEditorService.getActive().id }`;
                 let url = activeURL;
-                url += '/@@tinyform/example_widget?widget_type=subform&id=';
+                url += '/@@tinyform/example_widget';
                 url += $select2.val();
 
-                this.http.get(url, 'fieldsettings.component.ts loadSettings')
+                this.http.post(url,JSON.stringify({widget_type:'subform'}), 'fieldsettings.component.ts loadSettings')
                 .subscribe((response: any) => {
                   this.widgetService.getGroupLayout(
                     activeURL, { id: this.field.id, layout: response.json() }

@@ -354,16 +354,23 @@ class PlominoFormSettings(object):
     def example_widget(self):
         """ Return html of a field, hidewhen etc for inserting into the layout"""
         self.request.RESPONSE.setHeader('content-type', 'application/json')
-        widgets = self.request.get('widgets', None)
+        if self.request['REQUEST_METHOD'] == 'POST':
+            jsonData = json.loads(self.request.get('BODY'))
+            widgets = jsonData.get('widgets')
+            widget_type = jsonData.get('widget_type', 'field')
+            id = jsonData.get('id')
+        else:
+            widgets = self.request.get('widgets', None)
+            if widgets is not None:
+                widgets = json.loads(widgets)
+            widget_type = self.request.get('widget_type', 'field')
+            id = self.request.get('id')
         if widgets is not None:
-            widgets = json.loads(widgets)
             for widget in widgets:
                 html = self.context.example_widget(widget.get('widget_type'), widget.get('id'))
                 widget['html'] = html
             return json.dumps(widgets)
         else:
-            widget_type = self.request.get('widget_type','field')
-            id = self.request.get('id')
             widget = self.context.example_widget(widget_type, id)
             return json.dumps(widget)
 

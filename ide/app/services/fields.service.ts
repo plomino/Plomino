@@ -81,8 +81,8 @@ export class FieldsService {
   }
 
   getTemplate(formUrl: string, widgetType: string) {
-    return this.http.get(
-      `${formUrl}/@@tinyform/example_widget?widget_type=${widgetType}`,
+    return this.http.post(
+      `${formUrl}/@@tinyform/example_widget`, JSON.stringify({widget_type:widgetType}),
       'fields.service.ts getTemplate'
     )
     .map((response: Response) => {

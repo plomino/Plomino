@@ -361,8 +361,8 @@ export class WidgetService {
     });
 
     if (widgetQueryData.length) {
-      this.http.get(
-        `${baseUrl}/@@tinyform/example_widget?widgets=${JSON.stringify(widgetQueryData)}`,
+      this.http.post(
+        `${baseUrl}/@@tinyform/example_widget`, JSON.stringify({widgets:widgetQueryData}),
         'widget.service.ts getFormLayout'
       )
       .subscribe((response: Response) => {
@@ -825,8 +825,8 @@ export class WidgetService {
     //   return this.convertFormHidewhens();
     // }
 
-    return this.http.get(
-      `${baseUrl}/@@tinyform/example_widget?widget_type=${type}${ id ? `&id=${id}` : '' }`,
+    return this.http.post(
+      `${baseUrl}/@@tinyform/example_widget`,JSON.stringify({widget_type:type, id: id ? id : '' }),
       'widget.service.ts getWidget'
       )
       .map((response: Response) => {
