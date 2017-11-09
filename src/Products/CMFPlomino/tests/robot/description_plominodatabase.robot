@@ -319,6 +319,7 @@ I add a hidewhen by click
   Wait Until Element Is Enabled     jquery=.mdl-button[title='Hide When']   60s
   Execute Javascript    $(".mdl-button[title='Hide When']").click()
   wait until form is loaded
+  Sleep     5s
 
 I add a dynamic hidewhen by click
   I add a hidewhen by click
@@ -340,7 +341,7 @@ I add another dynamic hidewhen by click
   Capture Page Screenshot
 
 I select dynamic hide-when checkbox
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    100s    #increase waiting time to prevent stale element error
   Press Key     id=form-widgets-isDynamicHidewhen-0     \\9
   Click Element     id=form-widgets-isDynamicHidewhen-0
 

@@ -13,43 +13,32 @@ Scenario: I can add a view
    Then I can see a view editor listing my data
 
 Scenario: I can add columns to a view
-  Given a logged-in test user
-   and I open the ide for "mydb"
-   and I select "frm_test" from form tree
-   and I create view
-  When I add a column "text" with retries
-   and I click on Add tab
-   and I add a column "text_1" with retries
-   and I click on Add tab
-   and I add a column "text_2" with retries
-   Set selenium timeout     10s
-  Capture Page Screenshot 
-  Then I can see columns "text", "text_1", and "text_2" in the view
+  Given I have a form and some fields saved
+  When I create a view
+  Then I can see a view editor listing my data
+   and I can add a column "col_1"
+   and I can add a second column "col_2"
+   and I can add a third column "col_3"
+
+Scenario: I can reoder the columns in the view
+  Given I have a form and some fields saved
+  When I create a view
+  Then I can see a view editor listing my data
+  When I add a column "col_1"
+   and I add a second column "col_2"
+   and I add a third column "col_3"
+  Then I can move the column "col_1" to column "col_2" by offset "20" "0"
+   and I can move the column "col_3" to column "col_1" by offset "-20" "0"
+   and I can move the column "col_2" to column "col_1" by offset "40" "0"
+   and I can move the column "col_2" to column "col_3" by offset "-20" "0"
 
 Scenario: I can add an action to a view
   Given I have a form and some data saved
-   and I create a view
-   and I can see a view editor listing my data
-   When I add an action "my action"
-   Then I will see action "my-action" in the view
+   And I create a view
+   And I can see a view editor listing my data
+  When I add an action "my action"
+  Then I will see action "my-action" in the view
 
-Scenario: I can reoder the columns in the view
-  #This tests for PR27
-  Given a logged-in test user
-   and I open the ide for "mydb"
-   and I select "frm_test" from form tree
-   and I create view
-   When I add a column "text" with retries
-   and I click on Add tab
-   and I add a column "text_1" with retries
-   and I click on Add tab
-   and I add a column "text_2" with retries
-   Set selenium timeout     10s
-  Then I can move the column "text" to column "text_1" by offset "20" "0"
-   And I can move the column "text_2" to column "text" by offset "-20" "0"
-   And I can move the column "text_1" to column "text" by offset "40" "0"
-   And I can move the column "text_1" to column "text_2" by offset "-20" "0"
-  
 Scenario: I can rename a form and then create new form
   Given I have a form open
    When I enter "new-form" in "Id" in "Form Settings"
