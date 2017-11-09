@@ -79,6 +79,9 @@ Changelog
 - Handle file attachments being cleared during validation errors in single and multipage forms [quang]
 - Recompile Plomino for attachment script [quang]
 
+- Remove select user macro [ivanteoh]
+
+
 2.0b4 (2016-05-27)
 ------------------
 
