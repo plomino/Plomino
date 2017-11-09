@@ -2582,6 +2582,8 @@ def tostring_innerhtml(root):
     """ pyquery doesn't handle remove or replace_with well when you are dealing
     with fragments
     """
-    if not root:
+    if root is None or (str(root)=="" and root.text == ""):
         return ''
+    if not hasattr(root,'iterchildren'):
+        return str(root)
     return (root.text or '') + ''.join([tostring(child) for child in root.iterchildren()])
