@@ -52,9 +52,8 @@ jobs:
           command: |
             export NODES=1 VIDEO=false
             mkdir -p test; chown 1000:1000 test; ls -al test
-            docker-compose -f docker-compose.test.yml -p grid up -d hub chrome
-            docker exec grid_hub_1 wait_all_done 30s
-            docker exec grid_chrome_1 wait_all_done 30s
+            docker-compose -f docker-compose.test.yml -p grid up -d selenium
+            docker exec grid_selenium_1 wait_all_done 30s
             docker-compose -f docker-compose.test.yml -p grid up --abort-on-container-exit --exit-code-from=plominotest plominotest
       - run:
           name: Clean up tests

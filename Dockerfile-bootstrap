@@ -1,6 +1,6 @@
-FROM elgalu/selenium:2
+FROM plone:5.0
 USER root
-RUN apt-get update && apt-get install -y virtualenv git gcc python-dev build-essential autoconf libjpeg-turbo8-dev libxml2-dev libxslt1-dev
+RUN apt-get update && apt-get install -y curl git libjpeg-dev #virtualenv git gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev # python-dev libjpeg-turbo8-dev
 
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.1
@@ -21,17 +21,18 @@ ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
 ENV ZSERVER_HOST  0.0.0.0
 
-RUN mkdir -p /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
-RUN chown -R seluser.seluser /buildout
-RUN printf "[buildout]\nextends=https://raw.githubusercontent.com/collective/buildout.plonetest/master/buildout-cache.cfg\nindex=https://pypi.python.org/simple/\nplone-series=5.0\nparts=\n[versions]\nPlone=5.0.8" > /buildout/download.cfg
-RUN cd /buildout && virtualenv . && bin/pip install zc.buildout==2.2.5 setuptools==8.3 && bin/buildout -c download.cfg install download install
-RUN ls /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
+#RUN mkdir -p /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
+#RUN addgroup appuser && useradd -r -u 1001 -g appuser appuser
+#RUN chown -R appuser.appuser /buildout
+#RUN printf "[buildout]\nextends=https://raw.githubusercontent.com/collective/buildout.plonetest/master/buildout-cache.cfg\nindex=https://pypi.python.org/simple/\nplone-series=5.0\nparts=\n[versions]\nPlone=5.0.8" > /buildout/download.cfg
+#RUN cd /buildout && virtualenv . && bin/pip install zc.buildout==2.2.5 setuptools==8.3 && bin/buildout -c download.cfg install download install
+#RUN ls /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
 
-WORKDIR /buildout
+WORKDIR /plone/instance
 
 #COPY . /buildout/
-#RUN chown -R seluser.seluser /buildout
+#RUN chown -R sappuser.appuser /buildout
 
-#USER seluser
+USER plone
 #RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
 #RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide && npm install && npm run build"]

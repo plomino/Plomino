@@ -17,7 +17,7 @@ Run docker hub in the background
 
 
 ```
-docker-compose -f docker-compose.test.yml -p grid up -d hub chrome
+docker-compose -f docker-compose.test.yml -p grid up -d selenium
 ```
 
 
@@ -40,7 +40,7 @@ docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" 
 OR you can use robot directly. First start robot-server
 
 ```
-docker-compose -f docker-compose.test.yml -p grid up -d hub chrome robot-server
+docker-compose -f docker-compose.test.yml -p grid up -d selenium robot-server
 ```
 
 followed by a test run
@@ -52,7 +52,7 @@ docker-compose -f docker-compose.test.yml -p grid up robot
 or just to run a single test
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
+docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
 ```
 
 

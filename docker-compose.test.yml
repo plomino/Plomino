@@ -2,75 +2,81 @@
 #docker exec -ti rtests /bin/bash -c "cd /buildout; ROBOT_REMOTE_URL=http://127.0.0.1:24444/wd/hub bin/test --all"
 version: '3'
 services:
-  hub:
-    image: elgalu/selenium:2
-    ports:
-      - 4444:4444
-      # We need a fixed port range to expose VNC
-      # due to a bug in Docker for Mac beta (1.12)
-      # https://forums.docker.com/t/docker-for-mac-beta-not-forwarding-ports/8658/6
-      - ${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}:${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}
-      # e.g. (hard-coded)
-      # - 40650-40700:40650-40700
+  selenium:
+    image: selenium/standalone-chrome
+    volumes:
+      - /dev/shm:/dev/shm
+    privileged: true
 
-    volumes:
-      - /dev/shm:/dev/shm
-    privileged: true
-    environment:
-      - PICK_ALL_RANDOM_PORTS=true
-      - SELENIUM_HUB_HOST=hub
-      - SELENIUM_HUB_PORT=4444
-      - GRID=true
-      - CHROME=false
-      - FIREFOX=false
-      - MOCK_SERVER_HOST=mock
-  chrome:
-    image: elgalu/selenium:2
-    depends_on:
-      - hub
-    volumes:
-      - /dev/shm:/dev/shm
-    privileged: true
-    environment:
-      - PICK_ALL_RANDOM_PORTS=true
-      - SELENIUM_HUB_HOST=hub
-      - SELENIUM_HUB_PORT=4444
-      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
-      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
-      - VNC_TO_PORT=${VNC_TO_PORT-40700}
-      - SCREEN_WIDTH=1300
-      - SCREEN_HEIGHT=999
-      - VIDEO=${VIDEO-false}
-      - GRID=false
-      - CHROME=true
-      - FIREFOX=false
-
-  firefox:
-    image: elgalu/selenium:2
-    depends_on:
-      - hub
-    volumes:
-      - /dev/shm:/dev/shm
-    privileged: true
-    environment:
-      - PICK_ALL_RANDOM_PORTS=true
-      - SELENIUM_HUB_HOST=hub
-      - SELENIUM_HUB_PORT=4444
-      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
-      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
-      - VNC_TO_PORT=${VNC_TO_PORT-40700}
-      - SCREEN_WIDTH=1300
-      - SCREEN_HEIGHT=999
-      - VIDEO=${VIDEO-false}
-      - GRID=false
-      - CHROME=false
-      - FIREFOX=true
+#  hub:
+#    image: elgalu/selenium:2
+#    ports:
+#      - 4444:4444
+#      # We need a fixed port range to expose VNC
+#      # due to a bug in Docker for Mac beta (1.12)
+#      # https://forums.docker.com/t/docker-for-mac-beta-not-forwarding-ports/8658/6
+#      - ${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}:${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}
+#      # e.g. (hard-coded)
+#      # - 40650-40700:40650-40700
+#
+#    volumes:
+#      - /dev/shm:/dev/shm
+#    privileged: true
+#    environment:
+#      - PICK_ALL_RANDOM_PORTS=true
+#      - SELENIUM_HUB_HOST=hub
+#      - SELENIUM_HUB_PORT=4444
+#      - GRID=true
+#      - CHROME=false
+#      - FIREFOX=false
+#      - MOCK_SERVER_HOST=mock
+#  chrome:
+#    image: elgalu/selenium:2
+#    depends_on:
+#      - hub
+#    volumes:
+#      - /dev/shm:/dev/shm
+#    privileged: true
+#    environment:
+#      - PICK_ALL_RANDOM_PORTS=true
+#      - SELENIUM_HUB_HOST=hub
+#      - SELENIUM_HUB_PORT=4444
+#      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
+#      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
+#      - VNC_TO_PORT=${VNC_TO_PORT-40700}
+#      - SCREEN_WIDTH=1300
+#      - SCREEN_HEIGHT=999
+#      - VIDEO=${VIDEO-false}
+#      - GRID=false
+#      - CHROME=true
+#      - FIREFOX=false
+#
+#  firefox:
+#    image: elgalu/selenium:2
+#    depends_on:
+#      - hub
+#    volumes:
+#      - /dev/shm:/dev/shm
+#    privileged: true
+#    environment:
+#      - PICK_ALL_RANDOM_PORTS=true
+#      - SELENIUM_HUB_HOST=hub
+#      - SELENIUM_HUB_PORT=4444
+#      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
+#      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
+#      - VNC_TO_PORT=${VNC_TO_PORT-40700}
+#      - SCREEN_WIDTH=1300
+#      - SCREEN_HEIGHT=999
+#      - VIDEO=${VIDEO-false}
+#      - GRID=false
+#      - CHROME=false
+#      - FIREFOX=true
   plominotest:
     image: robot_tests
     ports:
       - 8080:8080
     environment:
-      - ROBOT_REMOTE_URL=http://hub:4444/wd/hub
+      - ROBOT_REMOTE_URL=http://selenium:4444/wd/hub
       - ROBOT_PLONE_URL=http://plominotest:55001/plone
     volumes:
       - /dev/shm:/dev/shm
@@ -79,12 +85,12 @@ services:
 #      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
     command: bin/test --all -vv
     depends_on:
-      - "hub"
+      - "selenium"
 
   robot-server:
     image: robot_tests
     depends_on:
-       - hub
+       - selenium
     command: bin/robot-server --no-reload -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
     volumes:
       - /dev/shm:/dev/shm
@@ -98,17 +104,26 @@ services:
   robot:
     image: robot_tests
     depends_on:
-       - hub
+       - selenium
        - robot-server
     environment:
 # Not sure why this doesn't work as advertised
 #       - ROBOT_OPTIONS="--outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone "
        - LISTENER_PORT=49999
        - LISTENER_HOST=robot-server
-    command: bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
+    command: bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
     volumes:
       - /dev/shm:/dev/shm
 # doesn't work with remote docker
       - ./test/testoutput:/buildout/parts/test
       - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
     privileged: true
+
+  instance:
+    image: robot_tests
+    command: bin/instance fg
+    ports:
+      - 8080:8080
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino

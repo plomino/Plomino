@@ -1,5 +1,7 @@
 .git
 Dockerfile*
+Dockerfile
+Dockerfile-bootstrap
 robottest.md
 lib
 var
