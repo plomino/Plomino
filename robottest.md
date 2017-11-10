@@ -28,13 +28,13 @@ There are two ways to run the tests:
 
 ### Start selenium at background
 
-Run selenium in the background using docker-compose
+Firstly, run selenium in the background using docker-compose
 
 ```
 docker-compose -f docker-compose.test.yml -p grid up -d selenium
 ```
 
-There are few options to run the tests.
+and then choose the few options below to run the tests.
 
 ### A. Run the all the tests (not working)
 
