@@ -1,35 +1,54 @@
 
-Build the base image first. 
+# Instruction to run all tests using docker
+
+This is the same way circle ci run the tests.
+You can follow these instructions below to run it locally.
+
+## Build docker image
+
+Before you run any test, you need to build the base image first.
+
 ```
 docker build --tag robot_tests -f Dockerfile-bootstrap .
 ```
 
-Then build buildout and npm build. If the code changes you need to redo this step.
+Then this command below will run buildout and npm build inside docker image.
+If the code changes you need to redo this step.
 
 ```
 docker build --tag robot_tests .
 ```
 
-# Using docker-compose
+There are two ways to run the tests:
 
+1. using docker compose (recommended)
+2. using docker directly
 
-Run docker hub in the background
+## 1. Using docker compose (recommended)
 
+### Start selenium at background
+
+Run selenium in the background using docker-compose
 
 ```
 docker-compose -f docker-compose.test.yml -p grid up -d selenium
 ```
 
+There are few options to run the tests.
+
+### A. Run the all the tests (not working)
 
 ```
 docker-compose -f docker-compose.test.yml -p grid run plominotest --rm -e bin/test --all
 ```
 
-Run a test
+### B. Run a single test
 
 ```
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
+
+### C. Run the all the tests with output statement (not working)
 
 if you are modifying tests and also want to see the test output
 
@@ -37,28 +56,29 @@ if you are modifying tests and also want to see the test output
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v ./test:/buildout/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
 
-OR you can use robot directly. First start robot-server
+### D. Run only robot tests
+
+Firstly, you need start robot-server
 
 ```
-docker-compose -f docker-compose.test.yml -p grid up -d selenium robot-server
+docker-compose -f docker-compose.test.yml -p grid up -d robot-server
 ```
 
-followed by a test run
+and then you got two options to run the tests:
+
+i. run all robot tests
 
 ```
 docker-compose -f docker-compose.test.yml -p grid up robot
 ```
 
-or just to run a single test
+ii. run a single robot test
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
+docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_views.robot
 ```
 
-
-
-# Using docker directly (equiv to above)
-
+## 2. Using docker directly (equiv to above)
 
 Start the selenium server
 
@@ -79,7 +99,6 @@ docker exec -ti rtests /buildout/bin/robot --variable REMOTE_URL:http://127.0.0.
 ```
 
 If you mapped your local test dir you will see the output of the tests here
-
 
 To shut down the server do
 
@@ -110,10 +129,8 @@ the tests. You can also look in .circleci/config.yml to see how that uses compos
 docker-compose -f docker-compose.test.yml up
 ```
 
-
 To interact with the running application. Below you can start a server which is available on port 8080. user admin:admin.
 
 ```
 docker exec -ti rtests /bin/bash -c "cd /buildout; bin/instance fg"
 ```
-
