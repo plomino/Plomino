@@ -1,3 +1,7 @@
+Plomino browser tests
+=========================
+
+
 Set up login account
 
     >>> portal = layer['portal']
@@ -123,14 +127,13 @@ Generate View API Test
 
 Post request to test new API that generate view with given form and fields
 
-    >>> import re
     >>> from urllib import urlencode
-    >>> regex = r'.*\?_authenticator=(.*)'
-    >>> match = re.search(regex, browser.url)
+    >>> token = browser.getControl(name='_authenticator').value
     >>> post_url = portal_url +'/mydb' +'/form1/manage_generateView'
-    >>> data = urlencode(dict(id= 'view1', title='View1',form='form1',field='field1', _authenticator=match.group(1)))
+    >>> data = urlencode(dict(id= 'view1', title='View1',form='form1',field='field1', token=token))
     >>> browser.addHeader('Content-Type','multipart/form-data')
     >>> browser.post(post_url, data)
+
 
 Check if view is created with name and column specified in inputed
     >>> db.view1 != None
@@ -141,6 +144,7 @@ Check if view is created with name and column specified in inputed
     True
     >>> db.view1.helpers
     [...]
+
 
 
 =============

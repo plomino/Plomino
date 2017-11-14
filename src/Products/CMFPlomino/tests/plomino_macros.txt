@@ -6,12 +6,8 @@ Plomino basic maco tests
 
 Import basic macro fo testing
 
-    >>> import os
-    >>> dir = os.path.abspath(os.path.join(__file__ ,"../../defaultmacros/macros"))
     >>> portal = layer['portal']
-    >>> id = portal.invokeFactory('PlominoDatabase', id='defaultmacros')
-    >>> db = portal.defaultmacros
-    >>> db.importDesignFromJSON(from_folder=dir, replace = True)
+    >>> db = portal.mydb
 
 A form may consist of multiple subforms. Set up some simple forms::
 

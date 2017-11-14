@@ -2386,8 +2386,6 @@ class PlominoForm(Container):
         return (view_id, view_title, fields)
 
     def setMacroRuleForView(self, view_obj):
-        # Still need the original formula  if the macro is not supported
-        view_obj.selection_formula = 'plominoDocument.getItem("Form")=="%s"' % self.id
         from ..browser.helpers import update_helpers
         selection_formula = {"formlist": self.id,
                              "Form": "macro_view_filter_by_form_attr",

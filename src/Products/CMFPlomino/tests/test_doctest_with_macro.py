@@ -6,7 +6,7 @@ from plone.app.testing import TEST_USER_ID
 from plone.testing import layered
 from plone.testing.z2 import Browser
 
-from Products.CMFPlomino.testing import PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING
+from Products.CMFPlomino.testing import PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
 
 OPTIONFLAGS = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
 
@@ -16,13 +16,9 @@ doctest.set_unittest_reportflags(
 
 def test_suite():
     suite = doctest.DocFileSuite(
-        'plomino.txt',
-        'plomino_accesscontrol.txt',
-        'plomino_advanced.txt',
-        'plomino_import_export.txt',
-        'plomino_browser.txt',
-        'plomino_file_attachment.txt',
-        'plomino_view.txt',
+        'plomino_macros.txt',
+        'defaultmacros/plomino_macro_field_selection_db_elements.txt',
+        'plomino_browser_with_macros.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',
@@ -33,4 +29,4 @@ def test_suite():
             'transaction': transaction
         }, optionflags=OPTIONFLAGS
     )
-    return layered(suite, layer=PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING)
+    return layered(suite, layer=PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING)
