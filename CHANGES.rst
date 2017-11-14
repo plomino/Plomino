@@ -80,10 +80,10 @@ Changelog
 - Recompile Plomino for attachment script [quang]
 - Remove select user macro [ivanteoh]
 
-- IDE hung when loading very large forms. due to too large GET request from IDE when selecting example widgets [quang]
-- Fix unresponsive error while saving macro "Filter View by Form' in view by removing manual inserted formula [quang]
-- Enable to retain request data when redirect on form save. [quang]
-- Merge redirect on save and redirect on load into one macro [quang]
+- Fix to ide when loading large forms [quang]
+- Fix "Filter View by Form' macro causing an unresponsive error [quang]
+- Improvement to 'redirect' macro, providing submitted data to target forms [quang]
+- Merge 'redirect on save' and 'redirect on load' into one macro [quang]
 
 
 2.0b4 (2016-05-27)
