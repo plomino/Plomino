@@ -90,11 +90,14 @@ I edit the field "${fieldid}" to "${newid}"
 
 I edit the title to "${newtitle}"
   Input Text    jquery=#form-widgets-IBasic-title     ${newtitle}
+  Sleep   3s
 
 I save the current field settings
+  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
+  Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
+  Capture Page Screenshot
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']
   Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons    60s
-  Sleep   5s
 
 
 # --- Given ------------------------------------------------------------------

@@ -1,23 +1,30 @@
 ## START formula {
 doc = plominoContext
-enable_attach_doc_id_ = doc.getItem('enable_attach_doc_id')
+retain_form_data_ = doc.getItem('retain_form_data')
 redirect_type_ = doc.getItem('redirect_type')
 form_redirect_ = doc.getItem('form_redirect')
 view_redirect_ = doc.getItem('view_redirect')
 url_redirect_ = doc.getItem('url_redirect')
+only_redirect_on_save_ = doc.getItem('only_redirect_on_save', False)
 code = ''
 if redirect_type_ == 'form':
     code = """
 db = plominoContext.getParentDatabase()
 req = getattr(plominoContext, 'REQUEST')
 form_redirect = '{form_redirect}'
-enable_attach_doc_id = '{enable_attach_doc_id}'
-targeturl = '%s/%s' % (db.absolute_url(), form_redirect)
-if enable_attach_doc_id=='True':
-    targeturl='%s/document/%s?openwithform=%s' % (db.absolute_url(), plominoDocument.id, form_redirect)
+retain_form_data = '{retain_form_data}'
+only_redirect_on_save = '{only_redirect_on_save}'
+if only_redirect_on_save=='True':
+    if retain_form_data=='True':
+        targeturl='%s/%s/redirect' % (db.absolute_url(),form_redirect)
+        req.response.setHeader('Plomino-Retain-Form-Data','True')
+    else:
+        targeturl = '%s/%s' % (db.absolute_url(), form_redirect)
+else:
+    targeturl = ''
 return targeturl
     """.format(
-    form_redirect=form_redirect_,enable_attach_doc_id=enable_attach_doc_id_
+    form_redirect=form_redirect_,retain_form_data=retain_form_data_, only_redirect_on_save=only_redirect_on_save_
 )
 elif redirect_type_ == 'view':
     code = """

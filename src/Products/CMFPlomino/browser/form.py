@@ -39,7 +39,10 @@ class FormView(BrowserView):
             # If the onDisplay event returned something, return it
             # We could do extra handling of the response here if needed
             if response is not None:
-                return response
+                if response.getHeader('Plomino-Redirect'):
+                    return response.redirect(response.getHeader('Plomino-Redirect'), status=307)
+                else:
+                    return response
 
         self.page_errors = []
 
@@ -86,6 +89,37 @@ class FormView(BrowserView):
         temp_doc = self.form.getTemporaryDocument()
         return temp_doc.getfile(REQUEST=self.request)
 
+    def redirect(self):
+        self.request.set('Form', self.form.id)
+        self.request.set('plomino_current_page',1)
+        if (hasattr(self.context, 'onDisplay') and
+                self.context.onDisplay):
+            try:
+                response = self.context.runFormulaScript(
+                    SCRIPT_ID_DELIMITER.join([
+                        'form', self.context.id, 'ondisplay']),
+                    self.context,
+                    self.context.onDisplay)
+            except PlominoScriptException, e:
+                response = None
+                e.reportError('onDisplay formula failed')
+            # If the onDisplay event returned something, return it
+            # We could do extra handling of the response here if needed
+            if response is not None:
+                return response
+        self.page_errors = []
+
+        if self.request['REQUEST_METHOD'] == 'POST':
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc=None)
+            self.form.processAttachment(self.request, doc=None, creation=False)
+            errors = self.form.validateInputs(self.request)
+            # We can't continue if there are errors
+            if errors:
+                # inject these into the form
+                self.page_errors = errors
+
+        return self.template()
 
 @implementer(IPublishTraverse)
 class PageView(BrowserView):
@@ -133,7 +167,10 @@ class PageView(BrowserView):
             # If the onDisplay event returned something, return it
             # We could do extra handling of the response here if needed
             if response is not None:
-                return response
+                if response.getHeader('Plomino-Redirect'):
+                    return response.redirect(response.getHeader('Plomino-Redirect'), status=307)
+                else:
+                    return response
         return self.render()
 
     def render(self):

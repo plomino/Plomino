@@ -280,10 +280,10 @@
                         "separator": null
                     }
                 },
-                "enable_attach_doc_id": {
-                    "id": "enable_attach_doc_id",
+                "retain_form_data": {
+                    "id": "retain_form_data",
                     "type": "PlominoField",
-                    "title": "Enable access document in target form",
+                    "title": "Retain form data in target form",
                     "params": {
                         "field_type": "BOOLEAN",
                         "mandatory": false,
@@ -293,7 +293,7 @@
                         "index_type": "DEFAULT",
                         "read_template": null,
                         "edit_template": null,
-                        "title": "Enable access document in target form",
+                        "title": "Retain form data in target form",
                         "description": "",
                         "helpers": [],
                         "ajax_load": null,
@@ -301,8 +301,144 @@
                         "widget": "CHECKBOX"
                     }
                 },
-                "doc_hidewhen": {
-                    "id": "doc_hidewhen",
+                "redirect_on_save_hidewhen": {
+                    "id": "redirect_on_save_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "defaultHidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "defaultHidewhen",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_2",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"only_redirect_on_save\" in Tru...",
+                                    "value_type": "text",
+                                    "field_value": "True",
+                                    "formula": "\nfield_name = \"\"\"only_redirect_on_save\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"True\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "only_redirect_on_save",
+                                    "_macro_id_": "macro_condition_field_got_substring_2"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_2",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "ondisplay": {
+                    "id": "ondisplay",
+                    "type": "PlominoField",
+                    "title": "onDisplay",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "onDisplay",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "only_redirect_on_save": {
+                    "id": "only_redirect_on_save",
+                    "type": "PlominoField",
+                    "title": "Only Redirect On Save",
+                    "params": {
+                        "field_type": "BOOLEAN",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Only Redirect On Save",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nif not plominoContext.getItem(field_id):\n    return 'True'\nreturn plominoContext.getItem(field_id)\n",
+                                    "defaultvalue": "True",
+                                    "_macro_id_": "macro_field_default_value_2",
+                                    "Form": "macro_field_default_value",
+                                    "title": "Default value"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "CHECKBOX"
+                    }
+                },
+                "not_redirect_on_save_defaulthidewhen": {
+                    "id": "not_redirect_on_save_defaulthidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "defaultHidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "defaultHidewhen",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_2",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "not in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"only_redirect_on_save\" not in...",
+                                    "value_type": "text",
+                                    "field_value": "True",
+                                    "formula": "\nfield_name = \"\"\"only_redirect_on_save\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"True\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value not in str(field_result)\nreturn result\n    ",
+                                    "field_name": "only_redirect_on_save",
+                                    "_macro_id_": "macro_condition_field_got_substring_2"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_2",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "page_form_defaulthidewhen": {
+                    "id": "page_form_defaulthidewhen",
                     "type": "PlominoHidewhen",
                     "title": "defaultHidewhen",
                     "params": {

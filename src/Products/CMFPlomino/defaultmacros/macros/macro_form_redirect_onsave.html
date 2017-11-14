@@ -3,13 +3,26 @@
 <p><span class="plominoHidewhenClass">start:form_hidewhen</span></p>
 <p><span class="plominoLabelClass">form_redirect</span></p>
 <p><span class="plominoFieldClass">form_redirect</span></p>
-<p><span class="plominoHidewhenClass">start:doc_hidewhen</span></p>
-<div class="plominoGroupClass" data-groupid="enable_attach_doc_id">
-<p><span class="plominoFieldClass">enable_attach_doc_id</span><span class="plominoLabelClass">enable_attach_doc_id</span></p>
+<div class="plominoGroupClass" data-groupid="retain_form_data">
+<p><span class="plominoFieldClass">retain_form_data</span><span class="plominoLabelClass">retain_form_data</span></p>
 </div>
-<p><span class="plominoHidewhenClass">end:doc_hidewhen</span></p>
 <p> </p>
+<div class="plominoGroupClass" data-groupid="only_redirect_on_save">
+<p><span class="plominoFieldClass">only_redirect_on_save</span><span class="plominoLabelClass">only_redirect_on_save</span></p>
+</div>
 <p> </p>
+<p><span class="plominoHidewhenClass">start:redirect_on_save_hidewhen</span></p>
+<p> </p>
+<p><span class="plominoHidewhenClass">start:page_form_defaulthidewhen</span></p>
+<p> This form is currently a Page form and no save will happen. Please change the style of form or untick the above option</p>
+<p><span class="plominoHidewhenClass">end:page_form_defaulthidewhen</span></p>
+<p> </p>
+<p><span class="plominoHidewhenClass">end:redirect_on_save_hidewhen</span></p>
+<p> </p>
+<p><span class="plominoHidewhenClass">start:not_redirect_on_save_defaulthidewhen</span></p>
+<p> Please ensure you add a condition to determine when to redirect, such as "Action clicked". If you don't the redirection will happen as soon as the form is opened</p>
+<p><span class="plominoHidewhenClass">end:not_redirect_on_save_defaulthidewhen</span></p>
+<p>  </p>
 <p><span class="plominoHidewhenClass">end:form_hidewhen</span></p>
 <p><span class="plominoHidewhenClass">start:view_hidewhen</span></p>
 <p><span class="plominoLabelClass">view_redirect</span></p>
@@ -20,3 +33,5 @@
 <p><span class="plominoFieldClass">url_redirect</span></p>
 <p><span class="plominoHidewhenClass">end:url_hidewhen</span></p>
 <p><span class="plominoFieldClass">onsavedocument</span></p>
+<p> </p>
+<p><span class="plominoFieldClass">ondisplay</span></p>

@@ -269,9 +269,12 @@ I save the macro and the form
   I save the fieldsettings
 
 I save the macro
+  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    60s
   Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    60s
   Execute Javascript    $(".actionButtons input[name='plomino_save']").click()
+  Sleep     5s
+  Capture Page Screenshot
   # Wait Until Element Is Not Visible     jquery=.plone-modal-dialog    60s
 
 I select current field
@@ -441,6 +444,7 @@ I click on HideWhen Settings tab
   Click Element     jquery=a:contains('Hidewhen Settings')
 
 I add a "${field}" field
+  Wait Until Element Is Visible     jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']     60s
   Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
   Wait Until Element Is Visible     jquery=.mce-tinymce     60s
 
@@ -629,4 +633,96 @@ I will see the validation error "${error}"
 I will see the preview form saved
   page should contain button  Close
 
+I have a source and target forms with a field on them
+  Given a logged-in test user
+  I open the ide for "mydb"
+  I add a target form
+  I save the form as "target"
+  Close the form
+  Sleep   5s
+  Capture Page Screenshot
+  I add a source form
+  Click Link  Form Settings
+  Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
 
+  Wait Until Element Is Visible     jquery=.select2-input:eq(1)
+  Click Element     jquery=.select2-input:eq(1)
+  Capture Page Screenshot
+
+  Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
+  wait until page contains element  css=.plominoSave    60s
+  Capture Page Screenshot
+
+  I select redirect type = Form
+  I select retain form data in target form
+  I save the macro
+  I save the form as "source"
+
+Close the form
+  Wait Until Element Is Visible     jquery=.mdl-tabs__tab-close-button:eq(1)    60s
+  Execute Javascript    $(".mdl-tabs__tab-close-button:eq(1)").click();
+  Wait Until Element Is Visible       jquery=.workflow-node__start-text        60s
+
+I add a target form
+  I add a form by click
+  I add a name field on the target form
+
+I add a name field on the target form
+  I add a "Text" field
+  I edit the field "text" to "name"
+  I edit the title to "Thank you"
+  I save the current field settings
+  Sleep   5s
+
+I add a source form
+  I add a form by click
+  I add a name field on the source form
+
+I add a name field on the source form
+  Wait Until Element Is Visible     jquery=button[title='Text']   100s
+  Wait Until Element Is Enabled     jquery=button[title='Text']   100s
+  Click Element     jquery=button[title='Text']
+  I edit the field "text" to "name"
+  I edit the title to "Name:"
+  Sleep   5s
+  Capture Page Screenshot
+  I save the current field settings
+  Capture Page Screenshot
+  Sleep   10s
+
+I select redirect type = Form
+  Wait Until Page Contains Element    jquery=.plone-modal-title:contains('Redirect in form on save')    60s
+  Wait Until Element Is Visible       jquery=.plone-modal-title:contains('Redirect in form on save')    60s
+  Click Element   jquery=#redirect_type-form
+
+  Wait Until Element Is Visible     jquery=#s2id_form_redirect    60s
+  Click Element     jquery=#s2id_form_redirect
+  Capture Page Screenshot
+  Wait Until Element Is Visible     jquery=.pat-select2 option[value='target']    60s
+  Capture Page Screenshot
+  Click Element     jquery=.pat-select2 option[value='target']
+  Capture Page Screenshot
+  Sleep   3s
+
+I select retain form data in target form
+  Wait Until Element Is Visible     jquery=#retain_form_data
+  Click Element   jquery=#retain_form_data
+
+I preview the source form
+  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Preview")    60s
+  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Preview")    60s
+  Click Element  jquery=.mdl-button:visible:contains("Preview")
+  Sleep  2s
+  select window  url=${PLONE_URL}/mydb/source/view
+  Capture Page Screenshot
+
+I fill in the "${name}" field and save the source form
+  Wait Until Element Is Visible     jquery=#${name}
+  Input Text    jquery=#${name}     Tester
+  Wait Until Element Is Visible     jquery=input[name='plomino_save']
+  Click Element     jquery=input[name='plomino_save']
+  Wait Until Element Is Visible     jquery=#name
+  Capture Page Screenshot
+
+I can see that the value entered on the source form is displayed on the "${name}" field of the target form
+  Element Should Be Visible     jquery=input[name='${name}'][value='Tester']

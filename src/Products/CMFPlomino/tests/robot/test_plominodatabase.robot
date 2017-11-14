@@ -294,3 +294,10 @@ Scenario: I can add two dynamic hidewhen fields
   Then I can add a text field in the hidewhen
   And when I add another dynamic hidewhen by click
   Then I can add a text field in the second hidewhen
+
+Scenario: I can do redirect in form on save (Form Redirect)
+#This will display the value of name field on source form to the target form
+  Given I have a source and target forms with a field on them
+  When I preview the source form
+  And I fill in the "name" field and save the source form
+  Then I can see that the value entered on the source form is displayed on the "name" field of the target form

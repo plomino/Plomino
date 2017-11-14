@@ -413,7 +413,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         form.readInputs(self, REQUEST)
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
-
         redirect = REQUEST.get('plominoredirecturl')
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
@@ -424,7 +423,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
-        REQUEST.RESPONSE.redirect(addTokenToUrl(redirect))
+        if REQUEST.RESPONSE.getHeader('Plomino-Retain-Form-Data'):
+            REQUEST.RESPONSE.redirect(addTokenToUrl(redirect), status=307)
+        else:
+            self.cleanTempAttachment(form, REQUEST)
+            REQUEST.RESPONSE.redirect(addTokenToUrl(redirect))
 
     def getTemporaryFolder(self):
         return getattr(self.getParentDatabase(), 'temporary_files', None)
@@ -435,17 +438,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             manage_addCMFBTreeFolder(self.getParentDatabase(), id='temporary_files')
         return getattr(self.getParentDatabase(), 'temporary_files')
 
-    def saveTempAttachment(self, form, REQUEST):
+    def saveTempAttachmentToDocument(self, form, REQUEST):
         db = self.getParentDatabase()
         tempStorage = self.getTemporaryFolder()
         if not tempStorage:
             tempStorage = self.createTemporaryFolder()
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
-            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
-                temp_files = db.getRequestCache(f.id+"@@ATTACHMENT")
+            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
+                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
                 for filename, contentytpe in temp_files.iteritems():
-                    filename = filename.encode('ascii','ignore')
+                    filename = filename.encode('ascii', 'ignore')
                     temp_blob = tempStorageWrapper.getfile(REQUEST, filename)
                     blob = BlobWrapper(contentytpe)
                     file_obj = blob.getBlob().open('w')
@@ -454,8 +457,20 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     blob.setFilename(filename)
                     blob.setContentType(contentytpe)
                     self._setObject(filename, blob)
-                    tempStorageWrapper.deletefile(REQUEST, filename)
                 self.setItem(f.id, temp_files)
+
+    def cleanTempAttachment(self, form, REQUEST):
+        db = self.getParentDatabase()
+        tempStorage = getattr(self.getParentDatabase(), 'temporary_files', None)
+        if not tempStorage:
+            return
+        tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
+        for f in form.getFormFields(includesubforms=True, request=REQUEST):
+            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
+                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
+                for filename, contentytpe in temp_files.iteritems():
+                    filename = filename.encode('ascii', 'ignore')
+                    tempStorageWrapper.deletefile(REQUEST, filename)
                 db.cleanRequestCache(f.id + "@@ATTACHMENT")
 
     def cleanExpiredAttachment(self):
@@ -472,13 +487,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 filename = objetItem[0]
                 tempStorageWrapper.deletefile(None, filename)
 
-
-
     security.declareProtected(EDIT_PERMISSION, 'refresh')
 
     def refresh(self, form=None):
         """ Re-compute fields and re-index document.
-
         (`onSaveEvent` is not called, and authors are not updated)
         """
         self.save(
@@ -491,7 +503,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
     security.declareProtected(EDIT_PERMISSION, 'save')
 
     def save(self, form=None, creation=False, refresh_index=True,
-            asAuthor=True, onSaveEvent=True):
+             asAuthor=True, onSaveEvent=True):
         """ Refresh values according to form, and reindex the document.
         # clean tempporary files
         self.cleanExpiredAttachment()
@@ -544,8 +556,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
             # As it happend only during creation request, we save temporary files and clean it
             if creation:
-                self.saveTempAttachment(form, self.REQUEST)
-
+                self.saveTempAttachmentToDocument(form, self.REQUEST)
 
         # update the Plomino_Authors field with the current user name
         if asAuthor:

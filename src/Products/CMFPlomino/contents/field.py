@@ -241,7 +241,6 @@ class PlominoField(Item):
                             current_files = {}
                         current_files[new_file] = contenttype
             v = current_files
-
         else:
             try:
                 v = adapt.processInput(submittedValue)

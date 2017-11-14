@@ -867,7 +867,6 @@ class PlominoForm(Container):
             )
         else:
             hidewhen_target = doc
-
         html_content = self.applyHideWhen(hidewhen_target, silent_error=False, cache_key='displayDocument')
         hidden_fields, reset_fields = self._get_hidden_fields(request, hidewhen_target, validation_mode=False)
         if request:
@@ -2078,7 +2077,6 @@ class PlominoForm(Container):
                                     v = asList(v)
                             # logger.debug(u'Method: form readInputs {} value {'
                             #             '}'.format(fieldName, v))
-
                             doc.setItem(fieldName, v)
                 else:
                     # The field was not submitted, probably because it is
@@ -2363,6 +2361,7 @@ class PlominoForm(Container):
                     doc.setItem(f.id, files)
                 else:
                     REQUEST.set(f.id + "@@ATTACHMENT", json.dumps(files))
+
 
     security.declarePublic('notifyErrors')
 
