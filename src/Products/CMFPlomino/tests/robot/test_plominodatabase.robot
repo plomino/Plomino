@@ -301,3 +301,16 @@ Scenario: I can do redirect in form on save (Form Redirect)
   When I preview the source form
   And I fill in the "name" field and save the source form
   Then I can see that the value entered on the source form is displayed on the "name" field of the target form
+
+Scenario: When I have a field in source form with request=auto I can see that the value will display on target form with request=post
+#From use case: have any fields in source form with in POST request, the value will display on target form in POST request
+  Given I have a source form with AUTO request and a target form with POST request
+  When I preview the source form
+  And I fill in the "name" field and save the source form
+  Then I can see that the value entered on the source form is displayed on the "name" field of the target form
+
+Scenario: A message will be displayed when I deselect the "Only Redirect On Save" checkbox
+#From use case: add check box, only redirect on save, and warning message... if you use a page form, you need to uncheck this, with condition
+  Given I have source and target forms
+  When I deselect the "Only Redirect On Save" checkbox
+  Then I will see a confirmation message

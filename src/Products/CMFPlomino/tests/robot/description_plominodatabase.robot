@@ -726,3 +726,96 @@ I fill in the "${name}" field and save the source form
 
 I can see that the value entered on the source form is displayed on the "${name}" field of the target form
   Element Should Be Visible     jquery=input[name='${name}'][value='Tester']
+
+I have a source form with AUTO request and a target form with POST request
+  Given a logged-in test user
+  I open the ide for "mydb"
+  I add a target form with POST request
+  I save the target form as "target"
+  Close the form
+  Sleep   5s
+  Capture Page Screenshot
+  I add a source form
+  Click Link  Form Settings
+  Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
+
+  Wait Until Element Is Visible     jquery=.select2-input:eq(1)
+  Click Element     jquery=.select2-input:eq(1)
+  Capture Page Screenshot
+
+  Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
+  wait until page contains element  css=.plominoSave    60s
+  Capture Page Screenshot
+
+  I select redirect type = Form
+  I select retain form data in target form
+  I save the macro
+  I save the form as "source"
+
+I add a target form with POST request
+  I add a form by click
+  I add a name field on the source form
+  I click on ADVANCED tab of the Form Settings
+  I select form method="POST"
+  Sleep   10s
+
+I click on ADVANCED tab of the Form Settings
+  Click Element       jquery=.mdl-tabs .mdl-tabs__tab-bar a:contains('Form Settings')
+  Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .form-settings-wrapper .formsettings--control-buttons
+  Wait Until Element Is Visible     jquery=a:contains('Advanced'):eq(1)   60s
+  Click Element     jquery=a:contains('Advanced'):eq(1)
+  Wait Until Element Is Visible     jquery=#form-widgets-form_method    60s
+  Capture Page Screenshot
+
+I select form method="${value}"
+  #value = GET, POST, Auto
+  Wait Until Element Is Visible     jquery=#form-widgets-form_method    60s
+  Click Element     jquery=#form-widgets-form_method
+  Wait Until Element Is Visible     jquery=select option[value='${value}']
+  Click Element     jquery=select option[value='${value}']
+
+I save the target form as "${form_name}"
+  Wait Until Element Is Visible     jquery=a:contains('Default'):eq(1)    60s
+  Click Element   jquery=a:contains('Default'):eq(1)
+  Sleep   5s
+  Wait Until Element Is Visible     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last    60s
+  Click Element     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last
+  Input Text     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last     ${form_name}
+  Sleep   3s
+  Click Element   jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IBasic-title']:last
+  Input Text     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IBasic-title']:last     ${form_name}
+  Click Element       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']
+  Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']     100s
+  Sleep   3s
+  wait until form is loaded
+
+I have source and target forms
+  Given a logged-in test user
+  I open the ide for "mydb"
+  I add a target form
+  I save the form as "target"
+  Close the form
+  Sleep   5s
+  Capture Page Screenshot
+  I add a source form
+
+I deselect the "Only Redirect On Save" checkbox
+  Click Link  Form Settings
+  Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
+
+  Wait Until Element Is Visible     jquery=.select2-input:eq(1)
+  Click Element     jquery=.select2-input:eq(1)
+  Capture Page Screenshot
+
+  Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
+  wait until page contains element  css=.plominoSave    60s
+  Capture Page Screenshot
+
+  I select redirect type = Form
+  I select retain form data in target form
+
+  Execute Javascript    window.document.getElementById("only_redirect_on_save").scrollIntoView(true);
+  Click Element     jquery=#only_redirect_on_save
+
+I will see a confirmation message
+  Wait Until Page Contains Element    jquery=.plomino-hidewhen p:contains('Please ensure you add a condition to determine when to redirect')
