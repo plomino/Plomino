@@ -716,6 +716,15 @@ I preview the source form
   select window  url=${PLONE_URL}/mydb/source/view
   Capture Page Screenshot
 
+I preview the form "${form}"
+  #Preview Redirect Form
+  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Preview")    60s
+  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Preview")    60s
+  Click Element  jquery=.mdl-button:visible:contains("Preview")
+  Sleep  2s
+  select window  url=${PLONE_URL}/test_redirect/${form}/view
+  Capture Page Screenshot
+
 I fill in the "${name}" field and save the source form
   Wait Until Element Is Visible     jquery=#${name}
   Input Text    jquery=#${name}     Tester

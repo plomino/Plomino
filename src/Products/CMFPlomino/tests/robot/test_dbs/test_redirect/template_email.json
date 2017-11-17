@@ -1,0 +1,76 @@
+{
+    "design": {
+        "resources": {},
+        "template_email": {
+            "id": "template_email",
+            "type": "PlominoForm",
+            "title": "Email",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Email",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "email": {
+                    "id": "email",
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "Form": "macro_condition_field_text_validate_email",
+                                    "_macro_id_": "macro_condition_field_text_validate_email_1",
+                                    "formula": "\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nvalue = plominoContext.getItem(field_id)\nreturn is_email(value)\n",
+                                    "title": "Is email"
+                                },
+                                {
+                                    "Form": "macro_field_validate_valid",
+                                    "_macro_id_": "macro_field_validate_valid_1",
+                                    "title": "Validate successful",
+                                    "validation_formula": "\nreturn\n"
+                                }
+                            ],
+                            [
+                                {
+                                    "Form": "macro_field_validate_invalid",
+                                    "_macro_id_": "macro_field_validate_invalid_1",
+                                    "invalid_message": "This email address is not valid.",
+                                    "title": "Show invalid message - This email address is not valid.",
+                                    "validation_formula": "\nreturn '''This email address is not valid.'''\n"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

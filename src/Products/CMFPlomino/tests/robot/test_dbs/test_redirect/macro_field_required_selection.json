@@ -1,0 +1,129 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_required_selection": {
+            "id": "macro_field_required_selection",
+            "type": "PlominoForm",
+            "title": "Required field based on selection",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Required field based on selection",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "field_name": {
+                    "id": "field_name",
+                    "type": "PlominoField",
+                    "title": "Selection field name",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Selection field name",
+                        "description": "",
+                        "helpers": [
+                            {
+                                "Form": "macro_field_selection_db_elements",
+                                "_macro_id_": "macro_field_selection_db_elements_1",
+                                "element_type": "Fields",
+                                "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = editcontext if ctype == 'PlominoForm' else editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm):\n  return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\nreturn [item(f) for f in editform.getFormFields()]",
+                                "title": "Select from Fields"
+                            }
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "field_value": {
+                    "id": "field_value",
+                    "type": "PlominoField",
+                    "title": "Selection field value",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Selection field value",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "form_error_message": {
+                    "id": "form_error_message",
+                    "type": "PlominoField",
+                    "title": "Error message",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Error message",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "validation_formula": {
+                    "id": "validation_formula",
+                    "type": "PlominoField",
+                    "title": "Validation formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Validation formula",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

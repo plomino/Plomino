@@ -1,0 +1,52 @@
+{
+    "design": {
+        "resources": {},
+        "macro_field_autofocus": {
+            "id": "macro_field_autofocus",
+            "type": "PlominoForm",
+            "title": "Set Autofocus",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Set Autofocus",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "html_attributes_formula": {
+                    "id": "html_attributes_formula",
+                    "type": "PlominoField",
+                    "title": "html_attributes_formula",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "html_attributes_formula",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

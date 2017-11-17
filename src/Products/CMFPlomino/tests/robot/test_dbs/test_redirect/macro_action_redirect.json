@@ -1,0 +1,287 @@
+{
+    "design": {
+        "resources": {},
+        "macro_action_redirect": {
+            "id": "macro_action_redirect",
+            "type": "PlominoForm",
+            "title": "Redirect in action",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Redirect in action",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "content": {
+                    "id": "content",
+                    "type": "PlominoField",
+                    "title": "Content",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "COMPUTEDONSAVE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Content",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "HIDDEN",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "form_hidewhen": {
+                    "id": "form_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "Form hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "Form hidewhen",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_1",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"redirect_type\" in form ",
+                                    "value_type": "text",
+                                    "field_value": "form",
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"form\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "redirect_type",
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_1",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "form_redirect": {
+                    "id": "form_redirect",
+                    "type": "PlominoField",
+                    "title": "Form redirect",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Form redirect",
+                        "description": "",
+                        "helpers": [
+                            {
+                                "Form": "macro_field_selection_db_elements",
+                                "_macro_id_": "macro_field_selection_db_elements_1",
+                                "element_type": "Forms",
+                                "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = editcontext if ctype == 'PlominoForm' else editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm):\n  return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\nreturn [item(f) for f in editdb.getForms()]",
+                                "title": "Select from Forms"
+                            }
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                },
+                "redirect_type": {
+                    "id": "redirect_type",
+                    "type": "PlominoField",
+                    "title": "Redirect type",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": true,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Redirect type",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "RADIO",
+                        "selectionlist": [
+                            "Form|form",
+                            "View|view",
+                            "URL|url"
+                        ],
+                        "separator": null
+                    }
+                },
+                "url_hidewhen": {
+                    "id": "url_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "URL hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "URL hidewhen",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_1",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"redirect_type\" in url ",
+                                    "value_type": "text",
+                                    "field_value": "url",
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"url\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "redirect_type",
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_1",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "url_redirect": {
+                    "id": "url_redirect",
+                    "type": "PlominoField",
+                    "title": "URL redirect",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "URL redirect",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "view_hidewhen": {
+                    "id": "view_hidewhen",
+                    "type": "PlominoHidewhen",
+                    "title": "View hidewhen",
+                    "params": {
+                        "isDynamicHidewhen": true,
+                        "isResetOnHide": false,
+                        "title": "View hidewhen",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nreturn False\n",
+                                    "_macro_id_": "macro_hidewhen_show_1",
+                                    "Form": "macro_hidewhen_show",
+                                    "title": "Show"
+                                },
+                                {
+                                    "field_compare": "in",
+                                    "Form": "macro_condition_field_got_substring",
+                                    "title": "\"redirect_type\" in view ",
+                                    "value_type": "text",
+                                    "field_value": "view",
+                                    "formula": "\nfield_name = \"\"\"redirect_type\"\"\"\nfield_value = \"\"\"view\"\"\"\nif not plominoContext.hasItem(field_name):\n    return False\nfield_result = plominoContext.getItem(field_name)\nif field_name != 'Form':\n    form = plominoContext.getForm()\n    field = getattr(form, field_name)\n    if field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n        field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "redirect_type",
+                                    "_macro_id_": "macro_condition_field_got_substring_1"
+                                }
+                            ],
+                            [
+                                {
+                                    "formula": "\nreturn True\n",
+                                    "_macro_id_": "macro_hidewhen_hide_1",
+                                    "Form": "macro_hidewhen_hide",
+                                    "title": "Hide"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null
+                    }
+                },
+                "view_redirect": {
+                    "id": "view_redirect",
+                    "type": "PlominoField",
+                    "title": "View redirect",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "View redirect",
+                        "description": "",
+                        "helpers": [
+                            {
+                                "Form": "macro_field_selection_db_elements",
+                                "_macro_id_": "macro_field_selection_db_elements_1",
+                                "element_type": "Views",
+                                "selectionlistformula": "\neditpath = plominoContext.REQUEST.get('Plomino_Macro_Context')\nLog('editpath %s' % editpath, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nif editpath is None:\n    return [] # we aren't being used in a popup\neditcontext = plominoContext.restrictedTraverse(editpath)\nLog('editcontext %s' % editcontext, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\nctype = editcontext.getPortalTypeName()\nLog('ctype %s' % ctype, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\neditform = editcontext if ctype == 'PlominoForm' else editcontext.getParentNode()\neditdb = editcontext.getParentDatabase()\nLog('editdb %s' % editdb, 'macro_field_selection_db_elements/selectionlistformula', severity='debug')\n\ndef item(elm):\n  return '{title} ({id})|{id}'.format(id=elm.id, title=elm.Title())\nreturn [item(f) for f in editdb.getViews()]",
+                                "title": "Select from Views"
+                            }
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": null,
+                        "separator": null
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}

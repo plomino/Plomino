@@ -1,0 +1,52 @@
+{
+    "design": {
+        "resources": {},
+        "a_src_post": {
+            "id": "a_src_post",
+            "type": "PlominoForm",
+            "title": "a_src_post",
+            "params": {
+                "form_method": "POST",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "a_src_post",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "name": {
+                    "id": "name",
+                    "type": "PlominoField",
+                    "title": "Name",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Name",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }
+            }              
+        }
+    },
+    "id": "macros"
+}

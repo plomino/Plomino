@@ -1,0 +1,52 @@
+{
+    "design": {
+        "resources": {},
+        "template_date": {
+            "id": "template_date",
+            "type": "PlominoForm",
+            "title": "Date",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "Date",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "date": {
+                    "id": "date",
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "DATETIME",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SERVER",
+                        "format": "%d/%m/%Y",
+                        "startingyear": "1975"
+                    }
+                }
+            }
+        }
+    },
+    "id": "macros"
+}
