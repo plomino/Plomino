@@ -147,3 +147,89 @@ I can see that the value entered is still displayed on the first page of the tar
 I go to the next page and go back to previous page of the target form
     I go to the next page
     I go back to the previous page
+
+I have a source form "${source}" with an attachment and a source form "${target}"
+    Given a logged-in test user
+    I open the ide for "test_redirect"
+    I select "${source}" from form tree
+    Click Link  Form Settings
+
+    Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
+
+    Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
+    Click element  css=.plomino-macros-rule .select2-container input
+    Capture Page Screenshot
+
+    Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
+    wait until page contains element  css=.plominoSave    60s
+    Capture Page Screenshot
+
+    I select the redirect type=Form
+    I select the target form "${target}"
+    I select retain form data in target form
+    I save the macro
+    I save the current layout
+
+I attach a document and save the source form
+    Wait Until Element Is Visible       jquery=#file_attachment     60s
+    Choose File         jquery=#file_attachment         ${CURDIR}/test_data/testdocument.pdf
+    Wait Until Element Is Visible     jquery=input[name='plomino_save']
+    Click Element     jquery=input[name='plomino_save']
+    Wait Until Element Is Visible     jquery=#file_attachment
+    Capture Page Screenshot
+
+I can see that the document attachment will also be displayed on the target form
+    Wait Until Element Is Visible   jquery=a:contains('testdocument.pdf')       60s
+    Element Should Be Visible       jquery=a:contains('testdocument.pdf')
+
+I attach an image and save the source form
+    Wait Until Element Is Visible       jquery=#file_attachment     60s
+    Choose File         jquery=#file_attachment         ${CURDIR}/test_data/image.jpg
+    Wait Until Element Is Visible     jquery=input[name='plomino_save']
+    Click Element     jquery=input[name='plomino_save']
+    Wait Until Element Is Visible     jquery=#file_attachment
+    Capture Page Screenshot
+
+I can see that the image attachment will also be displayed on the target form
+    Wait Until Element Is Visible   jquery=a:contains('image.jpg')       60s
+    Element Should Be Visible       jquery=a:contains('image.jpg')
+
+I have a multi-page source form "${source}" and a multi-page target form "${target}"
+    Given a logged-in test user
+    I open the ide for "test_redirect"
+    I select "${source}" from form tree
+    Click Link  Form Settings
+
+    Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
+
+    Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
+    Click element  css=.plomino-macros-rule .select2-container input
+    Capture Page Screenshot
+
+    Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
+    wait until page contains element  css=.plominoSave    60s
+    Capture Page Screenshot
+
+    I select the redirect type=Form
+    I select the target form "${target}"
+    I select retain form data in target form
+    I save the macro
+    I save the current layout
+
+I fill in the fields and save the source form
+    Wait Until Element Is Visible     jquery=#name
+    Input Text    jquery=#name     Tester
+    Wait Until Element Is Visible     jquery=input[name='next']
+    Click Element     jquery=input[name='next']
+    Wait Until Element Is Visible       jquery=#address
+    Input Text        jquery=#address   123 Main St
+    Wait Until Element Is Visible       jquery=input[name='plomino_save']
+    Click Element     jquery=input[name='plomino_save']
+    Wait Until Element Is Visible     jquery=#name
+
+I can see that the values entered on the source form is displayed on the fields of the target form
+    Element Should Be Visible      jquery=input[name='name'][value='Tester']
+    Wait Until Element Is Visible     jquery=input[name='next']
+    Click Element     jquery=input[name='next']
+    Wait Until Element Is Visible       jquery=#address
+    Element Should Be Visible      jquery=input[name='address'][value='123 Main St']

@@ -208,11 +208,12 @@ I can see the text created for the dynamic text field
   Wait Until Page Contains Element    jquery=.plominoFieldGroup p span:contains('Display This Text')    60s
 
 I edit the number field "${fieldid}" to "${newid}"
-  sleep  0.5s
+  sleep  5s
   select frame  jquery=.mce-edit-area iframe:visible
   wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
   Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
-  Wait Until Keyword Succeeds   1 min   5 sec    Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
+  Sleep   5s
+  Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
   Unselect Frame
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
   I edit the field as Number type
@@ -232,7 +233,7 @@ I edit the field as Number type
   Capture Page Screenshot
 
 I input a value "${value}" on the Library Fee field and move to the next field
-  Wait Until Element Is Visible     jquery=h1:contains('New Form')
+  Wait Until Element Is Visible     jquery=#amount1
   Click Element   jquery=#amount1
   Input Text    jquery=#amount1     ${value}
   Click Element   jquery=#amount2
@@ -500,6 +501,8 @@ I enter "${value}" in "${field}" in "${tab}"
   Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Save")     60s
   Click Element  jquery=.mdl-button:visible:contains("Save")
   wait until page contains element   jquery=.mdl-button:visible:contains("Save")   60s
+  wait until form is loaded
+  Sleep   5s
 
 I enter "${value}" in "${field}" in the form
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]

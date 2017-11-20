@@ -1,0 +1,98 @@
+{
+    "design": {
+        "resources": {},
+        "a_src_dyna_comp": {
+            "id": "a_src_dyna_comp",
+            "type": "PlominoForm",
+            "title": "a_src_dyna_comp",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "a_src_dyna_comp",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "amount1": {
+                    "id": "amount1",
+                    "type": "PlominoField",
+                    "title": "Library Fee",
+                    "params": {
+                        "field_type": "NUMBER",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": true,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Library Fee",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "amount2": {
+                    "id": "amount2",
+                    "type": "PlominoField",
+                    "title": "Misc Fee",
+                    "params": {
+                        "field_type": "NUMBER",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": true,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Misc Fee",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "total": {
+                    "id": "total",
+                    "type": "PlominoField",
+                    "title": "Total",
+                    "params": {
+                        "field_type": "NUMBER",
+                        "mandatory": false,
+                        "field_mode": "COMPUTED",
+                        "isDynamicField": true,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Total",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }                        
+            }
+        }
+    },
+    "id": "macros"
+}

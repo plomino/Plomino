@@ -50,3 +50,24 @@ Scenario: I can see that the data is retained for multi-page target form
   Then I can see that the value entered on the source form is displayed on the "name" field of the target form
   And when I go to the next page and go back to previous page of the target form
   Then I can see that the value entered is still displayed on the first page of the target form
+
+Scenario: When I have a file attachment on source form I can see that the attachment will also be displayed on the target form
+#From use case: have attachment field on source form, the upload value (any value except image) will display in attachment field on target form
+  Given I have a source form "a_src_auto_att" with an attachment and a source form "a_target_auto_att"
+  When I preview the form "a_src_auto_att"
+  And I attach a document and save the source form
+  Then I can see that the document attachment will also be displayed on the target form
+
+Scenario: When I have an image attachment on source form I can see that the attachment will also be displayed on the target form
+#From use case: have attachment field on source form, the upload image value will display in attachment field on target form
+  Given I have a source form "a_src_auto_att" with an attachment and a source form "a_target_auto_att"
+  When I preview the form "a_src_auto_att"
+  And I attach an image and save the source form
+  Then I can see that the image attachment will also be displayed on the target form
+
+Scenario: When I have a multi-page source form with request=post I can see that the values will display on the multi-page target form with request=post
+# From use case: source form can be multi page form (POST request only) or multi page and the target form can be multi page or multi page form
+  Given I have a multi-page source form "a_src_post_multi" and a multi-page target form "a_target_post_multi"
+  When I preview the form "a_src_post_multi"
+  And I fill in the fields and save the source form
+  Then I can see that the values entered on the source form is displayed on the fields of the target form
