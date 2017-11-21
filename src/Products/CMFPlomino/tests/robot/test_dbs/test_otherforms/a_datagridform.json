@@ -1,0 +1,55 @@
+{
+    "design": {
+        "resources": {},
+        "a_datagridform": {
+            "id": "a_datagridform",
+            "type": "PlominoForm",
+            "title": "a_datagridform",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "a_datagridform",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "datagrid": {
+                    "id": "datagrid",
+                    "type": "PlominoField",
+                    "title": "Untitled",
+                    "params": {
+                        "field_type": "DATAGRID",
+                        "mandatory": false,
+                        "validation_formula": "",
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "formula": "",
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "html_attributes_formula": "",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Untitled",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "REGULAR",
+                        "associated_form": "a_mainform",
+                        "field_mapping": null
+                    }
+                }                      
+            }
+        }
+    },
+    "id": "macros"
+}

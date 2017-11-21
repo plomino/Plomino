@@ -67,21 +67,6 @@ Scenario: I can add a new empty view from '+' button
    When I add a new empty view from '+' button
    Then I can see that the 'New View' screen is displayed
 
-Scenario: I can edit a row in a datagrid in an unsaved form (PR #47)
-  #PR 47 - [fix] Fix the parsing formid in input sent from server that prevent user from editing datagrid row
-  Given a logged-in test user
-   and I open the ide for "mydb"
-   and I create an unsaved datagrid form
-   and I create main form with some fields
-   and I associate the datagrid to main form
-   and I preview the layout in a new tab
-   and I add a row to the datagrid form to display the main form "new-form-1"
-   and I fill in the fields and save the form "new-form-1"
-  When I edit the row in the datagrid
-   Then the "new-form-1" is rendered
-  When I update the contents of "new-form-1" and save the form
-   Then I can see that the "new-form" is updated
-
 Scenario: I can create a view of form with all fields (PR 60) from tab (+) button
   #PR 39, 60 [feature] Generate View from form with selected fields
   Given a new form "frm_employee" is created and some fields are added
@@ -97,16 +82,3 @@ Scenario: I can create a view of form with all fields from the Add Panel
   Then I can see that the 'Create view of form' dialog is displayed
   And when I fill in the fields with id="mainform_all_view_id", title="mainform_view", form="frm_employee"
   Then I can successfully view all fields in the form with title="mainform_view"   
-
-# #---------Work In Progress-------
-# # Scenario: I can add a datagrid to multi-page form
-# #   #PR 41: fix handling of empty values in datagrid rendering
-# #   Maximize Browser Window
-# #   Given a logged-in test user
-# #    and I open the ide for "mydb"
-# #    and I add a form by click
-# #    and I add a datagrid to the form
-# #    and I add a field to the newly created form
-# #    and I add a page break to the form
-# #    and I add a datagrid after the page break
-# #    Capture Page Screenshot

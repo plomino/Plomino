@@ -191,38 +191,44 @@ I add a row to the datagrid form to display the main form "${mainform}"
   Capture Page Screenshot
 
 I fill in the fields and save the form "${mainform}"
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='name']      Ann
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='address']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='address']      123 Main St
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='contactno']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='contactno']      1234567890
-  
-  Click Element     jquery=form[name='${mainform}'] .formControls .actionButtons input[name='plomino_save']
+  Wait Until Element Is Visible     jquery=input[name='plomino_save']   60s
+  Click Element     jquery=input[id='name']
+  Input Text    jquery=input[id='name']      Ann
+  Click Element     jquery=input[id='address']
+  Input Text    jquery=input[id='address']      123 Main St
+  Click Element     jquery=input[id='contactno']
+  Input Text    jquery=input[id='contactno']      1234567890
+  Sleep   5s
+  Wait Until Element Is Visible     jquery=.formControls .actionButtons input[name='plomino_save']:eq(1)
+  Click Element     jquery=.formControls .actionButtons input[name='plomino_save']:eq(1)
+  Sleep   5s
 
 I update the contents of "${mainform}" and save the form
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='name']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='name']      Nanie
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='address']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='address']      123 Atlanta, GA
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element     jquery=.plominoFieldGroup p span input[id='contactno']
-  Wait Until Keyword Succeeds   2 min   5 sec   Input Text    jquery=.plominoFieldGroup p span input[id='contactno']      987-098-987
-
-  Click Element     jquery=form[name='${mainform}'] .formControls .actionButtons input[name='plomino_save']
+  Wait Until Element Is Visible     jquery=input[name='plomino_save']   60s
+  Click Element     jquery=input[id='name']
+  Input Text    jquery=input[id='name']      Nanie
+  Click Element     jquery=input[id='address']
+  Input Text    jquery=input[id='address']      123 Atlanta, GA
+  Click Element     jquery=input[id='contactno']
+  Input Text    jquery=input[id='contactno']      987-098-987
+  Sleep   5s
+  Wait Until Element Is Visible     jquery=.formControls .actionButtons input[name='plomino_save']:eq(1)
+  Click Element     jquery=.formControls .actionButtons input[name='plomino_save']:eq(1)
+  Sleep   10s
 
 I can see that the "${datagridform}" is updated
   Wait Until Element Is Visible     jquery=div[id='content-core'] form[name='${datagridform}']      60s
-  Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("123 Atlanta, GA")
-  Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("987-098-987")
-  Wait Until Keyword Succeeds   2 min   5 sec   Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("Nanie")
+  Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("123 Atlanta, GA")
+  Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("987-098-987")
+  Page Should Contain Element     jquery=.plomino-datagrid table tbody tr td:contains("Nanie")
 
 I edit the row in the datagrid
-  Wait Until Keyword Succeeds   2 min   5 sec   Click Element   jquery=.edit-row
+  Wait Until Element Is Visible     jquery=.edit-row
+  Click Element   jquery=.edit-row
+  Sleep   5s
 
 the "${mainform}" is rendered
   Wait Until Element Is Visible     jquery=form[name='${mainform}']   60s
-
-
 
 I add a field to the newly created form
   I click on Add tab
