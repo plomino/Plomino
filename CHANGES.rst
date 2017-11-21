@@ -84,7 +84,7 @@ Changelog
 - Fix "Filter View by Form' macro causing an unresponsive error [quang]
 - Improvement to 'redirect' macro, providing submitted data to target forms [quang]
 - Merge 'redirect on save' and 'redirect on load' into one macro [quang]
-
+- Re-index document after renaming database using event subscription [quang]
 
 2.0b4 (2016-05-27)
 ------------------

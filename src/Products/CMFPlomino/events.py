@@ -35,6 +35,12 @@ def afterDatabaseCreated(obj, event):
     # Due to plone.protect we need to ensure the resource directory is created
     write_on_read = get_resource_directory()
 
+def afterDatabaseMoved(obj, event):
+    """
+    """
+    # If event oldName is not defiend, it is a new database, so skip the refreshDB
+    if event.oldName and event.newName:
+        obj.getIndex().renameDB(event.oldName, event.newName)
 
 def afterFieldModified(obj, event):
     """

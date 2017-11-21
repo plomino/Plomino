@@ -50,6 +50,11 @@
         handler=".events.afterDatabaseCreated"
         />
 
+     <subscriber
+        for="Products.CMFPlomino.contents.database.IPlominoDatabase zope.lifecycleevent.interfaces.IObjectMovedEvent"
+        handler=".events.afterDatabaseMoved"
+        />
+
     <subscriber
         for="Products.CMFPlomino.contents.field.IPlominoField zope.lifecycleevent.interfaces.IObjectModifiedEvent"
         handler=".events.afterFieldModified"

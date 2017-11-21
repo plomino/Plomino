@@ -177,6 +177,20 @@ class PlominoIndex(UniqueObject, CatalogTool):
         return True
 
 
+    def renameDB(self, oldName, newName):
+        """ update index path without reindexing
+        """
+        def updatePath(oldPath):
+            olPaths = oldPath.split('/')
+            olPaths[2] = newName
+            return '/'.join(olPaths)
+
+        path_index = self._catalog.getIndex('path')
+        path_index = path_index.aq_inner
+        for path, rid in path_index._index_items.iteritems():
+            self._catalog.paths[rid] = updatePath(path)
+
+
     security.declareProtected(DESIGN_PERMISSION, 'delSelectionIndex')
     def delSelectionIndex(self, oldName):
         """

@@ -1,0 +1,77 @@
+Plomino Index tests
+=========================
+
+    >>> from plone import api
+
+
+Create plomino database and publish it::
+
+    >>> portal = layer['portal']
+    >>> db = portal.mydb
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Add some minimal content
+
+    >>> id = db.invokeFactory('PlominoForm', id='form1', title='Form 1')
+    >>> id = db.form1.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='field1',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.form1.field1.widget="TEXT"
+    >>> db.form1.form_layout = """<p><label for="field1">field1</label><span class="plominoFieldClass">field1</span></p>"""
+
+
+=======================
+Database Movement Test
+=======================
+
+Create new document
+
+    >>> doc1 = db.createDocument()
+    >>> doc1.setItem("Form", "frm1")
+    >>> doc1.setItem("field1", "sumo")
+    >>> doc1.save(creation=True)
+
+Test if index working
+    >>> index = db.getIndex()
+    >>> result = index.dbsearch({'id':doc1.id})[0];
+    >>> result.getPath().startswith('/plone/mydb/plomino_documents/')
+    True
+    >>> result.getObject().field1 == 'sumo'
+    True
+
+Change the database ID, then test if the index can search the document
+
+    >>> db1 = api.content.rename(db,'mydb1')
+    >>> index = db1.getIndex()
+
+    >>> results = index.dbsearch({'id':doc1.id})
+    >>> len(results) == 1
+    True
+    >>> results[0].getObject().id == doc1.id
+    True
+    >>> results[0].getObject().field1 == 'sumo'
+    True
+
+    >>> results = index.dbsearch({'field1':'sumo'});
+    >>> len(results) == 1
+    True
+    >>> len(results) == 1
+    True
+    >>> results[0].getObject().id == doc1.id
+    True
+    >>> results[0].getObject().field1 == 'sumo'
+    True
+
+    >>> results = index.dbsearch({'path':'/plone/mydb1/plomino_documents/'+doc1.id});
+    >>> len(results) == 1
+    True
+    >>> len(results) == 1
+    True
+    >>> results[0].getObject().id == doc1.id
+    True
+    >>> results[0].getObject().field1 == 'sumo'
+    True
