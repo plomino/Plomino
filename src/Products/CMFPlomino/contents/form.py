@@ -505,7 +505,7 @@ class PlominoForm(Container):
         elif valid is None or valid == '':
             doc.saveDocument(REQUEST, creation=True)
         else:
-            db.documents._delOb(doc.id)
+            db.documents.deleteDocument(doc)
             db.writeMessageOnPage(valid, REQUEST, False)
             REQUEST.RESPONSE.redirect(db.absolute_url())
 

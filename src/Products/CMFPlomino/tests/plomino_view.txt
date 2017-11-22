@@ -1,8 +1,36 @@
 Plomino view tests
 ==================
 
-    >>> portal = layer["portal"]
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Open portal:
+
     >>> db = portal.mydb
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> transaction.commit()
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
 
 When csv export in view, the multi select data is readable in csv file
 
@@ -73,3 +101,41 @@ When csv export in view, the multi select data is readable in csv file
     2
     >>> db.view1.exportCSV()
     '"sumi"\t"Serba\\, John"\t"Jones John Paul, Chameleon Chris"\r\n"sumo"\t"John Paul Jones, Chris Chameleon"\t"John\\, Serba"\r\n'
+
+
+=======================================
+Test unindexing document after deleted
+=======================================
+
+Delete document from the view will also unindex the document
+
+    >>> doc_list = db.view1.getAllDocuments()
+
+    >>> doc1.id in [doc.id for doc in doc_list]
+    True
+    >>> db.deleteDocuments(ids=[doc1.id])
+    >>> doc_list = db.view1.getAllDocuments()
+    >>> doc1.id not in [doc.id for doc in doc_list]
+    True
+
+    >>> doc2.id in [doc.id for doc in doc_list]
+    True
+    >>> db.deleteDocuments(ids=[doc2.id], massive=False)
+    >>> doc_list = db.view1.getAllDocuments()
+    >>> doc2.id not in [doc.id for doc in doc_list]
+    True
+
+Delete document by create new document and get exception
+
+    >>> doc_list = db.view1.getAllDocuments()
+    >>> len(db.view1.getAllDocuments())
+    0
+    >>> db.frm1.onCreateDocument = "return 'Error'"
+    >>> db.frm1.form_layout = """<p><label for="field1">field1</label><span class="plominoFieldClass">field1</span></p>"""
+    >>> transaction.commit()
+
+    >>> form_url = portal_url +'/mydb' +'/frm1'
+    >>> browser.open(form_url)
+    >>> browser.getControl('Save').click()
+    >>> len(db.view1.getAllDocuments())
+    0

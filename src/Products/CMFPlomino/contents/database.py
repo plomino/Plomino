@@ -375,6 +375,8 @@ class PlominoDatabase(
 
         if massive:
             ObjectManager.manage_delObjects(self.documents, ids)
+            for id in ids:
+                self.getIndex().unindexDocument(self.getDocument(id))
         else:
             for id in ids:
                 self.deleteDocument(self.getDocument(id))
@@ -388,7 +390,7 @@ class PlominoDatabase(
         strids = REQUEST.get('deldocs', None)
         if strids is not None:
             ids = [i for i in strids.split('@') if i is not '']
-            self.deleteDocuments(ids=ids, massive=False)  # Trigger events
+            self.deleteDocuments(ids=ids, massive=True)  # Trigger events
         REQUEST.RESPONSE.redirect('.')
 
     security.declarePublic('getIndex')

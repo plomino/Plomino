@@ -75,6 +75,11 @@
         handler=".events.afterFormModified"
         />
 
+     <subscriber
+        for="Products.CMFPlomino.document.PlominoDocument zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+        handler=".events.afterDocumentRemoved"
+        />
+
     <subscriber
         for="Products.CMFPlomino.contents.action.IPlominoAction zope.lifecycleevent.interfaces.IObjectAddedEvent"
         handler=".events.afterActionModified"

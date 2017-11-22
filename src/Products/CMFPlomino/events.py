@@ -155,3 +155,12 @@ def afterHidewhenModified(obj, event):
     """
     obj.cleanFormulaScripts(SCRIPT_ID_DELIMITER.join(
         ['hidewhen', obj.getParentNode().id, obj.id]))
+
+def afterDocumentRemoved(obj, event):
+    """
+    """
+    if not obj.getParentDatabase():
+        # modifying the view from folder_contents
+        return
+    db = obj.getParentDatabase()
+    db.getIndex().unindexDocument(obj)
