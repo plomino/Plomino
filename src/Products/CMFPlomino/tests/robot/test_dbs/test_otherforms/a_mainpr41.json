@@ -1,0 +1,101 @@
+{
+    "design": {
+        "resources": {},
+        "a_mainpr41": {
+            "id": "a_mainpr41",
+            "type": "PlominoForm",
+            "title": "a_mainpr41",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "a_mainpr41",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "name": {
+                    "id": "name",
+                    "type": "PlominoField",
+                    "title": "Name",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Name",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "address": {
+                    "id": "address",
+                    "type": "PlominoField",
+                    "title": "Address",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Address",
+                        "description": "",
+                        "helpers": null,
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "datagrid": {
+                    "id": "datagrid",
+                    "type": "PlominoField",
+                    "title": "Other Info",
+                    "params": {
+                        "field_type": "DATAGRID",
+                        "mandatory": false,
+                        "validation_formula": "",
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "formula": "",
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "html_attributes_formula": "",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Other Info",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "REGULAR",
+                        "associated_form": "a_dgridfields",
+                        "field_mapping": null
+                    }
+                }                       
+            }
+        }
+    },
+    "id": "macros"
+}
