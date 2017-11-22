@@ -85,6 +85,7 @@ Changelog
 - Improvement to 'redirect' macro, providing submitted data to target forms [quang]
 - Merge 'redirect on save' and 'redirect on load' into one macro [quang]
 - Re-index document after renaming database using event subscription [quang]
+- Fix error with selectionlistformula lost while saving field layout by add property NO_CHANGE to selection widget [quang]
 
 2.0b4 (2016-05-27)
 ------------------

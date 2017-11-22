@@ -14,7 +14,7 @@ from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from ..utils import asUnicode
 from base import BaseField
-
+from z3c.form.interfaces import NOT_CHANGED
 
 @provider(IFormFieldProvider)
 class ISelectionField(model.Schema):
@@ -56,6 +56,7 @@ class ISelectionField(model.Schema):
     selectionlistformula = schema.Text(
         title=u'Selection list formula',
         description=u'Formula to compute the selection list elements',
+        missing_value=NOT_CHANGED,
         required=False)
 
     separator = schema.TextLine(
