@@ -27,3 +27,15 @@ Scenario: I can add a datagrid to a multi-page form
   And I fill in the name and address fields and and go to the next page
   Then I can see the datagrid with civil status and job title fields
   And I can fill in the fields for the datagrid and save
+
+Scenario: I can set field mapping in the datagrid
+  #PR 48: Fix datagrid screwing up when field mapping is set
+  Given I have a main form "a_mainpr48" with some fields and a datagrid
+  ${mainpr48_url}=    Get Location
+  When I preview the main form "a_mainpr48"
+  And I add a row to the datagrid form to display the main form "a_mainpr48"
+  And I fill in the fields of the main form and datagrid and then save the form
+  ${dgrid_view_url}=  Get Location
+  When I select the window for the "${mainpr48_url}" and set the field mapping for the datagrid
+  And I reload the document view "${dgrid_view_url}"
+  Then I can see the datagrid form view is arranged according to field mapping

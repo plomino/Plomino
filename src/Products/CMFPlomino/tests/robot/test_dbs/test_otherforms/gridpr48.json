@@ -1,0 +1,112 @@
+{
+    "design": {
+        "resources": {},
+        "gridpr48": {
+            "id": "gridpr48",
+            "type": "PlominoForm",
+            "title": "gridpr48",
+            "params": {
+                "form_method": "Auto",
+                "dynamic_document_title": false,
+                "store_dynamic_document_title": false,
+                "hide_default_actions": false,
+                "isPage": false,
+                "isSearchForm": false,
+                "search_view": null,
+                "resources_js": null,
+                "resources_css": null,
+                "title": "gridpr48",
+                "description": "",
+                "helpers": null,
+                "ajax_load": null,
+                "ajax_include_head": null
+            },
+            "elements": {
+                "dg-text": {
+                    "id": "dg-text",
+                    "type": "PlominoField",
+                    "title": "Some text",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "validation_formula": "",
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "formula": "",
+                        "to_be_indexed": true,
+                        "index_type": "DEFAULT",
+                        "html_attributes_formula": "",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Some text",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                },
+                "dg-option": {
+                    "id": "dg-option",
+                    "type": "PlominoField",
+                    "title": "Pick an option",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "validation_formula": "",
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "formula": "",
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "html_attributes_formula": "",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Pick an option",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "SELECT",
+                        "selectionlist": [
+                            "Option A|a",
+                            "Option B|b",
+                            "Option C|c"
+                        ],
+                        "selectionlistformula": "",
+                        "separator": null
+                    }
+                },
+                "dg-name": {
+                    "id": "dg-name",
+                    "type": "PlominoField",
+                    "title": "Name",
+                    "params": {
+                        "field_type": "TEXT",
+                        "mandatory": false,
+                        "validation_formula": "",
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "formula": "",
+                        "to_be_indexed": true,
+                        "index_type": "DEFAULT",
+                        "html_attributes_formula": "",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Name",
+                        "description": "",
+                        "helpers": [],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "TEXT",
+                        "size": null,
+                        "preserve_carriage_returns": false
+                    }
+                }                       
+            }
+        }
+    },
+    "id": "macros"
+}
