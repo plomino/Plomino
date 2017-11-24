@@ -13,9 +13,9 @@
                 "do_not_reindex": false,
                 "isDatabaseTemplate": false,
                 "import_macros": [
-                    "."
+                    "macros"
                 ],
-                "title": "RedirectForm",
+                "title": "OtherTestForms",
                 "exclude_from_nav": true,
                 "description": "",
                 "ajax_load": null,
