@@ -24,6 +24,7 @@ def test_suite():
         'plomino_file_attachment.txt',
         'plomino_view.txt',
         'plomino_index.txt',
+        'plomino_formula.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',

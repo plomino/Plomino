@@ -87,14 +87,6 @@
 
     <browser:page
         for="Products.CMFPlomino.contents.form.IPlominoForm"
-        name="redirect"
-        class=".form.FormView"
-        attribute="redirect"
-        permission="zope.Public"
-        />
-
-    <browser:page
-        for="Products.CMFPlomino.contents.form.IPlominoForm"
         name="OpenForm"
         class=".form.FormView"
         attribute="openform"

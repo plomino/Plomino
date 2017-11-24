@@ -17,10 +17,10 @@ editcontext = plominoContext.restrictedTraverse(editpath)
 ctype = editcontext.getPortalTypeName()
 if ctype=='PlominoForm' and only_redirect_on_save=='False':
     if retain_form_data=='True':
-        targeturl='%s/%s?%s' % (db.absolute_url(),form_redirect,req["QUERY_STRING"])
+        targeturl='%s?%s&%s' % (db.absolute_url(),form_redirect,req["QUERY_STRING"],'ignore_actions=1')
     else:
         targeturl = '%s/%s' % (db.absolute_url(), form_redirect)
-    req.response.setHeader('Plomino-Redirect',targeturl)
+    req.response.redirect(targeturl, status=307)
     return req.response
 else:
     return None

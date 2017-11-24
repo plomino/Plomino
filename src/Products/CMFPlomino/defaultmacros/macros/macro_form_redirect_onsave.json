@@ -383,6 +383,13 @@
                         "helpers": [
                             [
                                 {
+                                    "formula": "\nfield_id = '@@CURRENT_FIELD'\nif field_id =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nvalue = plominoContext.getItem(field_id)\nreturn value is None or value is False or (isinstance(value, basestring) and len(value.strip())==0)\n",
+                                    "_macro_id_": "macro_condition_field_empty_2",
+                                    "field_id": "@@CURRENT_FIELD",
+                                    "Form": "macro_condition_field_empty",
+                                    "title": "No value"
+                                },
+                                {
                                     "formula": "\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nif not plominoContext.getItem(field_id):\n    return 'True'\nreturn plominoContext.getItem(field_id)\n",
                                     "defaultvalue": "True",
                                     "_macro_id_": "macro_field_default_value_2",

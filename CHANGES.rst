@@ -89,6 +89,7 @@ Changelog
 
 - Add event subscriber to unindex document after being deleted [quang]
 - Call to unindexing document after being indeleted regardless it is deleted with Plone API or not [quang]
+- Fix regression with form onDisplay to accept different type of returned value [quang]
 
 2.0b4 (2016-05-27)
 ------------------

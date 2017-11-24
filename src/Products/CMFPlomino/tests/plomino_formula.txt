@@ -1,0 +1,100 @@
+Plomino browser tests
+=========================
+
+
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Add some minimal content to test access (view 1 displays all documents)::
+
+    >>> id = db.invokeFactory('PlominoForm', id='form1', title='Form 1')
+    >>> id = db.form1.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='field1',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.form1.field1.widget="TEXT"
+    >>> db.form1.form_layout = """<p><label for="field1">field1</label><span class="plominoFieldClass">field1</span></p>"""
+
+    >>> id = db.invokeFactory('PlominoForm', id='form2', title='Form 1')
+    >>> id = db.form2.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='field1',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.form2.field1.widget="TEXT"
+    >>> db.form2.form_layout = """<p><label for="field1">field1</label><span class="plominoFieldClass">field1</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
+
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+
+===============================
+OnDisplay for Single-page Form
+==============================
+
+    >>> db.form1.onDisplay ="""return '<html><head></head><body>Test form display</body></html>'"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/form1'
+    >>> browser.open(form_url)
+    >>> 'Test form display' in browser.contents
+    True
+
+
+===============================
+OnDisplay for Multi-page Form
+==============================
+
+    >>> db.form2.onDisplay ="""plominoContext.REQUEST.set('field1','Sumo')\n
+    ... return None"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/form2'
+    >>> browser.open(form_url)
+    >>> 'Sumo' in browser.contents
+    True
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> 'Sumo' in browser.contents
+    True
