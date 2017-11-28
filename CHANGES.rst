@@ -84,9 +84,9 @@ Changelog
 - Fix "Filter View by Form' macro causing an unresponsive error [quang]
 - Improvement to 'redirect' macro, providing submitted data to target forms [quang]
 - Merge 'redirect on save' and 'redirect on load' into one macro [quang]
+
 - Re-index document after renaming database using event subscription [quang]
 - Fix error with selectionlistformula lost while saving field layout by add property NO_CHANGE to selection widget [quang]
-
 - Add event subscriber to unindex document after being deleted [quang]
 - Call to unindexing document after being indeleted regardless it is deleted with Plone API or not [quang]
 - Fix regression with form onDisplay to accept different type of returned value [quang]
