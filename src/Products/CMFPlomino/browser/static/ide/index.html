@@ -204,6 +204,16 @@
       position: absolute !important;
     }
 
+    .mdl-dialog__right-button {
+      right: 0;
+      position: absolute !important;
+      margin-right:8px !important;
+    }
+
+    .mdl-dialog__error {
+    	color:red
+    }
+
     .pattern-relateditems-dropdown {
       z-index: 10002;
     }
@@ -601,10 +611,61 @@
       <!--<h4 class="mdl-dialog__title">What you want to add?</h4>-->
       <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
           <button type="button" class="mdl-button" data-create="form">Add new form</button>
-          <button type="button" class="mdl-button" data-create="view">Add new view</button>
+          <button type="button" class="mdl-button" data-create="view">Add new empty view</button>
+          <button type="button" class="mdl-button" data-create="view/custom">Add all form view</button>
           <button type="button" class="mdl-button">Cancel</button>
       </div>
   </dialog>
+
+  <div id="new-view-dialog" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1041">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Create view of form</h4>
+        <span class="mdl-dialog__error"><small></small></span>
+      </div>
+    <div class="modal-body">
+      <div class="mdl-dialog__content-form-group">
+        <label for="new-view-dialog__form">Which forms would you like to View</label>
+        <select id="new-view-dialog__form" data-key="form"></select>
+      </div>
+      <div class="mdl-dialog__content-form-group">
+        <label for="new-view-dialog__field">Fields</label>
+        <select multiple id="new-view-dialog__field" data-key="field"></select>
+      </div>
+      <div
+        class="mdl-dialog__content-form-group">
+        <label for="new-view-dialog__id" >
+          View ID <span>*</span>
+        </label>
+        <input type="text" id="new-view-dialog__id" data-key="id" required>
+      </div>
+      <div
+        class="mdl-dialog__content-form-group">
+        <label for="new-view-dialog__title" >
+          View title<span> *</span>
+        </label>
+        <input type="text" id="new-view-dialog__title" data-key="title" required>
+      </div>
+
+
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent">
+        Cancel
+      </button>
+      <button type="button"
+        class="mdl-button mdl-button--raised mdl-button--accent
+        new-view-dialog__create-btn mdl-color--green-500">
+        Create
+      </button>
+    </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
   <div id="wf-item-settings-dialog" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1005">
     <div class="modal-dialog" role="document">
@@ -671,7 +732,15 @@
           mdl-dialog__left-button
           wf-item-settings-dialog__create-btn--view
           wf-item-settings-dialog__create-btn mdl-color--grey-700">
-          Create new view
+          Create new empty view
+        </button>
+        <button type="button"
+          data-typefor="workflowViewTask"
+          class="mdl-button mdl-button--raised mdl-button--accent
+          mdl-dialog__right-button
+          wf-item-settings-dialog__create-btn--view
+          wf-item-settings-dialog__create-btn mdl-color--grey-700">
+          Create new view from form
         </button>
         <button type="button"
           data-typefor="workflowViewTask"
@@ -722,6 +791,6 @@
   <script defer src="theme/material.min.js"
     onload="window.materialPromiseResolve()"
     onerror="window.materialPromiseReject()"></script>
-<script type="text/javascript" src="vendor.js?425a7c89c523a6d072f6"></script><script type="text/javascript" src="main.js?425a7c89c523a6d072f6"></script></body>
+<script type="text/javascript" src="vendor.js?d7f1014bfcafc405e5d4"></script><script type="text/javascript" src="main.js?d7f1014bfcafc405e5d4"></script></body>
 
 </html>

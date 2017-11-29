@@ -1,6 +1,10 @@
 Plomino advanced tests
 =========================
 
+    >>> import zope.event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+
+
 Sub forms
 -------------
 
@@ -31,12 +35,14 @@ Attempt to validate the form with an empty request::
 Now add frm1 as a subform of frm2. Validating frm2 should also fail::
 
     >>> db.frm2.form_layout = '<span class="plominoSubformClass">frm1</span>'
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm2, []))
     >>> db.frm2.validateInputs(REQUEST)
     [{'field': 'field1', 'error': 'Field 1 is mandatory'}]
 
 And it should also work for multiple levels down::
 
     >>> db.frm3.form_layout = '<span class="plominoSubformClass">frm2</span>'
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm3, []))
     >>> db.frm3.validateInputs(REQUEST)
     [{'field': 'field1', 'error': 'Field 1 is mandatory'}]
 
@@ -46,17 +52,19 @@ Sub forms with multipage
 Like the above, fields on a subform may be on a different page If that's the 
 case then they shouldn't trigger validation failures.
 
-    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form 4', isMulti=True)
-    >>> id = db.invokeFactory('PlominoForm', id='frm5', title='Form 5', isMulti=True)
+    >>> id = db.invokeFactory('PlominoForm', id='frm4', title='Form 4')
+    >>> id = db.invokeFactory('PlominoForm', id='frm5', title='Form 5')
 
 Add a subform with the mandatory field on a later page. It should validate::
     
     >>> db.frm4.form_layout = '<p>Hfrm4:</p><hr class="plominoPagebreakClass" /><span class="plominoSubformClass">frm1</span>'
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm4, []))
     >>> db.frm4.validateInputs(REQUEST)
     []
 
 Go one extra level deep. It should still validate:
 
     >>> db.frm5.form_layout = '<p>Hfrm5:</p><hr class="plominoPagebreakClass" /><span class="plominoSubformClass">frm2</span>'
+    >>> zope.event.notify(ObjectModifiedEvent(db.frm5, []))
     >>> db.frm5.validateInputs(REQUEST)
     []
