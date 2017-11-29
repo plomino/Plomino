@@ -811,7 +811,7 @@ I have source and target forms
   Capture Page Screenshot
   I add a source form
 
-I deselect the "Only Redirect On Save" checkbox
+I select the "Redirect On Load" radio button
   Click Link  Form Settings
   Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
 
@@ -826,8 +826,8 @@ I deselect the "Only Redirect On Save" checkbox
   I select redirect type = Form
   I select retain form data in target form
 
-  Execute Javascript    window.document.getElementById("only_redirect_on_save").scrollIntoView(true);
-  Click Element     jquery=#only_redirect_on_save
+  Execute Javascript    window.document.getElementById("redirect_event-load").scrollIntoView(true);
+  Click Element     jquery=#redirect_event-load
 
 I will see a confirmation message
   Wait Until Page Contains Element    jquery=.plomino-hidewhen p:contains('Please ensure you add a condition to determine when to redirect')

@@ -29,10 +29,10 @@ Scenario: When I have a field in source form with request=auto I can see that th
   And I fill in the "name" field and save the source form
   Then I can see that the value entered on the source form is displayed on the "name" field of the target form
 
-Scenario: A message will be displayed when I deselect the "Only Redirect On Save" checkbox
+Scenario: A message will be displayed when I select the "Redirect On Load" radio button
 #From use case: add check box, only redirect on save, and warning message... if you use a page form, you need to uncheck this, with condition
   Given I have source and target forms
-  When I deselect the "Only Redirect On Save" checkbox
+  When I select the "Redirect On Load" radio button
   Then I will see a confirmation message
 
 Scenario: When I have a field in source form with request=post I can see that the value will display on target form with request=auto

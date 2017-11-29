@@ -90,6 +90,7 @@ Changelog
 - Add event subscriber to unindex document after being deleted [quang]
 - Call to unindexing document after being indeleted regardless it is deleted with Plone API or not [quang]
 - Fix regression with form onDisplay to accept different type of returned value [quang]
+- Update macro redirect_on_save to have a separate choice for redirect on_save and on_load [quang]
 
 - cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay] 
 

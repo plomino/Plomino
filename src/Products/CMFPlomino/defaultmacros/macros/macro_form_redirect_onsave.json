@@ -321,12 +321,12 @@
                                 {
                                     "field_compare": "in",
                                     "Form": "macro_condition_field_got_substring",
-                                    "title": "\"only_redirect_on_save\" in Tru...",
+                                    "title": "\"redirect_event\" in save ",
                                     "value_type": "text",
-                                    "field_value": "True",
-                                    "formula": "\nfield_name = \"\"\"only_redirect_on_save\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"True\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
-                                    "field_name": "only_redirect_on_save",
-                                    "_macro_id_": "macro_condition_field_got_substring_2"
+                                    "field_value": "save",
+                                    "formula": "\nfield_name = \"\"\"redirect_event\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"save\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "redirect_event",
+                                    "_macro_id_": "macro_condition_field_got_substring_3"
                                 }
                             ],
                             [
@@ -365,44 +365,6 @@
                         "preserve_carriage_returns": false
                     }
                 },
-                "only_redirect_on_save": {
-                    "id": "only_redirect_on_save",
-                    "type": "PlominoField",
-                    "title": "Only Redirect On Save",
-                    "params": {
-                        "field_type": "BOOLEAN",
-                        "mandatory": false,
-                        "field_mode": "EDITABLE",
-                        "isDynamicField": false,
-                        "to_be_indexed": false,
-                        "index_type": "DEFAULT",
-                        "read_template": null,
-                        "edit_template": null,
-                        "title": "Only Redirect On Save",
-                        "description": "",
-                        "helpers": [
-                            [
-                                {
-                                    "formula": "\nfield_id = '@@CURRENT_FIELD'\nif field_id =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nvalue = plominoContext.getItem(field_id)\nreturn value is None or value is False or (isinstance(value, basestring) and len(value.strip())==0)\n",
-                                    "_macro_id_": "macro_condition_field_empty_2",
-                                    "field_id": "@@CURRENT_FIELD",
-                                    "Form": "macro_condition_field_empty",
-                                    "title": "No value"
-                                },
-                                {
-                                    "formula": "\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nif not plominoContext.getItem(field_id):\n    return 'True'\nreturn plominoContext.getItem(field_id)\n",
-                                    "defaultvalue": "True",
-                                    "_macro_id_": "macro_field_default_value_2",
-                                    "Form": "macro_field_default_value",
-                                    "title": "Default value"
-                                }
-                            ]
-                        ],
-                        "ajax_load": null,
-                        "ajax_include_head": null,
-                        "widget": "CHECKBOX"
-                    }
-                },
                 "not_redirect_on_save_defaulthidewhen": {
                     "id": "not_redirect_on_save_defaulthidewhen",
                     "type": "PlominoHidewhen",
@@ -421,14 +383,14 @@
                                     "title": "Show"
                                 },
                                 {
-                                    "field_compare": "not in",
+                                    "field_compare": "in",
                                     "Form": "macro_condition_field_got_substring",
-                                    "title": "\"only_redirect_on_save\" not in...",
+                                    "title": "\"redirect_event\" in load ",
                                     "value_type": "text",
-                                    "field_value": "True",
-                                    "formula": "\nfield_name = \"\"\"only_redirect_on_save\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"True\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value not in str(field_result)\nreturn result\n    ",
-                                    "field_name": "only_redirect_on_save",
-                                    "_macro_id_": "macro_condition_field_got_substring_2"
+                                    "field_value": "load",
+                                    "formula": "\nfield_name = \"\"\"redirect_event\"\"\"\nif field_name =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_name, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nfield_value = \"\"\"load\"\"\"\nfield_result = plominoContext.getItem(field_name)\nform = plominoContext.getForm()\nfield = getattr(form, field_name)\nif field.field_mode in [\"COMPUTED\",\"COMPUTEDONSAVE\"]:\n    field_result = form.computeFieldValue(field_name, plominoContext)\nresult = field_value in str(field_result)\nreturn result\n    ",
+                                    "field_name": "redirect_event",
+                                    "_macro_id_": "macro_condition_field_got_substring_3"
                                 }
                             ],
                             [
@@ -456,6 +418,49 @@
                         "helpers": [],
                         "ajax_load": null,
                         "ajax_include_head": null
+                    }
+                },
+                "redirect_event": {
+                    "id": "redirect_event",
+                    "type": "PlominoField",
+                    "title": "Redirect event",
+                    "params": {
+                        "field_type": "SELECTION",
+                        "mandatory": false,
+                        "field_mode": "EDITABLE",
+                        "isDynamicField": false,
+                        "to_be_indexed": false,
+                        "index_type": "DEFAULT",
+                        "read_template": null,
+                        "edit_template": null,
+                        "title": "Redirect event",
+                        "description": "",
+                        "helpers": [
+                            [
+                                {
+                                    "formula": "\nscript_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\nfield_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nif not plominoContext.getItem(field_id):\n    return 'save'\nreturn plominoContext.getItem(field_id)\n",
+                                    "defaultvalue": "save",
+                                    "_macro_id_": "macro_field_default_value_3",
+                                    "Form": "macro_field_default_value",
+                                    "title": "Default value"
+                                },
+                                {
+                                    "formula": "\nfield_id = '@@CURRENT_FIELD'\nif field_id =='@@CURRENT_FIELD':\n    script_type, form_id, rest = script_id.split(SCRIPT_ID_DELIMITER, 2)\n    field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)\nvalue = plominoContext.getItem(field_id)\nreturn value is None or value is False or (isinstance(value, basestring) and len(value.strip())==0)\n",
+                                    "_macro_id_": "macro_condition_field_empty_2",
+                                    "field_id": "@@CURRENT_FIELD",
+                                    "Form": "macro_condition_field_empty",
+                                    "title": "No value"
+                                }
+                            ]
+                        ],
+                        "ajax_load": null,
+                        "ajax_include_head": null,
+                        "widget": "RADIO",
+                        "selectionlist": [
+                            "Redirect on save|save",
+                            "Redirect on load|load"
+                        ],
+                        "separator": null
                     }
                 }
             }
