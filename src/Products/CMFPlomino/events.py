@@ -12,7 +12,10 @@ from zope.interface import directlyProvides
 from .config import SCRIPT_ID_DELIMITER, VERSION
 from .index.index import PlominoIndex
 from . import get_resource_directory
-
+from Acquisition import aq_inner
+from zope.component import getAdapter
+from Products.CMFPlone.interfaces import IUserGroupsSettingsSchema
+from plone import api
 
 def afterDatabaseCreated(obj, event):
     obj.plomino_version = VERSION
@@ -32,6 +35,9 @@ def afterDatabaseCreated(obj, event):
     # Create temporary file for attachment
     manage_addCMFBTreeFolder(obj, id='temporary_files')
 
+    # turn on do_not_list_user if Plone many_users is set
+    many_users = getAdapter(aq_inner(api.portal.get()), IUserGroupsSettingsSchema).many_users
+    obj.do_not_list_users =  many_users
     # Due to plone.protect we need to ensure the resource directory is created
     write_on_read = get_resource_directory()
 
@@ -41,6 +47,7 @@ def afterDatabaseMoved(obj, event):
     # If event oldName is not defiend, it is a new database, so skip the refreshDB
     if event.oldName and event.newName:
         obj.getIndex().renameDB(event.oldName, event.newName)
+
 
 def afterFieldModified(obj, event):
     """

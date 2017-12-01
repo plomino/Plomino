@@ -262,3 +262,76 @@ Turn on the feature listing database user again, but enable Plone many_user feat
     >>> search_result = json.loads(browser.contents)
     >>> search_result['total'] == 0
     True
+
+
+===============================
+Do Not List User setting Test
+===============================
+
+    >>> from plone import api
+
+Turn off Plone many_users Setting
+
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Site Setup').click()
+    >>> browser.getLink('Users and Groups').click()
+    >>> browser.getLink('Settings').click()
+    >>> browser.getControl('Many users').selected = False
+    >>> browser.getControl('Save').click()
+
+Create new DB and check the do_not_list_user setting =  False
+
+    >>> db1 = api.content.create(type='PlominoDatabase', id='db1', title='db1', container=portal)
+    >>> db1.do_not_list_users
+    False
+
+Browser the DB setting and verify that Do_not_list_user is visible
+
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/db1/edit'
+    >>> browser.open(form_url)
+    >>> control = browser.getControl(name='form.widgets.do_not_list_users:list')
+    >>> control.type
+    'checkbox'
+
+Set and get do_not_list_user will follow the updated value
+
+    >>> db1.do_not_list_users =  True
+    >>> db1.do_not_list_users
+    True
+    >>> db1.do_not_list_users = False
+    >>> db1.do_not_list_users
+    False
+
+Turn on Plone many_users Setting
+
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Site Setup').click()
+    >>> browser.getLink('Users and Groups').click()
+    >>> browser.getLink('Settings').click()
+    >>> browser.getControl('Many users').selected = True
+    >>> browser.getControl('Save').click()
+
+Create new DB and check the do_not_list_user setting =  True
+
+    >>> db2 = api.content.create(type='PlominoDatabase', id='db2', title='db2', container=portal)
+    >>> db2.do_not_list_users
+    True
+
+Browser the DB setting and verify that Do_not_list_user is hidden
+
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/db2/edit'
+    >>> browser.open(form_url)
+    >>> control = browser.getControl(name='form.widgets.do_not_list_users:list')
+    >>> control.type
+    'hidden'
+
+Set and get do_not_list_user will follow the Plone setting many_user
+
+    >>> db1.do_not_list_users =  True
+    >>> db1.do_not_list_users
+    True
+    >>> db1.do_not_list_users = False
+    >>> db1.do_not_list_users
+    True

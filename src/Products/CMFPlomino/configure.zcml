@@ -130,7 +130,6 @@
         handler=".events.afterHidewhenModified"
         />
 
-
     <utility
         name="Products.CMFPlomino.PlominoCoreUtils"
         provides="Products.CMFPlomino.interfaces.IPlominoUtils"

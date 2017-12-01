@@ -17,6 +17,9 @@ from zope import event
 from zope.interface import implements
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
+from z3c.form.browser.checkbox import SingleCheckBoxWidget
+from z3c.form import widget
+import zope.component
 
 from .. import _, config
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
@@ -26,8 +29,10 @@ from Products.CMFPlomino.interfaces import IPlominoContext
 from Products.CMFPlomino.design import DesignManager
 from Products.CMFPlomino.replication import ReplicationManager
 from Products.CMFPlomino.document import addPlominoDocument
-
-
+from zope.component import getAdapter
+from Products.CMFPlone.interfaces import IUserGroupsSettingsSchema
+from plone import api
+from Acquisition import aq_inner
 security = ClassSecurityInfo()
 
 
@@ -64,9 +69,24 @@ def default_macros(obj):
     return values + new_values
 
 
+class DoNotListUserCheckboxWidget(SingleCheckBoxWidget):
+
+    def update(self):
+        many_users = getAdapter(aq_inner(api.portal.get()), IUserGroupsSettingsSchema).many_users
+        # Hide the field if Plone many_user setting is enabled
+        if many_users:
+            self.mode = 'hidden'
+        else:
+            self.mode = 'input'
+        return super(SingleCheckBoxWidget,self).update()
+
+
+
 class IPlominoDatabase(model.Schema):
     """ Plomino database schema
     """
+
+
 
     indexAttachments = schema.Bool(
         title=_('CMFPlomino_label_IndexAttachments',
@@ -125,6 +145,8 @@ class IPlominoDatabase(model.Schema):
         required=False,
     )
 
+
+    directives.widget('do_not_list_users',DoNotListUserCheckboxWidget)
     do_not_list_users = schema.Bool(
         title=_("CMFPlomino_label_DoNotListUsers",
             default="Do not list portal users"),
@@ -134,6 +156,7 @@ class IPlominoDatabase(model.Schema):
             'amount of users is large.'),
         default=False,
     )
+
 
     do_not_reindex = schema.Bool(
         title=_("CMFPlomino_label_DoNotReindex",
@@ -186,6 +209,8 @@ class IPlominoDatabase(model.Schema):
     )
 
 
+
+
 class PlominoDatabase(
         Container, AccessControl, DesignManager, ReplicationManager):
     implements(IPlominoDatabase, IPlominoContext)
@@ -194,6 +219,20 @@ class PlominoDatabase(
     def documents(self):
         return self.plomino_documents
 
+    @property
+    def do_not_list_users(self):
+        many_users = getAdapter(aq_inner(api.portal.get()), IUserGroupsSettingsSchema).many_users
+        if many_users:
+            return True
+        else:
+            if hasattr(self, '_do_not_list_users'):
+                return self._do_not_list_users
+            else:
+                return False
+
+    @do_not_list_users.setter
+    def do_not_list_users(self, value):
+        self._do_not_list_users = value
 
     def allowedContentTypes(self):
         # Make sure PlominoDocument is hidden in Plone "Add..." menu

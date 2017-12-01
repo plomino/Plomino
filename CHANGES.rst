@@ -94,6 +94,7 @@ Changelog
 
 - cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay] 
 
+- Update do_not_list_user DB setting to follow Plone many_user setting [quang]
 
 2.0b4 (2016-05-27)
 ------------------
