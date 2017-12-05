@@ -94,6 +94,7 @@ Changelog
 - Update macro redirect_on_save to have a separate choice for redirect on_save and on_load [quang]
 - cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
 - Update do_not_list_user DB setting to follow Plone many_user setting [quang]
+- Fix issue with mandatory field inside hidewhen not validated [quang]
 
 - revert: cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
 - Set default redirect_type value in redirect_onsave macro. Fixes previous regression in redirect macros [instification, quang]
