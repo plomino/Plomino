@@ -1675,6 +1675,7 @@ class PlominoForm(Container):
         hidewhens_results = []
 
         hidewhens = self.getHidewhenFormulas()
+
         #if doc is None:
         #    doc = getTemporaryDocument(db, self, REQUEST, validation_mode=True)
         assert doc is not None
@@ -2230,10 +2231,11 @@ class PlominoForm(Container):
 
     security.declarePublic('validateInputs')
 
-    def validateInputs(self, REQUEST, doc=None, tmp=None):
+    def validateInputs(self, REQUEST, doc=None, tmp=None, applyhidewhen=True):
         """
         """
         db = self.getParentDatabase()
+
         if not tmp:
             tmp = getTemporaryDocument(
                 db,

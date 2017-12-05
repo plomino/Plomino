@@ -66,20 +66,20 @@ Createa form with mandatory field inside hidewhen
     ...         title='Field2',
     ...         field_type="TEXT",
     ...         field_mode="EDITABLE")
-    >>> id = db.frm1.invokeFactory('PlominoField', id='hw1',
+    >>> id = db.frm1.invokeFactory('PlominoHidewhen', id='hw1',
     ...         title='Hidewhen',
     ...         field_type="HIDEWHEN",
-    ...         formula="return plominoContext.getItem('field2','')=='Apple'")
+    ...         formula="return plominoContext.getItem('field2','')!='Apple'")
     >>> db.frm1.form_layout = """<span class="plominoHidewhenClass">start:hw1</span>
     ...     <p><label for="field1">Field1</label><span class="plominoFieldClass">field1</span></p>
-    ...     <p><label for="field1">Field2</label><span class="plominoFieldClass">field2</span></p>
-    ...     <span class="plominoHidewhenClass">end:hw1</span>"""
+    ...     <span class="plominoHidewhenClass">end:hw1</span>
+    ...     <p><label for="field2">Field2</label><span class="plominoFieldClass">field2</span></p>
+    ...     """
     >>> transaction.commit()
 
 Open the form and submit the form without value for mandatory
     >>> form_url = portal_url +'/mydb' +'/frm1'
     >>> browser.open(form_url)
-    >>> browser.getControl('Field1').value = ''
     >>> browser.getControl('Field2').value = 'Apple'
     >>> browser.getControl('Save').click()
     >>> 'Validation failed' in browser.contents

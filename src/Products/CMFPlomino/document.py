@@ -1091,7 +1091,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # (as BTreeFolder2 1.0 does not define __nonzero__)
         return True
 
-    def getTemporaryDocument(self, doc=None, validation_mode=False):
+    def getTemporaryDocument(self, doc=None, validation_mode=False, applyhidewhen=True):
         """Return a temporary document based on the current request and form"""
         db = self.getParentDatabase()
         request = self.REQUEST
@@ -1103,7 +1103,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             form,
             request,
             doc=doc,
-            validation_mode=validation_mode
+            validation_mode=validation_mode,
+            applyhidewhen=applyhidewhen
             ).__of__(db)
 
 
@@ -1149,7 +1150,8 @@ class TemporaryDocument(PlominoDocument):
         form,
         REQUEST,
         real_doc=None,
-        validation_mode=False
+        validation_mode=False,
+        applyhidewhen=True
     ):
         self._parent = parent
         self.form = form
@@ -1160,7 +1162,7 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.id)
             self.real_id = real_doc.id
-            form.validateInputs(REQUEST, self)
+            form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
@@ -1171,7 +1173,7 @@ class TemporaryDocument(PlominoDocument):
                 for f in mapped_field_ids:
                     self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
-                form.validateInputs(REQUEST, self)
+                form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
