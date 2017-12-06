@@ -8,7 +8,6 @@ from plone import api
 from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
 from plone.autoform import directives as form
 from plone.dexterity.content import Container
-from plone.memoize import instance
 from plone.supermodel import directives, model
 from pyquery import PyQuery as pq
 from z3c.form.datamanager import AttributeField, zope
@@ -315,27 +314,18 @@ class PlominoForm(Container):
         return value
 
     def getIsMulti(self):
-        db = self.getParentDatabase()
-        cache_key = 'getIsMulti_%s'%repr(self)
-
-        cached = db.getRequestCache(cache_key)
-        if cached is not None:
-            return cached
-
+        # TODO: Cache this?
         html_content = self.form_layout or ''
         if not html_content:
             return False
 
         # The form is multipage if there is a pagebreak HR
         html = pq(html_content)
-        result = False
         for elem in html.children():
             if elem.tag == 'hr' and \
                             elem.attrib.get('class') == 'plominoPagebreakClass':
-                result = True
-                break
-        db.setRequestCache(cache_key, result)
-        return result
+                return True
+        return False
 
     def getFormAction(self, request, bare=False):
         """
@@ -528,18 +518,17 @@ class PlominoForm(Container):
         """
         db = self.getParentDatabase()
         # XXX: Can this be re-enabled?
-        cache_key = "getFormFields_%s_%d_%d_%d_%d_%d" % (
-            repr(self),
-            hash(doc),
-            #hash(frozenset(request.keys())),
-            includesubforms,
-            applyhidewhen,
-            validation_mode,
-            deduplicate
-        )
-        cache = db.getRequestCache(cache_key)
-        if cache:
-            return cache
+        # cache_key = "getFormFields_%d_%d_%d_%d_%d_%d" % (
+        #     hash(self),
+        #     hash(doc),
+        #     includesubforms,
+        #     applyhidewhen,
+        #     validation_mode,
+        #     deduplicate
+        # )
+        # cache = db.getRequestCache(cache_key)
+        # if cache:
+        #     return cache
         # if not request and hasattr(self, 'REQUEST'):
         #     request = self.REQUEST
         form = self.getForm()
@@ -593,7 +582,7 @@ class PlominoForm(Container):
                      for f, c in seen.items() if c > 1])
                 logger.debug('Overridden fields: %s' % report)
 
-        db.setRequestCache(cache_key, result)
+        # db.setRequestCache(cache_key, result)
         return result
 
     security.declarePublic('getHidewhenFormulas')
@@ -612,11 +601,7 @@ class PlominoForm(Container):
     def getHidewhen(self, id):
         """ Get a hide-when formula
         """
-        hidewhen = getattr(self, id)
-        if getattr(hidewhen, 'portal_type', '') != 'PlominoHidewhen':
-            raise AttributeError()
-        return hidewhen
-
+        return getattr(self, id)
 
     def getFormActions(self):
         """ Get all actions
@@ -837,7 +822,7 @@ class PlominoForm(Container):
 
     @plomino_profiler('form')
     def displayDocument(self, doc, editmode=False, creation=False,
-            parent_form_id=False, request=None, temp_doc=None):
+                        parent_form_id=False, request=None):
         """ Display the document using the form's layout
         """
         db = self.getParentDatabase()
@@ -851,35 +836,22 @@ class PlominoForm(Container):
             if form_mode and form_mode == 'WRITE':
                 editmode = True
 
-        if request:
-            parent_form_ids = db.getRequestCache('parent_form_ids')
-            if parent_form_ids is None:
-                parent_form_ids = []
-            if parent_form_id:
-                db.setRequestCache('parent_form_ids', parent_form_ids + [parent_form_id])
-        else:
-            parent_form_ids = []
-
-        if parent_form_ids:
-            parent_form = db.getForm(parent_form_ids[0])
+        if parent_form_id:
+            parent_form = db.getForm(parent_form_id)
             is_multi = parent_form.getIsMulti()
         else:
             is_multi = self.getIsMulti()
 
         # Use the request for the temp doc in editmode with a multipage form
         if request and editmode and request.get('form') and is_multi:
-            #TODO: why? need to work out test for this
             use_request = True
             # Use the parent form for the temp doc
             if parent_form_id:
                 tempdoc_form = parent_form
         else:
             use_request = False
-
-        if temp_doc is not None:
-            hidewhen_target = temp_doc
         # remove the hidden content
-        elif doc and use_request:
+        if doc and use_request:
             hidewhen_target = getTemporaryDocument(
                 db,
                 tempdoc_form,
@@ -897,13 +869,11 @@ class PlominoForm(Container):
             hidewhen_target = doc
         html_content = self.applyHideWhen(hidewhen_target, silent_error=False, cache_key='displayDocument')
         hidden_fields, reset_fields = self._get_hidden_fields(request, hidewhen_target, validation_mode=False)
-        # TODO: work out why this is here. We shouldn't be changing the request as it
-        # screws up request caching
-        # if request:
-        #     parent_form_ids = request.get('parent_form_ids', [])
-        #     if parent_form_id:
-        #         parent_form_ids.append(parent_form_id)
-        #         request.set('parent_form_ids', parent_form_ids)
+        if request:
+            parent_form_ids = request.get('parent_form_ids', [])
+            if parent_form_id:
+                parent_form_ids.append(parent_form_id)
+                request.set('parent_form_ids', parent_form_ids)
 
         # get the field lists
         fields = self.getFormFields(doc=doc, request=request)
@@ -931,7 +901,7 @@ class PlominoForm(Container):
                             asUnicode(request.get(field_id, '')),
                             html_content)
                     )
-            for f in fields:
+            for f in self.getFormFields():
                 if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
                     temp_files = db.getRequestCache(f.id+"@@ATTACHMENT")
                     html_content = (
@@ -972,12 +942,12 @@ class PlominoForm(Container):
                 )
 
         # insert subforms
-        for subformname in self.getSubforms(hidewhen_target):
+        for subformname in self.getSubforms(doc):
             subform = self.getParentDatabase().getForm(subformname)
             if subform:
                 subformrendering = subform.displayDocument(
                     doc, editmode, creation, parent_form_id=self.id,
-                    request=request, temp_doc=hidewhen_target)
+                    request=request)
                 html_content = html_content.replace(
                     '<span class="plominoSubformClass">%s</span>' %
                     subformname,
@@ -1080,16 +1050,16 @@ class PlominoForm(Container):
         # Cache the number of pages so we don't have to parse the HTML
         # more than once per request
         db = self.getParentDatabase()
-        cache_key = 'cached-num-pages_%s'%repr(self)
+        cache_key = 'cached-num-pages'
 
         cached = db.getRequestCache(cache_key)
         if cached is not None:
             return cached
 
         pages = 0
-        html = self._get_html_content(True)
-        if html:
-            #html = pq(html_content)
+        html_content = self._get_html_content()
+        if html_content:
+            html = pq(html_content)
             pages = html('.multipage').size()
 
         # Cache the result
@@ -1245,19 +1215,9 @@ class PlominoForm(Container):
             pq(e).replace_with(span)
         self.form_layout = tostring_innerhtml(root)
 
-        #to ensure we don't get write on read with getIsMulti
-        self.getIsMulti()
-
     security.declarePrivate('_get_html_content')
 
-    def _get_html_content(self, as_pyquery=False):
-        db = self.getParentDatabase()
-        cache_key = "_get_html_content_%s"%repr(self)
-        html = db.getRequestCache(cache_key)
-        if html is not None:
-
-            return html if as_pyquery else html.outerHtml()
-
+    def _get_html_content(self):
         # get the raw value for rendering the form
         html_content = self.form_layout or ''
         html_content = html_content.replace('\r\n', '')
@@ -1315,11 +1275,11 @@ class PlominoForm(Container):
             # Remove the old node
             pq(linkto_node).remove()
 
-        db.setRequestCache(cache_key, html)
-
         # If this is html() and there is only one element, it will only return
         # what's inside it.
-        return html if as_pyquery else html.outerHtml()
+        html_content = html.outerHtml()
+
+        return html_content
 
     def example_widget(self, widget_type=None, id=None):
         """ id=None means we are dragging so just need a basic example
@@ -1429,8 +1389,8 @@ class PlominoForm(Container):
         # Some methods might pass in their own cache_key. Add the rest
         # of the key values to the key.
         db = self.getParentDatabase()
-        cache_key = "applyHideWhen_%s_%d_%d_%s" % (
-            repr(self),
+        cache_key = "applyHideWhen_%d_%d_%d_%s" % (
+            hash(self),
             hash(doc),
             hash(split_multipage),
             cache_key
@@ -1441,41 +1401,32 @@ class PlominoForm(Container):
 
         html_content = self._get_html_content()
 
-        if doc is None:
-            target = self
-        else:
-            target = doc
-        for hidewhenName, result, isReset in self._get_hidewhens(target):
+        # remove the hidden content
+        for hidewhen in self.getHidewhenFormulas():
+            hidewhenName = hidewhen.id
             try:
-                hidewhen = self.getHidewhen(hidewhenName)
-            except AttributeError:
-                # Will be multipage one
-                continue
-            #TODO: take error error reporting out of _get_hidewhens
-        #
-        #
-        # # remove the hidden content
-        # for hidewhen in self.getHidewhenFormulas():
-        #     hidewhenName = hidewhen.id
-        #     try:
-        #
-        #         result = self.runFormulaScript(
-        #             SCRIPT_ID_DELIMITER.join(
-        #                 ['hidewhen', self.id, hidewhen.id, 'formula']),
-        #             target,
-        #             hidewhen.formula)
-        #     except PlominoScriptException, e:
-        #         if not silent_error:
-        #             # applyHideWhen is called by getFormFields and
-        #             # getSubForms; in those cases, error reporting
-        #             # is not accurate,
-        #             # we only need error reporting when actually rendering a
-        #             # page
-        #             e.reportError(
-        #                 '%s hide-when formula failed' % hidewhen.id,
-        #                 request=getattr(self, 'REQUEST', None))
-        #         # if error, we hide anyway
-        #         result = True
+                if doc is None:
+                    target = self
+                else:
+                    target = doc
+
+                result = self.runFormulaScript(
+                    SCRIPT_ID_DELIMITER.join(
+                        ['hidewhen', self.id, hidewhen.id, 'formula']),
+                    target,
+                    hidewhen.formula)
+            except PlominoScriptException, e:
+                if not silent_error:
+                    # applyHideWhen is called by getFormFields and
+                    # getSubForms; in those cases, error reporting
+                    # is not accurate,
+                    # we only need error reporting when actually rendering a
+                    # page
+                    e.reportError(
+                        '%s hide-when formula failed' % hidewhen.id,
+                        request=getattr(self, 'REQUEST', None))
+                # if error, we hide anyway
+                result = True
 
             start = ('<span class="plominoHidewhenClass">start:%s</span>' %
                      hidewhenName)
@@ -1599,28 +1550,10 @@ class PlominoForm(Container):
 
         # Only evaluate hidewhens if there is something to evaluate
         hidewhens = asList(REQUEST.get('_hidewhens', []))
-        results['hidewhens'] = []
-        for token in hidewhens:
-            (formid, hwid) = token.split('/')
-            if formid == self.id:
-                form = self
-            else:
-                form = db.getForm(formid)
-                if not form:
-                    db.writeMessageOnPage(
-                        "Form %s id missing" % formid, REQUEST, False)
-                    results['hidewhens'].append(["%s/%s" % (formid, hwid), True])
-                    continue
-            if formid not in temp:
-                temp[formid] = getTemporaryDocument(
-                    db,
-                    db.getForm(formid),
-                    REQUEST,
-                    doc,
-                    validation_mode=False)
-            hidewhen = form.getHidewhen(hwid)
-            _, isHidden, isReset = form._get_hidewhen(temp[formid], hidewhen)
-            results['hidewhens'].append(["%s/%s" % (formid, hwid), isHidden, isReset])
+        if hidewhens:
+            results['hidewhens'] = self._get_hidewhens(REQUEST, doc, temp=temp, dynamic=True)
+        else:
+            results['hidewhens'] = []
 
         fields = asList(REQUEST.get('_fields', []))
         fields_results = []
@@ -1660,29 +1593,80 @@ class PlominoForm(Container):
 
     security.declarePrivate('_get_hidewhens')
 
-    def _get_hidewhens(self, doc):
+    def _get_hidewhens(self, REQUEST, doc, temp=None, include_multipage=False, dynamic=False):
         db = self.getParentDatabase()
 
         # assume the request doesn't change and temp is based on request
-        cache_key = "_get_hidewhens_%s_%d" % (
-            repr(self),
+        cache_key = "_get_hidewhens_%d_%d_%d_%d" % (
+            hash(self),
             hash(doc),
+            hash(include_multipage),
+            hash(dynamic)
         )
         cache = db.getRequestCache(cache_key)
         if cache is not None:
             return cache
 
+        if temp is None:
+            temp = {}
         hidewhens_results = []
 
-        hidewhens = self.getHidewhenFormulas()
-        #if doc is None:
-        #    doc = getTemporaryDocument(db, self, REQUEST, validation_mode=True)
-        assert doc is not None
-        for hidewhen in hidewhens:
-            hidewhens_results.append(self._get_hidewhen(doc, hidewhen))
+        if dynamic:
+            hidewhens = asList(REQUEST.get('_hidewhens', []))
+            for token in hidewhens:
+                (formid, hwid) = token.split('/')
+                if formid == self.id:
+                    form = self
+                else:
+                    form = db.getForm(formid)
+                    if not form:
+                        db.writeMessageOnPage(
+                            "Form %s id missing" % formid, REQUEST, False)
+                        hidewhens_results.append(["%s/%s" % (formid, hwid), True])
+                        continue
+                if formid not in temp:
+                    temp[formid] = getTemporaryDocument(
+                        db,
+                        db.getForm(formid),
+                        REQUEST,
+                        doc,
+                        validation_mode=False)
+                try:
+                    hidewhen = form.getHidewhen(hwid)
+                    isHidden = form.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join([
+                            'hidewhen', formid, hwid, 'formula'
+                        ]),
+                        temp[formid],
+                        hidewhen.formula)
+                except PlominoScriptException, e:
+                    e.reportError(
+                        '%s hide-when formula failed' % hwid)
+                    # if error, we hide anyway
+                    isHidden = True
+                hidewhens_results.append(["%s/%s" % (formid, hwid), isHidden, hidewhen.isResetOnHide])
+        else:
+            hidewhens = self.getHidewhenFormulas()
+            if doc is None:
+                doc = getTemporaryDocument(db, self, REQUEST, validation_mode=True)
+            for hidewhen in hidewhens:
+                try:
+                    isHidden = self.runFormulaScript(
+                        SCRIPT_ID_DELIMITER.join(
+                            ['hidewhen', self.id, hidewhen.id, 'formula']
+                        ),
+                        doc,
+                        hidewhen.formula
+                    )
+                except PlominoScriptException, e:
+                    e.reportError(
+                        '%s hide-when formula failed' % hidewhen.id)
+                    # if error, we hide anyway
+                    isHidden = True
+                hidewhens_results.append([hidewhen.id, isHidden, hidewhen.isResetOnHide])
 
         # Set hidewhen values for multipage based on current page
-        if self.getIsMulti():
+        if self.getIsMulti() and include_multipage:
             num_pages = self._get_num_pages()
             current_page = self._get_current_page()
             # 0-indexed pages are ugly
@@ -1696,33 +1680,13 @@ class PlominoForm(Container):
         db.setRequestCache(cache_key, hidewhens_results)
         return hidewhens_results
 
-
-    security.declarePrivate('_get_hidewhen')
-    def _get_hidewhen(self, doc, hidewhen):
-
-        try:
-            isHidden = self.runFormulaScript(
-                SCRIPT_ID_DELIMITER.join(
-                    ['hidewhen', self.id, hidewhen.id, 'formula']
-                ),
-                doc,
-                hidewhen.formula
-            )
-        except PlominoScriptException, e:
-            e.reportError(
-                '%s hide-when formula failed' % hidewhen.id)
-            # if error, we hide anyway
-            isHidden = True
-        return [hidewhen.id, isHidden, hidewhen.isResetOnHide]
-
-
     security.declarePrivate('_get_hidden_subforms')
 
     def _get_hidden_subforms(self, REQUEST, doc, already_hidden=False, validation_mode=False):
         # print "in _get_hidden_subforms for %s" % self.id
         db = self.getParentDatabase()
         hidden_forms = []
-        hidewhens = self._get_hidewhens(doc)
+        hidewhens = self._get_hidewhens(REQUEST, doc, include_multipage=True)
         html_content = self._get_html_content()
         # If we're already hidden, any subforms are also hidden
         if already_hidden:
@@ -1760,7 +1724,7 @@ class PlominoForm(Container):
         db = self.getParentDatabase()
         hidden_fields = []
         reset_fields = []
-        hidewhens = self._get_hidewhens(doc)
+        hidewhens = self._get_hidewhens(REQUEST, doc, include_multipage=True)
         html_content = self._get_html_content()
         for hidewhenName, doit, isResetOnHide in hidewhens:
             if not doit:  # Only consider True hidewhens
@@ -1969,8 +1933,8 @@ class PlominoForm(Container):
         Check if any of those types are present.
         """
         db = self.getParentDatabase()
-        cache_key = 'hasFieldTypes_%s_%d_%d' % (
-            repr(self),
+        cache_key = 'hasFieldTypes_%d_%d_%d' % (
+            hash(self),
             hash(types),
             hash(applyhidewhen)
         )
@@ -2249,10 +2213,9 @@ class PlominoForm(Container):
             validation_mode=True,
             request=REQUEST)
 
-        #getFormFields above doesn't remove hidden fields
-        hidden_fields, _ = self._get_hidden_fields(REQUEST, tmp)
+        hidden_fields, _ = self._get_hidden_fields(REQUEST, doc)
 
-        hidden_forms = self._get_hidden_subforms(REQUEST, tmp)
+        hidden_forms = self._get_hidden_subforms(REQUEST, doc)
         for form_id in hidden_forms:
             form = db.getForm(form_id)
             if form:
@@ -2266,7 +2229,6 @@ class PlominoForm(Container):
 
         fields = [field for field in fields
                   if field.getId() not in hidden_fields]
-
         errors = []
         for f in fields:
             field_errors = []

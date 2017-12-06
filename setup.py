@@ -56,9 +56,6 @@ setup(
             'plone.app.testing',
             'plone.app.contenttypes',
             'plone.app.robotframework[debug]',
-#            'collective.profiler',
-            'pas.plugins.ldap',
-            'ldap3',
         ],
     },
     entry_points="""
