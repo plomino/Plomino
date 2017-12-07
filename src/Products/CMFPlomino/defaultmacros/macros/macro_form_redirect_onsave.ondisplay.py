@@ -5,7 +5,7 @@ redirect_type_ = doc.getItem('redirect_type')
 form_redirect_ = doc.getItem('form_redirect')
 redirect_event_ = doc.getItem('redirect_event', '')
 code = ''
-if redirect_type_ == 'form':
+if redirect_type_ == 'form' and redirect_event_=='load':
     code = """
 db = plominoContext.getParentDatabase()
 req = getattr(plominoContext, 'REQUEST')
@@ -15,7 +15,7 @@ retain_form_data = '{retain_form_data}'
 editpath = plominoContext.REQUEST.get('Plomino_Macro_Context')
 editcontext = plominoContext.restrictedTraverse(editpath)
 ctype = editcontext.getPortalTypeName()
-if ctype=='PlominoForm' and redirect_event=='load':
+if ctype=='PlominoForm':
     if retain_form_data=='True':
         targeturl='%s/%s?%s&%s' % (db.absolute_url(),form_redirect,req["QUERY_STRING"],'ignore_actions=1')
     else:
@@ -25,7 +25,7 @@ if ctype=='PlominoForm' and redirect_event=='load':
 else:
     return None
     """.format(
-    form_redirect=form_redirect_,retain_form_data=retain_form_data_, redirect_event =  redirect_event_
+    form_redirect=form_redirect_,retain_form_data=retain_form_data_
 )
 return code
 ## END formula }
