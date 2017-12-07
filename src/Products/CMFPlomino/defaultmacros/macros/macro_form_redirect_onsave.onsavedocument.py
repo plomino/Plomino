@@ -5,7 +5,7 @@ redirect_type_ = doc.getItem('redirect_type')
 form_redirect_ = doc.getItem('form_redirect')
 view_redirect_ = doc.getItem('view_redirect')
 url_redirect_ = doc.getItem('url_redirect')
-redirect_event_ = doc.getItem('redirect_event', '')
+redirect_event_ = doc.getItem('redirect_event', 'save')
 code = ''
 if redirect_type_ == 'form':
     code = """
