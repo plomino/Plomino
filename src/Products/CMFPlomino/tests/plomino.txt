@@ -250,8 +250,8 @@ Simulate a search request, with no paramter, return all documents
 Simulate a search request, searching for field1
     >>> REQUEST = dict(field1='val2')
     >>> results = db.frm3.searchDocuments(REQUEST)
-    >>> len(results) == 1
-    True
+    >>> len(results)
+    1
     >>> db.deleteDocument(doc_search1)
     >>> db.deleteDocument(doc_search2)
 

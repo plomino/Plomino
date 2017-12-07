@@ -522,19 +522,23 @@ class PlominoForm(Container):
     security.declarePublic('getFormFields')
 
     def getFormFields(self, includesubforms=False, doc=None,
-                      applyhidewhen=False, validation_mode=False, request=None,
+                      applyhidewhen=False,
+                      validation_mode=False,
+                      only_in_layout=False,
+                      request=None,
                       deduplicate=True):
         """ Get fields
         """
         db = self.getParentDatabase()
         # XXX: Can this be re-enabled?
-        cache_key = "getFormFields_%s_%d_%d_%d_%d_%d" % (
+        cache_key = "getFormFields_%s_%d_%d_%d_%d_%d_%d" % (
             repr(self),
             hash(doc),
             #hash(frozenset(request.keys())),
             includesubforms,
             applyhidewhen,
             validation_mode,
+            only_in_layout,
             deduplicate
         )
         cache = db.getRequestCache(cache_key)
@@ -551,9 +555,14 @@ class PlominoForm(Container):
                 db, self, request,
                 validation_mode=validation_mode).__of__(db)
             layout = self.applyHideWhen(doc)
+        elif only_in_layout:
+            # Still need to restrict to fields actually in the layout
+            layout = self._get_html_content()
+        if applyhidewhen or only_in_layout:
             result = [f for f in result
                       if """<span class="plominoFieldClass">%s</span>""" %
                       f.id in layout]
+
         result.sort(key=lambda elt: elt.id.lower())
         if includesubforms:
             subformsseen = []
@@ -1671,6 +1680,7 @@ class PlominoForm(Container):
         cache = db.getRequestCache(cache_key)
         if cache is not None:
             return cache
+        #import pdb; pdb.set_trace()
 
         hidewhens_results = []
 
@@ -1758,6 +1768,8 @@ class PlominoForm(Container):
     security.declarePrivate('_get_hidden_fields')
 
     def _get_hidden_fields(self, REQUEST, doc, validation_mode=False):
+        """ validation_mode means ignore validation errors
+        """
         db = self.getParentDatabase()
         hidden_fields = []
         reset_fields = []
@@ -1904,7 +1916,7 @@ class PlominoForm(Container):
                 db,
                 self,
                 self.REQUEST,
-                validation_mode=True).__of__(db)
+                validation_mode=False).__of__(db)
         if (not invalid) or self.hasDesignPermission(self):
             return self.displayDocument(
                 tmp,
@@ -2019,7 +2031,8 @@ class PlominoForm(Container):
                         db,
                         self,
                         self.REQUEST,
-                        validation_mode=validation_mode).__of__(db)
+                        validation_mode=False,
+                        applyhidewhen=False).__of__(db)
                 except:
                     # TemporaryDocument might fail if field validation is
                     # wrong and as we need getFormFields during field
@@ -2044,7 +2057,7 @@ class PlominoForm(Container):
             validation_mode=False
     ):
         """ Read submitted values in REQUEST and store them in document
-        according to fields definition.
+        according to fields definition. Validation_mode means ignore errors.
         """
         db = self.getParentDatabase()
         all_fields = self.getFormFields(
@@ -2160,6 +2173,7 @@ class PlominoForm(Container):
 
             for f in self.getFormFields(
                     includesubforms=True,
+                    only_in_layout=False,
                     request=REQUEST
             ):
                 fieldname = f.id
@@ -2236,30 +2250,36 @@ class PlominoForm(Container):
         """
         db = self.getParentDatabase()
 
+        #import pdb; pdb.set_trace()
         if not tmp:
             tmp = getTemporaryDocument(
                 db,
                 self,
                 REQUEST,
                 doc,
-                validation_mode=True).__of__(db)
+                validation_mode=True,
+                applyhidewhen=False).__of__(db)
 
         fields = self.getFormFields(
             includesubforms=True,
             doc=tmp,
-            applyhidewhen=True,
+            applyhidewhen=False,
+            only_in_layout=True,
             validation_mode=True,
             request=REQUEST)
 
-        #getFormFields above doesn't remove hidden fields
-        hidden_fields, _ = self._get_hidden_fields(REQUEST, tmp)
+        if applyhidewhen:
+            #getFormFields above doesn't remove hidden fields
+            hidden_fields, _ = self._get_hidden_fields(REQUEST, tmp)
 
-        hidden_forms = self._get_hidden_subforms(REQUEST, tmp)
-        for form_id in hidden_forms:
-            form = db.getForm(form_id)
-            if form:
-                for field in form.getFormFields():
-                    hidden_fields.append(field.getId())
+            hidden_forms = self._get_hidden_subforms(REQUEST, tmp)
+            for form_id in hidden_forms:
+                form = db.getForm(form_id)
+                if form:
+                    for field in form.getFormFields():
+                        hidden_fields.append(field.getId())
+        else:
+            hidden_fields = []
 
         # print self.getId()
         # print fields
@@ -2342,7 +2362,7 @@ class PlominoForm(Container):
             self,
             REQUEST,
             doc,
-            validation_mode=True).__of__(db)
+            validation_mode=False).__of__(db)
         target = doc if doc and not creation else tmp
         for f in self.getFormFields(includesubforms=True):
             fieldname = f.id
@@ -2381,7 +2401,7 @@ class PlominoForm(Container):
             self,
             REQUEST,
             doc,
-            validation_mode=True).__of__(db)
+            validation_mode=False).__of__(db)
         target = doc if doc else tmp
 
         for f in self.getFormFields(includesubforms=True):

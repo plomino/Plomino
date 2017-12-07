@@ -1113,29 +1113,33 @@ addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
 
-def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, applyhidewhen=False):
     if hasattr(doc, 'real_id'):
         return doc
     else:
         #TODO: find where _hidewhens[] is being set in request.
         #We shouldn't really need the request in the key because it shouldn't change
         # however it seems to as the plomino.txt test breaks without it
-        cache_key = "getTemporaryDocument_%s_%d_%d_%d" % (
+        cache_key = "getTemporaryDocument_%s_%d_%d_%d_%d" % (
                 form.id,
                 hash(frozenset(REQUEST.keys())), #HACK big assumption that we don't modify values
                 hash(doc),
                 validation_mode,
+                applyhidewhen
             )
         cache = db.getRequestCache(cache_key)
         if cache:
             return cache
         #import pdb; pdb.set_trace()
+        # applying hidewhens will do validation which will get another temp doc.
+        # if we are just reading the data and not validating then don't apply hidewhens
         target = TemporaryDocument(
             db,
             form,
             REQUEST,
             real_doc=doc,
-            validation_mode=validation_mode).__of__(db)
+            validation_mode=validation_mode,
+            applyhidewhen=applyhidewhen).__of__(db)
         db.setRequestCache(cache_key, target)
         return target
 
@@ -1153,6 +1157,8 @@ class TemporaryDocument(PlominoDocument):
         validation_mode=False,
         applyhidewhen=True
     ):
+        """ Validation_mode means ignore validation errors
+        """
         self._parent = parent
         self.form = form
         self.REQUEST = REQUEST
@@ -1162,7 +1168,8 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.id)
             self.real_id = real_doc.id
-            form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
+            # TODO: not sure why we need to validate here
+            #form.validateInputs(REQUEST, self, applyhidewhen=applyhidewhen)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
@@ -1173,8 +1180,10 @@ class TemporaryDocument(PlominoDocument):
                 for f in mapped_field_ids:
                     self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
-                form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
-                form.readInputs(self, REQUEST, validation_mode=validation_mode)
+                # TODO: not sure why we need to validate here
+                #if validation_mode:
+                #    form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
+                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
 
