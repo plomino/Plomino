@@ -57,6 +57,7 @@ class ISelectionField(model.Schema):
         title=u'Selection list formula',
         description=u'Formula to compute the selection list elements',
         missing_value=NOT_CHANGED,
+        default=u'',
         required=False)
 
     separator = schema.TextLine(
