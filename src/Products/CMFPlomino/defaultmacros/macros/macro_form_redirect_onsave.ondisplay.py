@@ -4,7 +4,7 @@ retain_form_data_ = doc.getItem('retain_form_data')
 redirect_type_ = doc.getItem('redirect_type')
 form_redirect_ = doc.getItem('form_redirect')
 redirect_event_ = doc.getItem('redirect_event', '')
-code = ''
+code = 'pass'
 if redirect_type_ == 'form' and redirect_event_=='load':
     code = """
 db = plominoContext.getParentDatabase()
