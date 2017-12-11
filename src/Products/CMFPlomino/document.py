@@ -382,13 +382,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
 
-    def saveDocument(self, REQUEST, creation=False):
+    def saveDocument(self, REQUEST, creation=False, from_tempdoc=None):
         """ Save a document using the form submitted content
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
 
-        errors = form.validateInputs(REQUEST, doc=self)
+        if from_tempdoc is None:
+            errors = form.validateInputs(REQUEST, doc=self)
+        else:
+            # We assume if there were other errors then they showed up already
+            errors = []
 
         # execute the beforeSave code of the form
         error = None
@@ -407,12 +411,19 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if errors:
             return form.notifyErrors(errors)
 
-        self.setItem('Form', form.id)
-        form.processAttachment(REQUEST, doc=self, creation=creation)
-        # process editable fields (we read the submitted value in the request)
-        form.readInputs(self, REQUEST)
+        if from_tempdoc is None:
+            self.setItem('Form', form.id)
+            form.processAttachment(REQUEST, doc=self, creation=creation)
+            # process editable fields (we read the submitted value in the request)
+            form.readInputs(self, REQUEST, validation_mode=True)
+        else:
+            self.items.update(from_tempdoc.items)
+            self.plomino_modification_time = from_tempdoc.plomino_modification_time
+
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
+        #TODO: needs to be a done without a special request var. Security risk
+        # should pickup response redirect header instead
         redirect = REQUEST.get('plominoredirecturl')
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
@@ -423,6 +434,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
+        #TODO: should just look for 307 in the response redirect header
         if REQUEST.RESPONSE.getHeader('Plomino-Retain-Form-Data'):
             REQUEST.RESPONSE.redirect(addTokenToUrl(redirect), status=307)
         else:

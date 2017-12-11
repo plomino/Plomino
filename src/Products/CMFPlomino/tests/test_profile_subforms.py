@@ -1,10 +1,13 @@
 import Missing
 import os
+import pstats
 import unittest
+from urllib2 import HTTPError
 
 from AccessControl.unauthorized import Unauthorized
 from DateTime import DateTime
 from decimal import Decimal
+import cStringIO
 from plone.app.testing import ploneSite, SITE_OWNER_NAME, SITE_OWNER_PASSWORD, PloneSandboxLayer, applyProfile
 from plone.testing import Layer
 from Products.CMFPlomino.config import TIMEZONE
@@ -81,6 +84,7 @@ class TestProfileLayer(PloneSandboxLayer):
             form.form_layout += '<span class="plominoHidewhenClass">start:hide%i</span>A<span class="plominoHidewhenClass">end:hide%i</span>'%(i,i)
 
             topform.form_layout += """<span class="plominoSubformClass">form%i</span>""" % i
+            topform.form_layout += """<hr class="plominoPagebreakClass"/>"""
 
         #Single field form to test validation calls
         form = getattr(db, db.invokeFactory('PlominoForm', id='ldapform', title='LDAP Form'))
@@ -96,6 +100,16 @@ class TestProfileLayer(PloneSandboxLayer):
 
 PRODUCTS_CMFPLOMINO_PROFILER_FIXTURE = TestProfileLayer()
 
+
+def getcalls(prof, func, file=None):
+    for  (path,line,sfunc),stat in prof.stats.iteritems():
+        if func == sfunc and (file in path if file is not None else True):
+            (cc, nc, tt, ct, callers) = stat
+            return nc
+    return None
+
+
+
 class PlominoUtilsTest(unittest.TestCase):
 
     layer = FunctionalTesting(
@@ -103,7 +117,7 @@ class PlominoUtilsTest(unittest.TestCase):
         name='ProductsCmfplominoLayer:ProfilerTesting'
     )
 
-    def test_lotssubforms(self):
+    def test_tempdoccache_next(self):
 #        browser = self.layer['browser']
 #        portal_url = self.layer['portal_url']
 
@@ -124,27 +138,59 @@ class PlominoUtilsTest(unittest.TestCase):
         browser.open(portal_url + "/profdb/form")
 
 
-        cProfile.runctx('browser.open("'+portal_url+'/profdb/form")', globals(), locals(), filename="stats.prof")
+        prof = cProfile.Profile()
+        prof.runctx('browser.getControl("Next").click()', globals(), locals())
+        prof.dump_stats("stats.prof")
         self.assertIn("field1", browser.contents)
-#        self.assertIn("field2", browser.contents)
-#        self.assertIn("field9", browser.contents)
+        self.assertIn("field2", browser.contents)
+        self.assertIn("field9", browser.contents)
 
-    # TODO: getting 404 on the redirect to the document url. Not sure why
-    # def test_onsave(self):
-    #     with ploneSite() as portal:
-    #         portal_url = portal.absolute_url()
-    #         browser = Browser(portal.aq_parent)
-    #     browser.open(portal_url + "/login")
-    #     browser.getControl('Login Name').value = SITE_OWNER_NAME
-    #     browser.getControl('Password').value = SITE_OWNER_PASSWORD
-    #     browser.getControl('Log in').click()
-    #
-    #     browser.handleErrors = False
-    #
-    #     url = portal_url+'/profdb/ldapform'
-    #     cProfile.runctx('browser.post("%s","Form=ldapform&name=admin&plomino_save=Save")'%url, globals(), locals(), filename="onsave.prof")
-    #     self.assertIn("User not found", browser.contents)
+        # hidehwhen formula called only once
+        self.assertEquals(getcalls(prof, 'hidewhen_-_form0_-_hide0_-_formula'), 1)
+        self.assertEquals(getcalls(prof, 'field_-_form_-_field0_-_ValidationFormula'), 1)
 
+        # Validation only on the first page + 10 hidewhens
+        self.assertEquals(getcalls(prof, 'runFormulaScript'), 11)
+
+        # create an initial tempdoc to read values, and another with validation
+        self.assertEquals(getcalls(prof, '__init__', 'document.py'), 2)
+
+
+
+
+    def test_tempdoccache_onsave(self):
+        with ploneSite() as portal:
+            portal_url = portal.absolute_url()
+            browser = Browser(portal.aq_parent)
+        browser.open(portal_url + "/login")
+        browser.getControl('Login Name').value = SITE_OWNER_NAME
+        browser.getControl('Password').value = SITE_OWNER_PASSWORD
+        browser.getControl('Log in').click()
+
+        browser.handleErrors = True
+
+        url = portal_url+'/profdb/form'
+        prof = cProfile.Profile()
+        try:
+            prof.runctx('browser.post("%s","Form=form&field1=admin&plomino_save=Save")'%url, globals(), locals())
+        except HTTPError as e:
+            #TODO: not sure why it gets 404 for the document on redirect
+            #self.fail(e)
+            pass
+        prof.dump_stats("onsave.prof")
+        #TODO: currently 93
+        self.assertEquals(getcalls(prof, 'hidewhen_-_form0_-_hide0_-_formula'), 1)
+        self.assertEquals(getcalls(prof, 'field_-_form_-_field0_-_ValidationFormula'), 1)
+        self.assertEquals(getcalls(prof, 'runFormulaScript'), 11)
+        # create an initial tempdoc to read values, and another with validation
+        self.assertEquals(getcalls(prof, '__init__', 'document.py'), 1)
+
+        self.assertIn("User not found", browser.contents)
+
+
+#TODO additional test cases
+# - validate field on previous page at save time
+# - initial doc doesn't include hidden inputs. saved one should?
 
     def test_ldap(self):
 

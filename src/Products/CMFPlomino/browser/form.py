@@ -10,6 +10,7 @@ from zope.interface import alsoProvides
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from zope.publisher.http import HTTPResponse
+from Products.CMFPlomino.document import getTemporaryDocument
 
 class FormView(BrowserView):
 
@@ -25,8 +26,20 @@ class FormView(BrowserView):
             setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
     def _process_form(self, template):
-        if (hasattr(self.context, 'onDisplay') and
-                self.context.onDisplay):
+
+        db = self.form.getParentDatabase()
+        tmp = getTemporaryDocument(
+            db,
+            self.form,
+            self.request,
+            None,
+            validation_mode=True,
+            applyhidewhen=False).__of__(db)
+        # TODO: should be make this available in onDisplay? For macros we need to
+        # but also how to deal with code that munges attachments etc?
+
+
+        if getattr(self.context, 'onDisplay', ''):
             try:
                 response = self.context.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join([
@@ -36,6 +49,7 @@ class FormView(BrowserView):
             except PlominoScriptException, e:
                 response = None
                 e.reportError('onDisplay formula failed')
+                #TODO: should more detail on teh error
             # If the onDisplay event returned something, return it
             # We could do extra handling of the response here if needed
             if response is not None:
@@ -54,7 +68,7 @@ class FormView(BrowserView):
                 self.form.processAttachment(self.request, doc=None, creation=False)
             if 'attachment-delete' in self.request.form:
                 self.form.deleteAttachment(self.request, doc=None)
-            errors = self.form.validateInputs(self.request)
+            errors = self.form.validateInputs(self.request, tmp=tmp)
             # We can't continue if there are errors
             if errors:
                 # save file attachment
@@ -64,7 +78,7 @@ class FormView(BrowserView):
             else:
                 # Not create new document if we ignore the action
                 if self.request.get('ignore_actions', None) is None:
-                    self.form.createDocument(self.request)
+                    self.form.createDocument(self.request, from_tempdoc=tmp)
 
         return template()
 
@@ -191,7 +205,7 @@ class PageView(BrowserView):
 
             # Create the document if it's not a page
             if not form.isPage:
-                return form.createDocument(self.request)
+                return form.createDocument(self.request, validate=False)
             else:
                 # Process the temporary attachment
                 self.form.processAttachment(self.request, doc=None, creation=False)

@@ -441,7 +441,7 @@ class PlominoForm(Container):
 
     security.declareProtected(READ_PERMISSION, 'createDocument')
 
-    def createDocument(self, REQUEST):
+    def createDocument(self, REQUEST, from_tempdoc=None):
         """ Create a document using the form's submitted content.
 
         The created document may be a TemporaryDocument, in case
@@ -463,15 +463,16 @@ class PlominoForm(Container):
         if parent_field is not None:
             is_childform = True
 
-        # validate submitted values
-        errors = self.validateInputs(REQUEST)
-        if errors:
-            if is_childform:
-                REQUEST.RESPONSE.setStatus(400)
-                REQUEST.RESPONSE.setHeader(
-                    'content-type', 'application/json; charset=utf-8')
-                return json.dumps({'errors': errors})
-            return self.notifyErrors(errors)
+        # validate submitted values only if we haven't already
+        if from_tempdoc is None:
+            errors = self.validateInputs(REQUEST)
+            if errors:
+                if is_childform:
+                    REQUEST.RESPONSE.setStatus(400)
+                    REQUEST.RESPONSE.setHeader(
+                        'content-type', 'application/json; charset=utf-8')
+                    return json.dumps({'errors': errors})
+                return self.notifyErrors(errors)
 
         ################################################################
         # Add a document to the database
@@ -498,7 +499,8 @@ class PlominoForm(Container):
         if is_childform:
             # TODO: What if its not valid?
             # Inlcude calculated fields and title etc
-            doc.save(form=self, creation=True, refresh_index=False,
+            doc.save(form=self, from_tempdoc=from_tempdoc,
+                     creation=True, refresh_index=False,
                      asAuthor=True, onSaveEvent=True)
             # TODO: more generic way to include extra data
             # TODO: What happens if there is a field called title?
@@ -513,7 +515,7 @@ class PlominoForm(Container):
                 'content-type', 'application/json; charset=utf-8')
             return json.dumps(rowdata)
         elif valid is None or valid == '':
-            doc.saveDocument(REQUEST, creation=True)
+            doc.saveDocument(REQUEST, creation=True, from_tempdoc=from_tempdoc)
         else:
             db.documents.deleteDocument(doc)
             db.writeMessageOnPage(valid, REQUEST, False)
@@ -2251,7 +2253,7 @@ class PlominoForm(Container):
         db = self.getParentDatabase()
 
         #import pdb; pdb.set_trace()
-        if not tmp:
+        if tmp is None:
             tmp = getTemporaryDocument(
                 db,
                 self,
@@ -2357,13 +2359,16 @@ class PlominoForm(Container):
     # - if it is created before the request, creation = False, then all the attachment is in the input field and the document itself
     def processAttachment(self, REQUEST, doc=None, creation=False):
         db = self.getParentDatabase()
-        tmp = getTemporaryDocument(
-            db,
-            self,
-            REQUEST,
-            doc,
-            validation_mode=False).__of__(db)
-        target = doc if doc and not creation else tmp
+        if doc is not None and not creation:
+            target = doc
+        else:
+            target = getTemporaryDocument(
+                db,
+                self,
+                REQUEST,
+                doc,
+                validation_mode=False).__of__(db)
+
         for f in self.getFormFields(includesubforms=True):
             fieldname = f.id
             fieldtype = f.field_type
