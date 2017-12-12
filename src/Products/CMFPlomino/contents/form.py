@@ -499,7 +499,7 @@ class PlominoForm(Container):
         if is_childform:
             # TODO: What if its not valid?
             # Inlcude calculated fields and title etc
-            doc.save(form=self, from_tempdoc=from_tempdoc,
+            doc.save(form=self,
                      creation=True, refresh_index=False,
                      asAuthor=True, onSaveEvent=True)
             # TODO: more generic way to include extra data
