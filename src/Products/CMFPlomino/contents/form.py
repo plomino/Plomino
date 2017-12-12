@@ -396,8 +396,6 @@ class PlominoForm(Container):
 
         # Create a temp doc and calculate hidewhens
         db = self.getParentDatabase()
-        # save attachment
-        self.processAttachment(REQUEST, doc=doc, creation=False)
         tmp = getTemporaryDocument(db, self, REQUEST, doc=doc, validation_mode=True).__of__(db)
         # Make sure we don't split the multipage up
         html = pq(self.applyHideWhen(tmp, split_multipage=False))
@@ -2077,6 +2075,8 @@ class PlominoForm(Container):
             hidden_fields, reset_fields = \
                 self._get_hidden_fields(REQUEST, doc,
                                         validation_mode=validation_mode)
+        if process_attachments:
+            self.processAttachment(REQUEST,doc)
         for f in all_fields:
             mode = f.field_mode
             fieldName = f.id
@@ -2120,7 +2120,7 @@ class PlominoForm(Container):
                             v = f.processInput(
                                 submittedValue,
                                 doc,
-                                process_attachments,
+                                process_attachments=process_attachments,
                                 validation_mode=validation_mode)
                             if f.field_type == 'SELECTION':
                                 if f.widget in [
@@ -2353,35 +2353,22 @@ class PlominoForm(Container):
         return errors
 
     # Process the attachment from reqeust
-    # If the document is temporary, then all attachment is in temporary files
-    # If the document is real, there are two possibilities:
-    # - if it is created with the request, creation = True, then all the attachment is in temporary files
-    # - if it is created before the request, creation = False, then all the attachment is in the input field and the document itself
-    def processAttachment(self, REQUEST, doc=None, creation=False):
+    def processAttachment(self, REQUEST, doc):
         db = self.getParentDatabase()
-        if doc is not None and not creation:
-            target = doc
-        else:
-            target = getTemporaryDocument(
-                db,
-                self,
-                REQUEST,
-                doc,
-                validation_mode=False).__of__(db)
 
         for f in self.getFormFields(includesubforms=True):
             fieldname = f.id
             fieldtype = f.field_type
             submittedValue = REQUEST.get(fieldname)
             if fieldtype == "ATTACHMENT":
-                if doc and not creation:
+                if doc:
                     files = doc.getItem(fieldname,{})
                 else:
                     files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT", "{}"))
                 if submittedValue:
                     v = f.processInput(
                         submittedValue,
-                        target,
+                        doc,
                         True,
                         validation_mode=False)
                     # Combine current file with new file from input
@@ -2391,7 +2378,7 @@ class PlominoForm(Container):
                         if f.single_or_multiple =='MULTI':
                             files = dict(chain(files.iteritems(), v.iteritems()))
                 # save the value in cache (if temporary), otherwise save to doc
-                if doc and not creation:
+                if doc:
                     doc.setItem(fieldname, files)
                 else:
                     db.setRequestCache(f.id + "@@ATTACHMENT", files)

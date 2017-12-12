@@ -413,9 +413,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
         if from_tempdoc is None:
             self.setItem('Form', form.id)
-            form.processAttachment(REQUEST, doc=self, creation=creation)
             # process editable fields (we read the submitted value in the request)
-            form.readInputs(self, REQUEST, validation_mode=True)
+            form.readInputs(self, REQUEST, validation_mode=True, process_attachments=True)
         else:
             self.items.update(from_tempdoc.items)
             self.plomino_modification_time = from_tempdoc.plomino_modification_time
@@ -1125,7 +1124,7 @@ addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
 
-def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, applyhidewhen=False):
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, process_attachments=False, applyhidewhen=False):
     if hasattr(doc, 'real_id'):
         return doc
     else:
@@ -1137,11 +1136,13 @@ def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, app
                 hash(frozenset(REQUEST.keys())), #HACK big assumption that we don't modify values
                 hash(doc),
                 validation_mode,
-                applyhidewhen
-            )
+                applyhidewhen)
+        print sorted(REQUEST.keys())
         cache = db.getRequestCache(cache_key)
         if cache:
+            print 'Hit'
             return cache
+        print 'miss'
         #import pdb; pdb.set_trace()
         # applying hidewhens will do validation which will get another temp doc.
         # if we are just reading the data and not validating then don't apply hidewhens
@@ -1151,7 +1152,8 @@ def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, app
             REQUEST,
             real_doc=doc,
             validation_mode=validation_mode,
-            applyhidewhen=applyhidewhen).__of__(db)
+            applyhidewhen=applyhidewhen,
+            process_attachments=process_attachments).__of__(db)
         db.setRequestCache(cache_key, target)
         return target
 
@@ -1167,7 +1169,8 @@ class TemporaryDocument(PlominoDocument):
         REQUEST,
         real_doc=None,
         validation_mode=False,
-        applyhidewhen=True
+        applyhidewhen=True,
+        process_attachments=False
     ):
         """ Validation_mode means ignore validation errors
         """
@@ -1182,7 +1185,7 @@ class TemporaryDocument(PlominoDocument):
             self.real_id = real_doc.id
             # TODO: not sure why we need to validate here
             #form.validateInputs(REQUEST, self, applyhidewhen=applyhidewhen)
-            form.readInputs(self, REQUEST, validation_mode=validation_mode)
+            form.readInputs(self, REQUEST, validation_mode=validation_mode, process_attachments=process_attachments)
         else:
             self.items = {}
             self.setItem('Form', form.id)
@@ -1195,7 +1198,7 @@ class TemporaryDocument(PlominoDocument):
                 # TODO: not sure why we need to validate here
                 #if validation_mode:
                 #    form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
-                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen)
+                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen, process_attachments=process_attachments)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
 

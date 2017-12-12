@@ -137,7 +137,7 @@ class DocumentView(BrowserView):
             errors = form.validateInputs(self.request, doc=self.target)
             if errors:
                 # save file attachment
-                self.form.processAttachment(self.request, doc=self.target, creation=False)
+                self.form.processAttachment(self.request, doc=self.target)
                 self.page_errors = errors
                 return template()
             else:
@@ -182,7 +182,7 @@ class DocumentView(BrowserView):
 
             if errors:
                 # save file attachment
-                self.form.processAttachment(self.request, doc=self.target, creation=False)
+                self.form.processAttachment(self.request, doc=self.target)
                 self.page_errors = errors
                 return self.edit_template()
 
