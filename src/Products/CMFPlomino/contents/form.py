@@ -941,8 +941,8 @@ class PlominoForm(Container):
                             html_content)
                     )
             for f in fields:
-                if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id+"@@ATTACHMENT"):
-                    temp_files = db.getRequestCache(f.id+"@@ATTACHMENT")
+                if f.field_type == 'ATTACHMENT' and request.get(f.id+"@@ATTACHMENT"):
+                    temp_files = json.loads(request.get(f.id+"@@ATTACHMENT"))
                     html_content = (
                         "<input type='hidden' "
                         "name='%s' "
@@ -2052,7 +2052,6 @@ class PlominoForm(Container):
             self,
             doc,
             REQUEST,
-            process_attachments=False,
             applyhidewhen=True,
             validation_mode=False
     ):
@@ -2075,8 +2074,6 @@ class PlominoForm(Container):
             hidden_fields, reset_fields = \
                 self._get_hidden_fields(REQUEST, doc,
                                         validation_mode=validation_mode)
-        if process_attachments:
-            self.processAttachment(REQUEST,doc)
         for f in all_fields:
             mode = f.field_mode
             fieldName = f.id
@@ -2111,16 +2108,11 @@ class PlominoForm(Container):
                         #     submittedValue = urllib.unquote_plus(
                         #         submittedValue)
                         # Skip processing attachment as we already process in processAttacment
-                        if f.field_type == 'ATTACHMENT':
-                            v = db.getRequestCache(f.id + "@@ATTACHMENT") or {}
-                            # First time when document is created
-                            if v and doc.id != 'TEMPDOC':
-                                doc.setItem(fieldName, v)
-                        else:
+                        if f.field_type != 'ATTACHMENT':
                             v = f.processInput(
                                 submittedValue,
                                 doc,
-                                process_attachments=process_attachments,
+                                False,
                                 validation_mode=validation_mode)
                             if f.field_type == 'SELECTION':
                                 if f.widget in [
@@ -2247,7 +2239,7 @@ class PlominoForm(Container):
 
     security.declarePublic('validateInputs')
 
-    def validateInputs(self, REQUEST, doc=None, tmp=None, applyhidewhen=True):
+    def validateInputs(self, REQUEST, doc=None, tmp=None, applyhidewhen=True, process_attachments=False):
         """
         """
         db = self.getParentDatabase()
@@ -2282,6 +2274,10 @@ class PlominoForm(Container):
                         hidden_fields.append(field.getId())
         else:
             hidden_fields = []
+
+        if process_attachments:
+            if 'attachment-delete' in REQUEST.form:
+                self.deleteAttachment(REQUEST, doc if doc else tmp)
 
         # print self.getId()
         # print fields
@@ -2350,18 +2346,18 @@ class PlominoForm(Container):
                 else:
                     errors.append(field_error)
 
+        if process_attachments:
+            self.processAttachment(REQUEST,doc if doc else tmp)
         return errors
 
     # Process the attachment from reqeust
     def processAttachment(self, REQUEST, doc):
-        db = self.getParentDatabase()
-
         for f in self.getFormFields(includesubforms=True):
             fieldname = f.id
             fieldtype = f.field_type
             submittedValue = REQUEST.get(fieldname)
             if fieldtype == "ATTACHMENT":
-                if doc:
+                if doc.id != 'TEMPDOC':
                     files = doc.getItem(fieldname,{})
                 else:
                     files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT", "{}"))
@@ -2377,41 +2373,28 @@ class PlominoForm(Container):
                             files = v
                         if f.single_or_multiple =='MULTI':
                             files = dict(chain(files.iteritems(), v.iteritems()))
-                # save the value in cache (if temporary), otherwise save to doc
-                if doc:
-                    doc.setItem(fieldname, files)
-                else:
-                    db.setRequestCache(f.id + "@@ATTACHMENT", files)
+                # save the value to doc
+                doc.setItem(fieldname, files)
+                if doc.id == 'TEMPDOC':
+                    REQUEST.set(f.id + "@@ATTACHMENT", json.dumps(files))
 
-
-    def deleteAttachment(self, REQUEST, doc=None):
-        db = self.getParentDatabase()
+    def deleteAttachment(self, REQUEST, doc):
         deleteFiles = REQUEST.get("attachment-delete") or {}
-
-        tmp = getTemporaryDocument(
-            db,
-            self,
-            REQUEST,
-            doc,
-            validation_mode=False).__of__(db)
-        target = doc if doc else tmp
-
         for f in self.getFormFields(includesubforms=True):
             fieldtype = f.field_type
             if fieldtype == "ATTACHMENT":
                 # TODO: there is likely a crash if user include multiple attachment fields with same ids, perhaps by using subforms
-                if doc:
+                if doc.id != 'TEMPDOC':
                     files = doc.getItem(f.id,{})
                 else:
                     files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT", "{}"))
                 for filename, contentytpe in files.items():
                     filename = filename.encode('ascii', 'ignore')
                     if filename in deleteFiles:
-                        target.deletefile(filename)
+                        doc.deletefile(filename)
                         del files[filename]
-                if doc:
-                    doc.setItem(f.id, files)
-                else:
+                doc.setItem(f.id, files)
+                if doc.id == 'TEMPDOC':
                     REQUEST.set(f.id + "@@ATTACHMENT", json.dumps(files))
 
 

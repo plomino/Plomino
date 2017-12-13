@@ -414,7 +414,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if from_tempdoc is None:
             self.setItem('Form', form.id)
             # process editable fields (we read the submitted value in the request)
-            form.readInputs(self, REQUEST, validation_mode=True, process_attachments=True)
+            form.readInputs(self, REQUEST, validation_mode=True)
         else:
             self.items.update(from_tempdoc.items)
             self.plomino_modification_time = from_tempdoc.plomino_modification_time
@@ -456,8 +456,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             tempStorage = self.createTemporaryFolder()
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
-            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
-                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
+            if f.field_type == 'ATTACHMENT' and REQUEST.get(f.id + "@@ATTACHMENT"):
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT"))
                 for filename, contentytpe in temp_files.iteritems():
                     filename = filename.encode('ascii', 'ignore')
                     temp_blob = tempStorageWrapper.getfile(REQUEST, filename)
@@ -477,12 +477,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
-            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
-                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
+            if f.field_type == 'ATTACHMENT' and REQUEST.get(f.id + "@@ATTACHMENT"):
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT"))
                 for filename, contentytpe in temp_files.iteritems():
                     filename = filename.encode('ascii', 'ignore')
                     tempStorageWrapper.deletefile(REQUEST, filename)
-                db.cleanRequestCache(f.id + "@@ATTACHMENT")
 
     def cleanExpiredAttachment(self):
         tempStorage = self.getTemporaryFolder()
@@ -1124,7 +1123,7 @@ addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
 
-def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, process_attachments=False, applyhidewhen=False):
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, applyhidewhen=False):
     if hasattr(doc, 'real_id'):
         return doc
     else:
@@ -1137,12 +1136,9 @@ def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, pro
                 hash(doc),
                 validation_mode,
                 applyhidewhen)
-        print sorted(REQUEST.keys())
         cache = db.getRequestCache(cache_key)
         if cache:
-            print 'Hit'
             return cache
-        print 'miss'
         #import pdb; pdb.set_trace()
         # applying hidewhens will do validation which will get another temp doc.
         # if we are just reading the data and not validating then don't apply hidewhens
@@ -1152,8 +1148,7 @@ def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, pro
             REQUEST,
             real_doc=doc,
             validation_mode=validation_mode,
-            applyhidewhen=applyhidewhen,
-            process_attachments=process_attachments).__of__(db)
+            applyhidewhen=applyhidewhen).__of__(db)
         db.setRequestCache(cache_key, target)
         return target
 
@@ -1169,8 +1164,7 @@ class TemporaryDocument(PlominoDocument):
         REQUEST,
         real_doc=None,
         validation_mode=False,
-        applyhidewhen=True,
-        process_attachments=False
+        applyhidewhen=True
     ):
         """ Validation_mode means ignore validation errors
         """
@@ -1185,7 +1179,7 @@ class TemporaryDocument(PlominoDocument):
             self.real_id = real_doc.id
             # TODO: not sure why we need to validate here
             #form.validateInputs(REQUEST, self, applyhidewhen=applyhidewhen)
-            form.readInputs(self, REQUEST, validation_mode=validation_mode, process_attachments=process_attachments)
+            form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
             self.setItem('Form', form.id)
@@ -1198,7 +1192,7 @@ class TemporaryDocument(PlominoDocument):
                 # TODO: not sure why we need to validate here
                 #if validation_mode:
                 #    form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
-                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen, process_attachments=process_attachments)
+                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
 
@@ -1432,8 +1426,8 @@ class PlominoTemporaryFileStorageWrapper:
         db = doc.getParentDatabase()
         fieldnames = []
         for field_id in REQUEST.form:
-            if db.getRequestCache(field_id+'@@ATTACHMENT'):
-                field_value = db.getRequestCache(field_id+'@@ATTACHMENT')
+            if REQUEST.get(field_id+'@@ATTACHMENT'):
+                field_value = json.loads(REQUEST.get(field_id+'@@ATTACHMENT'))
                 fieldnames = [ filename for filename in field_value]
         sessionid = REQUEST.SESSION.getBrowserIdManager().getBrowserId()
         return [filename for filename in fieldnames

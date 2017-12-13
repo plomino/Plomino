@@ -34,8 +34,7 @@ class FormView(BrowserView):
             self.request,
             None,
             validation_mode=True,
-            applyhidewhen=False,
-            process_attachments=True).__of__(db)
+            applyhidewhen=False).__of__(db)
         # TODO: should be make this available in onDisplay? For macros we need to
         # but also how to deal with code that munges attachments etc?
 
@@ -66,9 +65,7 @@ class FormView(BrowserView):
                 # - Process the attachment in the request
                 self.request.set('Form', self.form.id)
                 self.request.set('plomino_current_page', 1)
-            if 'attachment-delete' in self.request.form:
-                self.form.deleteAttachment(self.request, doc=None)
-            errors = self.form.validateInputs(self.request, tmp=tmp)
+            errors = self.form.validateInputs(self.request, tmp=tmp, process_attachments=True)
             # We can't continue if there are errors
             if errors:
                 # save file attachment
@@ -176,19 +173,8 @@ class PageView(BrowserView):
                 # return form.OpenForm(request=self.request)
                 return self.openform()
 
-            db = self.form.getParentDatabase()
-            tmp = getTemporaryDocument(
-                db,
-                self.form,
-                self.request,
-                None,
-                validation_mode=True,
-                applyhidewhen=False,
-                process_attachments=True).__of__(db)
-            if 'attachment-delete' in self.request.form:
-                self.form.deleteAttachment(self.request, doc=None)
             # Need to validate the input first before any navigation
-            errors = form.validateInputs(self.request)
+            errors = form.validateInputs(self.request, process_attachments=True)
 
             # We can't continue if there are errors
             if errors:
@@ -211,7 +197,7 @@ class PageView(BrowserView):
 
             # Create the document if it's not a page
             if not form.isPage:
-                return form.createDocument(self.request, from_tempdoc=tmp)
+                return form.createDocument(self.request)
         return self.openform()
 
     def openform(self):
