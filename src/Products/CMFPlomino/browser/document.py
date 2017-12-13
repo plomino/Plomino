@@ -206,7 +206,7 @@ class DocumentView(BrowserView):
             self.target.setItem('Form', form.id)
 
             # process editable fields (we read the submitted value in the request)
-            form.readInputs(self.target, self.request, process_attachments=False)
+            form.readInputs(self.target, self.request)
 
             # refresh computed values, run onSave, reindex. Should never be creation.
             self.target.save(form, False)
