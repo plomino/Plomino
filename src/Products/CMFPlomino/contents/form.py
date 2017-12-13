@@ -1680,7 +1680,6 @@ class PlominoForm(Container):
         cache = db.getRequestCache(cache_key)
         if cache is not None:
             return cache
-        #import pdb; pdb.set_trace()
 
         hidewhens_results = []
 
@@ -2244,7 +2243,6 @@ class PlominoForm(Container):
         """
         db = self.getParentDatabase()
 
-        #import pdb; pdb.set_trace()
         if tmp is None:
             tmp = getTemporaryDocument(
                 db,

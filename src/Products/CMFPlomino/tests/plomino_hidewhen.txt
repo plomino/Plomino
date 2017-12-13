@@ -32,7 +32,7 @@ Create plomino database and publish it::
 Create the browser object we'll be using::
 
     >>> browser = Browser(layer['app'])
-    >>> browser.handleErrors = False
+    >>> browser.handleErrors = True
     >>> transaction.commit()  # enable the browser to see our changes
 
 
@@ -158,9 +158,12 @@ Open the form and submit the form without value for mandatory
     >>> post_url = portal_url +'/mydb' +'/frm1/createDocument'
     >>> browser.open(form_url)
     >>> token = browser.getControl(name='_authenticator').value
-    >>> data = urlencode(dict(Form= 'frm1', Field2='Apple',Plomino_Parent_Field='datagrid',Plomino_Parent_Form='frm4', token=token, plomino_save='Save'))
+    >>> data = urlencode(dict(Form= 'frm1', field2='Apple',Plomino_Parent_Field='datagrid',Plomino_Parent_Form='frm4', token=token, plomino_save='Save'))
     >>> browser.addHeader('Content-Type','multipart/form-data')
     >>> browser.post(post_url, data)
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 400: Bad Request
     >>> resp = json.loads(browser.contents)
     >>> 'errors' in resp
     True
