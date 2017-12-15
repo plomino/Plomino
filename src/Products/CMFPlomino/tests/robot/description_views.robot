@@ -493,11 +493,9 @@ I will see column header "${header}" and data "${rowdata1}", "${rowdata2}", "${r
 I can move the column "${col_1}" to column "${col_2}" by offset "${x}" "${y}"
   Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='${col_1}']    60s
   Wait Until Element Is Visible     jquery=.view-editor__column-header[data-column='${col_2}']    60s
-  Chain Click And Hold    jquery=.view-editor__column-header[data-column='${col_1}']
-  Chain Move To Element With Offset  jquery=.view-editor__column-header[data-column='${col_2}']  ${x}  ${y}
-  Chain Release     jquery=.view-editor__column-header[data-column='${col_2}']
-  Chains Perform Now
-  Sleep     10s
+
+  Selenium2Library.Drag And Drop By Offset   jquery=.view-editor__column-header[data-column='${col_1}']   ${x}    ${y}
+  Sleep     5s
 
 I can move column "${src}" to column "${target}"
   Drag Drop    jquery=.view-editor__column-header[data-column='${src}']    jquery=.view-editor__column-header[data-column='${target}']
