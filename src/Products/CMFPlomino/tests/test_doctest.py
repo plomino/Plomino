@@ -23,6 +23,7 @@ def test_suite():
         'plomino_browser.txt',
         'plomino_file_attachment.txt',
         'plomino_view.txt',
+        'plomino_hidewhen.txt',
         'plomino_index.txt',
         'plomino_formula.txt',
         # 'samples.txt',

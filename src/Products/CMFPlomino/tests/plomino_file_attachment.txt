@@ -224,7 +224,8 @@ Create multi-page form with file attachment
     ...     <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
     ...     <hr class="plominoPagebreakClass">
     ...     <p><label for="attach_2">Attach 2</label><span class="plominoFieldClass">attach_2</span></p>
-    ...     <p><label for="attach_3">Attach 3</label><span class="plominoFieldClass">attach_3</span></p>"""
+    ...     <p><label for="attach_3">Attach 3</label><span class="plominoFieldClass">attach_3</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
 
@@ -239,17 +240,20 @@ Fill the data, go back and forh to see if the attachment is not cleared
     >>> file_upload_ctl.add_file(open(test_file2), 'text/html',  'plomino.txt')
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file3), 'text/html',  'plomino_view.txt')
-    >>> browser.getControl('Previous').click()
-    >>> 'plomino_file_attachment.txt' in browser.contents
-    True
     >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> 'plomino.txt' in browser.contents
     True
     >>> 'plomino_view.txt' in browser.contents
     True
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_file_attachment.txt' in browser.contents
+    True
+
 
 Test deletetion and validation at the same time
 
+    >>> browser.getControl('Next').click()
     >>> browser.getControl(name='attachment-delete').value = [browser.getLink('plomino_view.txt').text]
     >>> browser.getControl('Save').click()
     >>> 'Validation failed' in browser.contents
@@ -263,6 +267,8 @@ Add again and test on page 1, validate faield and attachent still there
 
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file3), 'text/html',  'plomino_view.txt')
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> browser.getControl('Previous').click()
     >>> browser.getControl(name='text_1').value = ''
     >>> browser.getControl('Next').click()
@@ -317,8 +323,8 @@ Test existing document of multi-page can update attachment on single-attachment 
     >>> file_upload_ctl.add_file(open(test_file5), 'text/html',  'plomino_advanced.txt')
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file6), 'text/html',  'plomino_accesscontrol.txt')
-    >>> browser.getControl('Previous').click()
     >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> 'plomino_advanced.txt' in browser.contents
     True
     >>> 'plomino_accesscontrol.txt' in browser.contents
@@ -389,14 +395,17 @@ Fill the data, go back and forh to see if the attachment is not cleared
     >>> file_upload_ctl.add_file(open(test_file2), 'text/html',  'plomino.txt')
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file3), 'text/html',  'plomino_view.txt')
-    >>> browser.getControl('Previous').click()
-    >>> 'plomino_file_attachment.txt' in browser.contents
-    True
     >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> 'plomino.txt' in browser.contents
     True
     >>> 'plomino_view.txt' in browser.contents
     True
+    >>> browser.getControl('Previous').click()
+    >>> 'plomino_file_attachment.txt' in browser.contents
+    True
+    >>> browser.getControl('Next').click()
+
 
 Test deletetion and validation at the same time
 
@@ -413,6 +422,8 @@ Add again and test on page 1, validate faield and attachent still there
 
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file3), 'text/html',  'plomino_view.txt')
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> browser.getControl('Previous').click()
     >>> browser.getControl(name='text_1').value = ''
     >>> browser.getControl('Next').click()
@@ -507,7 +518,8 @@ Create multi-page form with file attachment, Multi-page Page Form will not save 
     ...     <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
     ...     <hr class="plominoPagebreakClass">
     ...     <p><label for="attach_2">Attach 2</label><span class="plominoFieldClass">attach_2</span></p>
-    ...     <p><label for="attach_3">Attach 3</label><span class="plominoFieldClass">attach_3</span></p>"""
+    ...     <p><label for="attach_3">Attach 3</label><span class="plominoFieldClass">attach_3</span></p>
+    ...     <hr class="plominoPagebreakClass">"""
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_frm2/page/1'
 
@@ -547,6 +559,8 @@ Add again and test on page 1, validate faield and attachent still there
 
     >>> file_upload_ctl = browser.getControl(name='attach_3')
     >>> file_upload_ctl.add_file(open(test_file3), 'text/html',  'plomino_view.txt')
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
     >>> browser.getControl('Previous').click()
     >>> browser.getControl(name='text_1').value = ''
     >>> browser.getControl('Save').click()

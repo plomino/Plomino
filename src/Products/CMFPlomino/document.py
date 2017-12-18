@@ -382,13 +382,17 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
 
     security.declareProtected(EDIT_PERMISSION, 'saveDocument')
 
-    def saveDocument(self, REQUEST, creation=False):
+    def saveDocument(self, REQUEST, creation=False, from_tempdoc=None):
         """ Save a document using the form submitted content
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
 
-        errors = form.validateInputs(REQUEST, doc=self)
+        if from_tempdoc is None:
+            errors = form.validateInputs(REQUEST, doc=self)
+        else:
+            # We assume if there were other errors then they showed up already
+            errors = []
 
         # execute the beforeSave code of the form
         error = None
@@ -407,12 +411,18 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if errors:
             return form.notifyErrors(errors)
 
-        self.setItem('Form', form.id)
-        form.processAttachment(REQUEST, doc=self, creation=creation)
-        # process editable fields (we read the submitted value in the request)
-        form.readInputs(self, REQUEST)
+        if from_tempdoc is None:
+            self.setItem('Form', form.id)
+            # process editable fields (we read the submitted value in the request)
+            form.readInputs(self, REQUEST, validation_mode=True)
+        else:
+            self.items.update(from_tempdoc.items)
+            self.plomino_modification_time = from_tempdoc.plomino_modification_time
+
         # refresh computed values, run onSave, reindex
         self.save(form, creation)
+        #TODO: needs to be a done without a special request var. Security risk
+        # should pickup response redirect header instead
         redirect = REQUEST.get('plominoredirecturl')
         if not redirect:
             redirect = self.getItem("plominoredirecturl")
@@ -423,6 +433,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             redirect = "./async_callback?" + urlencode(redirect)
         if not redirect:
             redirect = self.absolute_url()
+        #TODO: should just look for 307 in the response redirect header
         if REQUEST.RESPONSE.getHeader('Plomino-Retain-Form-Data'):
             REQUEST.RESPONSE.redirect(addTokenToUrl(redirect), status=307)
         else:
@@ -445,8 +456,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             tempStorage = self.createTemporaryFolder()
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
-            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
-                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
+            if f.field_type == 'ATTACHMENT' and REQUEST.get(f.id + "@@ATTACHMENT"):
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT"))
                 for filename, contentytpe in temp_files.iteritems():
                     filename = filename.encode('ascii', 'ignore')
                     temp_blob = tempStorageWrapper.getfile(REQUEST, filename)
@@ -466,12 +477,11 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             return
         tempStorageWrapper = PlominoTemporaryFileStorageWrapper(tempStorage)
         for f in form.getFormFields(includesubforms=True, request=REQUEST):
-            if f.field_type == 'ATTACHMENT' and db.getRequestCache(f.id + "@@ATTACHMENT"):
-                temp_files = db.getRequestCache(f.id + "@@ATTACHMENT")
+            if f.field_type == 'ATTACHMENT' and REQUEST.get(f.id + "@@ATTACHMENT"):
+                temp_files = json.loads(REQUEST.get(f.id + "@@ATTACHMENT"))
                 for filename, contentytpe in temp_files.iteritems():
                     filename = filename.encode('ascii', 'ignore')
                     tempStorageWrapper.deletefile(REQUEST, filename)
-                db.cleanRequestCache(f.id + "@@ATTACHMENT")
 
     def cleanExpiredAttachment(self):
         tempStorage = self.getTemporaryFolder()
@@ -1091,7 +1101,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         # (as BTreeFolder2 1.0 does not define __nonzero__)
         return True
 
-    def getTemporaryDocument(self, doc=None, validation_mode=False):
+    def getTemporaryDocument(self, doc=None, validation_mode=False, applyhidewhen=True):
         """Return a temporary document based on the current request and form"""
         db = self.getParentDatabase()
         request = self.REQUEST
@@ -1103,7 +1113,8 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
             form,
             request,
             doc=doc,
-            validation_mode=validation_mode
+            validation_mode=validation_mode,
+            applyhidewhen=applyhidewhen
             ).__of__(db)
 
 
@@ -1112,16 +1123,33 @@ addPlominoDocument = Factory(PlominoDocument)
 addPlominoDocument.__name__ = "addPlominoDocument"
 
 
-def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False):
+def getTemporaryDocument(db, form, REQUEST, doc=None, validation_mode=False, applyhidewhen=False):
     if hasattr(doc, 'real_id'):
         return doc
     else:
+        #TODO: find where _hidewhens[] is being set in request.
+        #We shouldn't really need the request in the key because it shouldn't change
+        # however it seems to as the plomino.txt test breaks without it
+        cache_key = "getTemporaryDocument_%s_%d_%d_%d_%d" % (
+                form.id,
+                hash(frozenset(REQUEST.keys())), #HACK big assumption that we don't modify values
+                hash(doc),
+                validation_mode,
+                applyhidewhen)
+        cache = db.getRequestCache(cache_key)
+        if cache:
+            return cache
+        #import pdb; pdb.set_trace()
+        # applying hidewhens will do validation which will get another temp doc.
+        # if we are just reading the data and not validating then don't apply hidewhens
         target = TemporaryDocument(
             db,
             form,
             REQUEST,
             real_doc=doc,
-            validation_mode=validation_mode).__of__(db)
+            validation_mode=validation_mode,
+            applyhidewhen=applyhidewhen).__of__(db)
+        db.setRequestCache(cache_key, target)
         return target
 
 
@@ -1135,8 +1163,11 @@ class TemporaryDocument(PlominoDocument):
         form,
         REQUEST,
         real_doc=None,
-        validation_mode=False
+        validation_mode=False,
+        applyhidewhen=True
     ):
+        """ Validation_mode means ignore validation errors
+        """
         self._parent = parent
         self.form = form
         self.REQUEST = REQUEST
@@ -1146,7 +1177,8 @@ class TemporaryDocument(PlominoDocument):
             self.items = PersistentDict(real_doc.items)
             self.setItem('Form', form.id)
             self.real_id = real_doc.id
-            form.validateInputs(REQUEST, self)
+            # TODO: not sure why we need to validate here
+            #form.validateInputs(REQUEST, self, applyhidewhen=applyhidewhen)
             form.readInputs(self, REQUEST, validation_mode=validation_mode)
         else:
             self.items = {}
@@ -1157,8 +1189,10 @@ class TemporaryDocument(PlominoDocument):
                 for f in mapped_field_ids:
                     self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
-                form.validateInputs(REQUEST, self)
-                form.readInputs(self, REQUEST, validation_mode=validation_mode)
+                # TODO: not sure why we need to validate here
+                #if validation_mode:
+                #    form.validateInputs(REQUEST, self,applyhidewhen=applyhidewhen)
+                form.readInputs(self, REQUEST, validation_mode=validation_mode, applyhidewhen=applyhidewhen)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
 
@@ -1392,8 +1426,8 @@ class PlominoTemporaryFileStorageWrapper:
         db = doc.getParentDatabase()
         fieldnames = []
         for field_id in REQUEST.form:
-            if db.getRequestCache(field_id+'@@ATTACHMENT'):
-                field_value = db.getRequestCache(field_id+'@@ATTACHMENT')
+            if REQUEST.get(field_id+'@@ATTACHMENT'):
+                field_value = json.loads(REQUEST.get(field_id+'@@ATTACHMENT'))
                 fieldnames = [ filename for filename in field_value]
         sessionid = REQUEST.SESSION.getBrowserIdManager().getBrowserId()
         return [filename for filename in fieldnames

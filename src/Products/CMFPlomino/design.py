@@ -739,6 +739,10 @@ class DesignManager:
         for id in to_delete:
             del self.scripts[id]
 
+        # If form etc has changed we can't rely on the caching temp docs etc
+        # Mainly helpful for tests but generally good idea
+        self.cleanRequestCache()
+
     security.declarePublic('compileFormulaScript')
 
     def compileFormulaScript(self, script_id, formula, with_args=False):
@@ -803,6 +807,8 @@ class DesignManager:
     def runFormulaScript(self, script_id, context, formula,
             with_args=False, *args):
         formula_str = formula or ''
+        if not formula_str:
+            return None
         compilation_errors = []
         ps = self.getFormulaScript(script_id)
         if not ps:

@@ -281,6 +281,8 @@ def load_macro(formid, helper, db, ids, curpath):
     form.REQUEST['Plomino_Parent_Form'] = formid
     form.REQUEST['Plomino_Macro_Context'] = curpath
 
+    db.cleanRequestCache() # important otherwise get wrong code
+
     doc = getTemporaryDocument(db_import, form, helper).__of__(db_import)
     # has to be computed on save so it appears in the doc
     # make sure all the fields must be in the form layout

@@ -4,7 +4,7 @@ from zope.interface import Interface, implements
 from ZPublisher.HTTPRequest import record
 
 from ..utils import asUnicode
-
+import json
 
 class IBaseField(Interface):
     """
@@ -95,8 +95,8 @@ class BaseField(object):
             if doc:
                 fieldValue = doc.getItem(fieldName)
                 db = doc.getParentDatabase()
-                if fieldType == 'ATTACHMENT' and doc.id =='TEMPDOC' and db.getRequestCache(fieldName+"@@ATTACHMENT"):
-                    fieldValue = db.getRequestCache(fieldName+"@@ATTACHMENT")
+                if fieldType == 'ATTACHMENT' and doc.id =='TEMPDOC' and request.get(fieldName+"@@ATTACHMENT"):
+                    fieldValue = json.loads(request.get(fieldName+"@@ATTACHMENT"))
             if (not fieldValue) and self.context.formula:
                 # This implies that if a falsy fieldValue is possible,
                 # Formula needs to take it into account, e.g. using hasItem
