@@ -100,6 +100,7 @@ Changelog
 
 - Fix redirect macro regression. Set default code value. [instification]
 - Fix error while saving form with selection list by adding default value to selectionlistformula [quang]
+- Fix error of erasing form data when refreshing web browser [quang]
 
 2.0b4 (2016-05-27)
 ------------------
