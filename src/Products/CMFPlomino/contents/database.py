@@ -510,8 +510,12 @@ class PlominoDatabase(
         if not hasattr(self, 'REQUEST'):
             return None
         annotations = IAnnotations(self.REQUEST)
+        if config.PLOMINO_REQUEST_CACHE_KEY not in annotations:
+            return
         if key:
             cache = annotations.get(config.PLOMINO_REQUEST_CACHE_KEY)
+            if key not in cache:
+                return
             del cache[key]
         else:
             del annotations[config.PLOMINO_REQUEST_CACHE_KEY]

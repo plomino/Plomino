@@ -28,7 +28,6 @@ Create plomino database and publish it::
 
     >>> db = portal.mydb
     >>> wf_tool = portal.portal_workflow
-    >>> wf_tool.doActionFor(db, 'publish')
     >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
 
 Add some minimal content to test access (view 1 displays all documents)::

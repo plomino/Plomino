@@ -1,6 +1,6 @@
 FROM plone:5.0
 USER root
-RUN apt-get update && apt-get install -y curl git libjpeg-dev #virtualenv git gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev # python-dev libjpeg-turbo8-dev
+RUN apt-get update && apt-get install -y curl git libjpeg-dev libldap2-dev libsasl2-dev #virtualenv git gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev  # python-dev libjpeg-turbo8-dev
 
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.1

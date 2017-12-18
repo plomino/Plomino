@@ -86,6 +86,7 @@ services:
     command: bin/test --all -vv
     depends_on:
       - "selenium"
+      - "ldapserver"
 
   robot-server:
     image: robot_tests
@@ -127,3 +128,11 @@ services:
     volumes:
       - /dev/shm:/dev/shm
       - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
+
+
+  ldapserver:
+    image: rroemhild/test-openldap
+    privileged: true
+#    container_name: ldapserver
+    ports:
+      - 389:389
