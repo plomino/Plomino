@@ -12,8 +12,9 @@ require([
             // Push the current page into the URL
             // The action is the current page
             var page = this.$el.parents('#plomino_form').attr('action');
-            var stateObj = {multipage: 'multipage' };
-            history.pushState(stateObj, '', page);
+            window.location.href = page;
+            //var stateObj = {multipage: 'multipage' };
+            //history.pushState(stateObj, '', page);
         }
     });
     return Multipage;
