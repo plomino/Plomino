@@ -10,7 +10,6 @@ from zope.interface import alsoProvides
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from zope.publisher.http import HTTPResponse
-from Products.CMFPlomino.document import getTemporaryDocument
 
 class FormView(BrowserView):
 
@@ -26,20 +25,8 @@ class FormView(BrowserView):
             setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
     def _process_form(self, template):
-
-        db = self.form.getParentDatabase()
-        tmp = getTemporaryDocument(
-            db,
-            self.form,
-            self.request,
-            None,
-            validation_mode=True,
-            applyhidewhen=False).__of__(db)
-        # TODO: should be make this available in onDisplay? For macros we need to
-        # but also how to deal with code that munges attachments etc?
-
-
-        if getattr(self.context, 'onDisplay', ''):
+        if (hasattr(self.context, 'onDisplay') and
+                self.context.onDisplay):
             try:
                 response = self.context.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join([
@@ -49,7 +36,6 @@ class FormView(BrowserView):
             except PlominoScriptException, e:
                 response = None
                 e.reportError('onDisplay formula failed')
-                #TODO: should more detail on teh error
             # If the onDisplay event returned something, return it
             # We could do extra handling of the response here if needed
             if response is not None:
@@ -65,16 +51,20 @@ class FormView(BrowserView):
                 # - Process the attachment in the request
                 self.request.set('Form', self.form.id)
                 self.request.set('plomino_current_page', 1)
-            errors = self.form.validateInputs(self.request, tmp=tmp, process_attachments=True)
+                self.form.processAttachment(self.request, doc=None, creation=False)
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc=None)
+            errors = self.form.validateInputs(self.request)
             # We can't continue if there are errors
             if errors:
                 # save file attachment
+                self.form.processAttachment(self.request, doc=None, creation=False)
                 # inject these into the form
                 self.page_errors = errors
             else:
                 # Not create new document if we ignore the action
                 if self.request.get('ignore_actions', None) is None:
-                    self.form.createDocument(self.request, from_tempdoc=tmp)
+                    self.form.createDocument(self.request)
 
         return template()
 
@@ -173,11 +163,15 @@ class PageView(BrowserView):
                 # return form.OpenForm(request=self.request)
                 return self.openform()
 
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc=None)
             # Need to validate the input first before any navigation
-            errors = form.validateInputs(self.request, process_attachments=True)
+            errors = form.validateInputs(self.request)
 
             # We can't continue if there are errors
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request, doc=None, creation=False)
                 # inject these into the form
                 self.page_errors = errors
                 return self.openform()
@@ -198,6 +192,9 @@ class PageView(BrowserView):
             # Create the document if it's not a page
             if not form.isPage:
                 return form.createDocument(self.request)
+            else:
+                # Process the temporary attachment
+                self.form.processAttachment(self.request, doc=None, creation=False)
         return self.openform()
 
     def openform(self):

@@ -74,6 +74,7 @@ class DocumentView(BrowserView):
             self.action = "deleteAttachment"
             return self
 
+
         doc = self.context.getParentDatabase().getDocument(name)
         if not doc:
             raise NotFound(self, name, request)
@@ -130,9 +131,13 @@ class DocumentView(BrowserView):
         self.page_errors = []
         if self.request['REQUEST_METHOD'] == 'POST':
             form = self.target.getForm()
+            if 'attachment-delete' in self.request.form:
+                form.deleteAttachment(self.request, doc=self.target)
             # Try to validate the form
-            errors = form.validateInputs(self.request, doc=self.target,process_attachments=True)
+            errors = form.validateInputs(self.request, doc=self.target)
             if errors:
+                # save file attachment
+                self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return template()
             else:
@@ -171,10 +176,13 @@ class DocumentView(BrowserView):
 
             # Pass in the current doc as well. This ensures that fields on other
             # pages are included (possibly needed for calculations)
-            errors = form.validateInputs(self.request, doc=self.target, process_attachments=True)
+            if 'attachment-delete' in self.request.form:
+                self.form.deleteAttachment(self.request, doc = self.target)
+            errors = form.validateInputs(self.request, doc=self.target)
 
             if errors:
                 # save file attachment
+                self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return self.edit_template()
 
@@ -206,7 +214,7 @@ class DocumentView(BrowserView):
             self.target.setItem('Form', form.id)
 
             # process editable fields (we read the submitted value in the request)
-            form.readInputs(self.target, self.request)
+            form.readInputs(self.target, self.request, process_attachments=False)
 
             # refresh computed values, run onSave, reindex. Should never be creation.
             self.target.save(form, False)

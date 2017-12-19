@@ -96,7 +96,8 @@ If we have just the condition then we get no code
 We can have more than one condition
 
     >>> range2 = {"more_field_value":100,
-    ...    "field_id":"field1",
+    ...    "more_field_name":"field1",
+    ...    "less_field_name":"field1",
     ...    "and_or":"or",
     ...    "less_field_value":200,
     ...    "Form":"macro_condition_number_range_in",
@@ -122,15 +123,6 @@ No operator assumes "AND"
     if macro_condition_number_range_in_2() and macro_condition_number_range_in_3():
     ...
     ### END macro_field_validate_invalid_2 ###
-
-Make sure the code has the right arguments
-
-    >>> '< 10' in db.frm1.field1.validation_formula
-    True
-    >>> '< 200' in db.frm1.field1.validation_formula
-    True
-    >>> 'field1' in db.frm1.field1.validation_formula
-    True
 
 or we use an explicit 'OR' operator
 

@@ -85,10 +85,7 @@ class ProductsMacrosLayer(Layer):
         with ploneSite() as portal:
             applyProfile(portal, 'Products.CMFPlomino.defaultmacros:macros')
 
-        #Show debug logs
-        #self.browser.handleErrors = False
-        #self.portal.error_log._ignored_exceptions = ()
-
+        # Show debug logs
         # root_logger = logging.getLogger()
         # root_logger.setLevel(logging.DEBUG)
         # handler = logging.StreamHandler(sys.stderr)
@@ -96,6 +93,9 @@ class ProductsMacrosLayer(Layer):
         # handler.setFormatter(formatter)
         # root_logger.addHandler(handler)
 
+        # self.browser.handleErrors = False
+        # self.portal.error_log._ignored_exceptions = ()
+        #
         # def raising(self, info):
         #     import traceback
         #     traceback.print_tb(info[2])
@@ -105,13 +105,9 @@ class ProductsMacrosLayer(Layer):
         # SiteErrorLog.raising = raising
 
 
-
-PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
-
-
 class TestDBsLayer(Layer):
 
-    defaultBases = (PRODUCTS_MACROS_FIXTURE,)
+    defaultBases = (PRODUCTS_CMFPLOMINO_FIXTURE,)
 
     def setUp(self):
 
@@ -138,6 +134,10 @@ class TestDBsLayer(Layer):
                 if data_import not in datas:
                     continue
                 db.importFromJSON(from_file=os.path.join(dir,data_import))
+
+
+
+PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
 
 TEST_DBS_FIXTURE = TestDBsLayer()
 
