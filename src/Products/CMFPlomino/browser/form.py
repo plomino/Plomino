@@ -63,7 +63,7 @@ class FormView(BrowserView):
                 self.page_errors = errors
             else:
                 # Not create new document if we ignore the action
-                if self.request.get('ignore_actions', None) is None:
+                if self.request.get('ignore_actions', None) is None and  'plomino_save' in self.request.form:
                     self.form.createDocument(self.request)
 
         return template()
@@ -119,14 +119,15 @@ class PageView(BrowserView):
         if not getattr(self.request, 'SESSION', None):
             setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
+        # Remove direct page access
         # Default page is page 1
-        self.page = 1
+        # self.page = 1
         # Ignore everything past the first page
-        if request.path:
-            try:
-                self.page = int(request.path[0])
-            except ValueError:
-                self.page = 1
+        # if request.path:
+        #    try:
+        #        self.page = int(request.path[0])
+        #    except ValueError:
+        #        self.page = 1
 
     def __call__(self):
         if (hasattr(self.context, 'onDisplay') and
@@ -149,12 +150,11 @@ class PageView(BrowserView):
     def render(self):
         self.page_errors = []
         # Set the current page
-        self.request['plomino_current_page'] = self.page
+        #self.request['plomino_current_page'] = self.page
         form = self.context.getForm()
         # Get multi page information
         current_page = form._get_current_page()
         num_pages = form._get_num_pages()
-
         if self.request['REQUEST_METHOD'] == 'POST':
 
             # If back or previous is in the form, page backwards
@@ -190,7 +190,7 @@ class PageView(BrowserView):
                     return self.openform()
 
             # Create the document if it's not a page
-            if not form.isPage:
+            if not form.isPage and 'plomino_save' in self.request.form:
                 return form.createDocument(self.request)
             else:
                 # Process the temporary attachment
