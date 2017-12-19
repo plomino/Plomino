@@ -335,7 +335,7 @@ class PlominoForm(Container):
         """
         is_childform = False = request.get("Plomino_Parent_Field", None) is not None
         if self.getIsMulti():
-            action = '/page/%s' % self._get_current_page()
+            action = '/page#%s' % self._get_current_page()
         elif self.isPage:
             action = ''
         elif bare:

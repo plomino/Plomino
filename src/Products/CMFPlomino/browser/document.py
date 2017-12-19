@@ -140,7 +140,7 @@ class DocumentView(BrowserView):
                 self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return template()
-            else:
+            elif 'plomino_save' in self.request.form:
                 return self.doc.saveDocument(self.request)
         else:
             return template()
