@@ -63,7 +63,16 @@ class FormView(BrowserView):
                 self.page_errors = errors
             else:
                 # Not create new document if we ignore the action
-                if self.request.get('ignore_actions', None) is None and  'plomino_save' in self.request.form:
+                # We need to check for custom SAVE actions
+                actions = self.context.getActions()
+                actions = [i[0].id for i in actions if
+                           i[0].action_type == 'SAVE']
+                # Add the default save action
+                actions.append('plomino_save')
+                request_actions = [i for i in actions if i in self.request.form]
+
+                if self.request.get('ignore_actions', None) is None \
+                        and len(request_actions):
                     self.form.createDocument(self.request)
 
         return template()
