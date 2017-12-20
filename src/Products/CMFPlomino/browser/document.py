@@ -131,6 +131,13 @@ class DocumentView(BrowserView):
         self.page_errors = []
         if self.request['REQUEST_METHOD'] == 'POST':
             form = self.target.getForm()
+            # We need to check for custom SAVE actions
+            actions = form.getActions()
+            actions = [i[0].id for i in actions if
+                       i[0].action_type == 'SAVE']
+            # Add the default save action
+            actions.append('plomino_save')
+            request_actions = [i for i in actions if i in self.request.form]
             if 'attachment-delete' in self.request.form:
                 form.deleteAttachment(self.request, doc=self.target)
             # Try to validate the form
@@ -140,7 +147,7 @@ class DocumentView(BrowserView):
                 self.form.processAttachment(self.request, doc=self.target, creation=False)
                 self.page_errors = errors
                 return template()
-            elif 'plomino_save' in self.request.form:
+            elif len(request_actions):
                 return self.doc.saveDocument(self.request)
         else:
             return template()
