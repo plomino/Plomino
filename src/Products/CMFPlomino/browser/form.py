@@ -199,7 +199,15 @@ class PageView(BrowserView):
                     return self.openform()
 
             # Create the document if it's not a page
-            if not form.isPage and 'plomino_save' in self.request.form:
+            # We need to check for custom SAVE actions
+            actions = self.context.getActions()
+            actions = [i[0].id for i in actions if
+                       i[0].action_type == 'SAVE']
+            # Add the default save action
+            actions.append('plomino_save')
+            request_actions = [i for i in actions if i in self.request.form]
+
+            if not form.isPage and len(request_actions):
                 return form.createDocument(self.request)
             else:
                 # Process the temporary attachment
