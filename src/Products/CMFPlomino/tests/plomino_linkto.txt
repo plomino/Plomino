@@ -1,0 +1,89 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+================================
+Multi-page Form Test
+===============================
+
+Create multi-page form with file attachment
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_frm1', title='Multi-page Form 1')
+    >>> id = db.mp_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
+    ...     <hr class="plominoPagebreakClass">
+    ...     <input type="submit" class="context plominoLinkto" name="plominolinkto-text_1" value="Link To"/>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
+
+Fill the data, use the Link To button to go back and forh to see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Link To').click()
+    >>> 'Input text 1' in browser.contents
+    True
+
+Save the form
+    >>> browser.getControl('Save').click()
+
+================================
+Multi-page Document Test
+===============================
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
+
+    >>> browser.open(edit_doc_url)
+    >>> browser.getControl(name='text_1').value = 'Input text 2'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Link To').click()
+    >>> 'Input text 2' in browser.contents
+    True
