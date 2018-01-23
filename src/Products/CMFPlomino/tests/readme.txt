@@ -155,18 +155,81 @@ Robot tests
 ===========
 
 - robot/description_datagrid.robot
+  Keyword for test_datagrid.robot
 - robot/description_dynamic.robot
+  Keywords for test_dynamic.robot
 - robot/description_plominodatabase.robot
+  Keywords for test_plominodatabase.robot
 - robot/description_redirect.robot
+  Keywords for test_redirect.robot
+- robot/description_validate.robot
+  Keywords for test_validate.robot
 - robot/description_views.robot
+  Keywords for test_views.robot
 - robot/description_workflow.robot
+  Keywords for test_workflow.robot
 - robot/test_datagrid.robot
+  Test editing datagrid in creation mode
+  Test editing datagrid in document mode
+  Test column follows order of field mapping
 - robot/test_dynamic.robot
+  Add computed-on-save field
+  Add computed field
+  Add computed-on-display field
+  Add hidewhen on text field
+  Add hidewhen on dropdown field
+  Add hidewhen on radio field
+  Add hidewhen on checkbox field
+  Add hidewhen on datagrid field
+  Add hidewhen for multi-select field
+  Add hidewhen on text field
+  Add two dynamic hidewhen
 - robot/test_plominodatabase.robot
-- robot/test_redirect.robot
+  Add new PlominoDatabase
+  Open current PlominoDatabase
+  Add new form to Plomino
+  Open new form
+  Open new form while editing another form
+  Edit a form
+  Edit new form while editing another form
+  Rename a form
+  Add new field to form by clicking Add Panel
+  Add new field to form by drag-and-drop from Add Panel
+  Edit field title and label at the same time
+  Add colon ':' to label
+  Preview a form
+  Preview a form while editing another form
+  Add validation rule to form field
+  Change field mode to COMPUTED
+  Change field mode to COMPUTED while editing another form
+  Change field mode to EDITABLE
+  Change field mode to EDITABLE while editing another form
+  Add hidewhen to empty form
+  Add hidewhen on email field in empty form
+  Export database design
 - robot/test_validate.robot
+  Add validation rule to the field
+- robot/test_redirect.robot
+  Redirect on save from source form with method = POST to target form with method = POST
+  Redirect on from source form with method = AUTO to target form with method = AUTO
+  Redirect on from source form with method = AUTO to target form with method = POST
+  Redirect on from source form with method = POST to target form with method = AUTO
+  Check if warning message displayed when select Redirect on Load on macro
+  Check if field data is retained in target form
+  Check if file attachment is retained in target form
+  Check if field data in multi-page is retained in target multi-page form
 - robot/test_views.robot
+  Add new view
+  Add column to view
+  Reorder column in view
+  Add action to a view
+  Add empty view by using editor tab (+)
+  Add view from form by using editor tab (+)
+  Add view from form by using Add Panel
 - robot/test_workflow.robot
+  Open workflow editor
+  Add Form task to workflow
+  Create view from form fields in Workflow editor
 
 Unit tests
 ==========
