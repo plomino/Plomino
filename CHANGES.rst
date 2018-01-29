@@ -101,6 +101,7 @@ Changelog
 - Fix redirect macro regression. Set default code value. [instification]
 - Fix error while saving form with selection list by adding default value to selectionlistformula [quang]
 - Fix to better handle form refreshes and browser button navigation [quang, instification]
+- Update CMFPlone to 5.0.9 [quang]
 
 2.0b4 (2016-05-27)
 ------------------
