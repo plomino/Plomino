@@ -30,9 +30,13 @@ I have a source form "${source}" with POST request and a target form "${target}"
 I select the redirect type=Form
   Wait Until Page Contains Element    jquery=.plone-modal-title:contains('Redirect in form on save')    60s
   Wait Until Element Is Visible       jquery=.plone-modal-title:contains('Redirect in form on save')    60s
+  Wait Until Page Contains Element      jquery=#redirect_type-form      60s
+  Wait Until Element Is Visible     jquery=#redirect_type-form      60s
   Click Element   jquery=#redirect_type-form
 
-  Wait Until Element Is Visible     jquery=#s2id_form_redirect    60s
+  Sleep     10s
+  Wait Until Page Contains Element  jquery=#s2id_form_redirect    90s
+  Wait Until Element Is Visible     jquery=#s2id_form_redirect    90s
 
 I select the target form "${target}"
   Click Element     jquery=#s2id_form_redirect
