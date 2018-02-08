@@ -1,0 +1,166 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+
+=============================================================
+Test text field displaying in multi-page form and page form
+=============================================================
+
+Create multi-page form that contains text field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_text_frm1', title='Text field testing')
+    >>> id = db.mp_text_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_text_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_text_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> 'Input text 1' in browser.contents
+    True
+
+
+Create multi-page page form that contains text field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_text_frm1', title='Text field testing', isPage= True)
+    >>> id = db.page_text_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> db.page_text_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_text_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> 'Input text 1' in browser.contents
+    True
+
+
+Set the value of text field to be a list and verify the field rendering value to be string
+
+    >>> doc1 = db.createDocument()
+    >>> doc1.setItem('text_1',['1','2'])
+    >>> doc1.save()
+    >>> db.mp_text_frm1.text_1.getSettings().getFieldValue(db.mp_text_frm1,doc1)
+    '1, 2'
+
+
+=============================================================
+Test checkbox field displaying in multi-page form and page form
+=============================================================
+
+Create multi-page form that contains text field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_chck_frm1', title='Boolean field testing')
+    >>> id = db.mp_chck_frm1.invokeFactory('PlominoField',
+    ...             id='chck_1',
+    ...             title='Checkbox1',
+    ...             field_type="BOOLEAN",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_chck_frm1.form_layout = """<p><label for="chck_1">Checkbox 1</label><span class="plominoFieldClass">chck_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_chck_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Checkbox 1').selected = False
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> browser.getControl('Checkbox 1').selected
+    True
+
+Create multi-page page form that contains text field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_chck_frm1', title='Boolean field testing', isPage= True)
+    >>> id = db.page_text_frm1.invokeFactory('PlominoField',
+    ...             id='chck_1',
+    ...             title='Checkbox1',
+    ...             field_type="BOOLEAN",
+    ...             field_mode="EDITABLE")
+    >>> db.page_chck_frm1.form_layout = """<p><label for="chck_1">Checkbox 1</label><span class="plominoFieldClass">chck_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_chck_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Checkbox 1').selected = False
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> browser.getControl('Checkbox 1').selected
+    True
+
+
+Set the value of boolean field to be a string or boolean and verify the field rendering value to be boolean
+
+    >>> doc1 = db.createDocument()
+    >>> doc1.setItem('chck_1',True)
+    >>> doc1.save()
+    >>> db.page_chck_frm1.chck_1.getSettings().getFieldValue(db.page_chck_frm1,doc1)
+    True
+    >>> doc1.setItem('chck_1','1')
+    >>> doc1.save()
+    >>> db.page_chck_frm1.chck_1.getSettings().getFieldValue(db.page_chck_frm1,doc1)
+    True

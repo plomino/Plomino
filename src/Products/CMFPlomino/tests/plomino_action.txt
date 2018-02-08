@@ -48,39 +48,30 @@ Log in with ``Site Manager`` access rights::
 Custom Save Action
 ===============================
 
-Create multi-page form with file attachment
+Create single-page form with custom save
 
-    >>> id = db.invokeFactory('PlominoForm', id='mp_frm1', title='Custom save action test')
-    >>> id = db.mp_frm1.invokeFactory('PlominoField',
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm1', title='Custom save action test')
+    >>> id = db.sp_frm1.invokeFactory('PlominoField',
     ...             id='text_1',
     ...             title='Text1',
     ...             field_type="TEXT",
     ...             field_mode="EDITABLE")
-    >>> id = db.mp_frm1.invokeFactory('PlominoAction',
+    >>> id = db.sp_frm1.invokeFactory('PlominoAction',
     ...             id='action_1',
     ...             title='Custom save',
     ...             action_type="SAVE")
-    >>> db.mp_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> db.sp_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
     >>> transaction.commit()
-    >>> form_url = portal_url +'/mydb' +'/mp_frm1/page/1'
+    >>> form_url = portal_url +'/mydb' +'/sp_frm1'
 
-Fill the data, use the Link To button to go back and forh to see if the field displayed
+Fill the data, use the Custom Save to save the data and see if the field displayed
 
     >>> browser.open(form_url)
+    >>> browser.getControl(name='action_1') != None
+    True
     >>> browser.getControl(name='text_1').value = 'Input text 1'
     >>> browser.getControl(name='action_1').click()
     >>> 'Input text 1' in browser.contents
     True
 
-Open the document
 
-    >>> browser.getControl('Edit').click()
-    >>> browser.getControl(name='text_1').value = 'Input text 2'
-    >>> browser.getControl(name='action_1').click()
-    >>> 'Input text 2' in browser.contents
-    True
-
-
-================================
-Python Action
-===============================

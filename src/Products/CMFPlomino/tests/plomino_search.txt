@@ -1,0 +1,91 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+=============
+Search Form
+=============
+
+Createa search form and view with some data
+
+    >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Form 3')
+    >>> db.frm3.isSearchForm = True
+    >>> db.frm3.search_view = 'search_view'
+    >>> id = db.frm3.invokeFactory('PlominoField', id='field1',
+    ...         title='Field1',
+    ...         mandatory=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm3.form_layout = """<p><label for="field1">Field1</label><span class="plominoFieldClass">field1</span></p>"""
+    >>> id = db.invokeFactory('PlominoView', id='search_view',
+    ...         title='View 1')
+    >>> id = db.search_view.invokeFactory('PlominoColumn', id='col1',
+    ...         title='Col 1', displayed_field = 'frm3/field1')
+
+    >>> doc1 = db.createDocument()
+    >>> doc1.setItem('field1','val1')
+    >>> doc1.save()
+    >>> doc2 = db.createDocument()
+    >>> doc2.setItem('field1','val2')
+    >>> doc2.save()
+    >>> transaction.commit()  # enable the browser to see our changes
+
+
+Make a GET request, expected all document found
+    >>> form_url = portal_url +'/mydb' +'/frm3'
+    >>> browser.open(form_url)
+    >>> '<span>val1</span>' in browser.contents
+    True
+    >>> '<span>val2</span>' in browser.contents
+    True
+
+Now fill in search criteria for field1 and search again
+    >>> browser.getForm(name='frm3').mech_form.enctype='application/x-www-form-urlencoded'
+    >>> browser.getControl('Field1').value = 'val2'
+    >>> browser.getControl(name='plomino_search').click()
+    >>> '<span>val1</span>' in browser.contents
+    False
+    >>> '<span>val2</span>' in browser.contents
+    True
