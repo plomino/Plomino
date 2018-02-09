@@ -45,6 +45,13 @@ Log in with ``Site Manager`` access rights::
     >>> browser.getControl('Log in').click()
 
 
+========
+NOTE
+========
+
+# Field not included in the test: datagrid, rich-text, name, doclink, google chart as the require using JavaScript at client
+
+
 =============================================================
 Test text field displaying in multi-page form and page form
 =============================================================
@@ -108,7 +115,7 @@ Set the value of text field to be a list and verify the field rendering value to
 Test checkbox field displaying in multi-page form and page form
 =============================================================
 
-Create multi-page form that contains text field
+Create multi-page form that contains boolean field
 
     >>> id = db.invokeFactory('PlominoForm', id='mp_chck_frm1', title='Boolean field testing')
     >>> id = db.mp_chck_frm1.invokeFactory('PlominoField',
@@ -124,16 +131,16 @@ Create multi-page form that contains text field
 Fill the form, ave the data and see if the field displayed
 
     >>> browser.open(form_url)
-    >>> browser.getControl('Checkbox 1').selected = False
+    >>> browser.getControl('Checkbox 1').selected = True
     >>> browser.getControl('Next').click()
     >>> browser.getControl('Save').click()
     >>> browser.getControl('Checkbox 1').selected
     True
 
-Create multi-page page form that contains text field
+Create multi-page page form that contains boolean field
 
     >>> id = db.invokeFactory('PlominoForm', id='page_chck_frm1', title='Boolean field testing', isPage= True)
-    >>> id = db.page_text_frm1.invokeFactory('PlominoField',
+    >>> id = db.page_chck_frm1.invokeFactory('PlominoField',
     ...             id='chck_1',
     ...             title='Checkbox1',
     ...             field_type="BOOLEAN",
@@ -146,21 +153,222 @@ Create multi-page page form that contains text field
 Fill the form, ave the data and see if the field displayed
 
     >>> browser.open(form_url)
-    >>> browser.getControl('Checkbox 1').selected = False
+    >>> browser.getControl('Checkbox 1').selected = True
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> browser.getControl('Checkbox 1').selected
+    True
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Checkbox 1').selected = "1"
     >>> browser.getControl('Next').click()
     >>> browser.getControl('Save').click()
     >>> browser.getControl('Checkbox 1').selected
     True
 
 
-Set the value of boolean field to be a string or boolean and verify the field rendering value to be boolean
 
-    >>> doc1 = db.createDocument()
-    >>> doc1.setItem('chck_1',True)
-    >>> doc1.save()
-    >>> db.page_chck_frm1.chck_1.getSettings().getFieldValue(db.page_chck_frm1,doc1)
+
+=================================================================
+Test selection field displaying in multi-page form and page form
+=================================================================
+
+Create multi-page form that contains selection field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_sel_frm1', title='Selection field testing')
+    >>> id = db.mp_sel_frm1.invokeFactory('PlominoField',
+    ...             id='sel_1',
+    ...             title='Selection1',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_sel_frm1.form_layout = """<p><label for="sel_1">Selection 1</label><span class="plominoFieldClass">sel_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> db.mp_sel_frm1.sel_1.selectionlist = ['apple','orange']
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_sel_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Selection 1').value = ['apple']
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> 'apple' in browser.contents
     True
-    >>> doc1.setItem('chck_1','1')
-    >>> doc1.save()
-    >>> db.page_chck_frm1.chck_1.getSettings().getFieldValue(db.page_chck_frm1,doc1)
+
+Create multi-page page form that contains selection field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_sel_frm1', title='Selection field testing', isPage= True)
+    >>> id = db.page_sel_frm1.invokeFactory('PlominoField',
+    ...             id='sel_1',
+    ...             title='Selection1',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> db.page_sel_frm1.form_layout = """<p><label for="sel_1">Selection 1</label><span class="plominoFieldClass">sel_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> db.page_sel_frm1.sel_1.selectionlist = ['apple','orange']
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_sel_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Selection 1').value = ['orange']
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> 'orange' in browser.contents
+    True
+
+
+=================================================================
+Test number field displaying in multi-page form and page form
+=================================================================
+
+Create multi-page form that contains number field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_num_frm1', title='Number field testing')
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_1',
+    ...             title='Number 1',
+    ...             field_type="NUMBER",
+    ...             number_type='INTEGER',
+    ...             field_mode="EDITABLE")
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_2',
+    ...             title='Number 2',
+    ...             field_type="NUMBER",
+    ...             number_type='DECIMAL',
+    ...             field_mode="EDITABLE")
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_3',
+    ...             title='Number 3',
+    ...             field_type="NUMBER",
+    ...             number_type='FLOAT',
+    ...             field_mode="EDITABLE")
+    >>> db.mp_num_frm1.form_layout = """<p><label for="num_1">Number 1</label><span class="plominoFieldClass">num_1</span></p>
+    ... <p><label for="num_2">Number 2</label><span class="plominoFieldClass">num_2</span></p>
+    ... <p><label for="num_3">Number 3</label><span class="plominoFieldClass">num_3</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_num_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 1').value = '123'
+    >>> browser.getControl('Number 2').value = '1.3333'
+    >>> browser.getControl('Number 3').value = '3.1427'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> docurl = browser.url
+    >>> docid = docurl.split('/')[-3]
+    >>> doc = db.getDocument(docid)
+    >>> 123L ==  doc.getItem('num_1')
+    True
+    >>> from decimal import *
+    >>> isinstance(doc.getItem('num_2'),Decimal)
+    True
+    >>> 3.1427 ==  doc.getItem('num_3')
+    True
+
+Create multi-page page form that contains rich-text field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_num_frm1', title='Number field testing', isPage=True)
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_1',
+    ...             title='Number 1',
+    ...             field_type="NUMBER",
+    ...             number_type='INTEGER',
+    ...             field_mode="EDITABLE")
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_2',
+    ...             title='Number 2',
+    ...             field_type="NUMBER",
+    ...             number_type='DECIMAL',
+    ...             field_mode="EDITABLE")
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_3',
+    ...             title='Number 3',
+    ...             field_type="NUMBER",
+    ...             number_type='FLOAT',
+    ...             field_mode="EDITABLE")
+    >>> db.page_num_frm1.form_layout = """<p><label for="num_1">Number 1</label><span class="plominoFieldClass">num_1</span></p>
+    ... <p><label for="num_2">Number 2</label><span class="plominoFieldClass">num_2</span></p>
+    ... <p><label for="num_3">Number 3</label><span class="plominoFieldClass">num_3</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_num_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 1').value = '123'
+    >>> browser.getControl('Number 2').value = '1.3333'
+    >>> browser.getControl('Number 3').value = '3.1427'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> browser.getControl('Number 1').value == '123'
+    True
+    >>> browser.getControl('Number 2').value == '1.3333'
+    True
+    >>> browser.getControl('Number 3').value == '3.1427'
+    True
+
+
+
+=================================================================
+Test datetime field displaying in multi-page form and page form
+=================================================================
+
+Create multi-page form that contains datetime field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_date_frm1', title='Datetime field testing')
+    >>> id = db.mp_date_frm1.invokeFactory('PlominoField',
+    ...             id='date_1',
+    ...             title='Datetime1',
+    ...             field_type="DATETIME",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_date_frm1.form_layout = """<p><label for="date_1">Datetime 1</label><span class="plominoFieldClass">date_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> db.mp_date_frm1.date_1.format = '%Y-%m-%d'
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_date_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> '2017-12-31'in browser.contents
+    True
+    >>> docurl = browser.url
+    >>> docid = docurl.split('/')[-3]
+    >>> doc = db.getDocument(docid)
+    >>> doc.getItem('date_1').strftime('We are the %d, %b %Y')
+    'We are the 31, Dec 2017'
+
+Create multi-page page form that contains selection field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_date_frm1', title='Datetime field testing', isPage= True)
+    >>> id = db.page_date_frm1.invokeFactory('PlominoField',
+    ...             id='date_1',
+    ...             title='Datetime1',
+    ...             field_type="DATETIME",
+    ...             field_mode="EDITABLE")
+    >>> db.page_date_frm1.form_layout = """<p><label for="date_1">Datetime 1</label><span class="plominoFieldClass">date_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> db.page_date_frm1.date_1.format = '%Y-%m-%d'
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_date_frm1'
+
+Fill the form, ave the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Save').click()
+    >>> '2017-12-31' in browser.contents
     True
