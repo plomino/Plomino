@@ -6,7 +6,8 @@ Resource  plone/app/robotframework/keywords.robot
 Resource  description_views.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
-Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
+# Was used to try and do better DnD tests
+#Library           ${CURDIR}/../../../../robotframework-selenium2library-extensions/src/Selenium2LibraryExtensions    WITH NAME    Selenium2LibraryExtensions
 
 
 *** Variables ****************************************************************
