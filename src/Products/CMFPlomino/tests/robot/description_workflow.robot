@@ -38,6 +38,7 @@ I create a view task
     Wait Until Element Is Visible       jquery=#wf-item-settings-dialog__title
     Wait Until Element Is Visible       jquery=#wf-item-settings-dialog__notes
     Wait Until Element Is Visible       jquery=#wf-item-settings-dialog__view
+    Wait Until Element is Visible        jquery=button:contains('Create new view from form')
 
     Click Element       jquery=#wf-item-settings-dialog__title
     Input Text          jquery=#wf-item-settings-dialog__title          Test Task
@@ -87,11 +88,13 @@ I can add a Form Task element by dnd
     Element Should Be Visible       jquery=.workflow-node__text--process[id='workflow-node__text--process-2']
 
 I can add a Form Task element
-    Click Element       jquery=.workflow-node__start-text
+    Mouse Over              jquery=.workflow-node__start-text
+    Sleep       1s
+    Wait Until Element Is Visible       jquery=#wf-vrt-btn-1     1s
     Click Element       jquery=#wf-vrt-btn-1
-    Capture Page Screenshot
+    Mouse Over       jquery=#wf-vrt-btn-1
+    Sleep       1s
     Wait Until Element Is Visible       jquery=.mdl-menu__container .mdl-menu li:contains('Form task')      60s
-    Capture Page Screenshot
     Click Element       jquery=.mdl-menu__container .mdl-menu li:contains('Form task')
     Capture Page Screenshot
     Element Should Be Visible       jquery=.workflow-node__text--task[id='workflow-node__text--task-2']

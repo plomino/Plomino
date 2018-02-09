@@ -31,6 +31,5 @@ Scenario: As a test user I can create a view of form with all fields from the wo
   When I add an All Form View
   Then I can see that the 'Create view of form' dialog is displayed
   And when I fill in the fields with id="mainform_all_view_id", title="mainform_view", form="frm_employee"
-  Then I can successfully view all fields in the form with title="mainform_view"   
+  Then I can successfully view all fields in the form with title="mainform_view"
 
- 
