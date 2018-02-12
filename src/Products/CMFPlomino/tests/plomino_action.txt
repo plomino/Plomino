@@ -73,5 +73,3 @@ Fill the data, use the Custom Save to save the data and see if the field display
     >>> browser.getControl(name='action_1').click()
     >>> 'Input text 1' in browser.contents
     True
-
-

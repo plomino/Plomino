@@ -48,7 +48,7 @@ Log in with ``Site Manager`` access rights::
 Multi-page Form Test
 ===============================
 
-Create multi-page form with file attachment
+Create multi-page form with Link To submit input
 
     >>> id = db.invokeFactory('PlominoForm', id='mp_frm1', title='Multi-page Form 1')
     >>> id = db.mp_frm1.invokeFactory('PlominoField',

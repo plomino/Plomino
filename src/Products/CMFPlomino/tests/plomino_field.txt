@@ -69,7 +69,7 @@ Create multi-page form that contains text field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_text_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl(name='text_1').value = 'Input text 1'
@@ -92,7 +92,7 @@ Create multi-page page form that contains text field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_text_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl(name='text_1').value = 'Input text 1'
@@ -128,7 +128,7 @@ Create multi-page form that contains boolean field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_chck_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Checkbox 1').selected = True
@@ -150,7 +150,7 @@ Create multi-page page form that contains boolean field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_chck_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Checkbox 1').selected = True
@@ -159,7 +159,7 @@ Fill the form, ave the data and see if the field displayed
     >>> browser.getControl('Checkbox 1').selected
     True
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Checkbox 1').selected = "1"
@@ -189,7 +189,7 @@ Create multi-page form that contains selection field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_sel_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Selection 1').value = ['apple']
@@ -212,7 +212,7 @@ Create multi-page page form that contains selection field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_sel_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Selection 1').value = ['orange']
@@ -254,7 +254,7 @@ Create multi-page form that contains number field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_num_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Number 1').value = '123'
@@ -273,7 +273,7 @@ Fill the form, ave the data and see if the field displayed
     >>> 3.1427 ==  doc.getItem('num_3')
     True
 
-Create multi-page page form that contains rich-text field
+Create multi-page page form that contains number field
 
     >>> id = db.invokeFactory('PlominoForm', id='page_num_frm1', title='Number field testing', isPage=True)
     >>> id = db.page_num_frm1.invokeFactory('PlominoField',
@@ -301,7 +301,7 @@ Create multi-page page form that contains rich-text field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_num_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Number 1').value = '123'
@@ -336,7 +336,7 @@ Create multi-page form that contains datetime field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_date_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Datetime 1').value = '2017-12-31'
@@ -350,7 +350,7 @@ Fill the form, ave the data and see if the field displayed
     >>> doc.getItem('date_1').strftime('We are the %d, %b %Y')
     'We are the 31, Dec 2017'
 
-Create multi-page page form that contains selection field
+Create multi-page page form that contains datetime field
 
     >>> id = db.invokeFactory('PlominoForm', id='page_date_frm1', title='Datetime field testing', isPage= True)
     >>> id = db.page_date_frm1.invokeFactory('PlominoField',
@@ -364,7 +364,7 @@ Create multi-page page form that contains selection field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_date_frm1'
 
-Fill the form, ave the data and see if the field displayed
+Fill the form, save the data and see if the field displayed
 
     >>> browser.open(form_url)
     >>> browser.getControl('Datetime 1').value = '2017-12-31'

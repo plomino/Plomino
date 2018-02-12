@@ -77,7 +77,7 @@ Create multi-page form that contains number field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/mp_num_frm1'
 
-Fill the form, ave the data and see if the field validated
+Fill the form, save the data and see if the field validated
 
     >>> browser.open(form_url)
     >>> browser.getControl('Number 1').value = 'abc123'
@@ -163,7 +163,7 @@ Fill the form, ave the data and see if the field validated
     >>> 'num_3 must be a float' not in browser.contents
     True
 
-Create multi-page page form that contains rich-text field
+Create multi-page page form that contains number field
 
     >>> id = db.invokeFactory('PlominoForm', id='page_num_frm1', title='Number field testing', isPage=True)
     >>> id = db.page_num_frm1.invokeFactory('PlominoField',
@@ -191,7 +191,7 @@ Create multi-page page form that contains rich-text field
     >>> transaction.commit()
     >>> form_url = portal_url +'/mydb' +'/page_num_frm1'
 
-Fill the form, ave the data and see if the field validated
+Fill the form, save the data and see if the field validated
 
     >>> browser.open(form_url)
     >>> browser.getControl('Number 1').value = 'abc123'
@@ -295,7 +295,7 @@ Create multi-page form that contains datetime field
     >>> form_url = portal_url +'/mydb' +'/mp_date_frm1'
     >>> transaction.commit()
 
-Fill the form, ave the data and see if the field validate
+Fill the form, save the data and see if the field validate
 
     >>> db.mp_date_frm1.date_1.format = '%Y-%m-%d'
     >>> transaction.commit()
@@ -374,7 +374,7 @@ Fill the form, ave the data and see if the field validate
     True
 
 
-Create multi-page page form that contains selection field
+Create multi-page page form that contains datetime field
 
     >>> id = db.invokeFactory('PlominoForm', id='page_date_frm1', title='Datetime field testing', isPage= True)
     >>> id = db.page_date_frm1.invokeFactory('PlominoField',
@@ -388,7 +388,7 @@ Create multi-page page form that contains selection field
     >>> form_url = portal_url +'/mydb' +'/page_date_frm1'
 
 
-Fill the form, ave the data and see if the field validate
+Fill the form, save the data and see if the field validate
 
     >>> db.page_date_frm1.date_1.format = '%Y-%m-%d'
     >>> transaction.commit()
