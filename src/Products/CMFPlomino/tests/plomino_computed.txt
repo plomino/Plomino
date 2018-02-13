@@ -1,0 +1,137 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+================================
+Field computed on Display
+===============================
+
+Create single-page form with field computed on display
+
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm1', title='Custom save action test')
+    >>> id = db.sp_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="DISPLAY")
+    >>> db.sp_frm1.text_1.formula = """return 'Computed on display'"""
+    >>> db.sp_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/sp_frm1'
+
+Open the form and verify the field is computed when the form is rendered
+
+    >>> browser.open(form_url)
+    >>> 'Computed on display' in browser.contents
+    True
+
+
+================================
+Field computed in general
+===============================
+
+Create single-page form with field computed in general
+
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm2', title='Custom save action test')
+    >>> id = db.sp_frm2.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="COMPUTED")
+    >>> db.sp_frm2.text_1.formula = """return 'Computed in general'"""
+    >>> db.sp_frm2.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/sp_frm2'
+
+Open the form and verify the field is computed when the form is rendered
+
+    >>> browser.open(form_url)
+    >>> 'Computed in general' in browser.contents
+    True
+
+================================
+Field computed on Save
+===============================
+
+Create single-page form with field computed in general
+
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm3', title='Custom save action test')
+    >>> id = db.sp_frm3.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="COMPUTEDONSAVE")
+    >>> db.sp_frm3.text_1.formula = """return 'Computed on saved'"""
+    >>> db.sp_frm3.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/sp_frm3'
+
+Open the form and verify the field is computed when the form is saved
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Save').click()
+    >>> 'Computed on saved' in browser.contents
+    True
+
+
+================================
+Field computed on Created
+===============================
+
+Create single-page form with field computed on created
+
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm4', title='Custom save action test')
+    >>> id = db.sp_frm4.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="CREATION")
+    >>> db.sp_frm4.text_1.formula = """return 'Computed on created'"""
+    >>> db.sp_frm4.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+
+Export form and verity the field is computed as being created
+
+    >>> 'Computed on created' in db.sp_frm4.tojson()
+    True

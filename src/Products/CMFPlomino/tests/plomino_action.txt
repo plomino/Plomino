@@ -1,0 +1,75 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+================================
+Custom Save Action
+===============================
+
+Create single-page form with custom save
+
+    >>> id = db.invokeFactory('PlominoForm', id='sp_frm1', title='Custom save action test')
+    >>> id = db.sp_frm1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> id = db.sp_frm1.invokeFactory('PlominoAction',
+    ...             id='action_1',
+    ...             title='Custom save',
+    ...             action_type="SAVE")
+    >>> db.sp_frm1.form_layout = """<p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/sp_frm1'
+
+Fill the data, use the Custom Save to save the data and see if the field displayed
+
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='action_1') != None
+    True
+    >>> browser.getControl(name='text_1').value = 'Input text 1'
+    >>> browser.getControl(name='action_1').click()
+    >>> 'Input text 1' in browser.contents
+    True

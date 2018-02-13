@@ -1,0 +1,467 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+
+=================================================================
+Test number field validation in multi-page form and page form
+=================================================================
+
+Create multi-page form that contains number field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_num_frm1', title='Number field testing')
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_1',
+    ...             title='Number 1',
+    ...             field_type="NUMBER",
+    ...             number_type='INTEGER',
+    ...             field_mode="EDITABLE")
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_2',
+    ...             title='Number 2',
+    ...             field_type="NUMBER",
+    ...             number_type='DECIMAL',
+    ...             field_mode="EDITABLE")
+    >>> id = db.mp_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_3',
+    ...             title='Number 3',
+    ...             field_type="NUMBER",
+    ...             number_type='FLOAT',
+    ...             field_mode="EDITABLE")
+    >>> db.mp_num_frm1.form_layout = """<p><label for="num_1">Number 1</label><span class="plominoFieldClass">num_1</span></p>
+    ... <p><label for="num_2">Number 2</label><span class="plominoFieldClass">num_2</span></p>
+    ... <p><label for="num_3">Number 3</label><span class="plominoFieldClass">num_3</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/mp_num_frm1'
+
+Fill the form, save the data and see if the field validated
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 1').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1.0'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '123L'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '-123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '+123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 2').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' in browser.contents
+    True
+    >>> browser.getControl('Number 2').value = '.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '-1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '+1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 3').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' in browser.contents
+    True
+    >>> browser.getControl('Number 3').value = '.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '-1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '+1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+
+Create multi-page page form that contains number field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_num_frm1', title='Number field testing', isPage=True)
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_1',
+    ...             title='Number 1',
+    ...             field_type="NUMBER",
+    ...             number_type='INTEGER',
+    ...             field_mode="EDITABLE")
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_2',
+    ...             title='Number 2',
+    ...             field_type="NUMBER",
+    ...             number_type='DECIMAL',
+    ...             field_mode="EDITABLE")
+    >>> id = db.page_num_frm1.invokeFactory('PlominoField',
+    ...             id='num_3',
+    ...             title='Number 3',
+    ...             field_type="NUMBER",
+    ...             number_type='FLOAT',
+    ...             field_mode="EDITABLE")
+    >>> db.page_num_frm1.form_layout = """<p><label for="num_1">Number 1</label><span class="plominoFieldClass">num_1</span></p>
+    ... <p><label for="num_2">Number 2</label><span class="plominoFieldClass">num_2</span></p>
+    ... <p><label for="num_3">Number 3</label><span class="plominoFieldClass">num_3</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_num_frm1'
+
+Fill the form, save the data and see if the field validated
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 1').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1.0'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' in browser.contents
+    True
+    >>> browser.getControl('Number 1').value = '1'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '123L'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '-123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 1').value = '+123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_1 must be an integer' not in browser.contents
+    True
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 2').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' in browser.contents
+    True
+    >>> browser.getControl('Number 2').value = '.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '-1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 2').value = '+1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_2 must be a decimal' not in browser.contents
+    True
+
+
+    >>> browser.open(form_url)
+    >>> browser.getControl('Number 3').value = 'abc123'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' in browser.contents
+    True
+    >>> browser.getControl('Number 3').value = '.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '-1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Number 3').value = '+1.23'
+    >>> browser.getControl('Next').click()
+    >>> 'num_3 must be a float' not in browser.contents
+    True
+
+
+=================================================================
+Test datetime field validation in multi-page form and page form
+=================================================================
+
+Create multi-page form that contains datetime field
+
+    >>> id = db.invokeFactory('PlominoForm', id='mp_date_frm1', title='Datetime field testing')
+    >>> id = db.mp_date_frm1.invokeFactory('PlominoField',
+    ...             id='date_1',
+    ...             title='Datetime1',
+    ...             field_type="DATETIME",
+    ...             field_mode="EDITABLE")
+    >>> db.mp_date_frm1.form_layout = """<p><label for="date_1">Datetime 1</label><span class="plominoFieldClass">date_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> form_url = portal_url +'/mydb' +'/mp_date_frm1'
+    >>> transaction.commit()
+
+Fill the form, save the data and see if the field validate
+
+    >>> db.mp_date_frm1.date_1.format = '%Y-%m-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.mp_date_frm1.date_1.format = '%Y-%m'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = 'Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-Dec'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.mp_date_frm1.date_1.format = '%m-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = 'Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.mp_date_frm1.date_1.format = '%Y-%b-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+
+Create multi-page page form that contains datetime field
+
+    >>> id = db.invokeFactory('PlominoForm', id='page_date_frm1', title='Datetime field testing', isPage= True)
+    >>> id = db.page_date_frm1.invokeFactory('PlominoField',
+    ...             id='date_1',
+    ...             title='Datetime1',
+    ...             field_type="DATETIME",
+    ...             field_mode="EDITABLE")
+    >>> db.page_date_frm1.form_layout = """<p><label for="date_1">Datetime 1</label><span class="plominoFieldClass">date_1</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/page_date_frm1'
+
+
+Fill the form, save the data and see if the field validate
+
+    >>> db.page_date_frm1.date_1.format = '%Y-%m-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.page_date_frm1.date_1.format = '%Y-%m'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = 'Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-Dec'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.page_date_frm1.date_1.format = '%m-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = 'Dec-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+
+    >>> db.page_date_frm1.date_1.format = '%Y-%b-%d'
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl('Datetime 1').value = '2017/12/31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
+    >>> browser.getControl('Datetime 1').value = '2017-12-31'
+    >>> browser.getControl('Next').click()
+    >>> 'Validation failed' in browser.contents
+    True
