@@ -74,7 +74,7 @@ class PlominoAgent(Item):
                 newSecurityManager(None, owner)
 
             result = self.runFormulaScript(
-                SCRIPT_ID_DELIMITER.join(["agent", self.id]),
+                SCRIPT_ID_DELIMITER.join(["agent", self.id, "content"]),
                 plominoContext,
                 self.content,
                 True,
