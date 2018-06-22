@@ -1,0 +1,182 @@
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> temp_storage = getattr(db,'temporary_files',None)
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+
+Log in with ``Site Manager`` access rights::
+
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+
+
+================================================
+Test multi-page-form with selection in sub-form
+================================================
+
+Create sub-page form with selection
+
+    >>> id = db.invokeFactory('PlominoForm', id='sub_frm1', title='Sub Form 1')
+    >>> id = db.sub_frm1.invokeFactory('PlominoField',
+    ...             id='selection_1',
+    ...             title='Selection 1',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> db.sub_frm1.form_layout = """<p><label for="selection_1">Selection 1</label><span class="plominoFieldClass">selection_1</span></p>"""
+    >>> db.sub_frm1.selection_1.selectionlist = ['apple','orange']
+    >>> transaction.commit()
+
+Crate the main form
+    >>> parent = db.invokeFactory('PlominoForm', id='parent1', title='Parent Form')
+    >>> id = db.parent1.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text 1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> id = db.parent1.invokeFactory('PlominoField',
+    ...             id='text_2',
+    ...             title='Text 2',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> db.parent1.form_layout ="""<span class="plominoSubformClass">sub_frm1</span>
+    ... <hr class="plominoPagebreakClass">
+    ... <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
+    ... <hr class="plominoPagebreakClass">
+    ... <p><label for="text_2">Text 2</label><span class="plominoFieldClass">text_2</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+
+    >>> transaction.commit()
+    >>> parent_form_url = portal_url +'/mydb' +'/parent1'
+
+
+Fill the data, go back and forth to see if the selection is preserved
+
+    >>> browser.open(parent_form_url)
+    >>> browser.getControl(name='selection_1').value = ['orange']
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True
+
+Save the form
+
+    >>> browser.getControl('Save').click()
+
+
+Open the saved document, go back and forth to see if the selection is preserved
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
+    >>> browser.open(edit_doc_url)
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True
+
+
+
+
+================================================
+Test multi-page-form with selection not in sub-form
+================================================
+
+
+Crate the main form
+    >>> parent = db.invokeFactory('PlominoForm', id='parent2', title='Parent Form')
+    >>> id = db.parent2.invokeFactory('PlominoField',
+    ...             id='text_1',
+    ...             title='Text 1',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> id = db.parent2.invokeFactory('PlominoField',
+    ...             id='text_2',
+    ...             title='Text 2',
+    ...             field_type="TEXT",
+    ...             field_mode="EDITABLE")
+    >>> id = db.parent2.invokeFactory('PlominoField',
+    ...             id='selection_1',
+    ...             title='Selection 1',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> db.parent2.selection_1.selectionlist = ['apple','orange']
+    >>> db.parent2.form_layout = """<p><label for="selection_1">Selection 1</label><span class="plominoFieldClass">selection_1</span></p>
+    ... <hr class="plominoPagebreakClass">
+    ... <p><label for="text_1">Text 1</label><span class="plominoFieldClass">text_1</span></p>
+    ... <hr class="plominoPagebreakClass">
+    ... <p><label for="text_2">Text 2</label><span class="plominoFieldClass">text_2</span></p>
+    ... <hr class="plominoPagebreakClass">"""
+
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/parent2'
+
+
+Fill the data, go back and forth to see if the selection is preserved
+
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='selection_1').value = ['orange']
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True
+
+Save the form
+
+    >>> browser.getControl('Save').click()
+
+
+Open the saved document, go back and forth to see if the selection is preserved
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('pageview/1')[0]+ 'EditDocument'
+    >>> browser.open(edit_doc_url)
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Next').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl('Previous').click()
+    >>> browser.getControl(name='selection_1').value == ['orange']
+    True

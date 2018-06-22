@@ -30,6 +30,7 @@ def test_suite():
         'plomino_computed.txt',
         'plomino_search.txt',
         'plomino_field.txt',
+        'plomino_selection.txt',
         'plomino_field_validation.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',

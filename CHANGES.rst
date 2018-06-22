@@ -102,6 +102,8 @@ Changelog
 - Fix error while saving form with selection list by adding default value to selectionlistformula [quang]
 - Fix to better handle form refreshes and browser button navigation [quang, instification]
 - Update CMFPlone to 5.0.9 [quang]
+- Fix 'selection field not saving data' while editing documents by how missing values are process for booleans, doclinks and selection when its an add form. [quang]
+
 
 - Export agents to zip file [instification]
 

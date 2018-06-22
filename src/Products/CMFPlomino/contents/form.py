@@ -2009,6 +2009,7 @@ class PlominoForm(Container):
         """ Read submitted values in REQUEST and store them in document
         according to fields definition.
         """
+
         db = self.getParentDatabase()
         all_fields = self.getFormFields(
             includesubforms=True,
@@ -2085,9 +2086,12 @@ class PlominoForm(Container):
                     # need to presume it was empty (as SELECT/checkbox/radio
                     # tags do not submit an empty value, they are just missing
                     # in the querystring)
+                    # However, in case of opening document, the active forms only
+                    # contains visible fields, with assumption that the remaining are unchanged
+                    # unless it is submitted, so we do not reset those fields
                     if applyhidewhen and f not in hidden_fields:
                         fieldtype = f.field_type
-                        if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN")):
+                        if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN") and doc.id =='TEMPDOC'):
                             doc.removeItem(fieldName)
 
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
