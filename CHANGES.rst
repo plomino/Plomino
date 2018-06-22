@@ -103,6 +103,8 @@ Changelog
 - Fix to better handle form refreshes and browser button navigation [quang, instification]
 - Update CMFPlone to 5.0.9 [quang]
 
+- Export agents to zip file [instification]
+
 2.0b4 (2016-05-27)
 ------------------
 
