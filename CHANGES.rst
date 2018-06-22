@@ -4,6 +4,7 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
+
 - Restore View custom template
 - Unquote plus signs when reading input [instification]
 - Add option to send plain text emails [instification]
@@ -106,6 +107,7 @@ Changelog
 
 
 - Export agents to zip file [instification]
+- Edit document button goes to current page [quang]
 
 2.0b4 (2016-05-27)
 ------------------

@@ -96,7 +96,8 @@ class DocumentView(BrowserView):
         if self.action == "edit":
             # If a user tries to edit a multipage form
             if self.target.getIsMulti():
-                return self.redirect('page', '1')
+                page = self.request.get('page', 1)
+                return self.redirect('page', page)
             return self._validate(self.edit_template)
         if self.action == "bareedit":
             return self._validate(self.bare_edit_template)
