@@ -25,6 +25,7 @@ class DocumentView(BrowserView):
         self.doc = None
         self.action = None
         self.form = None
+        self.page = None
         if not getattr(self.request, 'SESSION', None):
             setattr(self.request, 'SESSION', self.context.session_data_manager.getSessionData())
 
@@ -96,8 +97,8 @@ class DocumentView(BrowserView):
         if self.action == "edit":
             # If a user tries to edit a multipage form
             if self.target.getIsMulti():
-                page = self.request.get('page', 1)
-                return self.redirect('page', page)
+                self.page = self.request.get('page', 1)
+                return self.redirect('page', self.page)
             return self._validate(self.edit_template)
         if self.action == "bareedit":
             return self._validate(self.bare_edit_template)
