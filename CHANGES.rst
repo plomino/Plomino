@@ -109,6 +109,7 @@ Changelog
 
 - Export agents to zip file [instification]
 - Edit document button goes to current page [quang]
+- Fix next page not appearing on search page [djay]
 
 2.0b4 (2016-05-27)
 ------------------

@@ -242,7 +242,7 @@
                                                  <span i18n:name="end" tal:content="python:str(min(start+limit-1,count))">end</span>
                                                  of <span i18n:name="total" tal:content="count">count</span>
                                             </tal:count>
-                                            <tal:next condition="python:count>start+limit">
+                                            <tal:next condition="python:count>start+limit-1">
                                                 <a i18n:translate=""
                                                     tal:attributes="href python:request.physicalPathToURL(context.getPhysicalPath())+'/OpenForm?'+query_string+'&start='+str(nextstart)+'&limit='+str(limit)">Next &gt;&gt;</a>
                                             </tal:next></th>

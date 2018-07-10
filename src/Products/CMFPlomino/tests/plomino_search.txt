@@ -89,3 +89,34 @@ Now fill in search criteria for field1 and search again
     False
     >>> '<span>val2</span>' in browser.contents
     True
+
+
+Search forms are paged and can be controlled with "limit" param. Lets see 2 pages of 1 item each
+
+    >>> form_url = '%s/mydb/frm3?limit=1' % portal_url
+    >>> browser.open(form_url)
+    >>> '<span>val1</span>' in browser.contents
+    True
+    >>> '<span>val2</span>' in browser.contents
+    False
+    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
+    True
+
+    >>> browser.getLink('Next >>').click()
+
+    >>> '<span>val1</span>' in browser.contents
+    False
+    >>> '<span>val2</span>' in browser.contents
+    True
+    >>> 'Document(s) <span>2</span> to <span>2</span> of <span>2</span>' in browser.contents
+    True
+
+    >>> browser.getLink('<< Previous').click()
+    >>> '<span>val1</span>' in browser.contents
+    True
+    >>> '<span>val2</span>' in browser.contents
+    False
+    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
+    True
+
+
