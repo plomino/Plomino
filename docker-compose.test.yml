@@ -83,7 +83,7 @@ services:
 # doesn't work with remote docker
 #      - ./test/testoutput:/buildout/parts/test
 #      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
-    command: bin/test --all -vv
+    command: /bin/sh -c "bin/test -vv -s Products.CMFPlomino && bin/test --all -vv -t robot -s Products.CMFPlomino"
     depends_on:
       - "selenium"
 

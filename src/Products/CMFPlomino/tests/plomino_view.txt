@@ -34,7 +34,7 @@ Log in with ``Site Manager`` access rights::
 
 When csv export in view, the multi select data is readable in csv file
 
-    >>> id = db.invokeFactory("PlominoForm", 
+    >>> id = db.invokeFactory("PlominoForm",
     ...         id="frm1",
     ...         title="Form 1")
     >>> id = db.frm1.invokeFactory("PlominoField",
@@ -103,6 +103,60 @@ When csv export in view, the multi select data is readable in csv file
     '"sumi"\t"Serba\\, John"\t"Jones John Paul, Chameleon Chris"\r\n"sumo"\t"John Paul Jones, Chris Chameleon"\t"John\\, Serba"\r\n'
 
 
+Render View
+===========
+
+    >>> transaction.commit()
+    >>> browser.open(portal_url +'/mydb/view1')
+    >>> '<th data-column="col1">Col 1</th>' in browser.contents
+    True
+    >>> '<th data-column="col2">Col 2</th>' in browser.contents
+    True
+    >>> '<th data-column="col3">Col 3</th>' in browser.contents
+    True
+
+The rest of the table is loaded via ajax. But we can view using static rendering flag
+
+    >>> db.view1.static_rendering = True
+    >>> transaction.commit()
+    >>> browser.open(portal_url +'/mydb/view1')
+    >>> 'sumi' in browser.contents
+    True
+    >>> '2 documents' in browser.contents
+    True
+
+#TODO [u'John, Serba'] shouldn't be in there
+
+
+Open documents
+==============
+
+    >>> browser.getLink('sumi').click()
+
+#    >>> 'Title for field 1' in browser.contents
+#    True
+#    >>> 'sumi' in browser.contents
+#    True
+
+    >>> browser.getControl(name="plomino_edit")
+    <Control name='plomino_edit' type='button'>
+    >>> browser.getControl(name="plomino_close")
+    <Control name='plomino_close' type='button'>
+    >>> print browser.url
+    http://nohost/plone/mydb/view1/document/...
+
+Close button should use browser back
+
+    >>> print browser.getControl(name="plomino_close").mech_control.attrs['onclick']
+    history.go(-1)
+
+When we close we will go back to the search form again
+
+    #TODO requires JS
+
+
+
+
 =======================================
 Test unindexing document after deleted
 =======================================
@@ -139,3 +193,40 @@ Delete document by create new document and get exception
     >>> browser.getControl('Save').click()
     >>> len(db.view1.getAllDocuments())
     0
+
+
+Views with subforms
+===================
+
+
+    >>> id = db.invokeFactory("PlominoForm",
+    ...         id="sub1",
+    ...         title="Form 1")
+    >>> id = db.sub1.invokeFactory("PlominoField",
+    ...         id="subfield1",
+    ...         title="Title for sub field 1",
+    ...         field_type="TEXT")
+    >>> db.frm1.form_layout = """<span class="plominoSubformClass">sub1</span>"""
+
+    >>> id = db.view1.invokeFactory("PlominoColumn",
+    ...         id="subcol",
+    ...         title="Sub Col",
+    ...         displayed_field="sub1/subfield1")
+
+
+    >>> doc3 = db.createDocument()
+    >>> doc3.setItem("Form", "frm1")
+    >>> doc3.setItem("sub1", "mysub1")
+    >>> doc3.save(creation=True)
+    >>> transaction.commit()
+
+
+#    >>> len(db.view1.getAllDocuments())
+#    1
+
+#    >>> db.view1.exportCSV()
+
+
+
+
+

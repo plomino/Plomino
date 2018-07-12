@@ -171,6 +171,7 @@
                         <span tal:content="structure python:here.formLayout(request)" />
                         <tal:results
                             define="searchviewname python:here.search_view;
+                                    base_url python: here.absolute_url();
                                     searchviewobj python:here.getParentDatabase().getView(searchviewname);
                                     searchviewfound python: searchviewobj is not None;
                                     ">
@@ -191,7 +192,8 @@
                                                 nextstart python:start+limit;
                                                 previousstart python:max(1,start-limit);
                                                 query_string python:request['QUERY_STRING'].replace('start=', '').replace('limit=', '');
-                                                columns python:searchviewobj.getColumns()"
+                                                columns python:searchviewobj.getColumns();
+                                                "
                                     id="sortable"
                                     class="listing"
                                     summary="Content listing"
@@ -199,7 +201,7 @@
                                     <tr>
                                         <th tal:condition="python:not searchviewobj.hide_checkboxes">&nbsp;&nbsp;</th>
                                         <tal:block_column_titles repeat="c columns">
-                                            <th tal:condition="not: c/HiddenColumn|nothing">&nbsp;<span
+                                            <th tal:condition="not: c/hidden_column|nothing">&nbsp;<span
                                                 tal:content="c/Title">Title</span>&nbsp;</th>
                                         </tal:block_column_titles>
                                     </tr>
@@ -209,7 +211,7 @@
 
                                         <tr tal:define="
                                                 oddrow repeat/doc/odd;
-                                                docurl python:'../'+searchviewname+'/document/'+doc.getPath().split('/')[-1]"
+                                                docurl python:base_url+'/document/'+doc.getPath().split('/')[-1]"
                                             tal:attributes="class python:'odd' if oddrow else 'even';">
                                             <td tal:condition="python:not searchviewobj.hide_checkboxes">
                                                 <input
@@ -217,15 +219,11 @@
                                                     name="sdoc"
                                                     tal:attributes="value python:doc.getPath().split('/')[-1]" />
                                             </td>
-                                            <tal:block_column_values repeat="c columns">
-                                                <td tal:condition="not: c/HiddenColumn|nothing"><a tal:attributes="href string:${docurl}"><span
-                                                    tal:define="
-                                                            cname c/id;
-                                                            vname searchviewobj/id;
-                                                            cvalue python:getattr(doc, searchviewobj.getIndexKey(cname), '');
-                                                            "
-                                                    tal:content="structure cvalue" ></span></a></td>
-                                            </tal:block_column_values>
+                                            <td tal:repeat="key python:[dict(key=searchviewobj.getIndexKey(c.id),render=c.getColumnRender) for c in columns if not c.hidden_column]"><a
+                                               tal:attributes="href string:${docurl}"
+                                                tal:define="render nocall:key/render; key key/key"
+                                                ><span tal:content="structure python:render(getattr(doc, key, ''))"
+                                                ></span></a></td>
                                         </tr>
                                     </tal:block_result_rows>
 

@@ -52,6 +52,7 @@
                         nextstart python:start+limit;
                         previousstart python:max(0,start-limit);
                         baseurl python:context.absolute_url();
+                        keys python: [dict(key=context.getIndexKey(c.id),render=c.getColumnRender) for c in columns if not c.hidden_column]
                     ">
                         <tr tal:repeat="brain python:listdocuments[start-1:start-1+limit]">
                             <tal:row
@@ -62,12 +63,10 @@
                                         name="sdoc"
                                         tal:attributes="value python:brain.getPath().split('/')[-1]" />
                                 </td>
-                                <tal:columns tal:repeat="column columns">
-                                    <td tal:condition="not: column/hidden_column|nothing"
-                                        ><a tal:attributes="href string:${docurl}"
-                                        tal:define="column_name column/id;
-                                        column_value python:getattr(brain, context.getIndexKey(column_name), '');"
-                                        ><span tal:content="structure python:column.getColumnRender(column_value)"
+                                <tal:columns tal:repeat="key keys">
+                                    <td><a tal:attributes="href string:${docurl}"
+                                        tal:define="render nocall:key/render; key key/key"
+                                        ><span tal:content="structure python:render(getattr(brain, key, ''))"
                                         ></span></a></td>
                                 </tal:columns>
                                 <tal:nocol tal:condition="not: columns">

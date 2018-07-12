@@ -672,14 +672,24 @@ class PlominoView(Container):
     def getIndexKey(self, columnName):
         """ Returns an index key if one exists.
 
-        We try to find a computed index ('PlominoViewColumn_*');
+        if teh col has a formula use ('PlominoViewColumn_*');
         if not found, we look for a field.
         """
-        key = encode_name('PlominoViewColumn', self.id, columnName)
-        if key not in self.getParentDatabase().plomino_index.Indexes:
-            fieldPath = self.getColumn(columnName).displayed_field.split('/')
+
+        # TODO: previous code looked up self.getParentDatabase().plomino_index.Indexes to see if calulated
+        # forumla value exists. But if this is left behind by mistake it can lead to problems.
+
+        col = self.getColumn(columnName)
+        key = ''
+
+        if col is None:
+            key = ''
+        elif col.formula:
+            key = encode_name('PlominoViewColumn', self.id, columnName)
+            #if key not in self.getParentDatabase().plomino_index.Indexes:
+            #    return ''
+        elif col.displayed_field is not None:
+            fieldPath = col.displayed_field.split('/')
             if len(fieldPath) > 1:
                 key = fieldPath[1]
-            else:
-                key = ''
         return key

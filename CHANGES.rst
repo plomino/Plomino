@@ -110,6 +110,9 @@ Changelog
 - Export agents to zip file [instification]
 - Edit document button goes to current page [quang]
 - Fix next page not appearing on search page [djay]
+- Views and searchs links to documents work properly and close will go back [djay]
+- Left over indexes no longer result in no data displayed in views [djay]
+- Searches should render more kinds of fields properly [djay]
 
 2.0b4 (2016-05-27)
 ------------------

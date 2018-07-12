@@ -66,9 +66,11 @@ Createa search form and view with some data
 
     >>> doc1 = db.createDocument()
     >>> doc1.setItem('field1','val1')
+    >>> doc1.setItem('Form','frm3')
     >>> doc1.save()
     >>> doc2 = db.createDocument()
     >>> doc2.setItem('field1','val2')
+    >>> doc2.setItem('Form','frm3')
     >>> doc2.save()
     >>> transaction.commit()  # enable the browser to see our changes
 
@@ -76,47 +78,108 @@ Createa search form and view with some data
 Make a GET request, expected all document found
     >>> form_url = portal_url +'/mydb' +'/frm3'
     >>> browser.open(form_url)
-    >>> '<span>val1</span>' in browser.contents
+    >>> 'val1' in browser.contents
     True
-    >>> '<span>val2</span>' in browser.contents
+    >>> 'val2' in browser.contents
     True
 
 Now fill in search criteria for field1 and search again
     >>> browser.getForm(name='frm3').mech_form.enctype='application/x-www-form-urlencoded'
     >>> browser.getControl('Field1').value = 'val2'
     >>> browser.getControl(name='plomino_search').click()
-    >>> '<span>val1</span>' in browser.contents
+    >>> 'val1' in browser.contents
     False
-    >>> '<span>val2</span>' in browser.contents
+    >>> 'val2' in browser.contents
     True
 
+Open documents
+==============
+
+    >>> browser.getLink('val2').click()
+    >>> 'Field1' in browser.contents
+    True
+    >>> 'val2' in browser.contents
+    True
+    >>> browser.getControl(name="plomino_edit")
+    <Control name='plomino_edit' type='button'>
+    >>> browser.getControl(name="plomino_close")
+    <Control name='plomino_close' type='button'>
+    >>> print browser.url
+    http://nohost/plone/mydb/frm3/document/...
+
+Close button should use browser back
+
+    >>> print browser.getControl(name="plomino_close").mech_control.attrs['onclick']
+    history.go(-1)
+
+When we close we will go back to the search form again
+
+    #TODO requires JS
+
+
+Paging
+======
 
 Search forms are paged and can be controlled with "limit" param. Lets see 2 pages of 1 item each
 
     >>> form_url = '%s/mydb/frm3?limit=1' % portal_url
     >>> browser.open(form_url)
-    >>> '<span>val1</span>' in browser.contents
+    >>> 'val1' in browser.contents
     True
-    >>> '<span>val2</span>' in browser.contents
+    >>> 'val2' in browser.contents
     False
     >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
     True
 
     >>> browser.getLink('Next >>').click()
 
-    >>> '<span>val1</span>' in browser.contents
+    >>> 'val1' in browser.contents
     False
-    >>> '<span>val2</span>' in browser.contents
+    >>> 'val2' in browser.contents
     True
     >>> 'Document(s) <span>2</span> to <span>2</span> of <span>2</span>' in browser.contents
     True
 
     >>> browser.getLink('<< Previous').click()
-    >>> '<span>val1</span>' in browser.contents
+    >>> 'val1' in browser.contents
     True
-    >>> '<span>val2</span>' in browser.contents
+    >>> 'val2' in browser.contents
     False
     >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
     True
+
+
+Free Text Search
+================
+
+    >>> id = db.frm3.invokeFactory('PlominoField', id='Plomino_SearchableText',
+    ...         title='Query',
+    ...         mandatory=False,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.frm3.form_layout = """<p><label for="Plomino_SearchableText">Query</label><span class="plominoFieldClass">Plomino_SearchableText</span></p>"""
+
+    >>> transaction.commit()  # enable the browser to see our changes
+
+
+If we are using free text search then the default is to not return any results
+
+    >>> form_url = portal_url +'/mydb' +'/frm3'
+    >>> browser.open(form_url)
+    >>> 'val1' in browser.contents
+    True
+    >>> 'val2' in browser.contents
+    True
+
+# TODO: why is this needed?
+    >>> browser.getForm(name='frm3').mech_form.enctype='application/x-www-form-urlencoded'
+
+    >>> browser.getControl('Query').value = 'val2'
+    >>> browser.getControl(name='plomino_search').click()
+    >>> 'val1' in browser.contents
+    False
+    >>> 'val2' in browser.contents
+    True
+
 
 

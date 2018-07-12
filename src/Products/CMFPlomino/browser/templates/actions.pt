@@ -186,8 +186,9 @@ function selected_documents()
 </tal:block>
 
 <tal:block metal:define-macro="CloseAction"> <tal:block
-    tal:define="is_search_form_or_view python:(hasattr(view.target.aq_parent,'getIsSearchForm') or hasattr(view.target.aq_parent,'getSelectionFormula'));">
-    <tal:backtoDB tal:condition="python:not(is_search_form_or_view)">
+    tal:define="parent python:request.PARENTS[1] if len(request.PARENTS)>1 else None;
+                is_search_form_or_view python:(getattr(parent,'isSearchForm', False) or hasattr(parent,'selection_formula'));">
+    <tal:backtoDB tal:condition="not:is_search_form_or_view">
         <input type="button" class="standalone plominoClose" value="Close" name="plomino_close"
             i18n:domain="Products.CMFPlomino" i18n:attributes="value"
             tal:attributes="onclick python:'location.href=\''+view.target.getParentDatabase().absolute_url()+'\''" />
