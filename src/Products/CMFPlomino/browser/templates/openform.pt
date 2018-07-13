@@ -139,7 +139,7 @@
             id="plomino_form"
             tal:define="hasReadPermissionOnDatabase python:view.form.hasReadPermission(view.form.getParentDatabase());
                 hasReadPermissionOnForm python:view.form.hasReadPermission(context);
-                enctype python:(form_method == 'POST') and 'multipart/form-data'"
+                enctype python:'multipart/form-data' if form_method == 'POST' else 'application/x-www-form-urlencoded'"
              tal:attributes="
                 name view/form/id;
                 action string:${view/form/absolute_url}/OpenForm;

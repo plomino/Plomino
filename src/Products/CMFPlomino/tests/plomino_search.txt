@@ -84,13 +84,30 @@ Make a GET request, expected all document found
     True
 
 Now fill in search criteria for field1 and search again
-    >>> browser.getForm(name='frm3').mech_form.enctype='application/x-www-form-urlencoded'
     >>> browser.getControl('Field1').value = 'val2'
     >>> browser.getControl(name='plomino_search').click()
     >>> 'val1' in browser.contents
     False
     >>> 'val2' in browser.contents
     True
+
+
+Previously entered searchs are kept
+    >>> browser.getControl('Field1').value
+    'val2'
+
+
+You can also submit by pushing enter
+    >>> browser.getForm(name='frm3').submit()
+    >>> browser.getLink('val1')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+    >>> browser.getLink('val2')
+    <Link text='val2'...>
+
+
+
 
 Open documents
 ==============
@@ -152,27 +169,31 @@ Search forms are paged and can be controlled with "limit" param. Lets see 2 page
 Free Text Search
 ================
 
-    >>> id = db.frm3.invokeFactory('PlominoField', id='Plomino_SearchableText',
+    >>> frm = getattr(db, db.invokeFactory('PlominoForm', id='textsearch', title='Form 3'))
+    >>> frm.isSearchForm = True
+    >>> frm.search_view = 'search_view'
+
+    >>> _ = frm.invokeFactory('PlominoField', id='Plomino_SearchableText',
     ...         title='Query',
     ...         mandatory=False,
     ...         field_type="TEXT",
     ...         field_mode="EDITABLE")
-    >>> db.frm3.form_layout = """<p><label for="Plomino_SearchableText">Query</label><span class="plominoFieldClass">Plomino_SearchableText</span></p>"""
+    >>> frm.form_layout = """<p><label for="Plomino_SearchableText">Query</label><span class="plominoFieldClass">Plomino_SearchableText</span></p>"""
 
     >>> transaction.commit()  # enable the browser to see our changes
 
 
-If we are using free text search then the default is to not return any results
+If we are using free text search then the default is see all results
 
-    >>> form_url = portal_url +'/mydb' +'/frm3'
-    >>> browser.open(form_url)
+#TODO need to change this default to show empty results?
+
+    >>> browser.open("%s/%s/%s" %(portal_url,db.id,frm.id))
     >>> 'val1' in browser.contents
     True
     >>> 'val2' in browser.contents
     True
 
-# TODO: why is this needed?
-    >>> browser.getForm(name='frm3').mech_form.enctype='application/x-www-form-urlencoded'
+Free text searchs all values
 
     >>> browser.getControl('Query').value = 'val2'
     >>> browser.getControl(name='plomino_search').click()
@@ -180,6 +201,70 @@ If we are using free text search then the default is to not return any results
     False
     >>> 'val2' in browser.contents
     True
+
+Select search field
+===================
+
+    >>> frm = getattr(db, db.invokeFactory('PlominoForm', id='selsearch', title='Form 3'))
+    >>> frm.isSearchForm = True
+    >>> frm.search_view = 'search_view'
+
+    >>> _ = frm.invokeFactory('PlominoField', id='field1',
+    ...         title='myselection',
+    ...         mandatory=False,
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE",
+    ...         selectionlist=['val1','val2'])
+    >>> frm.form_layout = """<p><label for="field1">myselection</label><span class="plominoFieldClass">field1</span></p>"""
+
+    >>> transaction.commit()  # enable the browser to see our changes
+
+Default is we see all documents
+
+    >>> browser.open("%s/%s/%s" %(portal_url,db.id,frm.id))
+    >>> 'val1' in browser.contents and 'val2' in browser.contents
+    True
+
+We are now using a select to search for text values
+
+    >>> browser.getControl('myselection')
+    <ListControl name='field1' type='select'>
+
+    >>> browser.getControl('myselection').value = ['val1']
+    >>> browser.getControl(name='plomino_search').click() # search with single value
+    >>> browser.getLink('val1')
+    <Link text='val1'...>
+    >>> browser.getLink('val2')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
+    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>1</span>' in browser.contents
+    True
+
+Make it multiselect
+
+    >>> frm.field1.widget = 'MULTISELECT'
+    >>> transaction.commit()  # enable the browser to see our changes
+    >>> browser.open("%s/%s/%s" %(portal_url,db.id,frm.id))
+
+    >>> browser.getControl('myselection').multiple
+    True
+
+    >>> browser.getControl('myselection').value = ['val1','val2']
+    >>> browser.getControl(name='plomino_search').click() # search with multiple values
+    >>> browser.getLink('val1')
+    <Link text='val1'...>
+    >>> browser.getLink('val2')
+    <Link text='val2'...>
+
+    >>> browser.getControl('myselection').value = ['val1']
+    >>> browser.getControl(name='plomino_search').click() # search with multiple values
+    >>> browser.getLink('val1')
+    <Link text='val1'...>
+    >>> browser.getLink('val2')
+    Traceback (most recent call last):
+    ...
+    LinkNotFoundError
 
 
 

@@ -2134,8 +2134,8 @@ class PlominoForm(Container):
                 # returns all
                 submittedValue = REQUEST.get(fieldname)
                 if submittedValue:
-                    submittedValue = asUnicode(submittedValue)
                     # if non-text field, convert the value
+                    #TODO: shouldn't this get put through field.processInput or similar?
                     if f.field_type == "NUMBER":
                         if f.number_type == "INTEGER":
                             v = long(submittedValue)
@@ -2147,8 +2147,10 @@ class PlominoForm(Container):
                         # The format submitted by the datetime widget:
                         v = StringToDate(submittedValue,
                                          format='%Y-%m-%d %H:%M')
-                    else:
+                    elif f.field_type == 'SELECTION':
                         v = submittedValue
+                    else:
+                        v = asUnicode(submittedValue)
                     # rename Plomino_SearchableText to perform full-text
                     # searches on regular SearchableText index
                     if fieldname == "Plomino_SearchableText":
