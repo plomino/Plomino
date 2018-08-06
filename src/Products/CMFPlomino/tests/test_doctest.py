@@ -2,7 +2,7 @@ import doctest
 
 import transaction
 
-from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, TEST_USER_PASSWORD
 from plone.testing import layered
 from plone.testing.z2 import Browser
 
@@ -33,12 +33,15 @@ def test_suite():
         'plomino_selection.txt',
         'plomino_multi_page.txt',
         'plomino_field_validation.txt',
+        'plomino_doclink.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',
         # 'form-resources.txt',
         # 'searchableview.txt',
         globs={
             'TEST_USER_ID': TEST_USER_ID,
+            'TEST_USER_NAME': TEST_USER_NAME,
+            'TEST_USER_PASSWORD': TEST_USER_PASSWORD,
             'Browser': Browser,
             'transaction': transaction
         }, optionflags=OPTIONFLAGS

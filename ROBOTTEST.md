@@ -53,7 +53,7 @@ docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" 
 if you are modifying tests and also want to see the test output
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v ./test:/buildout/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
+docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
 
 ### D. Run only robot tests

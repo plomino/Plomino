@@ -675,7 +675,6 @@ class PlominoView(Container):
         if teh col has a formula use ('PlominoViewColumn_*');
         if not found, we look for a field.
         """
-
         # TODO: previous code looked up self.getParentDatabase().plomino_index.Indexes to see if calulated
         # forumla value exists. But if this is left behind by mistake it can lead to problems.
 

@@ -11,17 +11,17 @@
             <option tal:define="l python:v.split('|')"
                 tal:attributes="value python:l[1];
                     selected python:(lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]) and 1) or 0"
-                tal:content="python:l[0]">value</option>
-        </tal:loop></select>
+                tal:content="python:l[0]">value</option></tal:loop>
+        </select>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='MULTISELECT'">
         <select class="pat-select2" tal:attributes="id name; name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
                 <tal:block tal:define="l python:v.split('|')">
-                    <option 
+                    <option
                         tal:attributes="value python:l[1]; selected python:(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
                         tal:content="python:l[0]">value</option>
-                </tal:block>
-        </tal:loop></select>
+                </tal:block></tal:loop>
+        </select>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='VIEW'" >
         <table tal:define="sourceview python:field.sourceview;
@@ -38,7 +38,7 @@
                         tal:repeat="brain listdocuments">
                 <tr tal:define="oddrow repeat/brain/odd"
                     tal:attributes="class python:(oddrow and 'even') or 'odd'">
-                    <td><input type="checkbox" 
+                    <td><input type="checkbox"
                     tal:attributes="name name;
                             value python:brain.getPath();
                             checked python:((current and brain.id in lcurrent_ids) and 1) or 0">
@@ -55,4 +55,53 @@
             </tal:documents>
         </table>
     </tal:widget>
+    <tal:widget tal:condition="python:widget=='DATAGRID'" >
+
+
+        <div class="plomino-datagrid" tal:define="
+            field python:options['field'];
+            fieldname python:field.id;
+            settings field/getSettings;
+            associated_form python:settings.getAssociatedForm();
+            add_url associated_form/absolute_url|string:.;
+            parent_form field/getParentNode;
+            fieldvalue python:options['fieldvalue'];
+            datagrid python:settings.getDatagrid(fieldvalue);
+            fields settings/getColumns;
+            columns python:fields[1];
+            columns columns|python:['A','B','C'];
+            fields python:fields[0];"
+            tal:attributes="
+                data-associated-form associated_form/id|nothing;
+                data-fields python:','.join(fields);
+                data-columns python:','.join(columns);
+                data-form-url string:${add_url}/OpenForm?ajax_load=1&Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${parent_form/id};
+            ">
+            <table tal:attributes="data-rows python:settings.tojson(datagrid, True)"
+                   tal:define="rows datagrid|nothing">
+                <tr>
+                    <th tal:repeat="col columns"
+                        tal:content="col">col</th>
+                </tr>
+                <tr tal:repeat="row rows"><td tal:repeat="field fields"
+                        tal:content="structure python:row.get(field,'')">cell</td>
+                </tr>
+                <tr>
+                    <td class="actions"><a class="add-row" href=""><i class="icon-plus"></i></a></td>
+                    <td><select class="pat-select2"  multiple="true" lines="4"><tal:loop tal:repeat="v selection">
+                       <tal:block tal:define="l python:v.split('|')"
+                         ><option
+                            tal:attributes="value python:l[1]; selected python:(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
+                            tal:content="python:l[0]">value</option>
+                       </tal:block>
+                      </tal:loop></select>
+                  </td>
+                </tr>
+            </table>
+
+            <input type="hidden" name="" value=""
+                tal:attributes="name fieldname; value python:settings.tojson(datagrid)" />
+        </div>
+               </tal:widget>
+
 </span>

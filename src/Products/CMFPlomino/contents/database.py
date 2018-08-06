@@ -441,12 +441,20 @@ class PlominoDatabase(
 
     security.declarePublic('getAllDocuments')
 
-    def getAllDocuments(self, getObject=True):
+    def getAllDocuments(self, getObject=True, request_query=None):
         """ Return all the database documents.
         """
         if getObject is False:
-            # XXX: TODO: Return brains
-            pass
+            index = self.getParentDatabase().getIndex()
+
+            query = dict()
+            if request_query is not None:
+                query.update(request_query)
+
+            results = index.dbsearch(
+                query,
+                only_allowed=True)
+            return results
         return self.documents.values()
 
     def _cache(self):

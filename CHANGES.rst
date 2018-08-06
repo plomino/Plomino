@@ -114,6 +114,8 @@ Changelog
 - Left over indexes no longer result in no data displayed in views [djay]
 - Searches should render more kinds of fields properly [djay]
 - fix selection fields in search forms [djay]
+- Add datagrid style widget to doclinks [djay]
+- Add the ability to add and edit documents in a popup when using datagrid widget with doclinks [djay]
 
 2.0b4 (2016-05-27)
 ------------------

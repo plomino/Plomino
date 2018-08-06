@@ -594,30 +594,42 @@ A name field allow to select a user in the Plone portal members list::
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
     u'<div><input type="hidden" name="Form" value="frm2"/><div><p>9 </p><p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[]">            </input>                                </span></p></div></div>'
 
-# TO BE FIXED
-# Doclink field:
-# A Doclink field allows to create a reference to another document::
+Doclink field:
+A Doclink field allows to create a reference to another document::
 
-#     >>> id = db.frm2.invokeFactory('PlominoField',
-#     ...         id='relatedartist',
-#     ...         title='Related artist',
-#     ...         field_type="DOCLINK",
-#     ...         field_mode="EDITABLE")
-#     >>> db.frm2.relatedartist.widget = u'SELECT'
-#     >>> db.frm2.relatedartist.sourceview = u'view1'
-#     >>> db.frm2.relatedartist.labelcolumn = u'col1'
-#     >>> db.frm2.form_layout = """10 <p>Related artist:
-#     ... <span class="plominoFieldClass">relatedartist</span></p>"""
-#     >>> db.cleanRequestCache()
-#     >>> result = db.frm2.displayDocument(None, True, True)
-#     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
-#     True
-#     >>> """<option value="%s">bonjour</option>""" % (doc3.id) in result
-#     True
-#     >>> """<option value="%s">hello</option>""" % (doc2.id) in result
-#     True
-#     >>> """<option value="%s">ola</option>""" % (doc4.id) in result
-#     True
+     >>> id = db.frm2.invokeFactory('PlominoField',
+     ...         id='relatedartist',
+     ...         title='Related artist',
+     ...         field_type="DOCLINK",
+     ...         field_mode="EDITABLE")
+     >>> db.frm2.relatedartist.widget = u'SELECT'
+     >>> db.frm2.relatedartist.sourceview = u'view1'
+     >>> db.frm2.relatedartist.labelcolumn = u'col1'
+     >>> db.frm2.form_layout = """10 <p>Related artist:
+     ... <span class="plominoFieldClass">relatedartist</span></p>"""
+     >>> db.cleanRequestCache()
+     >>> result = db.frm2.displayDocument(None, True, True)
+     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
+     True
+     >>> """<option value="%s">bonjour</option>""" % (doc3.id) in result
+     True
+     >>> """<option value="%s">hello</option>""" % (doc2.id) in result
+     True
+     >>> """<option value="%s">ola</option>""" % (doc4.id) in result
+     True
+
+A doclink can also look like a datagrid
+
+     >>> db.frm2.relatedartist.widget = u'DATAGRID'
+     >>> db.cleanRequestCache()
+     >>> print db.frm2.displayDocument(None, True, True)
+     <div>...
+     ...
+             <div class="plomino-datagrid"...
+     ...
+     <input type="hidden" name="relatedartist" value="[]" />
+     ...
+
 
 A field can be computed:
 

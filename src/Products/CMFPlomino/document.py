@@ -525,6 +525,10 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     result = form.computeFieldValue(fieldname, self)
                     self.setItem(fieldname, result)
 
+                # special case where its a doclink that added a new doc.
+                if f.field_type == 'DOCLINK':
+                    self.setItem(f.id, f.getSettings().updateDocs(self.getItem(f.id)))
+
             # compute the document title
             title_formula = form.document_title
             if title_formula:

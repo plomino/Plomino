@@ -1,7 +1,9 @@
+      <tal:widget tal:condition="python:options['field'].widget!='DATAGRID'" >
+
 <tal:block tal:define="selection python:options['selection'];
             lselection python:[f.split('|') for f in selection];
             field python:options['field'];
-            current python:options['fieldvalue'];
+            current python:options['fieldvalue'] or [];
             lcurrent python:(hasattr(current,'split') and [current]) or current;
             lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
             labeled python:[e for e in lselection if e[1] in lcurrent or e[1] in lcurrent_ids]
@@ -16,3 +18,32 @@
     <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
 </tal:loop>
 </tal:block>
+      </tal:widget>
+
+
+      <tal:widget tal:condition="python:options['field'].widget=='DATAGRID'" >
+
+        <div  tal:define="
+            field python:options['field'];
+            fieldname python:field.id;
+            settings field/getSettings;
+            parent_form field/getParentNode;
+            fieldvalue python:options['fieldvalue'];
+            datagrid python:settings.getDatagrid(fieldvalue);
+            fields settings/getColumns;
+            columns python:fields[1];
+            columns columns|python:['A','B','C'];
+            fields python:fields[0];
+            ">
+            <table
+                   tal:define="rows datagrid|nothing">
+                <tr>
+                    <th tal:repeat="col columns"
+                        tal:content="col">col</th>
+                </tr>
+                <tr tal:repeat="row rows"><td tal:repeat="field fields"
+                        tal:content="structure python:row.get(field,'')">cell</td>
+                </tr>
+            </table>
+        </div>
+               </tal:widget>

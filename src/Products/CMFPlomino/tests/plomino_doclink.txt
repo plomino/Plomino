@@ -1,0 +1,183 @@
+Doclink fields store ids to other documents. Widgets allow selecting other documents and optionally
+adding new documents.
+
+Doc links have four ways to determine what are the potential documents to link to:
+
+1. sourceview - The selected View filters the possible documents
+2. formula - a list of Label|id
+3. associated form - Any document created using this Form
+4. Any - If nothing else is selected you can select any document (including itself)
+
+There are four kinds of widgets
+1. Single select2
+2. Multiple Select2
+3. Embedded (table with checkboxes). Shows all columns in the view if using a view, otherwise label or id
+4. Datagrid (Shows all cols for a view, all fields for associated form, else shows label or id)
+
+If associated form is picked then you have the ability to create a new document. Currently this only works
+for a datagrid. #TODO make work for other widgets
+
+
+    >>> portal = layer['portal']
+    >>> db = layer['portal'].mydb
+    >>> id = db.invokeFactory('PlominoForm', id='Company', title='Company')
+    >>> id = db.Company.invokeFactory('PlominoField',
+    ...         id='name',
+    ...         title='Title',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.Company.form_layout = """<p><label for="title_1">Title</label><span class="plominoFieldClass">title</span></p>"""
+    >>> id = db.invokeFactory('PlominoForm', id='Person', title='Person')
+    >>> id = db.Person.invokeFactory('PlominoField',
+    ...         id='company',
+    ...         title='Company',
+    ...         field_type="DOCLINK",
+    ...         field_mode="EDITABLE")
+    >>> db.Person.form_layout = """<p><label for="company_1">Company</label><span class="plominoFieldClass">company</span></p>"""
+
+    >>> company = db.createDocument()
+    >>> company.setItem('Form', 'Company')
+    >>> company.setItem('name', u'Evil Corp')
+    >>> company.save()
+
+    >>> person = db.createDocument()
+    >>> person.setItem('Form', 'Person')
+    >>> person.setItem('company', [company.id])
+    >>> person.save()
+    >>> empty = db.createDocument()
+
+
+    >>> transaction.commit()
+
+
+Selection Widget
+================
+
+With no method selected the field should let us select any document (currently 2)
+
+# TODO: should actually select one since we set it
+
+
+    >>> print db.Person.displayDocument(person, editmode=True, creation=False)
+    <div>...
+            <select class="pat-select2" id="company" name="company">
+                <option value="...">...</option>
+                <option value="...">...</option>
+            </select>
+    ...
+
+#TODO
+
+If we set AssociatedForm to Company we will only see those docs offered
+
+    >>> db.Person.company.associated_form = "Company"
+    >>> print db.Person.displayDocument(person, editmode=True, creation=False)
+    <div>...
+            <select class="pat-select2" id="company" name="company">
+                <option value="...">...</option>
+            </select>
+    ...
+
+In view mode we just see link
+
+    >>> db.Person.displayDocument(person, editmode=False, creation=False).count('href')
+    1
+
+
+And we see nothing if the doc is empty
+    >>> db.Person.displayDocument(empty, editmode=False, creation=False).count('href')
+    0
+
+
+Datagrid Widget
+===============
+
+DocLinks can be displayed as a datagrid
+
+    >>> db.Person.company.widget = "DATAGRID"
+    >>> transaction.commit()
+
+    >>> print db.Person.displayDocument(person, editmode=True, creation=False)
+    <div>...
+            <div class="plomino-datagrid"...>
+                <table data-rows="[[...]]">
+                    <tr>
+                        <th>Title</th>
+                    </tr>
+                    <tr><td>Evil Corp</td>
+                    </tr>
+    ...
+                <input type="hidden" name="company" value="[{...Evil Corp...}]" />
+    ...
+    </p></div>
+
+and in view mode we also see a table
+
+#TODO: should have links in
+
+    >>> print db.Person.displayDocument(person, editmode=False, creation=False)
+    <p>...
+                <table>
+                    <tr>
+                        <th>Title</th>
+                    </tr>
+                    <tr><td>Evil Corp</td>
+                    </tr>
+                </table>
+    ...
+
+and the same for an empty document
+
+    >>> print db.Person.displayDocument(empty, editmode=False, creation=False)
+    <p>...
+                <table>
+                    <tr>
+                        <th>Title</th>
+                    </tr>
+    <BLANKLINE>
+                </table>
+    ...
+
+and if we use a formula it still works
+
+   #TODO: need to include select to pick existing doc
+
+
+Adding Documents
+================
+    >>> browser = Browser(layer['app'])
+    >>> browser.open(portal.absolute_url() + "/login_form")
+    >>> browser.getControl(name='__ac_name').value = TEST_USER_NAME
+    >>> browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
+    >>> browser.getControl(name='submit').click()
+
+Open edit mode
+
+    >>> browser.open(person.absolute_url()+'/EditDocument')
+
+#TODO: really need buttons to work without JS
+
+Normally JS is used to open a popup, enter associated form data and then close.
+
+    >>> import json
+    >>> docs = json.loads(browser.getControl(name='company').value)
+    >>> docs
+    [{...u'name': u'Evil Corp'...}]
+
+Lets edit the existing doc
+    >>> docs[0]['name'] = 'Ferris Corp'
+
+Lets add a new document to the json
+    >>> docs.append({"Form": "Company", "name": "Protogen"})
+    >>> browser.getControl(name='company').value = json.dumps(docs)
+    >>> browser.getControl('Save').click()
+    >>> 'Protogen' in browser.contents
+    True
+    >>> sorted([d.getItem('name') for d in db.getAllDocuments() if d.getItem('Form')=='Company'])
+    [u'Ferris Corp', u'Protogen']
+
+
+
+
+
+

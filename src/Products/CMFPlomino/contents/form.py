@@ -2153,7 +2153,8 @@ class PlominoForm(Container):
                         v = asUnicode(submittedValue)
                     # rename Plomino_SearchableText to perform full-text
                     # searches on regular SearchableText index
-                    if fieldname == "Plomino_SearchableText":
+                    if fieldname == "Plomino_SearchableText" \
+                            or fieldname == 'plomino_searchabletext':
                         fieldname = "SearchableText"
                     query[fieldname] = v
             sortindex = searchview.sort_column
