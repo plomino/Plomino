@@ -29,7 +29,6 @@
                     string:source:${context/absolute_url}/tojson;;
                     hideCheckboxes:${context/hide_checkboxes};">
                 <tr class="header-row">
-                    <th></th>
                     <tal:headers tal:repeat="column columns">
                         <th tal:condition="not: column/hidden_column|nothing"
                             tal:attributes="data-column column/id;"
