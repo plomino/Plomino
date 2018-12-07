@@ -1,106 +1,106 @@
 <span tal:define="selection python:options['selection'];
-                field python:options['field'];
-                widget python:field.widget;
-                name python:field.id;
-                current python:options['fieldvalue'];
-                lcurrent python:(hasattr(current,'split') and [current]) or current;
-                lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
-                ">
-    <tal:widget tal:condition="python:widget=='SELECT'">
-        <select class="pat-select2" tal:attributes="id name; name name"><tal:loop tal:repeat="v selection">
-            <option tal:define="l python:v.split('|')"
-                tal:attributes="value python:l[1];
-                    selected python:(lcurrent and (lcurrent[0]==l[1] or lcurrent_ids[0]==l[1]) and 1) or 0"
-                tal:content="python:l[0]">value</option></tal:loop>
-        </select>
+        field python:options['field'];
+        settings field/getSettings;
+        widget python:field.widget;
+        name python:field.id;
+        current python:options['fieldvalue'] or [];
+        lcurrent python:(hasattr(current,'split') and [current]) or current;
+        lcurrent_ids python:[p.split('/')[-1] if hasattr(p,'split') else p['getId'] if 'getId' in p else '' for p in lcurrent];
+        " class="plomino-doclink">
+    <tal:widget tal:condition="python:widget=='SELECT'" tal:define="scurrent python:(hasattr(current,'split') and current) or (hasattr(current,'append') and (current[0] if current else '')) ;">
+        <input type="text" class="pat-select2 single-select-widget"
+                 tal:attributes="data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:3  ; value python:field.getSettings().getDocumentDisplay(scurrent)">
+        </input>
+        <input type="hidden"
+                 tal:attributes="id name; name name; value python:scurrent">
+        </input>
     </tal:widget>
-    <tal:widget tal:condition="python:widget=='MULTISELECT'">
-        <select class="pat-select2" tal:attributes="id name; name name" multiple="true" lines="4"><tal:loop tal:repeat="v selection">
-                <tal:block tal:define="l python:v.split('|')">
-                    <option
-                        tal:attributes="value python:l[1]; selected python:(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
-                        tal:content="python:l[0]">value</option>
-                </tal:block></tal:loop>
-        </select>
+    <tal:widget tal:condition="python:widget=='MULTISELECT'"
+             tal:define="datalist python:field.getSettings().tojson([{'id':docId,'text':field.getSettings().getDocumentDisplay(docId)} for docId in lcurrent])">
+        <input type="text" class="pat-select2 multi-select-widget"
+                 tal:attributes="data-list python:datalist; data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:true;;minimumInputLength:3; value python:', '.join([field.getSettings().getDocumentDisplay(docId) for docId in lcurrent])">
+        </input>
+        <input type="hidden"
+                 tal:attributes="id name; name name; value python:field.getSettings().tojson(lcurrent)">
+        </input>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='VIEW'" >
         <table tal:define="sourceview python:field.sourceview;
-                           v python:field.getParentDatabase().getView(sourceview);
-                           columns python:v.getColumns()">
+                v python:field.getParentDatabase().getView(sourceview);
+                        columns python:v.getColumns()">
             <tr>
                 <th>&nbsp;&nbsp;</th>
                 <tal:block tal:repeat="c columns">
                     <th tal:condition="not: c/hidden_column|nothing">&nbsp;<span
-                        tal:content="c/Title">Title</span>&nbsp;</th>
+                             tal:content="c/Title">Title</span>&nbsp;</th>
                 </tal:block>
             </tr>
             <tal:documents tal:define="listdocuments python:[b for b in v.getAllDocuments(getObject=False) if v.hasReadPermission(b.getObject())];"
-                        tal:repeat="brain listdocuments">
+                     tal:repeat="brain listdocuments">
                 <tr tal:define="oddrow repeat/brain/odd"
-                    tal:attributes="class python:(oddrow and 'even') or 'odd'">
+                         tal:attributes="class python:(oddrow and 'even') or 'odd'">
                     <td><input type="checkbox"
-                    tal:attributes="name name;
+                             tal:attributes="name name;
                             value python:brain.getPath();
                             checked python:((current and brain.id in lcurrent_ids) and 1) or 0">
                     </td>
                     <tal:block tal:repeat="c columns">
                         <td tal:condition="not: c/hidden_column|nothing"><span
-                            tal:define="cname c/id;
-                                        vname v/id;
-                                        cvalue python:getattr(brain, v.getIndexKey(cname));
-                                        "
-                            tal:content="structure cvalue" /></td>
+                                 tal:define="cname c/id;
+                                vname v/id;
+                                cvalue python:getattr(brain, v.getIndexKey(cname));
+                                "
+                                 tal:content="structure cvalue" /></td>
                     </tal:block>
                 </tr>
             </tal:documents>
         </table>
     </tal:widget>
+
     <tal:widget tal:condition="python:widget=='DATAGRID'" >
-
-
         <div class="plomino-datagrid" tal:define="
-            field python:options['field'];
-            fieldname python:field.id;
-            settings field/getSettings;
-            associated_form python:settings.getAssociatedForm();
-            add_url associated_form/absolute_url|string:.;
-            parent_form field/getParentNode;
-            fieldvalue python:options['fieldvalue'];
-            datagrid python:settings.getDatagrid(fieldvalue);
-            fields settings/getColumns;
-            columns python:fields[1];
-            columns columns|python:['A','B','C'];
-            fields python:fields[0];"
-            tal:attributes="
+                field python:options['field'];
+                fieldname python:field.id;
+                settings field/getSettings;
+                associated_form python:settings.getAssociatedForm();
+                sourceview python:settings.getSourceView();
+                add_url associated_form/absolute_url|string:.;
+                parent_form field/getParentNode;
+                fieldvalue python:options['fieldvalue'];
+                datagrid python:settings.getDatagrid(fieldvalue);
+                fields settings/getColumns;
+                columns python:fields[1];
+                columns columns|python:['A','B','C'];
+                fields python:fields[0];"
+                 tal:attributes="
+                        data-source-view sourceview/id|nothing;
                 data-associated-form associated_form/id|nothing;
                 data-fields python:','.join(fields);
                 data-columns python:','.join(columns);
                 data-form-url string:${add_url}/OpenForm?ajax_load=1&Plomino_Parent_Field=${fieldname}&Plomino_Parent_Form=${parent_form/id};
-            ">
-            <table tal:attributes="data-rows python:settings.tojson(datagrid, True)"
-                   tal:define="rows datagrid|nothing">
-                <tr>
-                    <th tal:repeat="col columns"
-                        tal:content="col">col</th>
-                </tr>
+                ">
+
+            <table tal:attributes="data-rows python:settings.tojson(datagrid, True);"
+                     tal:define="rows datagrid|nothing">
                 <tr tal:repeat="row rows"><td tal:repeat="field fields"
-                        tal:content="structure python:row.get(field,'')">cell</td>
+                         tal:content="structure python:row.get(field,'')">cell</td>
                 </tr>
                 <tr>
                     <td class="actions"><a class="add-row" href=""><i class="icon-plus"></i></a></td>
-                    <td><select class="pat-select2"  multiple="true" lines="4"><tal:loop tal:repeat="v selection">
-                       <tal:block tal:define="l python:v.split('|')"
-                         ><option
-                            tal:attributes="value python:l[1]; selected python:(lcurrent and (l[1] in lcurrent or l[1] in lcurrent_ids) and 1) or 0"
-                            tal:content="python:l[0]">value</option>
-                       </tal:block>
-                      </tal:loop></select>
-                  </td>
+                    <td class="select2-cell"></td>
                 </tr>
             </table>
+            <div class="select2-template">
+                <input type="text" class="pat-select2"
+                 tal:attributes="data-formid python:associated_form.getId(); data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:3  ; ">
+        </input>
+
+
+            </div>
+
 
             <input type="hidden" name="" value=""
-                tal:attributes="name fieldname; value python:settings.tojson(datagrid)" />
+                     tal:attributes="name fieldname; value python:settings.tojson(datagrid)" />
         </div>
                </tal:widget>
 

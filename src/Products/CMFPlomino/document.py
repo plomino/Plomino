@@ -387,7 +387,6 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         """
         db = self.getParentDatabase()
         form = db.getForm(REQUEST.get('Form'))
-
         errors = form.validateInputs(REQUEST, doc=self)
 
         # execute the beforeSave code of the form

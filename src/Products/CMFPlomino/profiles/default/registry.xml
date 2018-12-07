@@ -146,6 +146,11 @@
     <value key="js">++resource++Products.CMFPlomino/js/attachment.js</value>
   </records>
 
+    <records prefix="plone.resources/plominodoclink"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/doclink.js</value>
+  </records>
+
 
   <records prefix="plone.bundles/plomino"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
@@ -159,6 +164,7 @@
       <element>plominomacros</element>
       <element>plominorefresh</element>
         <element>plominoattachment</element>
+        <element>plominodoclink</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>

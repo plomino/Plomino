@@ -55,18 +55,14 @@ Selection Widget
 
 With no method selected the field should let us select any document (currently 2)
 
-# TODO: should actually select one since we set it
-
-
     >>> print db.Person.displayDocument(person, editmode=True, creation=False)
     <div>...
+
             <select class="pat-select2" id="company" name="company">
                 <option value="...">...</option>
-                <option value="...">...</option>
             </select>
-    ...
 
-#TODO
+    ...</div>
 
 If we set AssociatedForm to Company we will only see those docs offered
 
@@ -99,11 +95,9 @@ DocLinks can be displayed as a datagrid
 
     >>> print db.Person.displayDocument(person, editmode=True, creation=False)
     <div>...
+    ...
             <div class="plomino-datagrid"...>
                 <table data-rows="[[...]]">
-                    <tr>
-                        <th>Title</th>
-                    </tr>
                     <tr><td>Evil Corp</td>
                     </tr>
     ...

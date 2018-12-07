@@ -194,6 +194,14 @@
         permission="zope.Public"
         />
 
+     <browser:page
+        for="Products.CMFPlomino.contents.field.IPlominoField"
+        name="filterdocuments"
+        class=".field.FieldView"
+        attribute="filterdocuments"
+        permission="zope.Public"
+        />
+
     <!-- TinyMCE -->
 
     <browser:page

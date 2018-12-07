@@ -14,6 +14,7 @@ from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from ..utils import asUnicode
 from base import BaseField
+from ..utils import PlominoTranslate
 
 
 @provider(IFormFieldProvider)
@@ -112,6 +113,14 @@ class DoclinkField(BaseField):
         # 3. Make search work dynamically so only load all the data when selected
 
         db = self.context.getParentDatabase()
+        # If not dynamic rendering, then enable caching
+        cache_key = "getSelectionList_%s" % (
+            hash(self.context))
+        if not self.context.isDynamicField:
+            cache = db.getRequestCache(cache_key)
+            if cache:
+                return cache
+        result = []
 
         # if formula available, use formula, else use view entries
         f = self.context.documentslistformula
@@ -140,14 +149,12 @@ class DoclinkField(BaseField):
                 s = []
 
             # if values not specified, use label as value
-            proper = []
             for v in s:
                 l = v.split('|')
                 if len(l) == 2:
-                    proper.append(v)
+                    result.append(v)
                 else:
-                    proper.append(v + '|' + v)
-            return proper
+                    result.append(v + '|' + v)
         elif self.context.sourceview and self.context.labelcolumn:
             #TODO: should just pick first col as default
             v = self.context.getParentDatabase().getView(self.context.sourceview)
@@ -156,42 +163,98 @@ class DoclinkField(BaseField):
             label_key = v.getIndexKey(self.context.labelcolumn)
             if not label_key:
                 return []
-            result = []
-            for b in v.getAllDocuments(getObject=False):
+            for b in v.getAllDocuments(getObject=True):
                 val = getattr(b, label_key, '')
                 if not val:
                     val = ''
-                result.append(asUnicode(val) + "|" + b.id)
-            return result
+                result.append(asUnicode(val + "|" + self.valueForSelect2(b)))
         else:
             # We will select all documents (with limit)
-            result = []
             # TODO: add limit
             query = dict(limit=50) #TODO: not sure if this works
             if self.context.associated_form:
                 query['Form'] = self.context.associated_form
-            for b in db.getAllDocuments(getObject=False, request_query=query):
-                result.append(asUnicode(b.id) + "|" + b.id)
-            return result
+            for b in db.getAllDocuments(getObject=True, request_query=query):
+                # Filter by python in case Form is not index
+                if b.getForm() and b.getForm().id == self.context.associated_form:
+                    val = ''
+                    if self.context.labelcolumn:
+                        val = getattr(b, self.context.labelcolumn, '')
+                    if not val:
+                        val = b.id
+                    result.append(asUnicode(val + "|" + self.valueForSelect2(b)))
+
+        # Save to cache if not dynamic rendering
+        if not self.context.isDynamicField:
+            db.setRequestCache(cache_key, result)
+        return result
+
+    def getDocumentDisplay(self,docId):
+        db = self.context.getParentDatabase()
+        doc = db.getDocument(docId)
+        if not doc:
+            return ''
+        if self.context.sourceview and self.context.labelcolumn:
+            v = db.getView(self.context.sourceview)
+            label_key = v.getIndexKey(self.context.labelcolumn)
+            if not label_key:
+                return docId
+            return getattr(doc, label_key, '')
+        else:
+            return docId
+
+    def getFilteredDocuments(self, filter):
+        """ Return a JSON list of documents, filtered by id or name.
+        """
+        filterDocs = []
+        for doc_link in self.getSelectionList(self.context):
+            parts = doc_link.split('|')
+            if filter in parts[0]:
+                doc = json.loads(parts[1])
+                filterDocs.append({'id':doc['getId'],'text':parts[0],'object':doc})
+        widget = getattr(self.context, 'widget', None)
+        if widget == 'DATAGRID':
+            filterDocs.append({'id': 'NEW_DOC', 'text': PlominoTranslate('Add new document', self.context)})
+        return json.dumps(
+            {'results': filterDocs, 'total': len(filterDocs)})
+
+    def getSelectionIds(self, doc):
+        lists = self.getSelectionList(doc)
+        rselection = lists.split('|')[-1]
+        return [f["getId"] for f in rselection]
+
+    def valueForSelect2(self,doc):
+        doc_json = json.loads(doc.tojson())
+        doc_json["getId"] = doc.id
+        return json.dumps(doc_json)
 
     def processInput(self, submittedValue):
         """
         """
+        # Datagrid widget input: JSON-string of list of document object
+        # Selection list input: A single string or list of string, each is a JSON-string of document object
+        # Embeded view input: A single string or list of string, each is a path to document
 
-        #TODO: need to make select widget able to add documents too
-
-        db = self.context.getParentDatabase()
-
-
-        #TODO should be less hacky way of doing this
-        if submittedValue and submittedValue.startswith('['):
-            # Assume its json from datagrid.
-            submittedValue = json.loads(submittedValue)
-
-        if "|" in submittedValue:
-            return submittedValue.split("|")
+        if submittedValue:
+            if isinstance(submittedValue, list):
+                rows  = []
+                for row in submittedValue:
+                    try:
+                        row = json.loads(row)
+                    except Exception as exc:
+                        # 'Input from source view, wchich map to document path
+                        pass
+                    rows.append(row)
+                return rows
+            else:
+                try:
+                    submittedValue = json.loads(submittedValue)
+                except Exception as exc:
+                    # 'Input from source view, wchich map to document path
+                    pass
+                return submittedValue
         else:
-            return submittedValue
+            return []
 
 
     def updateDocs(self, value):
@@ -200,13 +263,12 @@ class DoclinkField(BaseField):
         new_value = []
         if not value:
             return value
-
         fields,_ = self.getColumns()
         for row in value if isinstance(value, list) else [value]:
             if type(row) != dict:
                 # Should be a string with the docid or path
                 # TODO: do we need to test it exists?
-                new_value.append(row)
+                new_value.append((row.split('/')[-1]))
             elif 'getId' in row:
                 # existing document. update it
                 form = db.getForm(row['Form'])
@@ -215,17 +277,17 @@ class DoclinkField(BaseField):
                 new_value.append(id)
             else:
                 form = db.getForm(row['Form'])
-
                 request = fake_request(row)
                 #TODO What happens if the data is invalid?
                 # TODO: more robust way of getting docid
                 form.createDocument(request)
                 assert request.RESPONSE.docid
-
                 new_value.append(request.RESPONSE.docid)
         # Ensure we return it without a list if the original was not a list
-        return new_value if isinstance(value, list) else value[0]
+        return new_value if isinstance(value, list) else new_value[0]
 
+    def fromjson(self, datatable):
+        return json.loads(datatable)
 
     def tojson(self, datatable, rendered=False):
         "just used for the datagrid to produce a json version for template. Rendered means lists"
@@ -233,52 +295,21 @@ class DoclinkField(BaseField):
             return json.dumps([])
         if rendered:
             fields, _ = self.getColumns()
-            return json.dumps([[row[f] for f in fields] for row in datatable])
+            return json.dumps([[row[f] for f in fields if f in row] for row in datatable])
         return json.dumps(datatable)
 
     def getDatagrid(self, value):
         """ return a list of dicts which have the field info just for the columns we care about.
         This will be used to render the datagrid and also to will be submitted back as json as the vable
         """
-
         if value is None:
             return []
-
+        # In case of multi page-form, the value is a dictionary
+        if type(value)==list and type(value[0]) == dict:
+            return value
         paths = value
-        fields,_ = self.getColumns()
+        fields, _ = self.getColumns()
         db = self.context.getParentDatabase()
-
-
-
-        if getattr(self.context,'sourceview'):
-            sourceview = self.context.getParentDatabase().getView(
-                self.context.sourceview)
-            # Lets reduce down to our paths
-            #TODO: this is going to filter by access permissions? if so some might be missing
-            if not paths:
-                return []
-            brains = sourceview.getAllDocuments(getObject=False, only_allowed=True,
-                                                request_query={'path':paths})
-
-            datatable = []
-            for b in brains:
-                doc = b.getObject() #TODO: should be able to get Form without waking up object?
-                row = dict(Form=doc.getItem('Form',None), getId=b.id)
-                #TODO: we need to return all the data in the doc, for the associated form. Otherwise will get reset.
-                # as well as the view metadata.
-                for col in fields:
-                    key = sourceview.getIndexKey(col)
-                    if not key:
-                        continue
-                    v = getattr(b, key)
-                    if not isinstance(v, str):
-                        v = unicode(v).encode('utf-8').replace('\r', '')
-                    row[col] = (v or '&nbsp;')
-                datatable.append(row)
-            return datatable
-
-        form = self.getAssociatedForm()
-
         datatable = []
         for path in paths:
             # HACK just get last part as id. Should do proper traverse. Could be other DB?
@@ -290,19 +321,38 @@ class DoclinkField(BaseField):
             for key in doc.getItems():
                 row[key] = doc.getItem(key)
             datatable.append(row)
+        if getattr(self.context, 'sourceview'):
+            sourceview = self.context.getParentDatabase().getView(
+                self.context.sourceview)
+            # Lets reduce down to our paths
+            # TODO: this is going to filter by access permissions? if so some might be missing
+            brains = sourceview.getAllDocuments(getObject=False, only_allowed=True,
+                                                request_query={'paths': paths})
+            for b in brains:
+                doc = b.getObject()  # TODO: should be able to get Form without waking up object?
+                for row in datatable:
+                    if row['getId'] == b.id:
+                        # TODO: we need to return all the data in the doc, for the associated form. Otherwise will get reset.
+                        # as well as the view metadata.
+                        for col in fields:
+                            key = sourceview.getIndexKey(col)
+                            if not key:
+                                continue
+                            v = getattr(b, key)
+                            if not isinstance(v, str):
+                                v = unicode(v).encode('utf-8').replace('\r', '')
+                            row[col] = (v or '&nbsp;')
         return datatable
 
-        #TODO: handle a datatable when formula (with and without associated_form)
+        # TODO: handle a datatable when formula (with and without associated_form)
 
-        return []
 
     def getAssociatedForm(self):
         child_form_id = self.context.associated_form
         if child_form_id:
             db = self.context.getParentDatabase()
+            f =  db.getForm(child_form_id)
             return db.getForm(child_form_id)
-
-
 
 
     def getColumns(self):
@@ -311,7 +361,7 @@ class DoclinkField(BaseField):
          """
         #
         field_ids = None
-        lists = (['getId'], ['ID'])
+        lists = [['getId'], ['ID']]
 
         f = self.context.documentslistformula
         if f:
@@ -332,10 +382,8 @@ class DoclinkField(BaseField):
             _lists =  zip(*[(col.displayed_field, col.title) for col in columns])
             if _lists != []:
                 lists = _lists
-            return lists
 
         if self.context.associated_form:
-
             child_form_id = self.context.associated_form
             if not child_form_id:
                 return ""
@@ -344,11 +392,19 @@ class DoclinkField(BaseField):
             child_form = db.getForm(child_form_id)
             _lists = zip(*[(f.id, f.title) for f in child_form.getFormFields(includesubforms=True)])
             if _lists != []:
-                lists = _lists
-
+                # Add form field together with view column
+                if self.context.sourceview:
+                    lists =  lists[0]+ _lists[0],lists[1]+ _lists[1]
+                else:
+                    lists = _lists
         # TODO: need some better result if not settings. Should be all data? or just a id?
         return lists
 
+    def getSourceView(self):
+        view_id =  self.context.sourceview
+        if view_id:
+            sourceview = self.context.getParentDatabase().getView(view_id)
+            return sourceview
 
     def getFieldMapping(self):
         fields,_ = self.getColumns()

@@ -1,29 +1,33 @@
-      <tal:widget tal:condition="python:options['field'].widget!='DATAGRID'" >
+<tal:widget tal:condition="python:options['field'].widget!='DATAGRID'" >
 
-<tal:block tal:define="selection python:options['selection'];
+    <tal:block tal:define="selection python:options['selection'];
             lselection python:[f.split('|') for f in selection];
             field python:options['field'];
+            settings field/getSettings;
+            datagrid python:[(row[0],settings.fromjson(row[1])) for row in lselection] ;
             current python:options['fieldvalue'] or [];
-            lcurrent python:(hasattr(current,'split') and [current]) or current;
-            lcurrent_ids python:[p.split('/')[-1] for p in lcurrent];
-            labeled python:[e for e in lselection if e[1] in lcurrent or e[1] in lcurrent_ids]
-    "><tal:loop tal:repeat="v labeled">
-    <tal:link tal:define="path python:v[1].split('/')"><a
-        tal:condition="python:len(path)>1"
-        tal:content="python:v[0]"
-        tal:attributes="href python:request.physicalPathToURL(path)">link to doc</a><a
-        tal:condition="python:len(path)==1"
-        tal:content="python:v[0]"
-        tal:attributes="href python:field.getParentDatabase().getDocument(v[1]).doc_url()">link to doc</a></tal:link>
-    <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
-</tal:loop>
-</tal:block>
-      </tal:widget>
+            lcurrent_ids python:(hasattr(current,'split') and [current]) or current;
+            labeled python:[e for e in datagrid if  e[1]['getId'] in lcurrent_ids]
+            ">
+        <tal:loop tal:repeat="v labeled">
+            <tal:link tal:define="path python:v[1]['getId'].split('/')"><a
+                     tal:condition="python:len(path)>1"
+                     tal:content="python:v[0]"
+                     tal:attributes="href python:request.physicalPathToURL(path)">link to doc</a><a
+                     tal:condition="python:len(path)==1"
+                     tal:content="python:v[0]"
+                     tal:attributes="href python:field.getParentDatabase().getDocument(v[1]['getId']).doc_url()">link to
+                doc</a></tal:link>
+            <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
+        </tal:loop>
+    </tal:block>
+
+</tal:widget>
 
 
-      <tal:widget tal:condition="python:options['field'].widget=='DATAGRID'" >
+<tal:widget tal:condition="python:options['field'].widget=='DATAGRID'" >
 
-        <div  tal:define="
+    <div  tal:define="
             field python:options['field'];
             fieldname python:field.id;
             settings field/getSettings;
@@ -35,15 +39,18 @@
             columns columns|python:['A','B','C'];
             fields python:fields[0];
             ">
-            <table
-                   tal:define="rows datagrid|nothing">
-                <tr>
-                    <th tal:repeat="col columns"
-                        tal:content="col">col</th>
-                </tr>
-                <tr tal:repeat="row rows"><td tal:repeat="field fields"
-                        tal:content="structure python:row.get(field,'')">cell</td>
-                </tr>
-            </table>
-        </div>
-               </tal:widget>
+        <table
+                 tal:define="rows datagrid|nothing">
+            <tr>
+                <th tal:repeat="col columns"
+                         tal:content="col">col
+                </th>
+            </tr>
+            <tr tal:repeat="row rows">
+                <td tal:repeat="field fields"
+                         tal:content="structure python:row.get(field,'')">cell
+                </td>
+            </tr>
+        </table>
+    </div>
+</tal:widget>

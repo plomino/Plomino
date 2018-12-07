@@ -19,6 +19,12 @@ class FieldView(BrowserView):
             return self.context.getSettings().getFilteredNames(
                 self.request.get('query'))
 
+    def filterdocuments(self):
+        if self.context.field_type == "DOCLINK":
+            self.request.RESPONSE.setHeader(
+                'content-type', 'application/json; charset=utf-8')
+            return self.context.getSettings().getFilteredDocuments(
+                self.request.get('query'))
 
 class EditForm(edit.DefaultEditForm):
 
