@@ -116,7 +116,9 @@ Changelog
 - fix selection fields in search forms [djay]
 - Add datagrid style widget to doclinks [djay]
 - Add the ability to add and edit documents in a popup when using datagrid widget with doclinks [djay]
+- Enable caching on value return by selectionlist field [quang]
 - Extend datagrid widget for doclink to select and display document [quang]
+
 
 2.0b4 (2016-05-27)
 ------------------

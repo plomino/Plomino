@@ -86,6 +86,16 @@ class SelectionField(BaseField):
         """ Return the values list.
         Format: label|value, use label as value if no label.
         """
+        # If not dynamic rendering, then enable caching
+        db = self.context.getParentDatabase()
+        cache_key = "getSelectionList_%s" % (
+            hash(self.context)
+        )
+        if not self.context.isDynamicField:
+            cache = db.getRequestCache(cache_key)
+            if cache:
+                return cache
+
         # if formula available, use formula, else use manual entries
         f = getattr(self.context,'selectionlistformula', None)
         if f:
@@ -94,6 +104,7 @@ class SelectionField(BaseField):
                 obj = doc
             else:
                 obj = self.context
+
             try:
                 s = self.context.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['field',
@@ -123,7 +134,9 @@ class SelectionField(BaseField):
                 label_value.append(v)
             else:
                 label_value.append(v + '|' + v)
-
+        # Save to cache if not dynamic rendering
+        if not self.context.isDynamicField:
+            db.setRequestCache(cache_key, label_value)
         return label_value
 
     def processInput(self, values):
