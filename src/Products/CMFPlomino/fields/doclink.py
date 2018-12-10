@@ -99,7 +99,7 @@ class DoclinkField(BaseField):
     read_template = PageTemplateFile('doclink_read.pt')
     edit_template = PageTemplateFile('doclink_edit.pt')
 
-    def getSelectionList(self, doc):
+    def _getSelectionList(self, doc):
         """ Return the documents list, format: label|docid_or_path, use
         value is used as label if no label.
         """
@@ -119,6 +119,7 @@ class DoclinkField(BaseField):
         if not self.context.isDynamicField:
             cache = db.getRequestCache(cache_key)
             if cache:
+                print 'Cache found'
                 return cache
         result = []
 
@@ -207,7 +208,7 @@ class DoclinkField(BaseField):
         """ Return a JSON list of documents, filtered by id or name.
         """
         filterDocs = []
-        for doc_link in self.getSelectionList(self.context):
+        for doc_link in self._getSelectionList(self.context):
             parts = doc_link.split('|')
             if filter in parts[0]:
                 doc = json.loads(parts[1])
@@ -219,7 +220,7 @@ class DoclinkField(BaseField):
             {'results': filterDocs, 'total': len(filterDocs)})
 
     def getSelectionIds(self, doc):
-        lists = self.getSelectionList(doc)
+        lists = self._getSelectionList(doc)
         rselection = lists.split('|')[-1]
         return [f["getId"] for f in rselection]
 

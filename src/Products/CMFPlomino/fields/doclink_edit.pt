@@ -1,5 +1,4 @@
-<span tal:define="selection python:options['selection'];
-        field python:options['field'];
+<span tal:define="field python:options['field'];
         settings field/getSettings;
         widget python:field.widget;
         name python:field.id;

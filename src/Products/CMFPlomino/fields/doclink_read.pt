@@ -1,10 +1,8 @@
 <tal:widget tal:condition="python:options['field'].widget!='DATAGRID'" >
 
-    <tal:block tal:define="selection python:options['selection'];
-            lselection python:[f.split('|') for f in selection];
-            field python:options['field'];
+    <tal:block tal:define="field python:options['field'];
             settings field/getSettings;
-            datagrid python:[(row[0],settings.fromjson(row[1])) for row in lselection] ;
+            datagrid python:settings.getDatagrid(fieldvalue);
             current python:options['fieldvalue'] or [];
             lcurrent_ids python:(hasattr(current,'split') and [current]) or current;
             labeled python:[e for e in datagrid if  e[1]['getId'] in lcurrent_ids]
