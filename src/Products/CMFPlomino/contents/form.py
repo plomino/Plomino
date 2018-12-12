@@ -123,6 +123,13 @@ class IPlominoForm(model.Schema):
                                                         " etc."),
     )
 
+    load_initial_search_data = schema.Bool(
+        title=_('CMFPlomino_label_LoadInitialSearchData', default="Load initial search data"),
+        description=_('CMFPlomino_help_LoadInitialSearchData',
+                      default="Load search data on initial display"),
+        default=True,
+    )
+
     isSearchForm = schema.Bool(
         title=_('CMFPlomino_label_SearchForm', default="Search form"),
         description=_('CMFPlomino_help_SearchForm',
@@ -2099,12 +2106,19 @@ class PlominoForm(Container):
     def searchDocuments(self, REQUEST):
         """ Search documents in the view matching the submitted form fields values.
 
+        # If loading searching data on initial display is disabled, return empty
         1. If there is an onSearch event, use the onSearch formula to generate
         a result set.
         2. Otherwise, do a dbsearch among the documents of the related view,
         2.1. and if there is a searchformula, evaluate that for every document
         in the view.
         """
+
+        if not self.load_initial_search_data:
+            # Search form on initial display does not have start and limit params
+            if not REQUEST.get('start') and not not REQUEST.get('limit'):
+                return []
+
         if self.onSearch:
             # Manually generate a result set
             try:

@@ -119,6 +119,7 @@ Changelog
 - Enable caching on value return by selectionlist field [quang]
 - Extend datagrid widget for doclink to select and display document [quang]
 - Remove getSelectionList from doclink [quang]
+- Add option to not load data on search form on intial display [quang]
 
 2.0b4 (2016-05-27)
 ------------------
