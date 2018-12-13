@@ -123,11 +123,11 @@ class IPlominoForm(model.Schema):
                                                         " etc."),
     )
 
-    load_initial_search_data = schema.Bool(
-        title=_('CMFPlomino_label_LoadInitialSearchData', default="Load initial search data"),
+    no_load_initial_search_data = schema.Bool(
+        title=_('CMFPlomino_label_LoadInitialSearchData', default="Do not load initial search data"),
         description=_('CMFPlomino_help_LoadInitialSearchData',
-                      default="Load search data on initial display"),
-        default=True,
+                      default="Do not load search data on initial display"),
+        default=False,
     )
 
     isSearchForm = schema.Bool(
@@ -2114,9 +2114,10 @@ class PlominoForm(Container):
         in the view.
         """
 
-        if not self.load_initial_search_data:
-            # Search form on initial display does not have start and limit params
-            if not REQUEST.get('start') and not not REQUEST.get('limit'):
+        if self.no_load_initial_search_data:
+            # Search form on initial display does not have any search paramater
+            search_params = [f.id for f in self.getFormFields(includesubforms=True,request=REQUEST) if f.id in REQUEST]
+            if not search_params:
                 return []
 
         if self.onSearch:
