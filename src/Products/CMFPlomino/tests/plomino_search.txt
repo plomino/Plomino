@@ -107,8 +107,6 @@ You can also submit by pushing enter
     <Link text='val2'...>
 
 
-
-
 Open documents
 ==============
 
@@ -267,4 +265,16 @@ Make it multiselect
     LinkNotFoundError
 
 
+Do not load search data on initial display
+
+    >>> db.frm3.no_load_initial_search_data = True
+    >>> transaction.commit()
+
+Make a GET request, expected no document found
+    >>> form_url = portal_url +'/mydb' +'/frm3'
+    >>> browser.open(form_url)
+    >>> 'val1' not in browser.contents
+    True
+    >>> 'val2' not in browser.contents
+    True
 
