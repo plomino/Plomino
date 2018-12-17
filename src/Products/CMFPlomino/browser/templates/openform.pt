@@ -185,7 +185,7 @@
                                     tal:define="results python:view.form.searchDocuments(request);
                                                 count python:len(results) if results else 0;
                                                 paramstart request/start|python:'1';
-                                                paramlimit request/limit|python:'100';
+                                                paramlimit request/limit|python:here.search_record_per_page;
                                                 start python:int(paramstart);
                                                 limit python:int(paramlimit);
                                                 overlimit python:count>limit;

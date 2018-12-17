@@ -52,6 +52,7 @@ Createa search form and view with some data
 
     >>> id = db.invokeFactory('PlominoForm', id='frm3', title='Form 3')
     >>> db.frm3.isSearchForm = True
+    >>> db.frm3.search_record_per_page = 5
     >>> db.frm3.search_view = 'search_view'
     >>> id = db.frm3.invokeFactory('PlominoField', id='field1',
     ...         title='Field1',
@@ -72,6 +73,19 @@ Createa search form and view with some data
     >>> doc2.setItem('field1','val2')
     >>> doc2.setItem('Form','frm3')
     >>> doc2.save()
+    >>> doc3 = db.createDocument()
+    >>> doc3.setItem('field1','val3')
+    >>> doc3.setItem('Form','frm3')
+    >>> doc3.save()
+    >>> doc4 = db.createDocument()
+    >>> doc4.setItem('field1','val4')
+    >>> doc4.setItem('Form','frm3')
+    >>> doc4.save()
+    >>> doc5 = db.createDocument()
+    >>> doc5.setItem('field1','val5')
+    >>> doc5.setItem('Form','frm3')
+    >>> doc5.save()
+
     >>> transaction.commit()  # enable the browser to see our changes
 
 
@@ -143,7 +157,7 @@ Search forms are paged and can be controlled with "limit" param. Lets see 2 page
     True
     >>> 'val2' in browser.contents
     False
-    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
+    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>5</span>' in browser.contents
     True
 
     >>> browser.getLink('Next >>').click()
@@ -152,7 +166,7 @@ Search forms are paged and can be controlled with "limit" param. Lets see 2 page
     False
     >>> 'val2' in browser.contents
     True
-    >>> 'Document(s) <span>2</span> to <span>2</span> of <span>2</span>' in browser.contents
+    >>> 'Document(s) <span>2</span> to <span>2</span> of <span>5</span>' in browser.contents
     True
 
     >>> browser.getLink('<< Previous').click()
@@ -160,9 +174,15 @@ Search forms are paged and can be controlled with "limit" param. Lets see 2 page
     True
     >>> 'val2' in browser.contents
     False
-    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>2</span>' in browser.contents
+    >>> 'Document(s) <span>1</span> to <span>1</span> of <span>5</span>' in browser.contents
     True
 
+    Search page display 5 items
+
+    >>> form_url = '%s/mydb/frm3' % portal_url
+    >>> browser.open(form_url)
+    >>> 'Document(s) <span>1</span> to <span>5</span> of <span>5</span>' in browser.contents
+    True
 
 Free Text Search
 ================

@@ -138,6 +138,13 @@ class IPlominoForm(model.Schema):
         default=False,
     )
 
+    search_record_per_page = schema.Int(
+        title=_('CMFPlomino_label_RecordPerPage', default="Number of records per page"),
+        description=_('CMFPlomino_help_RecordPerPage',
+                      default="Number of searching records per page."),
+        default=100,
+    )
+
     search_view = schema.TextLine(
         title=_('CMFPlomino_label_SearchView', default="Search view"),
         description=_('CMFPlomino_help_SearchView',

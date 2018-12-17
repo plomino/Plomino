@@ -122,6 +122,8 @@ Changelog
 - Add option to not load data on search form on intial display [quang]
 - Add 'Allow other value' option to selection fields to alow add new option on-the-fly [quang]
 - Add 'Unique field values' macro to select unique values stored of given document field [quang]
+- Limit number of search item to 20 per page [quang]
+
 
 2.0b4 (2016-05-27)
 ------------------
