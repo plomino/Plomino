@@ -1,0 +1,70 @@
+Plomino basic maco tests
+=========================
+
+    >>> import zope.event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+
+Import basic macro fo testing
+
+    >>> import os
+    >>> dir = os.path.abspath(os.path.join(__file__ ,"../../../defaultmacros/macros"))
+    >>> portal = layer['portal']
+    >>> id = portal.invokeFactory('PlominoDatabase', id='db1')
+    >>> db = portal.db1
+    >>> db.importDesignFromJSON(from_folder=dir, replace = True)
+
+Set up form and sample data
+    >>> id = db.invokeFactory('PlominoForm', id='Person', title='Person')
+    >>> id = db.Person.invokeFactory('PlominoField',
+    ...         id='name',
+    ...         title='Title',
+    ...         to_be_indexed=True,
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.Person.form_layout = """<p><label for="name">Title</label><span class="plominoFieldClass">name</span></p>"""
+    >>> person = db.createDocument()
+    >>> person.setItem('Form', 'Person')
+    >>> person.setItem('name', "Anna")
+    >>> person.save()
+    >>> person = db.createDocument()
+    >>> person.setItem('Form', 'Person')
+    >>> person.setItem('name', "Bob")
+    >>> person.save()
+
+    >>> id = db.invokeFactory('PlominoForm', id='PersonDirectory', title='Person directory')
+    >>> id = db.PersonDirectory.invokeFactory('PlominoField',
+    ...         id='namelist',
+    ...         title='Name list',
+    ...         widget='SELECT',
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.PersonDirectory.form_layout = """<p><label for="namelist">Name list</label><span class="plominoFieldClass">namelist</span></p>"""
+
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': memberName, 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> transaction.commit()  # enable the browser to see our changes
+
+
+Check if the macro generate all person name in database
+
+    >>> macro_input = {"field_id":"name",
+    ...    "Form":"macro_field_selection_unique",
+    ...    "_macro_id_":"macro_field_selection_unique_1"}
+
+    >>> db.PersonDirectory.namelist.helpers = [[macro_input]]
+    >>> zope.event.notify(ObjectModifiedEvent(db.PersonDirectory.namelist, []))
+    >>> db.PersonDirectory.namelist.getSelectionList(None)
+    [u'Anna|Anna', u'Bob|Bob']

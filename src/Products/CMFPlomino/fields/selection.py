@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-
+import copy
 from jsonutil import jsonutil as json
 from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
-from plone.supermodel import directives, model
+from plone.supermodel import model
 from zope.interface import implementer, provider
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
-
-from .. import _
+from ..utils import PlominoTranslate
 from ..config import SCRIPT_ID_DELIMITER
 from ..exceptions import PlominoScriptException
 from ..utils import asUnicode
@@ -60,17 +59,26 @@ class ISelectionField(model.Schema):
         default=u'',
         required=False)
 
+    allow_other_value = schema.Bool(
+        title=u'Allow other value',
+        description=u'Allow users to enter a value other than in your list.'
+                    u' Your multi-selection list should not include labels in '
+                    u'this case',
+        default=False,
+        required=False)
+
     separator = schema.TextLine(
         title=u'Separator',
         description=u'Only apply if multiple values will be displayed',
         required=False)
 
+
 # bug in plone.autoform means order_after doesn't moves correctly
-ISelectionField.setTaggedValue(ORDER_KEY,
-                               [('widget', 'after', 'field_type'),
-                                ('selectionlist', 'after', ".widget"),
-                                ('selectionlistformula', 'after', ".selectionlist"),
-                                ('separator', 'after', ".selectionlistformula")]
+ISelectionField.setTaggedValue(ORDER_KEY, [
+    ('widget', 'after', 'field_type'),
+    ('selectionlist', 'after', ".widget"),
+    ('selectionlistformula', 'after', ".selectionlist"),
+    ('separator', 'after', ".selectionlistformula")]
 )
 
 
@@ -97,7 +105,7 @@ class SelectionField(BaseField):
                 return cache
 
         # if formula available, use formula, else use manual entries
-        f = getattr(self.context,'selectionlistformula', None)
+        f = getattr(self.context, 'selectionlistformula', None)
         if f:
             # if no doc provided (if OpenForm action), we use the PlominoForm
             if doc:
@@ -108,8 +116,9 @@ class SelectionField(BaseField):
             try:
                 s = self.context.runFormulaScript(
                     SCRIPT_ID_DELIMITER.join(['field',
-                        self.context.getParentNode().id,
-                        self.context.id, 'SelectionListFormula']),
+                                              self.context.getParentNode().id,
+                                              self.context.id,
+                                             'SelectionListFormula']),
                     obj,
                     f)
 
@@ -122,32 +131,45 @@ class SelectionField(BaseField):
                 s = []
         else:
             s = getattr(self.context, 'selectionlist', None)
-            if not s:
-                return []
+
+        if not s:
+            s = []
 
         # if values not specified, use label as value
         label_value = []
         for v in s:
             v = asUnicode(v)
-            l = v.split('|')
-            if len(l) == 2:
+            if len(v.split('|')) == 2:
                 label_value.append(v)
             else:
                 label_value.append(v + '|' + v)
+
+
+        allow_other = getattr(self.context, 'allow_other_value', False)
+        widget =  getattr(self.context, 'widget', None)
+        if allow_other and ( widget =='CHECKBOX' or widget == 'RADIO'):
+            label_value.append(PlominoTranslate('Other', self.context) + '|' + '@@OTHER_VALUE')
         # Save to cache if not dynamic rendering
         if not self.context.isDynamicField:
             db.setRequestCache(cache_key, label_value)
+
         return label_value
 
     def processInput(self, values):
         """
         """
+        widget = getattr(self.context, 'widget', None)
+        allow_other = getattr(self.context, 'allow_other_value', False)
         values = BaseField.processInput(self, values)
+        if isinstance(values, basestring):
+            if widget == 'MULTISELECT' and allow_other:
+                values = values.split(',') if values else []
         if type(values) == list:
             values = [asUnicode(v) for v in values]
         return values
 
-    def tojson(self, selection):
+    @staticmethod
+    def tojson(selection):
         """ Return a JSON table storing documents to be displayed
         """
         return json.dumps([v.split('|')[::-1] for v in selection])

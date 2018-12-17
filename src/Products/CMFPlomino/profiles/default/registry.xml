@@ -144,6 +144,10 @@
     <records prefix="plone.resources/plominoattachment"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
     <value key="js">++resource++Products.CMFPlomino/js/attachment.js</value>
+     </records>
+        <records prefix="plone.resources/plominoselection"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++resource++Products.CMFPlomino/js/selection.js</value>
   </records>
 
     <records prefix="plone.resources/plominodoclink"
@@ -165,6 +169,7 @@
       <element>plominorefresh</element>
         <element>plominoattachment</element>
         <element>plominodoclink</element>
+        <element>plominoselection</element>
     </value>
     <value key="merge_with">default</value>
     <value key="enabled">True</value>
@@ -185,7 +190,7 @@
     <value key="compile">True</value>
     <value key="jscompilation">++resource++Products.CMFPlomino/js/plomino-compiled.js</value>
     <value key="csscompilation">++resource++Products.CMFPlomino/css/plomino-compiled.css</value>
-    <value key="last_compilation">2017-12-18 10:40:00</value>
+    <value key="last_compilation">2018-12-14 18:40:00</value>
   </records>
 
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">

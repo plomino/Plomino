@@ -18,6 +18,7 @@ def test_suite():
     suite = doctest.DocFileSuite(
         'plomino_macros.txt',
         'defaultmacros/plomino_macro_field_selection_db_elements.txt',
+        'defaultmacros/plomino_macro_field_selection_unique_value.txt',
         'plomino_browser_with_macros.txt',
         # 'samples.txt',
         # 'plomino_usage.txt',

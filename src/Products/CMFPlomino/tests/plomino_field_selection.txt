@@ -1,0 +1,169 @@
+Selection fields allow selecting choices and optionally adding new values.
+
+There are four kinds of widgets
+1. Single select2
+2. Multiple Select2
+3. Checkbox
+4. Radio
+
+
+Set up login account
+
+    >>> portal = layer['portal']
+    >>> memberName = 'siteManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member', 'Manager',),
+    ...         '',
+    ...         {'fullname': 'Site Manager', 'email': memberName+'@dummy.fr',}
+    ...         )
+    >>> memberName = 'userManager'
+    >>> portal.portal_membership.addMember(
+    ...         memberName,
+    ...         memberName,
+    ...         ('Member',),
+    ...         '',
+    ...         {'fullname': 'Site Member', 'email': memberName+'@dummy.fr',}
+    ...         )
+
+Create plomino database and publish it::
+
+    >>> db = portal.mydb
+    >>> wf_tool = portal.portal_workflow
+    >>> wf_tool.doActionFor(db, 'publish')
+    >>> db.manage_setLocalRoles('userManager', ['PlominoManager'])
+
+Create the browser object we'll be using::
+
+    >>> browser = Browser(layer['app'])
+    >>> browser.handleErrors = False
+
+    >>> id = db.invokeFactory('PlominoForm', id='form1', title='Form 1')
+    >>> id = db.form1.invokeFactory('PlominoField',
+    ...         id='field1',
+    ...         title='Field 1',
+    ...         allow_other_value=True,
+    ...         field_type="SELECTION",
+    ...         field_mode="EDITABLE")
+    >>> db.form1.field1.selectionlist = ['Option A|a','Option B|b','Option C|c']
+    >>> db.form1.form_layout = """<p><label for="field1">Field1</label><span class="plominoFieldClass">field1</span></p>"""
+    >>> transaction.commit()  # enable the browser to see our changes
+
+    Open portal::
+
+    >>> portal_url = portal.absolute_url()
+    >>> browser.open(portal_url)
+    >>> browser.getLink('Log in').click()
+    >>> browser.getControl('Login Name').value = 'siteManager'
+    >>> browser.getControl('Password').value = 'siteManager'
+    >>> browser.getControl('Log in').click()
+    >>> form_url = portal_url +'/mydb' +'/form1'
+
+Selection Widget
+================
+
+The selection widget still display and behave as normal
+
+    >>> db.form1.field1.widget = "SELECT"
+    >>> transaction.commit()
+    >>> form_url = portal_url +'/mydb' +'/form1'
+    >>> browser.open(form_url)
+
+No other value option for selection widget
+
+    >>> 'field1@@OTHER_VALUE' not in browser.contents
+    True
+    >>> browser.getControl(name='field1').value = ['a']
+    >>> browser.getControl('Save').click()
+    >>> 'Option A' in browser.contents
+    True
+
+Check document field type
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('?')[0]
+    >>> doc_id = edit_doc_url.split('/')[-1]
+    >>> doc = db.getDocument(doc_id)
+    >>> doc.getItem('field1')
+    u'a'
+
+
+
+Radio Widget
+=======================
+
+    >>> db.form1.field1.widget = "RADIO"
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+
+Other value option available for radio widget
+    >>> 'field1@@OTHER_VALUE' in browser.contents
+    True
+    >>> browser.getControl(name='field1').value =['@@OTHER_VALUE']
+    >>> browser.getControl(name='field1@@OTHER_VALUE').value ='New value'
+    >>> browser.getControl('Save').click()
+    >>> 'New value' in browser.contents
+    True
+
+Check document field type
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('?')[0]
+    >>> doc_id = edit_doc_url.split('/')[-1]
+    >>> doc = db.getDocument(doc_id)
+    >>> doc.getItem('field1')
+    u'New value'
+
+
+Multi-Selection Widget
+=======================
+
+    >>> db.form1.field1.widget = "MULTISELECT"
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+    >>> browser.getControl(name='field1').value = 'New value,c,New value 1'
+    >>> browser.getControl('Save').click()
+    >>> 'New value' in browser.contents
+    True
+    >>> 'Option C' in browser.contents
+    True
+    >>> 'New value 1' in browser.contents
+    True
+
+Check document field type
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('?')[0]
+    >>> doc_id = edit_doc_url.split('/')[-1]
+    >>> doc = db.getDocument(doc_id)
+    >>> doc.getItem('field1')
+    [u'New value', u'c', u'New value 1']
+
+
+Checkbox Widget
+=======================
+
+    >>> db.form1.field1.widget = "CHECKBOX"
+    >>> transaction.commit()
+    >>> browser.open(form_url)
+
+Other value option available for checkbox widget
+    >>> 'field1@@OTHER_VALUE' in browser.contents
+    True
+    >>> browser.getControl(name='field1').value = ['b','@@OTHER_VALUE']
+    >>> browser.getControl(name='field1@@OTHER_VALUE').value = 'New value'
+    >>> browser.getControl('Save').click()
+    >>> 'New value' in browser.contents
+    True
+    >>> 'Option B' in browser.contents
+    True
+
+Check document field type
+
+    >>> doc_url = browser.url
+    >>> edit_doc_url = doc_url.split('?')[0]
+    >>> doc_id = edit_doc_url.split('/')[-1]
+    >>> doc = db.getDocument(doc_id)
+    >>> doc.getItem('field1')
+    [u'b', u'New value']

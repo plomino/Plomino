@@ -21,6 +21,7 @@ def test_suite():
         'plomino_advanced.txt',
         'plomino_import_export.txt',
         'plomino_browser.txt',
+        'plomino_field_selection.txt',
         'plomino_file_attachment.txt',
         'plomino_view.txt',
         'plomino_linkto.txt',

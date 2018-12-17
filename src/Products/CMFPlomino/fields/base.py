@@ -43,8 +43,18 @@ class BaseField(object):
     def processInput(self, strValue):
         """
         """
+        fieldName = self.context.id
         if type(strValue) == str:
             strValue = strValue.decode('utf-8')
+
+        # if allow_other_value is enabled on RADIO and CHECKBOX, a special other text input {field_name}_other
+        # is included in form input. Need to combine with main input
+        other_value = self.context.REQUEST.get(fieldName + '@@OTHER_VALUE', '')
+        if other_value:
+            if isinstance(strValue, basestring) and strValue == '@@OTHER_VALUE':
+                strValue = other_value
+            if  type(strValue) == list and '@@OTHER_VALUE' in strValue:
+                strValue = [other_value if v == '@@OTHER_VALUE' else v for v in strValue]
         return strValue
 
     def getSelectionList(self, doc):
@@ -90,6 +100,7 @@ class BaseField(object):
             target = form
 
         fieldValue = None
+
         if mode == "EDITABLE":
             # if (not doc) or creation
             if doc:
@@ -130,7 +141,6 @@ class BaseField(object):
                 fieldValue = form.computeFieldValue(fieldName, form)
             else:
                 fieldValue = doc.getItem(fieldName)
-
         elif mode == "COMPUTEDONSAVE" and doc:
             fieldValue = doc.getItem(fieldName)
 
