@@ -119,7 +119,6 @@ class DoclinkField(BaseField):
         if not self.context.isDynamicField:
             cache = db.getRequestCache(cache_key)
             if cache:
-                print 'Cache found'
                 return cache
         result = []
 
@@ -156,34 +155,6 @@ class DoclinkField(BaseField):
                     result.append(v)
                 else:
                     result.append(v + '|' + v)
-        elif self.context.sourceview and self.context.labelcolumn:
-            #TODO: should just pick first col as default
-            v = self.context.getParentDatabase().getView(self.context.sourceview)
-            if not v:
-                return []
-            label_key = v.getIndexKey(self.context.labelcolumn)
-            if not label_key:
-                return []
-            for b in v.getAllDocuments(getObject=True):
-                val = getattr(b, label_key, '')
-                if not val:
-                    val = ''
-                result.append(asUnicode(val + "|" + self.valueForSelect2(b)))
-        else:
-            # We will select all documents (with limit)
-            # TODO: add limit
-            query = dict(limit=50) #TODO: not sure if this works
-            if self.context.associated_form:
-                query['Form'] = self.context.associated_form
-            for b in db.getAllDocuments(getObject=True, request_query=query):
-                # Filter by python in case Form is not index
-                if b.getForm() and b.getForm().id == self.context.associated_form:
-                    val = ''
-                    if self.context.labelcolumn:
-                        val = getattr(b, self.context.labelcolumn, '')
-                    if not val:
-                        val = b.id
-                    result.append(asUnicode(val + "|" + self.valueForSelect2(b)))
 
         # Save to cache if not dynamic rendering
         if not self.context.isDynamicField:
@@ -207,15 +178,48 @@ class DoclinkField(BaseField):
     def getFilteredDocuments(self, filter):
         """ Return a JSON list of documents, filtered by id or name.
         """
+        MAX_ITEM = 50
         filterDocs = []
-        for doc_link in self._getSelectionList(self.context):
-            parts = doc_link.split('|')
-            if filter in parts[0]:
-                doc = json.loads(parts[1])
-                filterDocs.append({'id':doc['getId'],'text':parts[0],'object':doc})
+        db = self.context.getParentDatabase()
+
+        # If documentlistformula is available, search in that formula
+        if self.context.documentslistformula:
+            for doc_link in self._getSelectionList(self.context)[:MAX_ITEM]:
+                parts = doc_link.split('|')
+                if filter in parts[0]:
+                    doc = json.loads(parts[1])
+                    filterDocs.append({'id': doc['getId'], 'text': parts[0], 'object': doc})
+        # If associate form is available, seach in catalog for related documents
+        elif self.context.associated_form:
+            def getMetadata(brain, prop):
+                if prop in brain:
+                    return brain[prop]
+                doc = brain.getObject()
+                return getattr(doc, prop, '')
+            index = db.getIndex()
+            query = {'SearchableText': '%s*' % filter, 'Form':  self.context.associated_form}
+            for brain in index.dbsearch(query,limit=MAX_ITEM):
+                val = brain.id
+                if self.context.labelcolumn:
+                    val = getMetadata(brain, self.context.labelcolumn)
+                row = {'object':{col:getMetadata(brain, col)  for col in self.getColumns()[0] }}
+                row['getId'] =  brain.id
+                row['Form'] =  self.context.associated_form
+                filterDocs.append({'id':brain.id,'text':val,'object':row} )
+        # Otherwise, get result from the view
+        elif self.context.sourceview:
+            v = self.context.getParentDatabase().getView(self.context.sourceview)
+            label_key = v.getIndexKey(self.context.labelcolumn)
+            if not label_key:
+                return []
+            for doc in v.getAllDocuments(getObject=False):
+                val = getattr(doc, label_key, '')
+                if val and filter in val:
+                    filterDocs.append({'id': doc.id, 'text': val, 'object':{col.id:getattr(doc, v.getIndexKey(col)) for col in v.getColumns()[0]}})
+
         widget = getattr(self.context, 'widget', None)
         if widget == 'DATAGRID':
-            filterDocs.append({'id': 'NEW_DOC', 'text': PlominoTranslate('Add new document', self.context)})
+            filterDocs.append({'id': 'NEW_DOC','Form': self.context.associated_form, 'text': PlominoTranslate('Add new document', self.context)})
         return json.dumps(
             {'results': filterDocs, 'total': len(filterDocs)})
 

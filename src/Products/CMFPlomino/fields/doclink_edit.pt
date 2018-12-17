@@ -8,7 +8,7 @@
         " class="plomino-doclink">
     <tal:widget tal:condition="python:widget=='SELECT'" tal:define="scurrent python:(hasattr(current,'split') and current) or (hasattr(current,'append') and (current[0] if current else '')) ;">
         <input type="text" class="pat-select2 single-select-widget"
-                 tal:attributes="data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:3  ; value python:field.getSettings().getDocumentDisplay(scurrent)">
+                 tal:attributes="data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:1  ; value python:field.getSettings().getDocumentDisplay(scurrent)">
         </input>
         <input type="hidden"
                  tal:attributes="id name; name name; value python:scurrent">
@@ -17,7 +17,7 @@
     <tal:widget tal:condition="python:widget=='MULTISELECT'"
              tal:define="datalist python:field.getSettings().tojson([{'id':docId,'text':field.getSettings().getDocumentDisplay(docId)} for docId in lcurrent])">
         <input type="text" class="pat-select2 multi-select-widget"
-                 tal:attributes="data-list python:datalist; data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:true;;minimumInputLength:3; value python:', '.join([field.getSettings().getDocumentDisplay(docId) for docId in lcurrent])">
+                 tal:attributes="data-list python:datalist; data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:true;;minimumInputLength:1; value python:', '.join([field.getSettings().getDocumentDisplay(docId) for docId in lcurrent])">
         </input>
         <input type="hidden"
                  tal:attributes="id name; name name; value python:field.getSettings().tojson(lcurrent)">
@@ -91,7 +91,7 @@
             </table>
             <div class="select2-template">
                 <input type="text" class="pat-select2"
-                 tal:attributes="data-formid python:associated_form.getId(); data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:3  ; ">
+                 tal:attributes="data-formid python:associated_form.getId(); data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:1  ; ">
         </input>
 
 

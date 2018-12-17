@@ -120,6 +120,7 @@ Changelog
 - Extend datagrid widget for doclink to select and display document [quang]
 - Remove getSelectionList from doclink [quang]
 - Add option to not load data on search form on intial display [quang]
+- Fix timeout issue with searching docklink on-the-fly [quang]
 - Add 'Allow other value' option to selection fields to alow add new option on-the-fly [quang]
 - Add 'Unique field values' macro to select unique values stored of given document field [quang]
 - Limit number of search item to 20 per page [quang]
