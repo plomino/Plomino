@@ -57,11 +57,8 @@ With no method selected the field should let us select any document (currently 2
 
     >>> print db.Person.displayDocument(person, editmode=True, creation=False)
     <div>...
-
-            <select class="pat-select2" id="company" name="company">
-                <option value="...">...</option>
-            </select>
-
+            <input type="text" class="pat-select2 single-select-widget" ...>
+            </input>
     ...</div>
 
 If we set AssociatedForm to Company we will only see those docs offered
@@ -69,9 +66,10 @@ If we set AssociatedForm to Company we will only see those docs offered
     >>> db.Person.company.associated_form = "Company"
     >>> print db.Person.displayDocument(person, editmode=True, creation=False)
     <div>...
-            <select class="pat-select2" id="company" name="company">
-                <option value="...">...</option>
-            </select>
+            <input type="text" class="pat-select2 single-select-widget" ...>
+            </input>
+            <input type="hidden" id="company" name="company" ...>
+            </input>
     ...
 
 In view mode we just see link
@@ -111,25 +109,25 @@ and in view mode we also see a table
 
     >>> print db.Person.displayDocument(person, editmode=False, creation=False)
     <p>...
-                <table>
-                    <tr>
-                        <th>Title</th>
-                    </tr>
-                    <tr><td>Evil Corp</td>
-                    </tr>
-                </table>
+            <table>
+                <tr>
+                    <th>Title</th>
+                </tr>
+                <tr>
+                    <td>Evil Corp</td>
+                </tr>
+            </table>
     ...
 
 and the same for an empty document
 
     >>> print db.Person.displayDocument(empty, editmode=False, creation=False)
     <p>...
-                <table>
-                    <tr>
-                        <th>Title</th>
-                    </tr>
-    <BLANKLINE>
-                </table>
+        <table>
+            <tr>
+                <th>Title</th>
+            </tr>
+        </table>
     ...
 
 and if we use a formula it still works
@@ -137,13 +135,34 @@ and if we use a formula it still works
    #TODO: need to include select to pick existing doc
 
 
-Adding Documents
-================
+Search for documents on-the-fly, return 2 including 'Add New' option
+
+    >>> import json
+    >>> res = json.loads(db.Person.company.getSettings().getFilteredDocuments('Evil'))
+    >>> res['total']
+    2
+
+
     >>> browser = Browser(layer['app'])
     >>> browser.open(portal.absolute_url() + "/login_form")
     >>> browser.getControl(name='__ac_name').value = TEST_USER_NAME
     >>> browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
     >>> browser.getControl(name='submit').click()
+
+    >>> browser.open(db.Person.company.absolute_url() + "/filterdocuments?query=Evil")
+    >>> print browser.contents
+    {"total": 2, "results": [{"text": "...", "object": {"name": "Evil Corp", "getId": "...", "Form": "Company"}, "id": "..."}, {"text": "Add new document", "id": "NEW_DOC", "Form": "Company"}]}
+
+    >>> browser.open(db.Person.company.absolute_url() + "/filterdocuments?query=")
+    >>> print browser.contents
+    {"total": 0, "results": []}
+
+#TODO test if you can access this data without login
+
+
+
+Adding Documents
+================
 
 Open edit mode
 

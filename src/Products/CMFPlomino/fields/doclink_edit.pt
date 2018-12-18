@@ -71,8 +71,7 @@
                 columns python:fields[1];
                 columns columns|python:['A','B','C'];
                 fields python:fields[0];"
-                 tal:attributes="
-                        data-source-view sourceview/id|nothing;
+                 tal:attributes="data-source-view sourceview/id|nothing;
                 data-associated-form associated_form/id|nothing;
                 data-fields python:','.join(fields);
                 data-columns python:','.join(columns);

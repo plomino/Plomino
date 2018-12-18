@@ -178,6 +178,9 @@ class DoclinkField(BaseField):
     def getFilteredDocuments(self, filter):
         """ Return a JSON list of documents, filtered by id or name.
         """
+        if not filter:
+            return json.dumps({'results': [], 'total': 0})
+        
         MAX_ITEM = 50
         filterDocs = []
         db = self.context.getParentDatabase()
@@ -202,7 +205,7 @@ class DoclinkField(BaseField):
                 val = brain.id
                 if self.context.labelcolumn:
                     val = getMetadata(brain, self.context.labelcolumn)
-                row = {'object':{col:getMetadata(brain, col)  for col in self.getColumns()[0] }}
+                row = {col:getMetadata(brain, col)  for col in self.getColumns()[0] }
                 row['getId'] =  brain.id
                 row['Form'] =  self.context.associated_form
                 filterDocs.append({'id':brain.id,'text':val,'object':row} )
@@ -239,7 +242,6 @@ class DoclinkField(BaseField):
         # Datagrid widget input: JSON-string of list of document object
         # Selection list input: A single string or list of string, each is a JSON-string of document object
         # Embeded view input: A single string or list of string, each is a path to document
-
         if submittedValue:
             if isinstance(submittedValue, list):
                 rows  = []
@@ -296,7 +298,7 @@ class DoclinkField(BaseField):
 
     def tojson(self, datatable, rendered=False):
         "just used for the datagrid to produce a json version for template. Rendered means lists"
-        if datatable is None:
+        if not datatable:
             return json.dumps([])
         if rendered:
             fields, _ = self.getColumns()
@@ -312,7 +314,7 @@ class DoclinkField(BaseField):
         # In case of multi page-form, the value is a dictionary
         if type(value)==list and type(value[0]) == dict:
             return value
-        paths = value
+        paths = (hasattr(value,'split') and [value]) or value
         fields, _ = self.getColumns()
         db = self.context.getParentDatabase()
         datatable = []
