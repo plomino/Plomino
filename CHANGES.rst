@@ -125,6 +125,7 @@ Changelog
 - Add 'Unique field values' macro to select unique values stored of given document field [quang]
 - Limit number of search item to 20 per page [quang]
 - Fix close button on the datagrid popup not closing [quang]
+- Remove error message displaying in console when docklink is used with widget rather than multi-select [quang]
 
 2.0b4 (2016-05-27)
 ------------------

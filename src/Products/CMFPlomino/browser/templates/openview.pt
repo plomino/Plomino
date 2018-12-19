@@ -45,7 +45,7 @@
                         tal:define="listdocuments python:context.getAllDocuments(getObject=False);
                         count python:len(listdocuments);
                         paramstart request/start|python:'1';
-                        paramlimit request/limit|python:here.search_record_per_page;
+                        paramlimit request/limit|here/search_record_per_page|python:'100';
                         start python:int(paramstart);
                         limit python:int(paramlimit);
                         overlimit python:count>limit;

@@ -602,21 +602,30 @@ A Doclink field allows to create a reference to another document::
      ...         title='Related artist',
      ...         field_type="DOCLINK",
      ...         field_mode="EDITABLE")
-     >>> db.frm2.relatedartist.widget = u'SELECT'
+     >>> db.frm2.relatedartist.widget = u'VIEW'
      >>> db.frm2.relatedartist.sourceview = u'view1'
      >>> db.frm2.relatedartist.labelcolumn = u'col1'
      >>> db.frm2.form_layout = """10 <p>Related artist:
      ... <span class="plominoFieldClass">relatedartist</span></p>"""
      >>> db.cleanRequestCache()
      >>> result = db.frm2.displayDocument(None, True, True)
-     >>> """<option value="%s">London calling</option>""" % (doc1.id) in result
+     >>> """<span>London calling</span>""" in result
      True
-     >>> """<option value="%s">bonjour</option>""" % (doc3.id) in result
+     >>> """<input type="checkbox" name="relatedartist" value="%s">""" % doc1.absolute_url_path() in result
      True
-     >>> """<option value="%s">hello</option>""" % (doc2.id) in result
+     >>> """<span>bonjour</span>""" in result
      True
-     >>> """<option value="%s">ola</option>""" % (doc4.id) in result
+     >>> """<input type="checkbox" name="relatedartist" value="%s">""" % doc2.absolute_url_path() in result
      True
+     >>> """<span>hello</span>""" in result
+     True
+     >>> """<input type="checkbox" name="relatedartist" value="%s">""" % doc3.absolute_url_path() in result
+     True
+     >>> """<span>ola</span>""" in result
+     True
+     >>> """<input type="checkbox" name="relatedartist" value="%s">""" % doc4.absolute_url_path() in result
+     True
+
 
 A doclink can also look like a datagrid
 

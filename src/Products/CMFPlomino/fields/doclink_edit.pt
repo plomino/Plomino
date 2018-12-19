@@ -90,7 +90,7 @@
             </table>
             <div class="select2-template">
                 <input type="text" class="pat-select2"
-                 tal:attributes="data-formid python:associated_form.getId(); data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:1  ; ">
+                 tal:attributes="data-formid associated_form/id|nothing; data-pat-select2 string:vocabularyUrl:${field/absolute_url}/filterdocuments;;multiple:'';;minimumInputLength:1  ; ">
         </input>
 
 
