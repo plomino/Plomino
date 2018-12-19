@@ -17,7 +17,7 @@ require([
       var $multi_select = $(multi_select[1]);
       var $input = $(input[0]);
 
-      if ($multi_select) {
+      if (multi_select.length) {
         var multi_select_value = JSON.parse(multi_select[1].dataset['list']);
         $multi_select.select2('data',multi_select_value);
         $multi_select.change(function (evt) {
