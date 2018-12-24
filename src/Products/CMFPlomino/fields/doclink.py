@@ -202,10 +202,14 @@ class DoclinkField(BaseField):
             index = db.getIndex()
             query = {'SearchableText': '%s*' % filter, 'Form':  self.context.associated_form}
             for brain in index.dbsearch(query,limit=MAX_ITEM):
-                val = brain.id
                 if self.context.labelcolumn:
                     val = getMetadata(brain, self.context.labelcolumn)
-                row = {col:getMetadata(brain, col)  for col in self.getColumns()[0] }
+                    if not val:
+                        val = brain.id
+                else:
+                    val = brain.id
+                columns, _ = self.getColumns()    
+                row = {col:getMetadata(brain, col)  for col in columns}
                 row['getId'] =  brain.id
                 row['Form'] =  self.context.associated_form
                 filterDocs.append({'id':brain.id,'text':val,'object':row} )
@@ -218,7 +222,9 @@ class DoclinkField(BaseField):
             for doc in v.getAllDocuments(getObject=False):
                 val = getattr(doc, label_key, '')
                 if val and filter in val:
-                    filterDocs.append({'id': doc.id, 'text': val, 'object':{col.id:getattr(doc, v.getIndexKey(col)) for col in v.getColumns()[0]}})
+                    fields, _ = v.getColumns()
+                    row = {col.id:getattr(doc, v.getIndexKey(col)) for col in fields}
+                    filterDocs.append({'id': doc.id, 'text': val, 'object':row})
 
         widget = getattr(self.context, 'widget', None)
         if widget == 'DATAGRID':

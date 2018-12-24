@@ -126,6 +126,8 @@ Changelog
 - Limit number of search item to 20 per page [quang]
 - Fix close button on the datagrid popup not closing [quang]
 - Remove error message displaying in console when docklink is used with widget rather than multi-select [quang]
+- Fix select2 exception when on-the-fly searching return results containing empty display text [quang]
+
 
 2.0b4 (2016-05-27)
 ------------------
