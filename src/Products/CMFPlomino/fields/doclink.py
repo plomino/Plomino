@@ -331,7 +331,7 @@ class DoclinkField(BaseField):
                 # skip row and save will remove the reference
                 continue
             row = dict(Form=doc.getItem('Form', None), getId=doc.getId())
-            for key in doc.getItems():
+            for key in fields:
                 row[key] = doc.getItem(key)
             datatable.append(row)
         if getattr(self.context, 'sourceview'):

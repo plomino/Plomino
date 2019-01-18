@@ -26,7 +26,13 @@ for a datagrid. #TODO make work for other widgets
     ...         title='Title',
     ...         field_type="TEXT",
     ...         field_mode="EDITABLE")
-    >>> db.Company.form_layout = """<p><label for="title_1">Title</label><span class="plominoFieldClass">title</span></p>"""
+    >>> id = db.Company.invokeFactory('PlominoField',
+    ...         id='code',
+    ...         title='Code',
+    ...         field_type="TEXT",
+    ...         field_mode="EDITABLE")
+    >>> db.Company.form_layout = """<p><label for="title">Title</label><span class="plominoFieldClass">title</span></p>
+    ...     <p><label for="code">Code</label><span class="plominoFieldClass">code</span></p>"""
     >>> id = db.invokeFactory('PlominoForm', id='Person', title='Person')
     >>> id = db.Person.invokeFactory('PlominoField',
     ...         id='company',
@@ -38,6 +44,7 @@ for a datagrid. #TODO make work for other widgets
     >>> company = db.createDocument()
     >>> company.setItem('Form', 'Company')
     >>> company.setItem('name', u'Evil Corp')
+    >>> company.setItem('code', u'EVIL')
     >>> company.save()
 
     >>> person = db.createDocument()
@@ -92,11 +99,13 @@ DocLinks can be displayed as a datagrid
     >>> transaction.commit()
 
     >>> print db.Person.displayDocument(person, editmode=True, creation=False)
+    ...
     <div>...
     ...
             <div class="plomino-datagrid"...>
                 <table data-rows="[[...]]">
-                    <tr><td>Evil Corp</td>
+                    <tr><td>EVIL</td>
+                    <td>Evil Corp</td>
                     </tr>
     ...
                 <input type="hidden" name="company" value="[{...Evil Corp...}]" />
@@ -111,9 +120,11 @@ and in view mode we also see a table
     <p>...
             <table>
                 <tr>
+                    <th>Code</th>
                     <th>Title</th>
                 </tr>
                 <tr>
+                    <td>EVIL</td>
                     <td>Evil Corp</td>
                 </tr>
             </table>
@@ -125,6 +136,7 @@ and the same for an empty document
     <p>...
         <table>
             <tr>
+                <th>Code</th>
                 <th>Title</th>
             </tr>
         </table>
@@ -141,8 +153,6 @@ Search for documents on-the-fly, return 2 including 'Add New' option
     >>> res = json.loads(db.Person.company.getSettings().getFilteredDocuments('Evil'))
     >>> res['total']
     2
-
-
     >>> browser = Browser(layer['app'])
     >>> browser.open(portal.absolute_url() + "/login_form")
     >>> browser.getControl(name='__ac_name').value = TEST_USER_NAME
@@ -151,7 +161,7 @@ Search for documents on-the-fly, return 2 including 'Add New' option
 
     >>> browser.open(db.Person.company.absolute_url() + "/filterdocuments?query=Evil")
     >>> print browser.contents
-    {"total": 2, "results": [{"text": "...", "object": {"name": "Evil Corp", "getId": "...", "Form": "Company"}, "id": "..."}, {"text": "Add new document", "id": "NEW_DOC", "Form": "Company"}]}
+    {"total": 2, "results": [{"text": "...", "object": {"code": "EVIL", "name": "Evil Corp", "getId": "...", "Form": "Company"}, "id": "..."}, {"text": "Add new document", "id": "NEW_DOC", "Form": "Company"}]}
 
     >>> browser.open(db.Person.company.absolute_url() + "/filterdocuments?query=")
     >>> print browser.contents
@@ -159,7 +169,11 @@ Search for documents on-the-fly, return 2 including 'Add New' option
 
 #TODO test if you can access this data without login
 
-
+Datagrid data is displayed in order with column
+    >>> db.Person.company.getSettings().getColumns()
+    [('code', 'name'), (u'Code', u'Title')]
+    >>> "data-rows=\"[[&quot;EVIL&quot;, &quot;Evil Corp&quot;]]\"" in  db.Person.displayDocument(person, editmode=True, creation=False)
+    True
 
 Adding Documents
 ================

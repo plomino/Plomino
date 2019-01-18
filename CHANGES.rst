@@ -128,6 +128,7 @@ Changelog
 - Remove error message displaying in console when docklink is used with widget rather than multi-select [quang]
 - Fix select2 exception when on-the-fly searching return results containing empty display text [quang]
 
+- Fix datagrid column of docklink display document field out of order [quang]
 
 2.0b4 (2016-05-27)
 ------------------
