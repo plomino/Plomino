@@ -350,6 +350,7 @@ I add an action "${actionid}"
   Click Element   jquery=#action
   wait until page contains element  jquery=.plomino-block-preloader:visible
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Sleep     5s
   Click Element  jquery=.actionButtons input[type="button"]:last
   wait until page contains element  jquery=.actionButtons input[type="button"].view-editor__action--selected
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
