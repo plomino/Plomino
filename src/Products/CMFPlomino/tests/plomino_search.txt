@@ -149,6 +149,15 @@ When we close we will go back to the search form again
 Paging
 ======
 
+Searh form display infor message 'No record found' if search result is empty
+    >>> form_url = '%s/mydb/frm3?field1=aaa' % portal_url
+    >>> browser.open(form_url)
+    >>> browser.getControl('Field1').value = 'aaa'
+    >>> browser.getControl(name='plomino_search').click()
+    >>> 'Sorry no search results match your query' in browser.contents
+    True
+
+
 Search forms are paged and can be controlled with "limit" param. Lets see 2 pages of 1 item each
 
     >>> form_url = '%s/mydb/frm3?limit=1' % portal_url

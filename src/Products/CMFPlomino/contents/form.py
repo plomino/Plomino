@@ -2120,7 +2120,6 @@ class PlominoForm(Container):
         2.1. and if there is a searchformula, evaluate that for every document
         in the view.
         """
-
         if self.no_load_initial_search_data:
             # Search form on initial display does not have any search paramater
             search_params = [f.id for f in self.getFormFields(includesubforms=True,request=REQUEST) if f.id in REQUEST]

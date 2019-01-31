@@ -246,7 +246,16 @@
                                             </tal:next></th>
                                         </tr>
                                     </tal:block_result_pagination>
-
+                                      <tal:block_no_result_found
+                                    condition="python:not len(results)">
+                                        <tr tal:define="total_col python:len(columns) if searchviewobj.hide_checkboxes else len(columns)+1;">
+                                            <th tal:attributes="colspan total_col">
+                                                <p i18n:domain="Products.CMFPlomino" i18n:translate="">
+                                                    Sorry no search results match your query.
+                                                </p>
+                                            </th>
+                                        </tr>
+                                    </tal:block_no_result_found>
                                 </table>
                             </tal:block_view_found>
                         </tal:results>
