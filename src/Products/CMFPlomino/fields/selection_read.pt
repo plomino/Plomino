@@ -9,5 +9,4 @@
     <tal:block tal:content="python:v[0]">selected value</tal:block>
     <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
 </tal:loop>
-    <div tal:attributes="test-data python:current"></div>
 </tal:block>

@@ -9,50 +9,60 @@
     other_value python:[l for l in currentaslist if lvalue and l not in lvalue]"
     tal:attributes="class python:field.id + '-' + 'selectionfield' + (' combo-selectionfield' if field.allow_other_value else '') ">
     <tal:widget tal:condition="python:widget=='SELECT'">
-        <select class="pat-select2" tal:attributes="id field/id; name field/id"><tal:loop tal:repeat="v selection">
-            <option tal:define="l python:v.split('|')"
-                tal:attributes="value python:l[1]; selected python:(current==l[1] and 1) or 0"
-                tal:content="python:l[0]">value</option>
-        </tal:loop></select>
+        <tal:block tal:condition="python: not field.allow_other_value">
+            <select class="pat-select2" tal:attributes="id field/id; name field/id">
+                <tal:loop tal:repeat="v lselection">
+                    <option
+                        tal:attributes="value python:v[1]; selected python:(current==v[1] and 1) or (other_value and v[1]=='@@OTHER_VALUE')"
+                        tal:content="python:v[0]">value</option>
+                </tal:loop>
+            </select>
+         </tal:block>
+        <tal:block tal:condition="python:field.allow_other_value"
+                    tal:define="tags python: 'tags:'+  ','.join([v[1] for v in lselection])+'';
+                                initialValues python: 'initialValues:'+','.join([v[1]+':'+v[0] for v in lselection if v[1] in currentaslist]);
+                                value python: ','.join(currentaslist) ;maximumSelectionSize python:'maximumSelectionSize:1'">
+            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join([maximumSelectionSize,tags, initialValues]); value python:value"/>
+        </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='MULTISELECT'">
          <tal:block tal:condition="python: not field.allow_other_value">
             <select class="pat-select2" tal:attributes="id field/id; name field/id" multiple="true"  lines="4" >
-                <tal:loop tal:repeat="v selection">
-                    <tal:block tal:define="l python:v.split('|')">
+                <tal:loop tal:repeat="v lselection">
+                    <tal:block>
                         <option
-                            tal:attributes="value python:l[1]; selected python:((currentaslist and l[1] in currentaslist) and 1) or 0"
-                            tal:content="python:l[0]">value</option>
+                            tal:attributes="value python:v[1]; selected python:((currentaslist and v[1] in currentaslist) and 1) or 0"
+                            tal:content="python:v[0]">value</option>
                     </tal:block>
                 </tal:loop>
             </select>
          </tal:block>
         <tal:block tal:condition="python:field.allow_other_value"
-                    tal:define="tags python: 'tags:'+  ','.join([v.split('|')[1] for v in selection])+'';
-                                initialValues python: 'initialValues:'+','.join([v.split('|')[1]+':'+v.split('|')[0] for v in selection if v.split('|')[1] in currentaslist]);
+                    tal:define="tags python: 'tags:'+  ','.join([v[1] for v in lselection])+'';
+                                initialValues python: 'initialValues:'+','.join([v[1]+':'+v[0] for v in lselection if v[1] in currentaslist]);
                                 value python: ','.join(currentaslist)">
             <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join([tags, initialValues]); value python:value"/>
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='CHECKBOX'">
-        <tal:block tal:repeat="v selection">
-            <tal:block tal:define="l python:v.split('|')">
+        <tal:block tal:repeat="v lselection">
+            <tal:block>
                 <span>
-                    <tal:block tal:condition="python:l[1]!='@@OTHER_VALUE'">
+                    <tal:block tal:condition="python:v[1]!='@@OTHER_VALUE'">
                         <input type="checkbox"
                             tal:attributes="name field/id;
-                                    value python:l[1];
-                                    checked python:((currentaslist and l[1] in currentaslist) and 1) or 0;
-                                    id python:field.id + '-' + l[1]">
-                        <label tal:attributes="for python:field.id + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+                                    value python:v[1];
+                                    checked python:((currentaslist and v[1] in currentaslist) and 1) or 0;
+                                    id python:field.id + '-' + v[1]">
+                        <label tal:attributes="for python:field.id + '-' + v[1]" tal:content="structure python:v[0]">value</label>
                     </tal:block>
-                    <tal:block tal:condition="python:l[1]=='@@OTHER_VALUE'">
+                    <tal:block tal:condition="python:v[1]=='@@OTHER_VALUE'">
                         <input type="checkbox"
                         tal:attributes="name python:field.id ;
-                                value python:l[1];
+                                value python:v[1];
                                 checked python:len(other_value);
                                 id python:field.id +  '_other'">
-                        <label tal:attributes="for python:field.id + '_other'" tal:content="structure python:l[0]">value</label>
+                        <label tal:attributes="for python:field.id + '_other'" tal:content="structure python:v[0]">value</label>
                     </tal:block>
                 </span>
                 <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>
@@ -64,24 +74,24 @@
     </tal:widget>
     <tal:widget tal:condition="python:widget=='RADIO'">
         <tal:block
-            tal:repeat="v selection">
-            <tal:block tal:define="l python:v.split('|')">
+            tal:repeat="v lselection">
+            <tal:block>
                 <span>
-                    <tal:block tal:condition="python:l[1]!='@@OTHER_VALUE'">
+                    <tal:block tal:condition="python:v[1]!='@@OTHER_VALUE'">
                         <input type="radio"
                             tal:attributes="name field/id;
-                                value python:l[1];
-                                checked python:((currentaslist and l[1] in currentaslist) and 1) or 0;
-                                id python:field.id + '-' + l[1]">
-                        <label tal:attributes="for python:field.id + '-' + l[1]" tal:content="structure python:l[0]">value</label>
+                                value python:v[1];
+                                checked python:((currentaslist and v[1] in currentaslist) and 1) or 0;
+                                id python:field.id + '-' + v[1]">
+                        <label tal:attributes="for python:field.id + '-' + v[1]" tal:content="structure python:v[0]">value</label>
                     </tal:block>
-                    <tal:block tal:condition="python:l[1]=='@@OTHER_VALUE'">
+                    <tal:block tal:condition="python:v[1]=='@@OTHER_VALUE'">
                         <input type="radio"
                             tal:attributes="name python:field.id ;
-                                value python:l[1];
+                                value python:v[1];
                                 checked python:len(other_value);
                                 id python:field.id + '_other'">
-                        <label tal:attributes="for python:field.id + '_other'" tal:content="structure python:l[0]">value</label>
+                        <label tal:attributes="for python:field.id + '_other'" tal:content="structure python:v[0]">value</label>
                     </tal:block>
                 </span>
                 <tal:sep tal:condition="not:repeat/v/end" tal:content="structure python:field.separator">separator</tal:sep>

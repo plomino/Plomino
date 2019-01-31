@@ -70,13 +70,11 @@ The selection widget still display and behave as normal
     >>> form_url = portal_url +'/mydb' +'/form1'
     >>> browser.open(form_url)
 
-No other value option for selection widget
+Other value option for selection widget
 
-    >>> 'field1@@OTHER_VALUE' not in browser.contents
-    True
-    >>> browser.getControl(name='field1').value = ['a']
+    >>> browser.getControl(name='field1').value = 'New value'
     >>> browser.getControl('Save').click()
-    >>> 'Option A' in browser.contents
+    >>> 'New value' in browser.contents
     True
 
 Check document field type
@@ -86,7 +84,7 @@ Check document field type
     >>> doc_id = edit_doc_url.split('/')[-1]
     >>> doc = db.getDocument(doc_id)
     >>> doc.getItem('field1')
-    u'a'
+    u'New value'
 
 
 

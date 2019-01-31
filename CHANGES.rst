@@ -129,6 +129,7 @@ Changelog
 - Fix select2 exception when on-the-fly searching return results containing empty display text [quang]
 - Fix datagrid column of docklink display document field out of order [quang]
 - Display info message when search result is empty [quang]
+- Enable 'Allow other value' on selection field using select2 widget [quang]
 
 2.0b4 (2016-05-27)
 ------------------
