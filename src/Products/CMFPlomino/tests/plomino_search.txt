@@ -306,4 +306,6 @@ Make a GET request, expected no document found
     True
     >>> 'val2' not in browser.contents
     True
+    >>> 'Please enter a search query.' in browser.contents
+    True
 

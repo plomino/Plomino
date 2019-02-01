@@ -181,6 +181,10 @@
                             </tal:block_no_view_found>
 
                             <tal:block_view_found condition="searchviewfound">
+                                 <tal:block_no_data_load condition="python:not view.form.requestParams(request) and getattr(view.form,'no_load_initial_search_data',False)">
+                                     <span i18n:domain="Products.CMFPlomino" i18n:translate="">Please enter a search query.</span>
+                                 </tal:block_no_data_load>
+                                <tal:block_data_load condition="python: view.form.requestParams(request) or not getattr(view.form,'no_load_initial_search_data',False)" >
                                 <table
                                     tal:define="results python:view.form.searchDocuments(request);
                                                 count python:len(results) if results else 0;
@@ -257,6 +261,7 @@
                                         </tr>
                                     </tal:block_no_result_found>
                                 </table>
+                                    </tal:block_data_load>
                             </tal:block_view_found>
                         </tal:results>
                     </tal:block_has_readpermission>

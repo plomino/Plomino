@@ -20,7 +20,6 @@ from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
 from ZPublisher.HTTPRequest import record
 from itertools import chain
-
 from .. import _, plomino_profiler
 from ..config import (
     DESIGN_PERMISSION,
@@ -2108,6 +2107,9 @@ class PlominoForm(Container):
                         if (fieldtype in ("SELECTION", "DOCLINK", "BOOLEAN") and doc.id =='TEMPDOC'):
                             doc.removeItem(fieldName)
 
+    def requestParams(self, REQUEST):
+        return  [f.id for f in self.getFormFields(includesubforms=True,request=REQUEST) if f.id in REQUEST]
+
     security.declareProtected(READ_PERMISSION, 'searchDocuments')
 
     def searchDocuments(self, REQUEST):
@@ -2120,9 +2122,10 @@ class PlominoForm(Container):
         2.1. and if there is a searchformula, evaluate that for every document
         in the view.
         """
+        db = self.getParentDatabase()
         if self.no_load_initial_search_data:
             # Search form on initial display does not have any search paramater
-            search_params = [f.id for f in self.getFormFields(includesubforms=True,request=REQUEST) if f.id in REQUEST]
+            search_params = self.requestParams(REQUEST)
             if not search_params:
                 return []
 
@@ -2139,7 +2142,6 @@ class PlominoForm(Container):
                     return []
         else:
             # Allow Plomino to filter by view, default query, and formula
-            db = self.getParentDatabase()
             searchview = db.getView(self.search_view)
 
             # index search

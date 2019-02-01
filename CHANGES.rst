@@ -130,6 +130,7 @@ Changelog
 - Fix datagrid column of docklink display document field out of order [quang]
 - Display info message when search result is empty [quang]
 - Enable 'Allow other value' on selection field using select2 widget [quang]
+- Optionally don't display results on initial search form load. New setting [quang]
 
 2.0b4 (2016-05-27)
 ------------------
