@@ -10,18 +10,18 @@
 
     <div id="content-core">
         <table tal:define="form python:view.doc.getItem('Form')" class="listing">
-                <tr><th>Property</th><th>Value</th></tr>
-                <tr><td>Id</td><td tal:content="view/doc/id">id</td></tr>
-                <tr><td>Last modified</td><td tal:content="python:view.doc.getLastModified(asString=True)">id</td></tr>
-                <tr tal:condition="form"><td>Form id</td><td tal:content="form">formname</td></tr>
-                <tr tal:condition="not:form"><td>Form</td><td>FORM NOT AVAILABLE</td></tr>
+                <tr><th i18n:translate="">Property</th><th i18n:translate="">Value</th></tr>
+                <tr><td i18n:translate="">Id</td><td tal:content="view/doc/id">id</td></tr>
+                <tr><td i18n:translate="">Last modified</td><td tal:content="python:view.doc.getLastModified(asString=True)">id</td></tr>
+                <tr tal:condition="form"><td i18n:translate="">Form id</td><td tal:content="form">formname</td></tr>
+                <tr tal:condition="not:form"><td i18n:translate="">Form</td><td i18n:translate="">FORM NOT AVAILABLE</td></tr>
           </table>
 
           <table class="listing"
                 tal:define="listItems python:view.doc.getItems();
                             sort python:listItems.sort()">
 
-            <tr><th>Item</th><th>Classname</th><th>Value</th></tr>
+            <tr><th i18n:translate="">Item</th><th i18n:translate="">Classname</th><th i18n:translate="">Value</th></tr>
             
             <tal:block tal:repeat="i python:listItems">
               <tr

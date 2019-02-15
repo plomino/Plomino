@@ -38,7 +38,7 @@
         // If the form is being created, don't create the same command
         if (location.pathname.indexOf("++add++PlominoForm") != -1)
         {
-            alert(ed.getLang('plomino_tinymce.edition_forbidden', 'Please save the form before using this button.'));
+            alert(ed.getLang('plomino_tinymce.edition_forbidden', 'Please save the form before using this button.')); // TODO: Add i18n support
             return;
         }
 

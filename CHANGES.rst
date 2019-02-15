@@ -4,7 +4,7 @@ Changelog
 2.0b8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added more improvements about i18n [macagua]
 
 
 2.0b7 (2017-02-15)

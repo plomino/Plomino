@@ -18,7 +18,7 @@
 			<div class="plone-modal-content">
 				<div class="plone-modal-header">
 					<a class="plone-modal-close">×</a>
-					<h2 class="plone-modal-title">Add/edit a Plomino Action</h2>
+					<h2 class="plone-modal-title" i18n:translate="">Add/edit a Plomino Action</h2>
 				</div>
 				<div class="plone-modal-body">
 					<!-- Form which selects an existing action -->

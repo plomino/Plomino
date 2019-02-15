@@ -34,8 +34,8 @@ class IPlominoAgent(model.Schema):
         required=True,
         default='CURRENT',
         vocabulary=SimpleVocabulary.fromItems([
-            ("Current user", "CURRENT"),
-            ("Agent owner", "OWNER"),
+            (_("Current user"), "CURRENT"),
+            (_("Agent owner"), "OWNER"),
         ]),
     )
 

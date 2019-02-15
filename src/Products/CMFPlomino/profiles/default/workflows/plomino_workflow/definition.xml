@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="plone"
+             i18n:domain="Products.CMFPlomino"
              workflow_id="plomino_workflow"
              title="Plomino Workflow"
              description="A single state workflow."

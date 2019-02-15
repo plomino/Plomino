@@ -143,7 +143,7 @@ var PlominoDialog = {
 
 			else {
 				// String to add in the editor
-				var zone = '<span class="plominoCacheClass">start:' + value + '</span>' + ed.selection.getContent() + '<span class="plominoCacheClass">end:' + value + '</span>';
+				var zone = '<span class="plominoCacheClass">start:' + value + '</span>' + ed.selection.getContent() + '<span class="plominoCacheClass">end:' + value + '</span>'; // TODO: Add i18n support
 				ed.execCommand('mceInsertContent', false, zone, {skip_undo : 1});
 			}
 		}

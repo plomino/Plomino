@@ -17,7 +17,7 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <h2 class="plone-modal-title">Add/edit a Plomino Field</h2>
+                    <h2 class="plone-modal-title" i18n:translate="">Add/edit a Plomino Field</h2>
                 </div>
                 <div class="plone-modal-body">
                     <fieldset tal:condition="field">

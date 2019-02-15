@@ -140,7 +140,7 @@ class PlominoAction(Item):
                 # TODO: why not use e.reportError here?
                 return ('javascript:alert('
                         '"Error: formula error in redirect action %s")' %
-                        self.Title())
+                        self.Title()) # TODO: Add i18n support
         else:  # "CLOSE", "SAVE"
             return '.'
 

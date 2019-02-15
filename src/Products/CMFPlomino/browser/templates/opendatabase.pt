@@ -22,19 +22,19 @@
         <tal:block
             tal:condition="python:context.hasReadPermission(context)">
             <tal:views tal:condition="python:len(views)>0">
-                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Browse">Browse</h3>
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="">Browse</h3>
                 <p tal:repeat="v views">
                     <a href="#"
                         tal:attributes="href v/absolute_url_path"
-                        tal:content="v/Title">view link</a>
+                        tal:content="v/Title" title="Browse all items" i18n:attributes="title">view link</a>
                     <br/>
                 </p>
             </tal:views>
             <tal:search tal:condition="python:len(searchforms)>0">
-                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Search">Search</h3>
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="CMFPlomino_label_search">Search</h3>
                 <p tal:repeat="f searchforms"><a href="#"
                     tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
-                    tal:content="f/Title">form link</a> <br />
+                    tal:content="f/Title" title="Open this form" i18n:attributes="title">form link</a> <br />
                 </p>
             </tal:search>
 
@@ -43,31 +43,31 @@
         <tal:block tal:condition="python:context.hasCreatePermission(context)">
 
             <tal:forms tal:condition="python:len(composeforms)>0">
-                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="Add new content">Add
+                <h3 i18n:domain="Products.CMFPlomino" i18n:translate="">Add
                 new content</h3>
                 <p tal:repeat="f composeforms"><a href="#"
                     tal:attributes="href python:f.absolute_url_path()+'/OpenForm'"
-                    tal:content="f/Title">form link</a> <br />
+                    tal:content="f/Title" title="Open this form" i18n:attributes="title">form link</a> <br />
                 </p>
             </tal:forms>
         </tal:block>
 
         <tal:block
             tal:condition="python:not(len(composeforms)>0 or len(searchforms)>0 or len(views)>0)">
-            <p>The database is empty</p>
+            <p i18n:translate="">The database is empty</p>
             <tal:template-picker tal:condition="python:context.hasDesignPermission()">
                 <form tal:define="template_list python:context.getTemplateList()"
                     tal:condition="template_list"
                     name="ImportTemplate" action="importTemplate" method="POST">
-                    <label for="template">Import a template</label>
+                    <label for="template" i18n:translate="">Import a template</label>
                     <select name="template_id">
-                        <option value="">== Templates ==</option>
+                        <option value="" i18n:translate="">== Templates ==</option>
                         <tal:block tal:repeat="f template_list">
                             <option tal:attributes="value f;"
                                 tal:content="python:f">value</option>
                         </tal:block>
                     </select>
-                    <input type="submit" value="Import template"/>
+                    <input type="submit" value="Import template" i18n:attributes="value" />
                 </form>
             </tal:template-picker>
         </tal:block>
@@ -77,3 +77,4 @@
 </metal:content>
 </body>
 </html>
+

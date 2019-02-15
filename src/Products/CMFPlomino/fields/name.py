@@ -20,33 +20,40 @@ class INameField(model.Schema):
 
     type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Single valued", "SINGLE"),
-            ("Multi valued", "MULTI")
+            (_("Single valued"), "SINGLE"),
+            (_("Multi valued"), "MULTI")
         ]),
-        title=u'Type',
-        description=u'Single or multi-valued name field',
+        title=_('CMFPlomino_label_type', 
+            default="Type"),
+        description=_('CMFPlomino_help_type', 
+            default="Single or multi-valued name field"),
         default="SINGLE",
         required=True)
 
     selector = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Select in a list", "LIST"),
-            ("Fill a field", "FIELD"),
+            (_("Select in a list"), "LIST"),
+            (_("Fill a field"), "FIELD"),
         ]),
-        title=u'Selection mode',
-        description=u'How the name is selected',
+        title=_('CMFPlomino_label_selector', 
+            default="Selection mode"),
+        description=_('CMFPlomino_help_selector', 
+            default="How the name is selected"),
         default="LIST",
         required=True)
 
     restricttogroup = schema.TextLine(
-        title=u'Restrict to group',
-        description=u'The field will only display members of the specified'
-        ' group (empty = no group restriction)',
+        title=_('CMFPlomino_label_restricttogroup', 
+            default="Restrict to group"),
+        description=_('CMFPlomino_help_restricttogroup', 
+            default="The field will only display members of the specified group (empty = no group restriction)"),
         required=False)
 
     separator = schema.TextLine(
-        title=u'Separator',
-        description=u'Only apply if multiple values will be displayed',
+        title=_('CMFPlomino_label_separator', 
+            default="Separator"),
+        description=_('CMFPlomino_help_separator', 
+            default="Only apply if multiple values will be displayed"),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

@@ -18,10 +18,12 @@ class IBooleanField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Single checkbox", "CHECKBOX")
+            (_("Single checkbox"), "CHECKBOX")
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget', 
+            default="Widget"),
+        description=_('CMFPlomino_help_widget', 
+            default="Field rendering"),
         default="CHECKBOX",
         required=True)
 

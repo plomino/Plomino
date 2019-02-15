@@ -244,7 +244,7 @@ class PlominoDatabase(
         """
         if not self.isCurrentUserAuthor(doc):
             if hasattr(self, 'REQUEST'):
-                self.writeMessageOnPage("You cannot delete this document.",
+                self.writeMessageOnPage(_("You cannot delete this document."),
                         self.REQUEST, error=False)
             raise Unauthorized("You cannot delete this document.")
         else:

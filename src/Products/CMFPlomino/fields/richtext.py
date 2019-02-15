@@ -16,8 +16,10 @@ class IRichtextField(model.Schema):
     """
 
     height = schema.TextLine(
-        title=u'Height',
-        description=u'Height in pixels',
+        title=_('CMFPlomino_label_height', 
+            default="Height"),
+        description=_('CMFPlomino_help_height', 
+            default="Height in pixels"),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

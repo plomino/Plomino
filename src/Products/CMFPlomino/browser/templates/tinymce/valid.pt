@@ -23,12 +23,12 @@
 					<fieldset tal:define="field python:here.restrictedTraverse(fieldurl);">
 						<p>
 							<a tal:attributes="href python:field.absolute_url() + '/edit'" target="_blank"
-								i18n:translate="plominofield_mainsettings">Edit the field settings</a>
+								i18n:translate="plominofield_editfieldsettings">Edit the field settings</a>
 						</p>
 					</fieldset>
 
 					<p i18n:domain="tinymce">
-						<input type="button" id="close" class="context" name="close" value="Close" i18n:attributes="value;" onclick="top.tinymce.activeEditor.windowManager.close();" />
+						<input type="button" id="close" class="context" name="close" value="Close" i18n:domain="Products.CMFPlomino" i18n:attributes="value" onclick="top.tinymce.activeEditor.windowManager.close();" />
 					</p>
 				</form>
 				<script type="text/javascript" tal:condition="python:not fieldurl">top.tinymce.activeEditor.windowManager.close();</script>

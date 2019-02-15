@@ -54,7 +54,7 @@ class IPlominoForm(model.Schema):
 
     form_method = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems(
-            [("GET", "GET"), ("POST", "POST"), ("Auto", "Auto")]),
+            [(_("GET"), "GET"), (_("POST"), "POST"), (_("Auto"), "Auto")]),
         title=_('CMFPlomino_label_FormMethod', default="Form method"),
         description=_('CMFPlomino_help_FormMethod',
             default="The form method: GET or POST or Auto (default)."),
@@ -574,7 +574,7 @@ class PlominoForm(Container):
                     html_content_processed = label_re.sub(
                         "<span class='label' "
                         "title='Label for %s'>%s</span>" % (fn, label),
-                        html_content_processed, count=1)
+                        html_content_processed, count=1) # TODO: Add i18n support 
 
         return html_content_processed
 
@@ -794,9 +794,9 @@ class PlominoForm(Container):
                 result = True
 
             start = ('<span class="plominoHidewhenClass">start:%s</span>' %
-                hidewhenName)
+                hidewhenName) # TODO: Add i18n support
             end = ('<span class="plominoHidewhenClass">end:%s</span>' %
-                hidewhenName)
+                hidewhenName) # TODO: Add i18n support
 
             if hidewhen.isDynamicHidewhen:
                 if result:
@@ -865,7 +865,7 @@ class PlominoForm(Container):
                 form = db.getForm(formid)
                 if not form:
                     db.writeMessageOnPage(
-                        "Form %s id missing" % formid, REQUEST, False)
+                        _("Form %s id missing") % formid, REQUEST, False)
                     hidewhens_results.append(["%s/%s" % (formid, hwid), True])
                     continue
             if formid not in temp:
@@ -901,7 +901,7 @@ class PlominoForm(Container):
                 form = db.getForm(formid)
                 if not form:
                     db.writeMessageOnPage(
-                        "Form %s id missing" % formid, REQUEST, False)
+                        _("Form %s id missing") % formid, REQUEST, False)
                     fields_results.append(["%s/%s" % (formid, fieldid), True])
                     continue
             if formid not in temp:
@@ -952,9 +952,9 @@ class PlominoForm(Container):
                 cachekey = None
 
             start = ('<span class="plominoCacheClass">start:%s</span>' %
-                cacheid)
+                cacheid) # TODO: Add i18n support
             end = ('<span class="plominoCacheClass">end:%s</span>' %
-                cacheid)
+                cacheid) # TODO: Add i18n support
 
             if cachekey:
                 cachekey = 'fragment_' + cachekey
@@ -988,9 +988,9 @@ class PlominoForm(Container):
         db = self.getParentDatabase()
         for cacheid in to_be_cached.keys():
             start = ('<span class="plominoCacheClass">start:%s</span>' %
-                cacheid)
+                cacheid) # TODO: Add i18n support
             end = ('<span class="plominoCacheClass">end:%s</span>' %
-                cacheid)
+                cacheid) # TODO: Add i18n support
             regexp = start + '(.*?)' + end
             search_fragment = re.findall(
                 regexp,
@@ -1410,7 +1410,7 @@ class PlominoForm(Container):
                 )
                 REQUEST.RESPONSE.redirect(self.absolute_url_path())
             return
-        view_title = "All " + self.Title()
+        view_title = _("All ") + self.Title()
         formula = 'plominoDocument.getItem("Form")=="%s"' % self.id
         db.invokeFactory(
             'PlominoView',
@@ -1437,7 +1437,7 @@ class PlominoForm(Container):
         view_obj.invokeFactory(
             'PlominoAction',
             id='add_new',
-            title="Add a new " + self.title,
+            title=_("Add a new ") + self.title,
             action_type="OPENFORM",
             action_display="BUTTON",
             content=self.id)

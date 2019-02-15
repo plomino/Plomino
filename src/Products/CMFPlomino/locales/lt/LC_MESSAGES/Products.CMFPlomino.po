@@ -1,18 +1,21 @@
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: CMFPlomino-lt\n"
 "POT-Creation-Date: 2019-01-28 03:02+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2010-06-08 10:12+0200\n"
+"Last-Translator: Martynas <martynas.storasta@gmail.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
-"Language-Code: en\n"
-"Language-Name: English\n"
-"Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Language-Code: lt\n"
+"Language-Name: Lithuanian\n"
+"Preferred-Encodings: utf-8\n"
+"Domain: Products.CMFPlomino\n"
+"X-Is-Fallback-For: lt-lt\n"
+"X-Poedit-Language: Lithuanian\n"
 
 #: ../contents/field.py:71
 msgid " (match any contained words)"
@@ -45,12 +48,12 @@ msgstr ""
 #. Default: " must be a float (submitted value was: "
 #: ../fields/number.py:91
 msgid " must be a float (submitted value was: "
-msgstr " doit être nombre décimal, exemple : 4.16 (la valeur saisie était : "
+msgstr "privalo būti slankusis skaičius (buvo įvesta: "
 
 #. Default: " must be an integer (submitted value was: "
 #: ../fields/number.py:81
 msgid " must be an integer (submitted value was: "
-msgstr " doit être un nombre entier (la valeur saisie était : "
+msgstr " privalo būti sveikasis skaičius (buvo įvesta: "
 
 #: ../browser/templates/openview.pt:79
 msgid "${listdocuments_count} documents"
@@ -170,7 +173,7 @@ msgstr ""
 
 #: ../browser/templates/opendatabase.pt:46
 msgid "Add new content"
-msgstr "Ajouter un nouveau document"
+msgstr "Pridėti naujus įrašus"
 
 #: ../browser/templates/acl.pt:132
 msgid "Add new user role:"
@@ -229,7 +232,7 @@ msgstr ""
 #: ../browser/templates/design_portlet.pt:88
 #: ../browser/templates/opendatabase.pt:25
 msgid "Browse"
-msgstr "Consulter"
+msgstr "Naršyti"
 
 #: ../browser/templates/opendatabase.pt:27
 msgid "Browse all items"
@@ -242,55 +245,54 @@ msgstr ""
 #. Default: "Code or parameter depending on the action type"
 #: ../contents/action.py:51
 msgid "CMFPlomino_help_ActionContent"
-msgstr "En fonction du type d'action, on renseigne ici le paramètre ou le code nécessaire"
+msgstr "Parametras ar kodas, priklausomai nuo veiksmo tipo"
 
 #. Default: "How the action is shown"
 #: ../contents/action.py:41
 msgid "CMFPlomino_help_ActionDisplay"
-msgstr "Type d'affichage de l'action"
+msgstr "Kaip parodomas veiksmas"
 
 #. Default: "Action is hidden if formula returns True"
 #: ../contents/action.py:60
 #, fuzzy
 msgid "CMFPlomino_help_ActionHidewhen"
-msgstr "L'action est masquée si la formule renvoie True"
+msgstr "Veiksmas paslepiamas, jei ši formulė įvertinama True"
 
 #. Default: "Display action in action bar (yes/no)"
 #: ../contents/action.py:68
-#, fuzzy
 msgid "CMFPlomino_help_ActionInActionBar"
-msgstr "Afficher l'action dans la barrre d'actions (oui/non)"
+msgstr "Rodyti veiksmą prie veiksmų juostos (taip/ne)"
 
 #. Default: "Select the type for this action"
 #: ../contents/action.py:33
 msgid "CMFPlomino_help_ActionType"
-msgstr "Sélectionner le type d'action"
+msgstr "Pasirinkite šio veiksmo tipą"
 
 #. Default: "Code to execute"
 #: ../contents/agent.py:24
 msgid "CMFPlomino_help_AgentContent"
-msgstr "Code à exécuter"
+msgstr "Vykdyti skirtas kodas"
 
 #. Default: "Run the agent using current user access rights, or using the developer access rights."
 #: ../contents/agent.py:31
 msgid "CMFPlomino_help_AgentRunAs"
-msgstr "Exécute l'agent avec les droits de l'utilisateur courant, ou avec les droits du développeur qui a rédigé l'agent."
+msgstr ""
 
 #. Default: "Categorised on first column"
 #: ../contents/view.py:113
 #, fuzzy
 msgid "CMFPlomino_help_Categorized"
-msgstr "Catégoriser sur les valeurs de la première colonne"
+msgstr "Grupuojama pagal pirmą stulpelį"
 
 #. Default: "Python code returning the column value."
 #: ../contents/column.py:30
 msgid "CMFPlomino_help_ColumnFormula"
-msgstr "Code python retournant la valeur de la colonne."
+msgstr "Python kodas, pateikiantis stulpelio reikšmė."
 
 #. Default: "Format example: %Y-%m-%d"
 #: ../contents/database.py:65
 msgid "CMFPlomino_help_DateTimeFormat"
-msgstr "Exemple de format: %Y-%m-%d"
+msgstr "Formato pvz.: %Y-%m-%d"
 
 #. Default: "Field value to display in the column. It does not apply if Formula is provided."
 #: ../contents/column.py:21
@@ -299,24 +301,23 @@ msgstr ""
 
 #. Default: "If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is large."
 #: ../contents/database.py:90
-#, fuzzy
 msgid "CMFPlomino_help_DoNotListUsers"
-msgstr "Dans l'écran des ACL, les utilisateurs sont entrés en texte libre. Sinon c'est une liste déroulante des utilisateurs Plone existants. A utiliser en cas de nombre d'utilisateurs important"
+msgstr ""
 
 #. Default: "If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed."
 #: ../contents/database.py:100
 msgid "CMFPlomino_help_DoNotReindex"
-msgstr "Si activé, les documents ne sont réindexés automatiquement lors d'un changement dans le design. La réindexation doit alors être manuelle."
+msgstr ""
 
 #. Default: "Compute the document id at creation. (Undergoes normalization.)"
 #: ../contents/form.py:92
 msgid "CMFPlomino_help_DocumentId"
-msgstr "Calcule l'ID du document à sa création. Doit être unique globalement s'il doit être synchronisé avec une autre base de données."
+msgstr ""
 
 #. Default: "Compute the document title"
 #: ../contents/form.py:68
 msgid "CMFPlomino_help_DocumentTitle"
-msgstr "Calcule le titre du document"
+msgstr "Apskaičiuoti dokumento pavadinimą"
 
 #. Default: "Execute DocumentTitle formula when document is rendered"
 #: ../contents/form.py:77
@@ -326,49 +327,49 @@ msgstr ""
 #. Default: "Custom rendering template in edit mode"
 #: ../contents/field.py:174
 msgid "CMFPlomino_help_FieldEditTemplate"
-msgstr "Template spécifique pour le rendu du champ en mode modification"
+msgstr "Specialus šablonas redagavimo režime"
 
 #. Default: "How to calculate field content"
 #: ../contents/field.py:132
 msgid "CMFPlomino_help_FieldFormula"
-msgstr "Calcule la valeur du champ"
+msgstr "Kaip apskaičiuoti lauko turinį"
 
 #. Default: "The field will be searchable"
 #: ../contents/field.py:139
 msgid "CMFPlomino_help_FieldIndex"
-msgstr "Le champ sera disponible comme critère de recherche"
+msgstr "Bus galima ieškoti lauko reikšmių"
 
 #. Default: "The way the field values will be indexed"
 #: ../contents/field.py:147
 msgid "CMFPlomino_help_FieldIndexType"
-msgstr "Mode d'indexation des valeurs"
+msgstr ""
 
 #. Default: "Is this field mandatory? (empty value will not be allowed)"
 #: ../contents/field.py:95
 msgid "CMFPlomino_help_FieldMandatory"
-msgstr "Ce champs est-il obligatoire? (les saisies vides seront refusées)"
+msgstr "Ar šis laukas privalomas (bus reikalaujama įvesti reikšmę)"
 
 #. Default: "Custom rendering template in read mode"
 #: ../contents/field.py:166
 msgid "CMFPlomino_help_FieldReadTemplate"
-msgstr "Template spécifique pour le rendu du champ en mode lecture"
+msgstr "Specialus šablonas skaitymo režime"
 
 #. Default: "Evaluate the input validation"
 #: ../contents/field.py:106
 msgid "CMFPlomino_help_FieldValidation"
-msgstr "Etablit la validité de la saisie"
+msgstr "Patikrina įvestos reikšmės teisingumą"
 
 #. Default: "Documents open from the view will use the form defined by the following formula(they use their own form if empty)"
 #: ../contents/view.py:70
 #, fuzzy
 msgid "CMFPlomino_help_FormFormula"
-msgstr "Les documents ouverts à partir de cette vue utiliseront le formulaire défini par cette formule (si vide, ils utilisent leur propre formulaire)"
+msgstr "Dokumentai, atverti iš DB vaizdo bus adaptuoti pagal šią formulę (jei nenurodyta, bus naudojama įprasta įvedimo forma)"
 
 #. Default: "Text with 'Plominofield' styles correspond to the contained field elements."
 #: ../contents/form.py:49
 #, fuzzy
 msgid "CMFPlomino_help_FormLayout"
-msgstr "Mise en page du formulaire. Les styles 'PlominoXXX' permettent de signaler la position des champs, des formules 'Cacher quand...', et des actions"
+msgstr "Formos išdėstymas. Tekstas, kuriam taikomas stilius 'Plominofield' atitinka sukurtų laukų id"
 
 #. Default: "The form method: GET or POST or Auto (default)."
 #: ../contents/form.py:59
@@ -387,9 +388,8 @@ msgstr ""
 
 #. Default: "If enabled, documents are full-text indexed in the Plomino index."
 #: ../contents/database.py:42
-#, fuzzy
 msgid "CMFPlomino_help_FulltextIndex"
-msgstr "Si activé, le contenu des documents sera indexé full-text (tous les champs)"
+msgstr ""
 
 #. Default: "Inject DOM attributes in the field tag"
 #: ../contents/field.py:158
@@ -399,28 +399,28 @@ msgstr ""
 #. Default: "Edit, Save, Delete, Close actions will not be displayed in the action bar"
 #: ../contents/form.py:101
 msgid "CMFPlomino_help_HideDefaultActions"
-msgstr "Les actions par défaut (modifier,sauvegarder,supprimer,fermer) ne seront pas affichées dans la barre d'actions"
+msgstr ""
 
 #. Default: "Delete, Close actions will not be displayed in the action bar"
 #: ../contents/view.py:79
 msgid "CMFPlomino_help_HideViewDefaultActions"
-msgstr "Les actions par défaut (supprimer,fermer) ne seront pas affichées dans la barre d'actions"
+msgstr ""
 
 #. Default: "If returning True, the block will be hidden."
 #: ../contents/hidewhen.py:17
 msgid "CMFPlomino_help_HidewhenFormula"
-msgstr "Si retourne True, le bloc est caché."
+msgstr "Jei bus įvertinta kaip True, šis blokas pasislėps."
 
 #. Default: "If enabled, files attached in File Attachment fields will be indexed. It might increase the index size."
 #: ../contents/database.py:33
 #, fuzzy
 msgid "CMFPlomino_help_IndexAttachments"
-msgstr "Si activé, les fichiers joints dans les champs File Attachment seront indexés. Cela peut augmenter significativement la taille de l'index."
+msgstr "Jei įjungta, prisegti failai bus indeksuojami. Tai gali išplėsti indekso apimtį."
 
 #. Default: "If enabled, documents are searchable in Plone search."
 #: ../contents/database.py:51
 msgid "CMFPlomino_help_IndexInPortal"
-msgstr "Si activé les documents pourront être recherchés dans Plone"
+msgstr ""
 
 #. Default: "If True, the database design can be exported in a GenericSetup profile and can then be used as a template in any Plomino database."
 #: ../contents/database.py:110
@@ -435,39 +435,39 @@ msgstr ""
 #. Default: "Reverse the sort ordering"
 #: ../contents/view.py:120
 msgid "CMFPlomino_help_ReverseSorting"
-msgstr "Inverse l'ordre de tri"
+msgstr "Apsukti rūšiavimo tvarką"
 
 #. Default: "A search form is only used to search documents, it cannot be saved."
 #: ../contents/form.py:118
 msgid "CMFPlomino_help_SearchForm"
-msgstr "Un formulaire de recherche sert uniquement à effectuer des recherches, il ne permet pas de sauvegarder un document."
+msgstr "Paieškos forma naudojama tik paieškai, jos negalite išsaugoti."
 
 #. Default: "Leave blank to use default ZCatalog search"
 #: ../contents/form.py:134
 msgid "CMFPlomino_help_SearchFormula"
-msgstr "Laisser vide pour utiliser la recherche ZCatalog par défaut"
+msgstr "Palikite tuščią, jei naudosite numatytą Zcatalog paiešką"
 
 #. Default: "View used to display the search results"
 #: ../contents/form.py:126
 msgid "CMFPlomino_help_SearchView"
-msgstr "Vue utilise pour rechercher les documents et afficher les résultats"
+msgstr "Vaizdas, naudojamas pateikti paieškos rezultatus"
 
 #. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. 'plominoDocument' is a reserved name in formulae: it returns the current Plomino document."
 #: ../contents/view.py:56
 #, fuzzy
 msgid "CMFPlomino_help_SelectionFormula"
-msgstr "La formule de sélection de la vue est une ligne de code Python qui doit retourner un booléen. La formule sera évaluée pour chaque document dans la base Plomino pour établir si le document doit apparaître dans la vue ou pas. plominoDocument est un mot-clé réservé dans les formules, il retourne le document courant. Chaque valeur de champ du document peut être accédée de la même manière qu'un attribut: plominoDocument.<fieldname>"
+msgstr "Vaizdo pasirinkimo formulė yra Python kodo eilutė, kuri turėtų būti įvertinta kaip True ar False. Pagal šią formulę bus vertinamas kiekvienas dokumentas (įrašas) duomenų bazėje, kad pagal tai būtų nuspręsta, ar jį rodyti, ar ne. plominoDocument yra rezervuotas vardas formulėje jis parodo dabartinį Plomino dokumentą. Kiekviena dokumento lauko reikšmė gali būti prieinama tiesiogiai  kaip dokumento atributas: plominoDocument.<fieldname>"
 
 #. Default: "Column used to sort the view, and for key lookup"
 #: ../contents/view.py:98
 #, fuzzy
 msgid "CMFPlomino_help_SortColumn"
-msgstr "Colonne utilisée pour trier la vue"
+msgstr "Stulpelis, pagal kurį bus rūšiuojamas DB vaizdas"
 
 #. Default: "Element to display instead of the regular database menu."
 #: ../contents/database.py:74
 msgid "CMFPlomino_help_StartPage"
-msgstr "Element à afficher à la place du menu normal."
+msgstr "Elementas, kurį rodysite vietoje įprasto DB meniu."
 
 #. Default: "Store computed title every time document is rendered"
 #: ../contents/form.py:84
@@ -478,7 +478,7 @@ msgstr ""
 #: ../contents/view.py:144
 #, fuzzy
 msgid "CMFPlomino_help_ViewTemplate"
-msgstr "Laisser vide pour utiliser le template standard."
+msgstr "Palikite tuščią, jei naudosite standartinį"
 
 #. Default: "Form to use to create/edit rows"
 #: ../fields/datagrid.py:39
@@ -503,7 +503,7 @@ msgstr ""
 #. Default: "If enabled, script and formula errors are logged."
 #: ../contents/database.py:58
 msgid "CMFPlomino_help_debugMode"
-msgstr "Si activé, les erreurs survenant dans les formules apparapitront dans la log."
+msgstr "Jei įjungta, bus įrašomos scenarijaus bei formulių klaidos."
 
 #. Default: "Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')"
 #: ../fields/doclink.py:56
@@ -553,7 +553,7 @@ msgstr ""
 #. Default: "A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."
 #: ../contents/form.py:110
 msgid "CMFPlomino_help_isPage"
-msgstr "Une page dynamique ne peut pas être sauvée et ne propose pas de barre d'action. Cela peut servir à créer des pages d'accueil, d'explications, de rapports, de navgation, etc."
+msgstr "Puslapis negali būti išsaugotas ir neturi veiksmų juostos. Gali būti naudingas kuriant pradinį psl., paaiškinimus, ataskaitas ir pan."
 
 #. Default: "Google Vizualization code"
 #: ../fields/googlevisualization.py:36
@@ -583,12 +583,12 @@ msgstr ""
 #. Default: "Action to take when the document is created"
 #: ../contents/form.py:184
 msgid "CMFPlomino_help_onCreateDocument"
-msgstr "Script excuté à la création d'un document"
+msgstr "Veiksmas, atliekamas sukūrus dokumentą"
 
 #. Default: "Action to take before deleting the document"
 #: ../contents/form.py:219
 msgid "CMFPlomino_help_onDeleteDocument"
-msgstr "Script exécuté avant la suppression d'un document"
+msgstr "Veiksmas, atliekamas pašalinant dokumentą"
 
 #. Default: "Action to take when the form is displayed"
 #: ../contents/form.py:175
@@ -598,18 +598,17 @@ msgstr ""
 #. Default: "Action to take when the document is opened"
 #: ../contents/form.py:192
 msgid "CMFPlomino_help_onOpenDocument"
-msgstr "Script exécuté à l'ouverture d'un document"
+msgstr "Veiksmas, atliekaams atveriant dokumentą"
 
 #. Default: "Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."
 #: ../contents/view.py:88
-#, fuzzy
 msgid "CMFPlomino_help_onOpenView"
-msgstr "Script exécuté à l'ouverture d'un document. Si une chaîne est renvoyée, on considère qu'il s'agit d'un message d'erreur et la vue ne s'ouvre pas."
+msgstr ""
 
 #. Default: "Action to take when saving the document"
 #: ../contents/form.py:210
 msgid "CMFPlomino_help_onSaveDocument"
-msgstr "Script exécuté à la sauvegarde d'un document"
+msgstr "Veiksmas, atliekaams išsaugant dokumentą"
 
 #. Default: "Action to take when submitting a search"
 #: ../contents/form.py:228
@@ -688,56 +687,56 @@ msgstr ""
 #. Default: "Parameter or code"
 #: ../contents/action.py:50
 msgid "CMFPlomino_label_ActionContent"
-msgstr "Paramètre ou code"
+msgstr "Parametras ar kodas"
 
 #. Default: "Action display"
 #: ../contents/action.py:40
 msgid "CMFPlomino_label_ActionDisplay"
-msgstr "Affichage de l'action"
+msgstr "Veiksmų atvaizdavimas"
 
 #. Default: "Action is hidden if formula returns True"
 #: ../contents/action.py:58
 #, fuzzy
 msgid "CMFPlomino_label_ActionHidewhen"
-msgstr "Formule de masquage"
+msgstr "Paslėpti-kai formulė"
 
 #. Default: "Display action in action bar (yes/no)"
 #: ../contents/action.py:66
 #, fuzzy
 msgid "CMFPlomino_label_ActionInActionBar"
-msgstr "Afficher l'action dans la barrre d'actions"
+msgstr "Rodyti veiksmą prie veiksmų juostos"
 
 #. Default: "Select the type for this action"
 #: ../contents/action.py:31
 #, fuzzy
 msgid "CMFPlomino_label_ActionType"
-msgstr "Type d'action"
+msgstr "Veiksmo tipas"
 
 #. Default: "Code to execute"
 #: ../contents/agent.py:23
 #, fuzzy
 msgid "CMFPlomino_label_AgentContent"
-msgstr "Code"
+msgstr "Kodas"
 
 #. Default: "Run as"
 #: ../contents/agent.py:30
 msgid "CMFPlomino_label_AgentRunAs"
-msgstr "Exécuter en tant que"
+msgstr ""
 
 #. Default: "Categorized"
 #: ../contents/view.py:112
 msgid "CMFPlomino_label_Categorized"
-msgstr "Catégorisation"
+msgstr "Sugrupuotas vaizdas"
 
 #. Default: "Formula"
 #: ../contents/column.py:29
 msgid "CMFPlomino_label_ColumnFormula"
-msgstr "Formule"
+msgstr "Formulė"
 
 #. Default: "Date/time format"
 #: ../contents/database.py:64
 msgid "CMFPlomino_label_DateTimeFormat"
-msgstr "Format de date"
+msgstr "Datos/laiko formatas"
 
 #. Default: "Displayed field"
 #: ../contents/column.py:20
@@ -747,22 +746,22 @@ msgstr ""
 #. Default: "Do not list portal users"
 #: ../contents/database.py:88
 msgid "CMFPlomino_label_DoNotListUsers"
-msgstr "Ne pas afficher la liste des utilisateurs"
+msgstr ""
 
 #. Default: "Do not re-index documents on design changes"
 #: ../contents/database.py:98
 msgid "CMFPlomino_label_DoNotReindex"
-msgstr "Ne pas réindexer les documents lors des changements de design"
+msgstr ""
 
 #. Default: "Document id formula"
 #: ../contents/form.py:91
 msgid "CMFPlomino_label_DocumentId"
-msgstr "Formule de calcul de l'ID du document"
+msgstr ""
 
 #. Default: "Document title formula"
 #: ../contents/form.py:66
 msgid "CMFPlomino_label_DocumentTitle"
-msgstr "Titre du document"
+msgstr "Dokumento pavadinimo formulė"
 
 #. Default: "Compute document title on view"
 #: ../contents/form.py:74
@@ -772,58 +771,58 @@ msgstr ""
 #. Default: "Field edit template"
 #: ../contents/field.py:172
 msgid "CMFPlomino_label_FieldEditTemplate"
-msgstr "Template modification"
+msgstr "Lauko redagavimo šablonas"
 
 #. Default: "Formula"
 #: ../contents/field.py:131
 msgid "CMFPlomino_label_FieldFormula"
-msgstr "Formule"
+msgstr "Formulė"
 
 #. Default: "Add to index"
 #: ../contents/field.py:138
 msgid "CMFPlomino_label_FieldIndex"
-msgstr "Ajouter dans l'index"
+msgstr "Prideti prie indekso"
 
 #. Default: "Index type"
 #: ../contents/field.py:146
 msgid "CMFPlomino_label_FieldIndexType"
-msgstr "Type d'index"
+msgstr ""
 
 #. Default: "Mandatory"
 #: ../contents/field.py:94
 msgid "CMFPlomino_label_FieldMandatory"
-msgstr "Obligatoire"
+msgstr "Privalomas"
 
 #. Default: "Field mode"
 #: ../contents/field.py:112
 msgid "CMFPlomino_label_FieldMode"
-msgstr "Mode"
+msgstr "Lauko režimas"
 
 #. Default: "Field read template"
 #: ../contents/field.py:164
 msgid "CMFPlomino_label_FieldReadTemplate"
-msgstr "Template lecture"
+msgstr "Lauko nuskaitymo šablonas"
 
 #. Default: "Field type"
 #: ../contents/field.py:86
 msgid "CMFPlomino_label_FieldType"
-msgstr "Type"
+msgstr "Lauko tipas"
 
 #. Default: "Validation formula"
 #: ../contents/field.py:104
 msgid "CMFPlomino_label_FieldValidation"
-msgstr "Formule de validation"
+msgstr "Patikrinimo formulė"
 
 #. Default: "Form formula"
 #: ../contents/view.py:69
 #, fuzzy
 msgid "CMFPlomino_label_FormFormula"
-msgstr "Calcul du formulaire"
+msgstr "Formos formulė"
 
 #. Default: "Form layout"
 #: ../contents/form.py:48
 msgid "CMFPlomino_label_FormLayout"
-msgstr "Mise en page"
+msgstr "Formos išdėstymas"
 
 #. Default: "Form method"
 #: ../contents/form.py:58
@@ -843,7 +842,7 @@ msgstr ""
 #. Default: "Local full-text index"
 #: ../contents/database.py:40
 msgid "CMFPlomino_label_FulltextIndex"
-msgstr "Index local full-text"
+msgstr ""
 
 #. Default: "HTML attributes formula"
 #: ../contents/field.py:156
@@ -853,32 +852,32 @@ msgstr ""
 #. Default: "Hidden column"
 #: ../contents/column.py:36
 msgid "CMFPlomino_label_HiddenColumn"
-msgstr "Colonne cachée"
+msgstr "Paslėptas stulpelis"
 
 #. Default: "Hide default actions"
 #: ../contents/form.py:99
 msgid "CMFPlomino_label_HideDefaultActions"
-msgstr "Cacher les actions par défaut"
+msgstr ""
 
 #. Default: "Hide default actions"
 #: ../contents/view.py:77
 msgid "CMFPlomino_label_HideViewDefaultActions"
-msgstr "Cacher les actions par défaut"
+msgstr ""
 
 #. Default: "Formula"
 #: ../contents/hidewhen.py:16
 msgid "CMFPlomino_label_HidewhenFormula"
-msgstr "Formule"
+msgstr "Formulė"
 
 #. Default: "Index file attachments"
 #: ../contents/database.py:31
 msgid "CMFPlomino_label_IndexAttachments"
-msgstr "Indexer les fichiers joints"
+msgstr "Indeksuoti pridedamus failus"
 
 #. Default: "Index documents in Plone portal"
 #: ../contents/database.py:49
 msgid "CMFPlomino_label_IndexInPortal"
-msgstr "Indexer les documents dans le portail Plone"
+msgstr ""
 
 #. Default: "Use it as a template"
 #: ../contents/database.py:108
@@ -894,37 +893,37 @@ msgstr ""
 #: ../contents/view.py:119
 #, fuzzy
 msgid "CMFPlomino_label_ReverseSorting"
-msgstr "Tri inversé"
+msgstr "Atvirkštinis rūšiavimas"
 
 #. Default: "Search form"
 #: ../contents/form.py:117
 msgid "CMFPlomino_label_SearchForm"
-msgstr "Formulaire de recherche"
+msgstr "Paieškos forma"
 
 #. Default: "Search formula"
 #: ../contents/form.py:133
 msgid "CMFPlomino_label_SearchFormula"
-msgstr "Formule de recherche"
+msgstr "Paieškos formulė"
 
 #. Default: "Search view"
 #: ../contents/form.py:125
 msgid "CMFPlomino_label_SearchView"
-msgstr "Vue de recherche"
+msgstr "Paieškos vaizdas"
 
 #. Default: "Selection formula"
 #: ../contents/view.py:54
 msgid "CMFPlomino_label_SelectionFormula"
-msgstr "Formule de sélection"
+msgstr "Atrankos formulė"
 
 #. Default: "Sort column"
 #: ../contents/view.py:97
 msgid "CMFPlomino_label_SortColumn"
-msgstr "Colonne à trier"
+msgstr "Rūšiuoti stulpelius"
 
 #. Default: "Start page"
 #: ../contents/database.py:73
 msgid "CMFPlomino_label_StartPage"
-msgstr "Page d'accueil"
+msgstr "Pradinis puslapis"
 
 #. Default: "Store dynamically computed title"
 #: ../contents/form.py:82
@@ -935,7 +934,7 @@ msgstr ""
 #: ../contents/view.py:142
 #, fuzzy
 msgid "CMFPlomino_label_ViewTemplate"
-msgstr "Nom du template"
+msgstr "Peržiūros šablonas"
 
 #. Default: "Associated form"
 #: ../fields/datagrid.py:37
@@ -960,7 +959,7 @@ msgstr ""
 #. Default: "Debug mode"
 #: ../contents/database.py:57
 msgid "CMFPlomino_label_debugMode"
-msgstr "Mode debug"
+msgstr "Klaidų tikrinimo režimas"
 
 #. Default: "Documents list formula"
 #: ../fields/doclink.py:54
@@ -1010,7 +1009,7 @@ msgstr ""
 #. Default: "Page"
 #: ../contents/form.py:108
 msgid "CMFPlomino_label_isPage"
-msgstr "Page dynamique"
+msgstr "Puslapis"
 
 #. Default: "Javascript settings"
 #: ../fields/googlevisualization.py:34
@@ -1040,12 +1039,12 @@ msgstr ""
 #. Default: "On create document"
 #: ../contents/form.py:182
 msgid "CMFPlomino_label_onCreateDocument"
-msgstr "Création du document"
+msgstr "Sukūrus dokumentą"
 
 #. Default: "On delete document"
 #: ../contents/form.py:217
 msgid "CMFPlomino_label_onDeleteDocument"
-msgstr "A la suppression du document"
+msgstr "Pašalinant dokumentą"
 
 #. Default: "On display"
 #: ../contents/form.py:173
@@ -1055,17 +1054,17 @@ msgstr ""
 #. Default: "On open document"
 #: ../contents/form.py:191
 msgid "CMFPlomino_label_onOpenDocument"
-msgstr "Ouverture du document"
+msgstr "Atidarant dokumentą"
 
 #. Default: "On open view"
 #: ../contents/view.py:87
 msgid "CMFPlomino_label_onOpenView"
-msgstr "Ouverture de la vue"
+msgstr ""
 
 #. Default: "On save document"
 #: ../contents/form.py:209
 msgid "CMFPlomino_label_onSaveDocument"
-msgstr "Sauvegarde du document"
+msgstr "Išsaugant dokumentą"
 
 #. Default: "On submission of search form"
 #: ../contents/form.py:226
@@ -1189,7 +1188,7 @@ msgstr ""
 #: ../browser/templates/tinymce/valid.pt:31
 #: ../config.py:62
 msgid "Close"
-msgstr "Sortir"
+msgstr "Uždaryti"
 
 #: ../browser/templates/design_portlet.pt:67
 msgid "Column"
@@ -1279,7 +1278,7 @@ msgstr ""
 
 #: ../browser/templates/actions.pt:123
 msgid "Delete"
-msgstr "Supprimer"
+msgstr "Pašalinti"
 
 #: ../browser/templates/acl.pt:215
 msgid "Delete document action"
@@ -1322,7 +1321,7 @@ msgstr ""
 # Action bar buttons
 #: ../browser/templates/actions.pt:12
 msgid "Edit"
-msgstr "Modifier"
+msgstr "Redaguoti"
 
 #: ../browser/templates/design.pt:53
 #: ../browser/templates/design_portlet.pt:123
@@ -1412,7 +1411,7 @@ msgstr ""
 #: ../browser/templates/design.pt:232
 #: ../browser/templates/replication.pt:162
 msgid "Export"
-msgstr "Export"
+msgstr ""
 
 #: ../browser/templates/design.pt:81
 #: ../browser/templates/design_portlet.pt:151
@@ -1475,7 +1474,7 @@ msgstr ""
 #: ../browser/templates/design.pt:22
 #: ../browser/templates/design_portlet.pt:92
 msgid "Forms"
-msgstr "Formulaires"
+msgstr "Formos"
 
 #: ../browser/templates/replication.pt:124
 msgid "From a JSON file"
@@ -1492,7 +1491,7 @@ msgstr ""
 #: ../browser/templates/design.pt:158
 #: ../browser/templates/replication.pt:139
 msgid "From server folder"
-msgstr "Depuis un dossier local du serveur"
+msgstr ""
 
 #: ../contents/form.py:57
 msgid "GET"
@@ -1513,7 +1512,7 @@ msgstr ""
 
 #: ../browser/templates/errors.pt:16
 msgid "Go back"
-msgstr "Retourner"
+msgstr "Grįžti atgal"
 
 #: ../config.py:46
 msgid "Google chart"
@@ -1543,7 +1542,7 @@ msgstr ""
 #: ../browser/templates/design.pt:142
 #: ../browser/templates/replication.pt:104
 msgid "Import"
-msgstr "Import"
+msgstr ""
 
 #: ../browser/templates/opendatabase.pt:62
 msgid "Import a template"
@@ -1727,11 +1726,10 @@ msgstr ""
 msgid "Path of the database where the element is stored"
 msgstr ""
 
-# Please log in
 #: ../browser/templates/openbareform.pt:53
 #: ../browser/templates/openform.pt:58
 msgid "Please log in"
-msgstr "Veuillez vous identifier."
+msgstr ""
 
 #: ../browser/portlet.py:117
 msgid "Plomino Element Display"
@@ -1751,7 +1749,7 @@ msgstr ""
 
 #: ../profiles/default/types/PlominoAction.xml
 msgid "PlominoAction"
-msgstr "Plomino: Action"
+msgstr "Plomino: veiksmas"
 
 #: ../profiles/default/types/PlominoAgent.xml
 msgid "PlominoAgent"
@@ -1763,11 +1761,11 @@ msgstr ""
 
 #: ../profiles/default/types/PlominoColumn.xml
 msgid "PlominoColumn"
-msgstr "Plomino: Colonne"
+msgstr "Plomino: stulpelis"
 
 #: ../profiles/default/types/PlominoDatabase.xml
 msgid "PlominoDatabase"
-msgstr "Plomino: Database"
+msgstr "Plomino: duomenų bazė"
 
 #: ../browser/templates/acl.pt:73
 msgid "PlominoDesigner"
@@ -1779,15 +1777,15 @@ msgstr ""
 
 #: ../profiles/default/types/PlominoField.xml
 msgid "PlominoField"
-msgstr "Plomino: Champ"
+msgstr "Plomino: laukas"
 
 #: ../profiles/default/types/PlominoForm.xml
 msgid "PlominoForm"
-msgstr "Plomino: Formulaire"
+msgstr "Plomino: forma"
 
 #: ../profiles/default/types/PlominoHidewhen.xml
 msgid "PlominoHidewhen"
-msgstr "Plomino: Cacher quand"
+msgstr "Plomino: paslėpti kai"
 
 #: ../browser/templates/acl.pt:74
 msgid "PlominoManager"
@@ -1799,7 +1797,7 @@ msgstr ""
 
 #: ../profiles/default/types/PlominoView.xml
 msgid "PlominoView"
-msgstr "Plomino: Vue"
+msgstr "Plomino: vaizdas"
 
 #: ../browser/portlet.py:99
 msgid "Portlet header"
@@ -1931,13 +1929,13 @@ msgstr ""
 #: ../browser/templates/actions.pt:46
 #: ../config.py:63
 msgid "Save"
-msgstr "Enregistrer"
+msgstr "Išsaugoti"
 
 #. Default: "Search"
 #: ../browser/static/js/plomino-compiled.js
 #: ../browser/static/js/table.js
 msgid "Search"
-msgstr "Rechercher"
+msgstr "Ieškoti"
 
 #: ../fields/name.py:35
 msgid "Select in a list"
@@ -2057,7 +2055,7 @@ msgstr ""
 #: ../browser/templates/design.pt:245
 #: ../browser/templates/replication.pt:194
 msgid "To server folder"
-msgstr "Vers un dossier local du serveur"
+msgstr ""
 
 #: ../browser/templates/acl.pt:114
 msgid "User roles"
@@ -2079,10 +2077,9 @@ msgstr ""
 msgid "Users access rights"
 msgstr ""
 
-# ErrorsMessages
 #: ../browser/templates/errors.pt:9
 msgid "Validation failed"
-msgstr "La validation a échoué"
+msgstr ""
 
 #: ../browser/templates/design_portlet.pt:35
 msgid "View"
@@ -2091,7 +2088,7 @@ msgstr ""
 #: ../browser/templates/design.pt:73
 #: ../browser/templates/design_portlet.pt:143
 msgid "Views"
-msgstr "Vues"
+msgstr "Vaizdai"
 
 #: ../profiles/default/workflows/plomino_workflow/definition.xml
 msgid "Visible to everyone, editable by the owner."
@@ -2146,7 +2143,7 @@ msgstr ""
 #. Default: "is mandatory"
 #: ../document.py:718
 msgid "is mandatory"
-msgstr "est obligatoire"
+msgstr "yra privalomas"
 
 #. Default: "(Required)"
 #: ../browser/templates/replication.pt:50

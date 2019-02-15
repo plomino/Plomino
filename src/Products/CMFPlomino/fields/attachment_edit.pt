@@ -4,7 +4,7 @@
     <tal:block tal:repeat="attachment options/fieldvalue">
         <a href="#" tal:attributes="href python:doc.doc_url()+'/getfile?filename='+attachment" 
             tal:content="attachment">filename</a>
-         <a href="#" class="btn btn-danger" tal:attributes="href string:${doc/doc_url}/deleteAttachment?_authenticator=${token}&field=${field/id}&filename=$attachment">Delete</a>
+         <a href="#" class="btn btn-danger" tal:attributes="href string:${doc/doc_url}/deleteAttachment?_authenticator=${token}&field=${field/id}&filename=$attachment" i18n:translate="">Delete</a>
         <br/>
 
     </tal:block>

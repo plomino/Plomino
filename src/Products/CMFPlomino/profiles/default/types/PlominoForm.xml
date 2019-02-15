@@ -45,7 +45,7 @@
     url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="Generate view" action_id="generate_view" category="object_buttons" condition_expr=""
+  <action title="Generate view" i18n:attributes="title" action_id="generate_view" category="object_buttons" condition_expr=""
     description="" icon_expr="" link_target=""
     url_expr="string:${object_url}/manage_generateView" visible="True">
     <permission value="Modify portal content"/>

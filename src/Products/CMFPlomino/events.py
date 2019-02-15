@@ -11,12 +11,12 @@ from zope.interface import directlyProvides
 
 from .config import SCRIPT_ID_DELIMITER, VERSION
 from .index.index import PlominoIndex
-from . import get_resource_directory
+from . import _, get_resource_directory
 
 
 def afterDatabaseCreated(obj, event):
     obj.plomino_version = VERSION
-    obj.setStatus("Ready")
+    obj.setStatus(_("Ready"))
     manage_addCMFBTreeFolder(obj, id='plomino_documents')
     directlyProvides(obj.documents, IHideFromBreadcrumbs)
     obj.ACL_initialized = 0

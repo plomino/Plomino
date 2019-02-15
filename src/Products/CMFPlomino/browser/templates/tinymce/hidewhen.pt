@@ -4,7 +4,7 @@
     i18n:domain="plomino.tinymce">
     <head>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
-        <title i18n:translate="plominofield_title">Add/edit a Plomino Hide-when</title>
+        <title i18n:translate="plominohidewhen_title">Add/edit a Plomino Hide-when</title>
         <link tal:replace="structure provider:plone.htmlhead.links" />
     </head>
     <body id="plonebrowser" tal:define="form python:view.context;
@@ -16,7 +16,7 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <h2 class="plone-modal-title">Add/edit a Plomino Hide-when</h2>
+                    <h2 class="plone-modal-title" i18n:translate="">Add/edit a Plomino Hide-when</h2>
                 </div>
                 <div class="plone-modal-body">
                     <fieldset tal:condition="hidewhen">

@@ -74,12 +74,12 @@
                     </tal:rows>
                 </tal:static>
                 <tr class="header-row count">
-                    <td tal:attributes="colspan python:len(columns)+1">
+                    <td tal:attributes="colspan python:len(columns)+1" i18n:translate="">
                         <tal:static tal:condition="context/static_rendering">
                             <tal:block
                                 tal:define="listdocuments python:context.getAllDocuments(getObject=False);
                                             count python:len(listdocuments);"
-                                tal:content="count" /> documents
+                                tal:content="count" i18n:name="listdocuments_count" /> documents
                         </tal:static>
                     </td>
                 </tr>

@@ -4,7 +4,7 @@ xmlns:metal="http://xml.zope.org/namespaces/metal"
 xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 lang="en"
 metal:use-macro="context/main_template/macros/master"
-i18n:domain="plone">
+i18n:domain="Products.CMFPlomino">
 <body>
 
     <metal:content fill-slot="main">
@@ -13,48 +13,48 @@ i18n:domain="plone">
 
     <div class="pat-autotoc autotabs" data-pat-autotoc="section:fieldset;levels:legend;">
         <fieldset>
-            <legend>Access rights</legend>
+            <legend i18n:translate="">Access rights</legend>
             <div>
                 <form name="RemoveEntries" action="removeACLEntries" method="POST">
-                <h3>Users access rights</h3>
+                <h3 i18n:translate="">Users access rights</h3>
                 <table class="listing">
-                <tr><th>Access right</th><th>Users</th></tr>
-                <tr><td valign="top"><b>Readers</b></td>
+                <tr><th i18n:translate="">Access right</th><th i18n:translate="">Users</th></tr>
+                <tr><td valign="top"><b i18n:translate="">Readers</b></td>
                 <td><tal:block tal:repeat="u python:context.getUsersForRight('PlominoReader')">
                     <input type="checkbox" name="users" tal:attributes="value u; id string:reader-${u}" /> <label tal:attributes="for string:reader-${u}" tal:content="u">user</label>  
                     <br/>
                 </tal:block>
                 </td></tr>
-                <tr><td valign="top"><b>Authors</b></td>
+                <tr><td valign="top"><b i18n:translate="">Authors</b></td>
                 <td><tal:block tal:repeat="u python:context.getUsersForRight('PlominoAuthor')">
                     <input type="checkbox" name="users" tal:attributes="value u; id string:author-${u}" /> <label tal:attributes="for string:author-${u}" tal:content="u">user</label>  
                     <br/>
                 </tal:block>
                 </td></tr>
-                <tr><td valign="top"><b>Editors</b></td>
+                <tr><td valign="top"><b i18n:translate="">Editors</b></td>
                 <td><tal:block tal:repeat="u python:context.getUsersForRight('PlominoEditor')">
                     <input type="checkbox" name="users" tal:attributes="value u; id string:editor-${u}" /> <label tal:attributes="for string:editor-${u}" tal:content="u">user</label>  
                     <br/>
                 </tal:block>
                 </td></tr>
-                <tr><td valign="top"><b>Designers</b></td>
+                <tr><td valign="top"><b i18n:translate="">Designers</b></td>
                 <td><tal:block tal:repeat="u python:context.getUsersForRight('PlominoDesigner')">
                     <input type="checkbox" name="users" tal:attributes="value u; id string:designer-${u}" /> <label tal:attributes="for string:designer-${u}" tal:content="u">user</label>  
                     <br/>
                 </tal:block>
                 </td></tr>
-                <tr><td valign="top"><b>Managers</b></td>
+                <tr><td valign="top"><b i18n:translate="">Managers</b></td>
                 <td><tal:block tal:repeat="u python:context.getUsersForRight('PlominoManager')">
                     <input type="checkbox" name="users" tal:attributes="value u; id string:manager-${u}" /> <label tal:attributes="for string:manager-${u}" tal:content="u">user</label>    
                     <br/>
                 </tal:block>
                 </td></tr>
                 </table>
-                <input type="submit" class="context" value="Remove selected users"/>
+                <input type="submit" class="context" value="Remove selected users" i18n:attributes="value"/>
                 </form>
                 <br/>
                 <form name="AddEntry" action="addACLEntry" method="POST">
-                Add ACL entry:
+                <i18n:block i18n:translate="">Add ACL entry:</i18n:block>
                 <tal:listusers tal:condition="python:not(context.do_not_list_users)">
                     <select name="newuser">
                         <tal:block tal:repeat="u context/getPortalMembersGroupsIds">
@@ -67,55 +67,55 @@ i18n:domain="plone">
                     <input type="text" name="newuser"/>
                 </tal:nolistusers>
                 <select name="accessright">
-                    <option value="PlominoReader">PlominoReader</option>
-                    <option value="PlominoAuthor">PlominoAuthor</option>
-                    <option value="PlominoEditor">PlominoEditor</option>
-                    <option value="PlominoDesigner">PlominoDesigner</option>
-                    <option value="PlominoManager">PlominoManager</option>
+                    <option value="PlominoReader" i18n:translate="">PlominoReader</option>
+                    <option value="PlominoAuthor" i18n:translate="">PlominoAuthor</option>
+                    <option value="PlominoEditor" i18n:translate="">PlominoEditor</option>
+                    <option value="PlominoDesigner" i18n:translate="">PlominoDesigner</option>
+                    <option value="PlominoManager" i18n:translate="">PlominoManager</option>
                 </select>
-                <input type="submit" class="context" value="Add"/>
+                <input type="submit" class="context" value="Add" i18n:attributes="value"/>
                 </form>
                 <br/>
-                <h3>Generic users access rights</h3>
+                <h3 i18n:translate="">Generic users access rights</h3>
                 <form name="SetGenericAccess" action="setGenericAccess" method="POST">
                 <table class="listing">
-                    <tr><th>Generic user</th><th>Current access right</th><th>Change to</th></tr>
-                    <tr><td valign="top"><b>Anonymous</b></td>
-                    <td><tal:block tal:content="context/AnomynousAccessRight" /></td>
+                    <tr><th i18n:translate="">Generic user</th><th i18n:translate="">Current access right</th><th i18n:translate="">Change to</th></tr>
+                    <tr><td valign="top"><b i18n:translate="">Anonymous</b></td>
+                    <td><tal:block tal:content="context/AnomynousAccessRight" /></td><!-- Add i18n support -->
                     <td>
                         <select name="anonymousaccessright">
-                            <option value="NoAccess">No access</option>
-                            <option value="PlominoReader">PlominoReader</option>
-                            <option value="PlominoAuthor">PlominoAuthor</option>
-                            <option value="PlominoEditor">PlominoEditor</option>
-                            <option value="PlominoDesigner">PlominoDesigner</option>
-                            <option value="PlominoManager">PlominoManager</option>
+                            <option value="NoAccess" i18n:translate="">No access</option>
+                            <option value="PlominoReader" i18n:translate="">PlominoReader</option>
+                            <option value="PlominoAuthor" i18n:translate="">PlominoAuthor</option>
+                            <option value="PlominoEditor" i18n:translate="">PlominoEditor</option>
+                            <option value="PlominoDesigner" i18n:translate="">PlominoDesigner</option>
+                            <option value="PlominoManager" i18n:translate="">PlominoManager</option>
                         </select>
                     </td></tr>
-                    <tr><td valign="top"><b>Authenticated</b></td>
-                    <td><tal:block tal:content="context/AuthenticatedAccessRight" /></td>
+                    <tr><td valign="top"><b i18n:translate="">Authenticated</b></td>
+                    <td><tal:block tal:content="context/AuthenticatedAccessRight" /></td><!-- Add i18n support -->
                     <td>
                         <select name="authenticatedaccessright">
-                            <option value="NoAccess">No access</option>
-                            <option value="PlominoReader">PlominoReader</option>
-                            <option value="PlominoAuthor">PlominoAuthor</option>
-                            <option value="PlominoEditor">PlominoEditor</option>
-                            <option value="PlominoDesigner">PlominoDesigner</option>
-                            <option value="PlominoManager">PlominoManager</option>
+                            <option value="NoAccess" i18n:translate="">No access</option>
+                            <option value="PlominoReader" i18n:translate="">PlominoReader</option>
+                            <option value="PlominoAuthor" i18n:translate="">PlominoAuthor</option>
+                            <option value="PlominoEditor" i18n:translate="">PlominoEditor</option>
+                            <option value="PlominoDesigner" i18n:translate="">PlominoDesigner</option>
+                            <option value="PlominoManager" i18n:translate="">PlominoManager</option>
                         </select>
                     </td></tr>
                 </table>
-                <input type="submit" class="context" value="Change"/>
+                <input type="submit" class="context" value="Change" i18n:attributes="value"/>
                 </form>
             </div>
         </fieldset>
 
         <fieldset>
-            <legend>User roles</legend>
+            <legend i18n:translate="">User roles</legend>
             <div>
 
                 <table class="listing">
-                    <tr><th>Roles</th><th>Users</th></tr>
+                    <tr><th i18n:translate="">Roles</th><th i18n:translate="">Users</th></tr>
                     <tal:block tal:repeat="r python:here.getUserRoles()">
                         <tr>
                             <td valign="top"><b><tal:block tal:content="r" /></b></td>
@@ -129,14 +129,14 @@ i18n:domain="plone">
                 </table>
                 <form name="AddPlominoUserRole" action="addPlominoUserRole" method="POST">
                     <table><tr>
-                        <td>Add new user role:</td>
+                        <td i18n:translate="">Add new user role:</td>
                         <td><input type="text" name="newrole" /></td>
-                        <td><input type="submit" class="context" value="Add"/></td></tr>
+                        <td><input type="submit" class="context" value="Add" i18n:attributes="value"/></td></tr>
                     </table>
                 </form>
                 <form name="RemovePlominoUserRole" action="removePlominoUserRole" method="POST">
                     <table><tr>
-                        <td>Remove user role:</td>
+                        <td i18n:translate="">Remove user role:</td>
                         <td><select name="role">
                             <tal:block tal:repeat="r python:here.getUserRoles()">
                                 <option tal:content="r" tal:attributes="value r">role</option>
@@ -144,12 +144,12 @@ i18n:domain="plone">
                             </tal:block>
                             </select>
                         </td>
-                        <td><input type="submit" class="context" value="Remove"/></td></tr>
+                        <td><input type="submit" class="context" value="Remove" i18n:attributes="value"/></td></tr>
                     </table>
                 </form>
                 <form name="AddPlominoRoleToUser" action="addPlominoRoleToUser" method="POST">
                     <table><tr>
-                        <td>Add role to user:</td><td>Role:</td>
+                        <td i18n:translate="">Add role to user:</td><td i18n:translate="">Role:</td>
                         <td><select name="role">
                             <tal:block tal:repeat="r python:here.getUserRoles()">
                                 <option tal:content="r" tal:attributes="value r">role</option>
@@ -157,7 +157,7 @@ i18n:domain="plone">
                             </tal:block>
                             </select>
                         </td>
-                        <td>User:</td>
+                        <td i18n:translate="">User:</td>
                         <td>
                         <tal:listusers tal:condition="python:not(context.do_not_list_users)">
                             <select name="user">
@@ -171,12 +171,12 @@ i18n:domain="plone">
                             <input type="text" name="user"/>
                         </tal:nolistusers>
                         </td>
-                        <td><input type="submit" class="context" value="Add"/></td></tr>
+                        <td><input type="submit" class="context" value="Add" i18n:attributes="value"/></td></tr>
                     </table>
                 </form>
                 <form name="RemovePlominoRoleFromUser" action="removePlominoRoleFromUser" method="POST">
                     <table><tr>
-                        <td>Remove role from user:</td><td>Role:</td>
+                        <td i18n:translate="">Remove role from user:</td><td i18n:translate="">Role:</td>
                         <td><select name="role">
                             <tal:block tal:repeat="r python:here.getUserRoles()">
                                 <option tal:content="r" tal:attributes="value r">role</option>
@@ -184,7 +184,7 @@ i18n:domain="plone">
                             </tal:block>
                             </select>
                         </td>
-                        <td>User:</td>
+                        <td i18n:translate="">User:</td>
                         <td>
                         <tal:listusers tal:condition="python:not(context.do_not_list_users)">
                         <select name="user">
@@ -198,7 +198,7 @@ i18n:domain="plone">
                             <input type="text" name="user"/>
                         </tal:nolistusers>
                         </td>
-                        <td><input type="submit" class="context" value="Remove"/></td></tr>
+                        <td><input type="submit" class="context" value="Remove" i18n:attributes="value"/></td></tr>
                     </table>
                 </form>
 
@@ -206,36 +206,36 @@ i18n:domain="plone">
         </fieldset>
 
         <fieldset>
-            <legend>Specific action rights</legend>
+            <legend i18n:translate="">Specific action rights</legend>
             <div>
                <form name="ManageSpecificRights" action="manage_specificrights" method="POST">
                     <table class="listing">
-                        <tr><th>Action</th><th>Access level</th><th>Change to</th></tr>
+                        <tr><th i18n:translate="">Action</th><th i18n:translate="">Access level</th><th i18n:translate="">Change to</th></tr>
                         <tr>
-                            <td><b>Delete document action</b></td>
+                            <td><b i18n:translate="">Delete document action</b></td>
                             <td><span tal:content="python:here.getSpecificRights('specific_deletedocument')">level</span></td>
                             <td><select name="specific_deletedocument">
-                                <option value="">Keep unchanged</option>
-                                <option value="PlominoReader">PlominoReader</option>
-                                <option value="PlominoAuthor">PlominoAuthor</option>
-                                <option value="PlominoEditor">PlominoEditor</option>
-                                <option value="PlominoDesigner">PlominoDesigner</option>
-                                <option value="PlominoManager">PlominoManager</option>
+                                <option value="" i18n:translate="">Keep unchanged</option>
+                                <option value="PlominoReader" i18n:translate="">PlominoReader</option>
+                                <option value="PlominoAuthor" i18n:translate="">PlominoAuthor</option>
+                                <option value="PlominoEditor" i18n:translate="">PlominoEditor</option>
+                                <option value="PlominoDesigner" i18n:translate="">PlominoDesigner</option>
+                                <option value="PlominoManager" i18n:translate="">PlominoManager</option>
                             </select>
                         </tr>
                     </table>
-                    <input type="submit" class="context" value="Change rights"/>
+                    <input type="submit" class="context" value="Change rights" i18n:attributes="value"/>
                 </form>
             </div>
         </fieldset>
     </div>
 
     <div id="content-core">
-        <h3>Current workflow state</h3>
-        <div>Note: Plone workflow state might impact Plomino access right settings.</div>
+        <h3 i18n:translate="">Current workflow state</h3>
+        <div i18n:translate="">Note: Plone workflow state might impact Plomino access right settings.</div>
         <table class="listing" tal:define="wfstates python:context.getWorkflowStates()">
-            <tr><th>Workflow</th><th>State</th></tr>
-            <tal:loop tal:repeat="w python:wfstates.keys()">
+            <tr><th i18n:translate="">Workflow</th><th i18n:translate="">State</th></tr>
+            <tal:loop tal:repeat="w python:wfstates.keys()"><!-- Add i18n support -->
                 <tr><td tal:content="w">workflow id</td><td><strong><span tal:content="python:wfstates[w]">state</span></strong></td></tr>
             </tal:loop>
         </table>

@@ -4,7 +4,7 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     lang="en"
     metal:use-macro="context/main_template/macros/master"
-    i18n:domain="plone">
+    i18n:domain="Products.CMFPlomino">
 <body>
 
 <metal:content fill-slot="main">
@@ -14,7 +14,7 @@
     <div id="content-core">
         <div class="pat-autotoc autotabs" data-pat-autotoc="section:fieldset;levels:legend;">
             <fieldset>
-                <legend>Structure</legend>
+                <legend i18n:translate="">Structure</legend>
                 <ul class="design-tree plomino-design"
                     tal:define="db python:context.getParentDatabase();">
                     <li>
@@ -24,15 +24,15 @@
                             <li tal:repeat="form python:db.getForms(sortbyid=True)">
                                 <input type="checkbox" tal:attributes="id string:designtree-forms-${form/id}" />
                                 <label tal:attributes="for string:designtree-forms-${form/id}" tal:content="form/id">form id</label>
-                                <a tal:attributes="href python:form.absolute_url_path()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
-                                <a tal:attributes="href python:form.absolute_url_path()+'/view'" class="link-icon"><i class="icon-doc-text" /></a>
-                                <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'" class="link-icon"><i class="icon-folder-empty" /></a>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/edit'" class="link-icon" title="Edit Form" i18n:attributes="title"><i class="icon-pencil" /></a>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/view'" class="link-icon" title="Show Form" i18n:attributes="title"><i class="icon-doc-text" /></a>
+                                <a tal:attributes="href python:form.absolute_url_path()+'/folder_contents'" class="link-icon" title="Access to folder contents" i18n:attributes="title"><i class="icon-folder-empty" /></a>
                                 <ul>
                                     <li><span i18n:translate="">Fields</span>
                                         <ul>
                                         <tal:fieldsforms tal:repeat="field python:form.getFormFields()">
                                             <li>
-                                                <a href="" tal:attributes="href python:field.absolute_url_path()+'/edit'" tal:content="field/id">Field name</a>
+                                                <a href="" tal:attributes="href python:field.absolute_url_path()+'/edit'" tal:content="field/id" title="Edit Field" i18n:attributes="title">Field name</a>
                                             </li>
                                         </tal:fieldsforms>
                                         </ul>
@@ -41,7 +41,7 @@
                                         <ul>
                                         <tal:hidewhens tal:repeat="h python:form.getHidewhenFormulas()">
                                             <li>
-                                                <a href="" tal:attributes="href python:h.absolute_url_path()+'/edit'" tal:content="h/id">Hide when name</a>
+                                                <a href="" tal:attributes="href python:h.absolute_url_path()+'/edit'" tal:content="h/id" title="Edit Hide when" i18n:attributes="title">Hide when name</a>
                                             </li>
                                         </tal:hidewhens>
                                         </ul>
@@ -50,7 +50,7 @@
                                         <ul>
                                             <tal:actionsforms tal:repeat="action_tuple python:form.getActions(None, False)">
                                                 <li tal:define="action python:action_tuple[0]">
-                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id">action name</a>
+                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id" title="Edit Action" i18n:attributes="title">action name</a>
                                                 </li>
                                             </tal:actionsforms>
                                         </ul>
@@ -59,7 +59,7 @@
                                         <tal:caches tal:repeat="c python:form.getCacheFormulas()">
                                         <ul>
                                             <li>
-                                                <a href="" tal:attributes="href python:c.absolute_url_path()+'/edit'" tal:content="c/id">Cache name</a>
+                                                <a href="" tal:attributes="href python:c.absolute_url_path()+'/edit'" tal:content="c/id" title="Edit Cache" i18n:attributes="title">Cache name</a>
                                             </li>
                                         </ul>
                                         </tal:caches>
@@ -75,15 +75,15 @@
                             <li tal:repeat="plominoview python:db.getViews(sortbyid=True)">
                                 <input type="checkbox" tal:attributes="id string:designtree-views-${plominoview/id}" />
                                 <label tal:attributes="for string:designtree-views-${plominoview/id}" tal:content="plominoview/id">view id</label>
-                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
-                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/view'" class="link-icon"><i class="icon-doc-text" /></a>
-                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/folder_contents'" class="link-icon"><i class="icon-folder-empty" /></a>
-                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/exportCSV'" class="link-icon"><i class="icon-link-ext" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/edit'" class="link-icon" title="Edit View" i18n:attributes="title"><i class="icon-pencil" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/view'" class="link-icon" title="Show View" i18n:attributes="title"><i class="icon-doc-text" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/folder_contents'" class="link-icon" title="Access to folder contents" i18n:attributes="title"><i class="icon-folder-empty" /></a>
+                                <a tal:attributes="href python:plominoview.absolute_url_path()+'/exportCSV'" class="link-icon" title="Export CSV file" i18n:attributes="title"><i class="icon-link-ext" /></a>
                                 <ul>
                                     <li><span i18n:translate="">Columns</span>
                                         <ul>
                                             <li tal:repeat="column python:plominoview.getColumns()">
-                                            <a href="" tal:attributes="href python:column.absolute_url()+'/edit'" tal:content="python:column.id">column name</a>
+                                            <a href="" tal:attributes="href python:column.absolute_url()+'/edit'" tal:content="python:column.id" title="Edit Column" i18n:attributes="title">column name</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -92,7 +92,7 @@
                                         <ul>
                                             <tal:actionsviews tal:repeat="action_tuple python:plominoview.getActions(False)">
                                                 <li tal:define="action python:action_tuple[0]">
-                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id">action name</a>
+                                                    <a href="" tal:attributes="href python:action.absolute_url()+'/edit'" tal:content="action/id" title="Edit Action" i18n:attributes="title">action name</a>
                                                 </li>
                                             </tal:actionsviews>
                                         </ul>
@@ -108,8 +108,8 @@
                             <tal:blockagents tal:repeat="agent python:db.getAgents()">
                                 <li>
                                     <tal:block tal:content="agent/id">agent name</tal:block>
-                                    <a href="" tal:attributes="href python:agent.absolute_url()+'/edit'" class="link-icon"><i class="icon-pencil" /></a>
-                                    <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'" class="link-icon"><i class="icon-cog-alt" /></a>
+                                    <a href="" tal:attributes="href python:agent.absolute_url()+'/edit'" class="link-icon" title="Edit Agent" i18n:attributes="title"><i class="icon-pencil" /></a>
+                                    <a href="" target="_new" tal:attributes="href python:agent.absolute_url()+'/runAgent'" class="link-icon" title="Execute the agent formula" i18n:attributes="title"><i class="icon-cog-alt" /></a>
                                 </li>
                             </tal:blockagents>
                         </ul>
@@ -118,7 +118,7 @@
             </fieldset>
 
             <fieldset>
-                <legend>Manage</legend>
+                <legend i18n:translate="">Manage</legend>
                 <ul><li><a class="standalone" href="./resources/manage_main" target="_new" i18n:translate="">Resources folder (ZMI)</a></li>
                     <li><a class="standalone" href="./plomino_index/manage_catalogView" target="_new" i18n:translate="">Index (ZMI)</a></li>
                     <li><a class="standalone" href="./plomino_documents/manage_main" i18n:translate="">Documents folder</a></li>
@@ -138,8 +138,8 @@
             </fieldset>
 
             <fieldset>
-                <legend>Import/export</legend>
-                <h3>Import</h3>
+                <legend i18n:translate="">Import/export</legend>
+                <h3 i18n:translate="">Import</h3>
                     <form name="ImportDesign" action="importDesign"  method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="mode" value="refresh"/>
                     <table tal:define="sourceURL request/sourceURL|nothing;
@@ -183,29 +183,29 @@
                         </tr>
                         <tr><td></td>
                             <td><label for="import-entire" i18n:translate="">Entire design</label></td>
-                            <td><input type="checkbox" name="entire" value="Yes" id="import-entire"/></td>
+                            <td><input type="checkbox" name="entire" value="Yes" id="import-entire" i18n:attributes="value" /></td>
                         </tr>
                         <tr><td></td>
                             <td i18n:translate="">or elements</td>
                             <td>
                             <select name="designelements" multiple="true" size="10">
                                 <tal:block tal:condition="sourceURL">
-                                    <option value="">== Forms ==</option>
+                                    <option value="" i18n:translate="">== Forms ==</option>
                                     <tal:block tal:repeat="f python:here.getRemoteForms(sourceURL, username, password)">
                                         <option tal:attributes="value f;"
                                             tal:content="python:f">value</option>
                                     </tal:block>
-                                    <option value="">== Views ==</option>
+                                    <option value="" i18n:translate="">== Views ==</option>
                                     <tal:block tal:repeat="v python:here.getRemoteViews(sourceURL, username, password)">
                                         <option tal:attributes="value v;"
                                             tal:content="python:v">value</option>
                                     </tal:block>
-                                    <option value="">== Agents ==</option>
+                                    <option value="" i18n:translate="">== Agents ==</option>
                                     <tal:block tal:repeat="a python:here.getRemoteAgents(sourceURL, username, password)">
                                         <option tal:attributes="value a;"
                                             tal:content="python:a">value</option>
                                     </tal:block>
-                                    <option value="">== Resources ==</option>
+                                    <option value="" i18n:translate="">== Resources ==</option>
                                     <tal:block tal:repeat="v python:here.getRemoteResources(sourceURL, username, password)">
                                         <option tal:attributes="value v;"
                                             tal:content="python:v">value</option>
@@ -217,11 +217,11 @@
                         </tr>
                         <tr><td colspan="3">
                                  <label for="no_refresh_documents" i18n:translate="">Do not refresh database after design update:</label>
-                                 <input type="checkbox" name="no_refresh_documents" id="no_refresh_documents" value="Yes"/><br/>
+                                 <input type="checkbox" name="no_refresh_documents" id="no_refresh_documents" value="Yes" i18n:attributes="value" /><br/>
                             </td></tr>
                         <tr><td colspan="3">
                                  <label for="replace_design" i18n:translate="">Replace mode:</label>
-                                 <input type="checkbox" name="replace_design" id="replace_design" value="Yes"/><br/>
+                                 <input type="checkbox" name="replace_design" id="replace_design" value="Yes" i18n:attributes="value" /><br/>
                              </td></tr>
                         <tr><td colspan="3">
                                  <input type="submit" class="context" value="Import" name="submit_import" i18n:attributes="value"/>
@@ -229,7 +229,7 @@
                     </table>
                 </form>
 
-                <h3>Export</h3>
+                <h3 i18n:translate="">Export</h3>
                 <form name="ExportDesign" action="exportDesign" method="POST">
                     <table>
                         <tr>
@@ -266,7 +266,7 @@
                         </tr>
                         <tr>
                             <td colspan="2"><label for="export-entire" i18n:translate="">Entire design</label></td>
-                            <td><input type="checkbox" name="entire" value="Yes" checked="checked" id="export-entire"/></td>
+                            <td><input type="checkbox" name="entire" value="Yes" checked="checked" id="export-entire" i18n:attributes="value"/></td>
                         </tr>
                         <tr>
                             <td colspan="2" i18n:translate="">or elements</td>
@@ -295,7 +295,7 @@
                         </tr>
                         <tr>
                             <td colspan="2"><label for="export-dbsettings" i18n:translate="">Include db settings</label></td>
-                            <td><input type="checkbox" name="dbsettings" value="Yes" checked="checked" id="export-dbsettings"/></td>
+                            <td><input type="checkbox" name="dbsettings" value="Yes" checked="checked" id="export-dbsettings" i18n:attributes="value" /></td>
                         </tr>
                         <tr><td colspan="2"><input type="submit" class="context" value="Export" name="submit_export" i18n:attributes="value"/></td><td></td></tr>
                     </table>

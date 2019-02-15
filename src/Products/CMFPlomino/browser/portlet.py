@@ -15,7 +15,7 @@ class IPortlet(IPortletDataProvider):
         title=_("Display design tree"),
         description=_(u"Embed the full design tree in the portlet."),
         vocabulary=schema.vocabulary.SimpleVocabulary.fromItems(
-            [('Yes', True), ('No', False)]),
+            [(_('Yes'), True), (_('No'), False)]),
         required=True)
 
 
@@ -176,8 +176,8 @@ class ElementPortletRenderer(base.Renderer):
         if element:
             return element.formLayout(self.request)
         else:
-            return "<p>The database cannot be found or the element cannot "
-            "be displayed.</p>"
+            return _("<p>The database cannot be found or the element cannot "
+            "be displayed.</p>")
 
     @property
     def header(self):

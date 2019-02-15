@@ -15,7 +15,7 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <h2 class="plone-modal-title">Insert a Sub-form</h2>
+                    <h2 class="plone-modal-title" i18n:translate="">Insert a Sub-form</h2>
                 </div>
                 <div class="plone-modal-body">
                     <!-- Form which adds the label -->

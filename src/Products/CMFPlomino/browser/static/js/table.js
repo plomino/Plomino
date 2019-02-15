@@ -20,7 +20,7 @@ require([
             if(self.options.source) {
                 self.$el.find('tr:not(.header-row)').remove();
                 var counter = self.$el.find('tr.header-row.count')
-                counter.find('td').text('Loading...');
+                counter.find('td').text('Loading...'); // TODO: Add i18n support
                 $.get(self.options.source, self.params, function(data) {
                     var html = '';
                     for(var i=0; i<data.rows.length; i++) {
@@ -46,9 +46,9 @@ require([
                         html += '</tr>';
                     }
                     if(data.rows.length > 1) {
-                        counter.find('td').text(data.rows.length + ' documents');
+                        counter.find('td').text(data.rows.length + ' documents'); // TODO: Add i18n support
                     } else {
-                        counter.find('td').text(data.rows.length + ' document');
+                        counter.find('td').text(data.rows.length + ' document'); // TODO: Add i18n support
                     }
                     counter.before(html);
                 });
@@ -56,7 +56,7 @@ require([
         },
         init_search: function() {
             var self = this;
-            var search = $('<input type="text" placeholder="Search"/>');
+            var search = $('<input type="text" placeholder="Search"/>'); // TODO: Add i18n support
             self.$el.before(search);
             search.on('submit', function() {return false;});
             var wait;
