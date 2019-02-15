@@ -4,6 +4,7 @@ Changelog
 2.0b8 (unreleased)
 ------------------
 
+- Updated Spanish translation [macagua]
 - Added support for plomino.tinymce domain [macagua]
 - Added more improvements about i18n [macagua]
 
