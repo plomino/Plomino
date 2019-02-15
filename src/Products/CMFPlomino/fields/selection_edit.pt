@@ -6,7 +6,10 @@
     selection python:options['selection'];
     lselection python:[f.split('|') for f in selection];
     lvalue python:[e[1] for e in lselection];
-    other_value python:[l for l in currentaslist if lvalue and l not in lvalue]"
+    other_value python:[l for l in currentaslist if lvalue and l not in lvalue];
+    tags python: None if not lselection else 'tags:'+  ','.join([v[1] for v in lselection])+'' ;
+    initialValues python: None if not lselection or not currentaslist else 'initialValues:'+','.join([v[1]+':'+v[0] for v in lselection if v[1] in currentaslist]);
+  "
     tal:attributes="class python:field.id + '-' + 'selectionfield' + (' combo-selectionfield' if field.allow_other_value else '') ">
     <tal:widget tal:condition="python:widget=='SELECT'">
         <tal:block tal:condition="python: not field.allow_other_value">
@@ -18,11 +21,8 @@
                 </tal:loop>
             </select>
          </tal:block>
-        <tal:block tal:condition="python:field.allow_other_value"
-                    tal:define="tags python: 'tags:'+  ','.join([v[1] for v in lselection])+'';
-                                initialValues python: 'initialValues:'+','.join([v[1]+':'+v[0] for v in lselection if v[1] in currentaslist]);
-                                value python: ','.join(currentaslist) ;maximumSelectionSize python:'maximumSelectionSize:1'">
-            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join([maximumSelectionSize,tags, initialValues]); value python:value"/>
+        <tal:block tal:condition="python:field.allow_other_value">
+            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join(v for v in ['maximumSelectionSize:1',tags, initialValues] if v); value python:','.join(currentaslist)"/>
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='MULTISELECT'">
@@ -37,11 +37,8 @@
                 </tal:loop>
             </select>
          </tal:block>
-        <tal:block tal:condition="python:field.allow_other_value"
-                    tal:define="tags python: 'tags:'+  ','.join([v[1] for v in lselection])+'';
-                                initialValues python: 'initialValues:'+','.join([v[1]+':'+v[0] for v in lselection if v[1] in currentaslist]);
-                                value python: ','.join(currentaslist)">
-            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join([tags, initialValues]); value python:value"/>
+        <tal:block tal:condition="python:field.allow_other_value">
+            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join(v for v in [tags, initialValues] if v); value python:','.join(currentaslist"/>
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='CHECKBOX'">
