@@ -35,7 +35,7 @@ for lang in $(find ../locales -mindepth 1 -maxdepth 1 -type d); do
     fi
 done
 
-# Synchronise the templates and scripts with the .pot.
+# Synchronise the Plone template and script with the .pot.
 i18ndude rebuild-pot --pot plone.pot \
     --create plone \
     ../configure.zcml \
@@ -49,6 +49,22 @@ for po in ../locales/*/LC_MESSAGES/plone.po; do
     MO=$lang/LC_MESSAGES/plone.mo
     echo "Compiling $MO"
     msgfmt -o $MO $lang/LC_MESSAGES/plone.po
+done
+
+# Synchronise the plomino.tinymce template and script with the .pot.
+i18ndude rebuild-pot --pot plomino.tinymce.pot \
+    --create plomino.tinymce \
+    ../configure.zcml \
+    ../profiles/default/
+
+# Synchronise the plomino.tinymce's pot file (Used for the workflows)
+for po in ../locales/*/LC_MESSAGES/plomino.tinymce.po; do
+    i18ndude sync --pot plomino.tinymce.pot $po
+
+    # Compile .po to .mo
+    MO=$lang/LC_MESSAGES/plomino.tinymce.mo
+    echo "Compiling $MO"
+    msgfmt -o $MO $lang/LC_MESSAGES/plomino.tinymce.po
 done
 
 ERRORS=`find ../ -name "*pt" | xargs i18ndude find-untranslated | grep -e '^-ERROR' | wc -l`
