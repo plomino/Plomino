@@ -1315,7 +1315,12 @@ class DesignManager:
             logger.info("Current design removed")
 
         for jsonstring in json_strings:
-            design = json.loads(jsonstring.encode('utf-8'), object_pairs_hook=OrderedDict)["design"]
+            try:
+                design = json.loads(jsonstring.encode('utf-8'), object_pairs_hook=OrderedDict)["design"]
+            except ValueError:
+                withlines = '\n'.join(['{:4d}: {}'.format(i, x.rstrip()) for i, x in enumerate(jsonstring.split('\n'), start=1)])
+                logger.error('Could not import \n'+withlines)
+                raise
             elements = design.items()
 
             if not total_elements:
