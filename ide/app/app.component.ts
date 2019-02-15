@@ -154,6 +154,7 @@ export class AppComponent implements OnInit {
   DIRECTION_RIGHT = 'right';
   wrapperWidth: number = 464;
   addDialog: HTMLDialogElement;
+  dbName = 'Plomino IDE';
 
   constructor(private treeService: TreeService,     
     private elementService: ElementService, 
@@ -297,6 +298,15 @@ export class AppComponent implements OnInit {
       require('./assets/scripts/macros.js');
       require('./assets/scripts/dynamic.js');
       require('./assets/scripts/links.js');
+    });
+
+    this.objService.getDB().subscribe(html=> {
+       //console.log($(html)[0].getElementsByTagName('title'));
+      $(html).each((idx, elem) => {
+        if (elem.tagName =='TITLE')
+         this.dbName =elem.innerHTML;
+      });
+
     });
   }
 
@@ -457,6 +467,7 @@ export class AppComponent implements OnInit {
     const dbLink = this.dbService.getDBLink();
     return dbLink.split('/').slice(0, -1).join('/')
   }
+
 
   private resolveData(data: any, resolver: Function): void {
     resolver(null, data);

@@ -131,6 +131,7 @@ Changelog
 - Display info message when search result is empty [quang]
 - Enable 'Allow other value' on selection field using select2 widget [quang]
 - Optionally don't display results on initial search form load. New setting [quang]
+- Display DB name in IDE title bar
 
 2.0b4 (2016-05-27)
 ------------------
