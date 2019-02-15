@@ -1,6 +1,7 @@
 *.egg-info
 *.mo
 *.pyc
+*.sublime-*
 .installed.cfg
 .mr.developer.cfg
 .project
@@ -13,6 +14,7 @@ parts/
 src/*
 !src/Products
 var/
+local/
 htmlcov/
 .coverage
 *.log
