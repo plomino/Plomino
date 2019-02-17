@@ -26,23 +26,29 @@ class INumberField(model.Schema):
 
     number_type = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Integer", "INTEGER"),
-            ("Float", "FLOAT"),
-            ("Decimal", "DECIMAL"),
+            (_("Integer"), "INTEGER"),
+            (_("Float"), "FLOAT"),
+            (_("Decimal"), "DECIMAL"),
         ]),
-        title=u'Type',
-        description=u'Number type',
+        title=_('CMFPlomino_label_number_type', 
+            default="Type"),
+        description=_('CMFPlomino_help_number_type', 
+            default="Number type"),
         default="INTEGER",
         required=True)
 
     size = schema.TextLine(
-        title=u'Size',
-        description=u'Length',
+        title=_('CMFPlomino_label_number_size', 
+            default="Size"),
+        description=_('CMFPlomino_help_number_size', 
+            default="Length"),
         required=False)
 
     format = schema.TextLine(
-        title=u'Format',
-        description=u'Number formatting (example: %1.2f)',
+        title=_('CMFPlomino_label_number_format', 
+            default="Format"),
+        description=_('CMFPlomino_help_number_format', 
+            default="Number formatting (example: \%1.2f)"),
         required=False)
 # bug in plone.autoform means order_after doesn't moves correctly
 INumberField.setTaggedValue(ORDER_KEY,

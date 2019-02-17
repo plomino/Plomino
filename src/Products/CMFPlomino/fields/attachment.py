@@ -19,9 +19,11 @@ class IAttachmentField(model.Schema):
 
     single_or_multiple = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems(
-            [("Single file", "SINGLE"), ("Multiple files", "MULTI")]),
-        title=u'Type',
-        description=u'Single or multiple file(s)',
+            [(_("Single file"), "SINGLE"), (_("Multiple files"), "MULTI")]),
+        title=_('CMFPlomino_label_single_or_multiple', 
+            default="Type"),
+        description=_('CMFPlomino_help_single_or_multiple', 
+            default="Single or multiple file(s)"),
         default="MULTI",
         required=True)
 

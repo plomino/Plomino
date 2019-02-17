@@ -12,6 +12,7 @@ from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary
 
+from .. import _
 from Products.CMFPlomino.utils import DatetimeToJS
 from Products.CMFPlomino.utils import StringToDate
 
@@ -22,23 +23,28 @@ class IDatetimeField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Default", "SERVER"),
-            ("JQuery datetime widget", "JQUERY")
+            (_("Default"), "SERVER"),
+            (_("JQuery datetime widget"), "JQUERY")
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget', 
+            default="Widget"),
+        description=_('CMFPlomino_help_widget', 
+            default="Field rendering"),
         default="SERVER",
         required=True)
 
     format = schema.TextLine(
-        title=u'Format',
-        description=u"Date/time format (if different than "
-        "database default format)",
+        title=_('CMFPlomino_label_format', 
+            default="Format"),
+        description=_('CMFPlomino_help_format', 
+            default="Date/time format (if different than database default format)"),
         required=False)
 
     startingyear = schema.TextLine(
-        title=u"Starting year",
-        description=u"Oldest year selectable in the calendar widget",
+        title=_('CMFPlomino_label_startingyear', 
+            default="Starting year"),
+        description=_('CMFPlomino_help_startingyear', 
+            default="Oldest year selectable in the calendar widget"),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

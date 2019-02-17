@@ -24,8 +24,7 @@ class IPlominoHidewhen(model.Schema):
         title=_('CMFPlomino_label_isDynamicHidewhen',
             default="Dynamic Hide-when"),
         description=_('CMFPlomino_help_isDynamicHidewhen',
-            default="Hide-when are evaluated dynamically when the user enters"
-            " information"),
+            default="Hide-when are evaluated dynamically when the user enters information"),
         required=True,
         default=False,
     )

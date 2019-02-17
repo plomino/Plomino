@@ -1,0 +1,2179 @@
+# CMFPlomino POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: 2019-02-10 02:46+0000\n"
+"PO-Revision-Date: Thu Sep 28 15:52:32 2006\n"
+"Last-Translator: [Volker TILL] <[vtill@till.net]>\n"
+"Language-Team: [Eric BREHAULT] <[ebrehault@gmail.com]>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: de\n"
+"Language-Name: German\n"
+"Preferred-Encodings: utf-8 latin1 iso-8859-1\n"
+"Domain: Products.CMFPlomino\n"
+"X-Is-Fallback-For: de-ch de-de de-at\n"
+
+#: ../contents/field.py:71
+msgid " (match any contained words)"
+msgstr ""
+
+#: ../contents/field.py:70
+msgid " (match exact value)"
+msgstr ""
+
+#: ../contents/field.py:72
+msgid " (match list elements)"
+msgstr ""
+
+#. Default: " document"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid " document"
+msgstr ""
+
+#. Default: " documents"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid " documents"
+msgstr ""
+
+#: ../fields/number.py:101
+msgid " must be a decimal (submitted value was: "
+msgstr ""
+
+#. Default: " must be a float (submitted value was: "
+#: ../fields/number.py:91
+msgid " must be a float (submitted value was: "
+msgstr " muss eine Fliesskomma-Zahl sein (der eingegebene Wert war: "
+
+#. Default: " must be an integer (submitted value was: "
+#: ../fields/number.py:81
+msgid " must be an integer (submitted value was: "
+msgstr " muss eine Integer-Zahl sein (der eigegebene Wert war: "
+
+#: ../browser/templates/openview.pt:79
+msgid "${listdocuments_count} documents"
+msgstr ""
+
+#: ../browser/templates/replication.pt:13
+msgid "${title_replication} replication"
+msgstr ""
+
+#: ../replication.py:413
+msgid "%d documents imported successfully, %d document(s) not imported"
+msgstr ""
+
+#: ../design.py:314
+msgid "%d documents re-cataloged"
+msgstr ""
+
+#: ../replication.py:118
+msgid "%s processed: %s document(s) imported, %s document(s) failed."
+msgstr ""
+
+#: ../replication.py:61
+msgid "%s: unmanaged action%s"
+msgstr ""
+
+#: ../browser/templates/design.pt:129
+msgid "(clean scripts, re-index documents, and check Plomino version migration)"
+msgstr ""
+
+#: ../browser/templates/design.pt:135
+msgid "(if the database allows portal catalog indexing, documents are re-indexed, else they are removed from the catalog)"
+msgstr ""
+
+#: ../browser/templates/design.pt:132
+msgid "(save all documents with their current form: computed fields and computed on save fields will be re-computed and stored, and documents are re-indexed)"
+msgstr ""
+
+#: ../browser/portlet.py:179
+msgid "<p>The database cannot be found or the element cannot be displayed.</p>"
+msgstr ""
+
+#: ../browser/templates/design.pt:203
+msgid "== Agents =="
+msgstr ""
+
+#: ../browser/templates/design.pt:193
+msgid "== Forms =="
+msgstr ""
+
+#: ../browser/templates/design.pt:208
+msgid "== Resources =="
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:64
+msgid "== Templates =="
+msgstr ""
+
+#: ../browser/templates/design.pt:198
+msgid "== Views =="
+msgstr ""
+
+#: ../browser/templates/editbaredocument.pt:63
+#: ../browser/templates/editdocument.pt:70
+msgid "A Plomino document always needs a Plomino form in order to be displayed or edited."
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "A single state workflow."
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:21
+msgid "Access control"
+msgstr ""
+
+#: ../browser/templates/acl.pt:213
+msgid "Access level"
+msgstr ""
+
+#: ../browser/templates/acl.pt:21
+msgid "Access right"
+msgstr ""
+
+#: ../browser/templates/acl.pt:16
+msgid "Access rights"
+msgstr ""
+
+#: ../browser/templates/design.pt:29
+#: ../browser/templates/design_portlet.pt:99
+msgid "Access to folder contents"
+msgstr ""
+
+#: ../browser/templates/acl.pt:213
+#: ../browser/templates/design_portlet.pt:53
+msgid "Action"
+msgstr ""
+
+#: ../browser/templates/design.pt:49
+#: ../browser/templates/design_portlet.pt:119
+msgid "Actions"
+msgstr ""
+
+#: ../browser/templates/acl.pt:76
+msgid "Add"
+msgstr ""
+
+#: ../browser/templates/acl.pt:57
+msgid "Add ACL entry:"
+msgstr ""
+
+#: ../browser/portlet.py:76
+msgid "Add a Plomino Element Portlet"
+msgstr ""
+
+#: ../contents/form.py:1440
+msgid "Add a new "
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:46
+msgid "Add new content"
+msgstr "Neues Dokument erstellen"
+
+#: ../browser/templates/acl.pt:132
+msgid "Add new user role:"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:30
+msgid "Add new..."
+msgstr ""
+
+#: ../browser/templates/acl.pt:152
+msgid "Add role to user:"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:38
+msgid "Agent"
+msgstr ""
+
+#: ../contents/agent.py:38
+msgid "Agent owner"
+msgstr ""
+
+#: ../browser/templates/design.pt:106
+#: ../browser/templates/design_portlet.pt:176
+msgid "Agents"
+msgstr ""
+
+#: ../contents/form.py:1413
+msgid "All "
+msgstr ""
+
+#: ../fields/datagrid.py:25
+msgid "Always dynamic"
+msgstr ""
+
+#: ../browser/templates/acl.pt:83
+msgid "Anonymous"
+msgstr ""
+
+#: ../browser/templates/acl.pt:95
+msgid "Authenticated"
+msgstr ""
+
+#: ../browser/templates/acl.pt:28
+msgid "Authors"
+msgstr ""
+
+#: ../contents/form.py:57
+msgid "Auto"
+msgstr ""
+
+#: ../config.py:50
+msgid "Boolean"
+msgstr ""
+
+# OpenDatabase
+#: ../browser/templates/design_portlet.pt:88
+#: ../browser/templates/opendatabase.pt:25
+msgid "Browse"
+msgstr "Ansichten"
+
+#: ../browser/templates/opendatabase.pt:27
+msgid "Browse all items"
+msgstr ""
+
+#: ../config.py:72
+msgid "Button"
+msgstr ""
+
+#. Default: "Code or parameter depending on the action type"
+#: ../contents/action.py:51
+msgid "CMFPlomino_help_ActionContent"
+msgstr "Je nach Typ der Aktion"
+
+#. Default: "How the action is shown"
+#: ../contents/action.py:41
+msgid "CMFPlomino_help_ActionDisplay"
+msgstr "Präsentationstyp der Aktion"
+
+#. Default: "Action is hidden if formula returns True"
+#: ../contents/action.py:60
+#, fuzzy
+msgid "CMFPlomino_help_ActionHidewhen"
+msgstr "Die Aktion wird verborgen, wenn die Berechnung der Formel 'True' ergibt"
+
+#. Default: "Display action in action bar (yes/no)"
+#: ../contents/action.py:68
+#, fuzzy
+msgid "CMFPlomino_help_ActionInActionBar"
+msgstr "Soll die Aktion in der Aktion-Anzeige erscheinen?"
+
+#. Default: "Select the type for this action"
+#: ../contents/action.py:33
+msgid "CMFPlomino_help_ActionType"
+msgstr "Wählen Sie den Typ der Aktion"
+
+#. Default: "Code to execute"
+#: ../contents/agent.py:24
+msgid "CMFPlomino_help_AgentContent"
+msgstr "Ausführbarer Code"
+
+#. Default: "Run the agent using current user access rights, or using the developer access rights."
+#: ../contents/agent.py:31
+msgid "CMFPlomino_help_AgentRunAs"
+msgstr ""
+
+#. Default: "Categorised on first column"
+#: ../contents/view.py:113
+#, fuzzy
+msgid "CMFPlomino_help_Categorized"
+msgstr "Kategorisiert anhand der Werte in der ersten Spalte"
+
+#. Default: "Python code returning the column value."
+#: ../contents/column.py:30
+msgid "CMFPlomino_help_ColumnFormula"
+msgstr "Formel, die den Wert für die Inhalte der Spalte berechnet."
+
+#. Default: "Format example: %Y-%m-%d"
+#: ../contents/database.py:65
+msgid "CMFPlomino_help_DateTimeFormat"
+msgstr "Beispiel: %Y-%m-%d"
+
+#. Default: "Field value to display in the column. It does not apply if Formula is provided."
+#: ../contents/column.py:21
+msgid "CMFPlomino_help_DisplayedField"
+msgstr ""
+
+#. Default: "If True, in ACL screen, users are entered using a free text field, if False, using a selection list. Use True when the amount of users is large."
+#: ../contents/database.py:90
+msgid "CMFPlomino_help_DoNotListUsers"
+msgstr ""
+
+#. Default: "If True, documents are not re-indexed automatically when views, columns or indexed fields are changed. Note: manual refresh db is then needed."
+#: ../contents/database.py:100
+msgid "CMFPlomino_help_DoNotReindex"
+msgstr ""
+
+#. Default: "Compute the document id at creation. (Undergoes normalization.)"
+#: ../contents/form.py:92
+msgid "CMFPlomino_help_DocumentId"
+msgstr ""
+
+#. Default: "Compute the document title"
+#: ../contents/form.py:68
+msgid "CMFPlomino_help_DocumentTitle"
+msgstr "Der Titel wird anhand dieser Formel erzeugt"
+
+#. Default: "Execute DocumentTitle formula when document is rendered"
+#: ../contents/form.py:77
+msgid "CMFPlomino_help_DynamicDocumentTitle"
+msgstr ""
+
+#. Default: "Custom rendering template in edit mode"
+#: ../contents/field.py:174
+msgid "CMFPlomino_help_FieldEditTemplate"
+msgstr "Template um das Feld im Bearbeiten-Modus anzuzeigen"
+
+#. Default: "How to calculate field content"
+#: ../contents/field.py:132
+msgid "CMFPlomino_help_FieldFormula"
+msgstr "Formel zur Berechnung der Feldwerte"
+
+#. Default: "The field will be searchable"
+#: ../contents/field.py:139
+msgid "CMFPlomino_help_FieldIndex"
+msgstr "Das Feld kann als Suchkriterium verwendet werden"
+
+#. Default: "The way the field values will be indexed"
+#: ../contents/field.py:147
+msgid "CMFPlomino_help_FieldIndexType"
+msgstr ""
+
+#. Default: "Is this field mandatory? (empty value will not be allowed)"
+#: ../contents/field.py:95
+msgid "CMFPlomino_help_FieldMandatory"
+msgstr "Wenn Sie diese Option wählen, wird das Dokument nur erstellt, wenn dieses Feld ausgefüllt ist."
+
+#. Default: "Custom rendering template in read mode"
+#: ../contents/field.py:166
+msgid "CMFPlomino_help_FieldReadTemplate"
+msgstr "Template um das Feld im Lese-Modus anzuzeigen"
+
+#. Default: "Evaluate the input validation"
+#: ../contents/field.py:106
+msgid "CMFPlomino_help_FieldValidation"
+msgstr "Zum Überprüfen der formalen Korrektheit der Eingabe"
+
+#. Default: "Documents open from the view will use the form defined by the following formula(they use their own form if empty)"
+#: ../contents/view.py:70
+#, fuzzy
+msgid "CMFPlomino_help_FormFormula"
+msgstr "Dokumente werden aus dieser Ansicht mit der angegebenen Formular-Formel geöffnet. (Wenn dieses Feld leer bleibt, wird die Standard-Formel verwendet)."
+
+#. Default: "Text with 'Plominofield' styles correspond to the contained field elements."
+#: ../contents/form.py:49
+#, fuzzy
+msgid "CMFPlomino_help_FormLayout"
+msgstr "Mit einem Wysiwyg-Editor können Sie das Layous der Formulars nach Belieben gestalten. Die Auszeichnungen (Stil) 'Plomino XXX' erlauben die Positionierung von Feldern, von 'Verbergen, wenn'-Formeln und von Aktionen"
+
+#. Default: "The form method: GET or POST or Auto (default)."
+#: ../contents/form.py:59
+msgid "CMFPlomino_help_FormMethod"
+msgstr ""
+
+#. Default: "CSS resources loaded by this form. Enter one path per line."
+#: ../contents/form.py:149
+msgid "CMFPlomino_help_FormResourcesCSS"
+msgstr ""
+
+#. Default: "JavaScript resources loaded by this form. Enter one path per line."
+#: ../contents/form.py:141
+msgid "CMFPlomino_help_FormResourcesJS"
+msgstr ""
+
+#. Default: "If enabled, documents are full-text indexed in the Plomino index."
+#: ../contents/database.py:42
+msgid "CMFPlomino_help_FulltextIndex"
+msgstr ""
+
+#. Default: "Inject DOM attributes in the field tag"
+#: ../contents/field.py:158
+msgid "CMFPlomino_help_HTMLAttributesFormula"
+msgstr ""
+
+#. Default: "Edit, Save, Delete, Close actions will not be displayed in the action bar"
+#: ../contents/form.py:101
+msgid "CMFPlomino_help_HideDefaultActions"
+msgstr ""
+
+#. Default: "Delete, Close actions will not be displayed in the action bar"
+#: ../contents/view.py:79
+msgid "CMFPlomino_help_HideViewDefaultActions"
+msgstr ""
+
+#. Default: "If returning True, the block will be hidden."
+#: ../contents/hidewhen.py:17
+msgid "CMFPlomino_help_HidewhenFormula"
+msgstr "Wenn die Berechnung der Formel 'True' ergibt, wird der betroffene Bereich verborgen."
+
+#. Default: "If enabled, files attached in File Attachment fields will be indexed. It might increase the index size."
+#: ../contents/database.py:33
+#, fuzzy
+msgid "CMFPlomino_help_IndexAttachments"
+msgstr "Wenn Sie diese Option wählen, werden angehängte Dateien indiziert, was den Katalog stark vergrössern kann."
+
+#. Default: "If enabled, documents are searchable in Plone search."
+#: ../contents/database.py:51
+msgid "CMFPlomino_help_IndexInPortal"
+msgstr ""
+
+#. Default: "If True, the database design can be exported in a GenericSetup profile and can then be used as a template in any Plomino database."
+#: ../contents/database.py:110
+msgid "CMFPlomino_help_IsDatabaseTemplate"
+msgstr ""
+
+#. Default: "Column used for key lookup, if different from sort column"
+#: ../contents/view.py:106
+msgid "CMFPlomino_help_KeyColumn"
+msgstr ""
+
+#. Default: "Reverse the sort ordering"
+#: ../contents/view.py:120
+msgid "CMFPlomino_help_ReverseSorting"
+msgstr "Kehrt die Sortier-Reihenfolge um"
+
+#. Default: "A search form is only used to search documents, it cannot be saved."
+#: ../contents/form.py:118
+msgid "CMFPlomino_help_SearchForm"
+msgstr "Mit einem Suchformular kann man nur suchen, keine Dokumente erstellen."
+
+#. Default: "Leave blank to use default ZCatalog search"
+#: ../contents/form.py:134
+msgid "CMFPlomino_help_SearchFormula"
+msgstr "Leer lassen, wenn die ZCatalog-Defaultsuche verwendet werden soll"
+
+#. Default: "View used to display the search results"
+#: ../contents/form.py:126
+msgid "CMFPlomino_help_SearchView"
+msgstr "Für das Suchen und das Anzeigen der Suchresultate"
+
+#. Default: "The view selection formula is a line of Python code which should return True or False. The formula will be evaluated for each document in the database to decide if the document must be displayed in the view or not. 'plominoDocument' is a reserved name in formulae: it returns the current Plomino document."
+#: ../contents/view.py:56
+#, fuzzy
+msgid "CMFPlomino_help_SelectionFormula"
+msgstr "Die Auswahl-Formel der Ansicht muss 'True' oder 'Faslse' zurückgeben. Sie entscheidet für jedes Dokument der Datenbank,  ob dieses Dokument in der Ansicht erscheinen soll oder nicht. 'plominoDocument' ist ein reserviertes Schlüsselwort in der Formel, es liefert das aktuelle Dokument. Jeder Wert eines Feldes im Dokument kann mit der Attribut-Schreibweise erreicht werden: plominoDocument.<fieldname>"
+
+#. Default: "Column used to sort the view, and for key lookup"
+#: ../contents/view.py:98
+#, fuzzy
+msgid "CMFPlomino_help_SortColumn"
+msgstr "Spalte, nach der die Dolumente in der Ansicht sortiert werden"
+
+#. Default: "Element to display instead of the regular database menu."
+#: ../contents/database.py:74
+msgid "CMFPlomino_help_StartPage"
+msgstr "Eine beliebige (bestehende) Seite, die Sie anstelle des normalen Menus als Startseite anzeigen wollen."
+
+#. Default: "Store computed title every time document is rendered"
+#: ../contents/form.py:84
+msgid "CMFPlomino_help_StoreDynamicDocumentTitle"
+msgstr ""
+
+#. Default: "Id of a .pt template located in the /resources folder. Leave blank to use default"
+#: ../contents/view.py:144
+#, fuzzy
+msgid "CMFPlomino_help_ViewTemplate"
+msgstr "Wenn das Feld leer bleibt, wird das Standardtemplate verwendet."
+
+#. Default: "Form to use to create/edit rows"
+#: ../fields/datagrid.py:39
+msgid "CMFPlomino_help_associated_form"
+msgstr ""
+
+#. Default: "Action to take when opening a blank form"
+#: ../contents/form.py:237
+msgid "CMFPlomino_help_beforeCreateDocument"
+msgstr ""
+
+#. Default: "Action to take before submitted values are saved into the document (submitted values are in context.REQUEST)"
+#: ../contents/form.py:201
+msgid "CMFPlomino_help_beforeSaveDocument"
+msgstr ""
+
+#. Default: "Used to name the javascript variable/functions and the DIV element"
+#: ../fields/googlevisualization.py:71
+msgid "CMFPlomino_help_chartid"
+msgstr ""
+
+#. Default: "If enabled, script and formula errors are logged."
+#: ../contents/database.py:58
+msgid "CMFPlomino_help_debugMode"
+msgstr "Wenn Sie diese Option wählen, werden Skript- und Formel-Fehler in die log-Datei geschrieben."
+
+#. Default: "Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')"
+#: ../fields/doclink.py:56
+msgid "CMFPlomino_help_documentslistformula"
+msgstr ""
+
+#. Default: "Size of the editable text area"
+#: ../fields/googlechart.py:23
+msgid "CMFPlomino_help_editrows"
+msgstr ""
+
+#. Default: "Field ids from the associated form, separated by commas."
+#: ../fields/datagrid.py:46
+msgid "CMFPlomino_help_field_mapping"
+msgstr ""
+
+#. Default: "Date/time format (if different than database default format)"
+#: ../fields/datetime.py:39
+msgid "CMFPlomino_help_format"
+msgstr ""
+
+#. Default: "Height in pixels"
+#: ../fields/richtext.py:21
+msgid "CMFPlomino_help_height"
+msgstr ""
+
+#. Default: "The first column with checkboxes will not be displayed"
+#: ../contents/view.py:128
+msgid "CMFPlomino_help_hide_checkboxes"
+msgstr ""
+
+#. Default: "i18n domain to use for Plomino internal translation"
+#: ../contents/database.py:82
+msgid "CMFPlomino_help_i18n"
+msgstr ""
+
+#. Default: "The field will be rendered dynamically when the user enters information"
+#: ../contents/field.py:122
+msgid "CMFPlomino_help_isDynamicField"
+msgstr ""
+
+#. Default: "Hide-when are evaluated dynamically when the user enters information"
+#: ../contents/hidewhen.py:26
+msgid "CMFPlomino_help_isDynamicHidewhen"
+msgstr ""
+
+#. Default: "A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc."
+#: ../contents/form.py:110
+msgid "CMFPlomino_help_isPage"
+msgstr "Mit einer Seite kann man keine Dokumente erstellen. Solche Formulare sind nur geeignet für Startseiten, Navigationsseiten, Berichte, Erklärungen usw."
+
+#. Default: "Google Vizualization code"
+#: ../fields/googlevisualization.py:36
+msgid "CMFPlomino_help_jssettings"
+msgstr ""
+
+#. Default: "View column used as label"
+#: ../fields/doclink.py:48
+msgid "CMFPlomino_help_labelcolumn"
+msgstr ""
+
+#. Default: "Number formatting (example: \%1.2f)"
+#: ../fields/number.py:50
+msgid "CMFPlomino_help_number_format"
+msgstr ""
+
+#. Default: "Length"
+#: ../fields/number.py:43
+msgid "CMFPlomino_help_number_size"
+msgstr ""
+
+#. Default: "Number type"
+#: ../fields/number.py:35
+msgid "CMFPlomino_help_number_type"
+msgstr ""
+
+#. Default: "Action to take when the document is created"
+#: ../contents/form.py:184
+msgid "CMFPlomino_help_onCreateDocument"
+msgstr "Diese Formel wird beim Erstellen eines Dokuments ausgeführt"
+
+#. Default: "Action to take before deleting the document"
+#: ../contents/form.py:219
+msgid "CMFPlomino_help_onDeleteDocument"
+msgstr "Diese Formel wird vor dem Löschen eines Dokuments ausgeführt"
+
+#. Default: "Action to take when the form is displayed"
+#: ../contents/form.py:175
+msgid "CMFPlomino_help_onDisplay"
+msgstr ""
+
+#. Default: "Action to take when the document is opened"
+#: ../contents/form.py:192
+msgid "CMFPlomino_help_onOpenDocument"
+msgstr "Diese Formel wird beim Öffnen eines Dokuments ausgeführt"
+
+#. Default: "Action to take when the view is opened. If a string is returned, it is considered an error message, and the opening is not allowed."
+#: ../contents/view.py:88
+msgid "CMFPlomino_help_onOpenView"
+msgstr ""
+
+#. Default: "Action to take when saving the document"
+#: ../contents/form.py:210
+msgid "CMFPlomino_help_onSaveDocument"
+msgstr "Diese Formel wird beim Speichern eines Dokuments ausgeführt"
+
+#. Default: "Action to take when submitting a search"
+#: ../contents/form.py:228
+msgid "CMFPlomino_help_onSearch"
+msgstr ""
+
+#. Default: "Render carriage returns in HTML"
+#: ../fields/text.py:48
+msgid "CMFPlomino_help_preserve_carriage_returns"
+msgstr ""
+
+#. Default: "The field will only display members of the specified group (empty = no group restriction)"
+#: ../fields/name.py:48
+msgid "CMFPlomino_help_restricttogroup"
+msgstr ""
+
+#. Default: "List of values to select, one per line, formatted as 'label|value'"
+#: ../fields/selection.py:52
+msgid "CMFPlomino_help_selectionlist"
+msgstr ""
+
+#. Default: "Formula to compute the selection list elements"
+#: ../fields/selection.py:62
+msgid "CMFPlomino_help_selectionlistformula"
+msgstr ""
+
+#. Default: "How the name is selected"
+#: ../fields/name.py:40
+msgid "CMFPlomino_help_selector"
+msgstr ""
+
+#. Default: "Only apply if multiple values will be displayed"
+#: ../fields/doclink.py:63
+#: ../fields/name.py:55
+#: ../fields/selection.py:69
+msgid "CMFPlomino_help_separator"
+msgstr ""
+
+#. Default: "Single or multiple file(s)"
+#: ../fields/attachment.py:25
+msgid "CMFPlomino_help_single_or_multiple"
+msgstr ""
+
+#. Default: "Length or rows (depending on the widget)"
+#: ../fields/text.py:41
+msgid "CMFPlomino_help_size"
+msgstr ""
+
+#. Default: "View containing the linkable documents"
+#: ../fields/doclink.py:41
+msgid "CMFPlomino_help_sourceview"
+msgstr ""
+
+#. Default: "Oldest year selectable in the calendar widget"
+#: ../fields/datetime.py:46
+msgid "CMFPlomino_help_startingyear"
+msgstr ""
+
+#. Default: "Use inline HTML, without AJAX."
+#: ../contents/view.py:136
+msgid "CMFPlomino_help_static_rendering"
+msgstr ""
+
+#. Default: "Single or multi-valued name field"
+#: ../fields/name.py:28
+msgid "CMFPlomino_help_type"
+msgstr ""
+
+#. Default: "Field rendering"
+#: ../fields/boolean.py:25
+#: ../fields/datagrid.py:30
+#: ../fields/datetime.py:31
+msgid "CMFPlomino_help_widget"
+msgstr ""
+
+#. Default: "Parameter or code"
+#: ../contents/action.py:50
+msgid "CMFPlomino_label_ActionContent"
+msgstr "Parameter oder Code"
+
+#. Default: "Action display"
+#: ../contents/action.py:40
+msgid "CMFPlomino_label_ActionDisplay"
+msgstr "Anzeige der Aktion"
+
+#. Default: "Action is hidden if formula returns True"
+#: ../contents/action.py:58
+#, fuzzy
+msgid "CMFPlomino_label_ActionHidewhen"
+msgstr "'Verbergen, wenn'-Formel"
+
+#. Default: "Display action in action bar (yes/no)"
+#: ../contents/action.py:66
+#, fuzzy
+msgid "CMFPlomino_label_ActionInActionBar"
+msgstr "Aktion im der Aktions-Anzeige anzeigen"
+
+#. Default: "Select the type for this action"
+#: ../contents/action.py:31
+#, fuzzy
+msgid "CMFPlomino_label_ActionType"
+msgstr "Typ der Aktion"
+
+#. Default: "Code to execute"
+#: ../contents/agent.py:23
+#, fuzzy
+msgid "CMFPlomino_label_AgentContent"
+msgstr "Code"
+
+#. Default: "Run as"
+#: ../contents/agent.py:30
+msgid "CMFPlomino_label_AgentRunAs"
+msgstr ""
+
+#. Default: "Categorized"
+#: ../contents/view.py:112
+msgid "CMFPlomino_label_Categorized"
+msgstr "Kategorisierung"
+
+#. Default: "Formula"
+#: ../contents/column.py:29
+msgid "CMFPlomino_label_ColumnFormula"
+msgstr "Formel"
+
+#. Default: "Date/time format"
+#: ../contents/database.py:64
+msgid "CMFPlomino_label_DateTimeFormat"
+msgstr "Format von Datum und Zeit"
+
+#. Default: "Displayed field"
+#: ../contents/column.py:20
+msgid "CMFPlomino_label_DisplayedField"
+msgstr ""
+
+#. Default: "Do not list portal users"
+#: ../contents/database.py:88
+msgid "CMFPlomino_label_DoNotListUsers"
+msgstr ""
+
+#. Default: "Do not re-index documents on design changes"
+#: ../contents/database.py:98
+msgid "CMFPlomino_label_DoNotReindex"
+msgstr ""
+
+#. Default: "Document id formula"
+#: ../contents/form.py:91
+msgid "CMFPlomino_label_DocumentId"
+msgstr ""
+
+#. Default: "Document title formula"
+#: ../contents/form.py:66
+msgid "CMFPlomino_label_DocumentTitle"
+msgstr "Titel des Dokuments"
+
+#. Default: "Compute document title on view"
+#: ../contents/form.py:74
+msgid "CMFPlomino_label_DynamicDocumentTitle"
+msgstr ""
+
+#. Default: "Field edit template"
+#: ../contents/field.py:172
+msgid "CMFPlomino_label_FieldEditTemplate"
+msgstr "Template für den Bearbeiten-Modus"
+
+#. Default: "Formula"
+#: ../contents/field.py:131
+msgid "CMFPlomino_label_FieldFormula"
+msgstr "Formel"
+
+#. Default: "Add to index"
+#: ../contents/field.py:138
+msgid "CMFPlomino_label_FieldIndex"
+msgstr "Den Inhalt des Feldes im Katalog indizieren"
+
+#. Default: "Index type"
+#: ../contents/field.py:146
+msgid "CMFPlomino_label_FieldIndexType"
+msgstr ""
+
+#. Default: "Mandatory"
+#: ../contents/field.py:94
+msgid "CMFPlomino_label_FieldMandatory"
+msgstr "Obligatorisch"
+
+#. Default: "Field mode"
+#: ../contents/field.py:112
+msgid "CMFPlomino_label_FieldMode"
+msgstr "Modus"
+
+#. Default: "Field read template"
+#: ../contents/field.py:164
+msgid "CMFPlomino_label_FieldReadTemplate"
+msgstr "Template für den Lese-Modus"
+
+#. Default: "Field type"
+#: ../contents/field.py:86
+msgid "CMFPlomino_label_FieldType"
+msgstr "Typ"
+
+#. Default: "Validation formula"
+#: ../contents/field.py:104
+msgid "CMFPlomino_label_FieldValidation"
+msgstr "Validation-Formel"
+
+#. Default: "Form formula"
+#: ../contents/view.py:69
+#, fuzzy
+msgid "CMFPlomino_label_FormFormula"
+msgstr "Formular-Formel"
+
+#. Default: "Form layout"
+#: ../contents/form.py:48
+msgid "CMFPlomino_label_FormLayout"
+msgstr "Layout des Formulars"
+
+#. Default: "Form method"
+#: ../contents/form.py:58
+msgid "CMFPlomino_label_FormMethod"
+msgstr ""
+
+#. Default: "CSS"
+#: ../contents/form.py:148
+msgid "CMFPlomino_label_FormResourcesCSS"
+msgstr ""
+
+#. Default: "JavaScripts"
+#: ../contents/form.py:140
+msgid "CMFPlomino_label_FormResourcesJS"
+msgstr ""
+
+#. Default: "Local full-text index"
+#: ../contents/database.py:40
+msgid "CMFPlomino_label_FulltextIndex"
+msgstr ""
+
+#. Default: "HTML attributes formula"
+#: ../contents/field.py:156
+msgid "CMFPlomino_label_HTMLAttributesFormula"
+msgstr ""
+
+#. Default: "Hidden column"
+#: ../contents/column.py:36
+msgid "CMFPlomino_label_HiddenColumn"
+msgstr "Verborgene Spalte"
+
+#. Default: "Hide default actions"
+#: ../contents/form.py:99
+msgid "CMFPlomino_label_HideDefaultActions"
+msgstr ""
+
+#. Default: "Hide default actions"
+#: ../contents/view.py:77
+msgid "CMFPlomino_label_HideViewDefaultActions"
+msgstr ""
+
+#. Default: "Formula"
+#: ../contents/hidewhen.py:16
+msgid "CMFPlomino_label_HidewhenFormula"
+msgstr "Formel"
+
+#. Default: "Index file attachments"
+#: ../contents/database.py:31
+msgid "CMFPlomino_label_IndexAttachments"
+msgstr "Index für angehängte Dateien erstellen"
+
+#. Default: "Index documents in Plone portal"
+#: ../contents/database.py:49
+msgid "CMFPlomino_label_IndexInPortal"
+msgstr ""
+
+#. Default: "Use it as a template"
+#: ../contents/database.py:108
+msgid "CMFPlomino_label_IsDatabaseTemplate"
+msgstr ""
+
+#. Default: "Key column"
+#: ../contents/view.py:105
+msgid "CMFPlomino_label_KeyColumn"
+msgstr ""
+
+#. Default: "Reverse sorting"
+#: ../contents/view.py:119
+#, fuzzy
+msgid "CMFPlomino_label_ReverseSorting"
+msgstr "Umgekehrte Sortierung"
+
+#. Default: "Search form"
+#: ../contents/form.py:117
+msgid "CMFPlomino_label_SearchForm"
+msgstr "Suchformular"
+
+#. Default: "Search formula"
+#: ../contents/form.py:133
+msgid "CMFPlomino_label_SearchFormula"
+msgstr "Suchformel"
+
+#. Default: "Search view"
+#: ../contents/form.py:125
+msgid "CMFPlomino_label_SearchView"
+msgstr "Suchansicht"
+
+#. Default: "Selection formula"
+#: ../contents/view.py:54
+msgid "CMFPlomino_label_SelectionFormula"
+msgstr "Auswahlformel"
+
+#. Default: "Sort column"
+#: ../contents/view.py:97
+msgid "CMFPlomino_label_SortColumn"
+msgstr "Spalte, nach der sortiert werden soll"
+
+#. Default: "Start page"
+#: ../contents/database.py:73
+msgid "CMFPlomino_label_StartPage"
+msgstr "Startseite"
+
+#. Default: "Store dynamically computed title"
+#: ../contents/form.py:82
+msgid "CMFPlomino_label_StoreDynamicDocumentTitle"
+msgstr ""
+
+#. Default: "Custom view template"
+#: ../contents/view.py:142
+#, fuzzy
+msgid "CMFPlomino_label_ViewTemplate"
+msgstr "Ansichtstemplate"
+
+#. Default: "Associated form"
+#: ../fields/datagrid.py:37
+msgid "CMFPlomino_label_associated_form"
+msgstr ""
+
+#. Default: "Before document creation"
+#: ../contents/form.py:235
+msgid "CMFPlomino_label_beforeCreateDocument"
+msgstr ""
+
+#. Default: "Before save document"
+#: ../contents/form.py:199
+msgid "CMFPlomino_label_beforeSaveDocument"
+msgstr ""
+
+#. Default: "Chart id"
+#: ../fields/googlevisualization.py:69
+msgid "CMFPlomino_label_chartid"
+msgstr ""
+
+#. Default: "Debug mode"
+#: ../contents/database.py:57
+msgid "CMFPlomino_label_debugMode"
+msgstr "Debug-Modus"
+
+#. Default: "Documents list formula"
+#: ../fields/doclink.py:54
+msgid "CMFPlomino_label_documentslistformula"
+msgstr ""
+
+#. Default: "Rows"
+#: ../fields/googlechart.py:21
+msgid "CMFPlomino_label_editrows"
+msgstr ""
+
+#. Default: "Fields/columns mapping"
+#: ../fields/datagrid.py:44
+msgid "CMFPlomino_label_field_mapping"
+msgstr ""
+
+#. Default: "Format"
+#: ../fields/datetime.py:37
+msgid "CMFPlomino_label_format"
+msgstr ""
+
+#. Default: "Height"
+#: ../fields/richtext.py:19
+msgid "CMFPlomino_label_height"
+msgstr ""
+
+#. Default: "Hide checkboxes"
+#: ../contents/view.py:126
+msgid "CMFPlomino_label_hide_checkboxes"
+msgstr ""
+
+#. Default: "i18n domain"
+#: ../contents/database.py:81
+msgid "CMFPlomino_label_i18n"
+msgstr ""
+
+#. Default: "Dynamic rendering"
+#: ../contents/field.py:120
+msgid "CMFPlomino_label_isDynamicField"
+msgstr ""
+
+#. Default: "Dynamic Hide-when"
+#: ../contents/hidewhen.py:24
+msgid "CMFPlomino_label_isDynamicHidewhen"
+msgstr ""
+
+#. Default: "Page"
+#: ../contents/form.py:108
+msgid "CMFPlomino_label_isPage"
+msgstr "Seite"
+
+#. Default: "Javascript settings"
+#: ../fields/googlevisualization.py:34
+msgid "CMFPlomino_label_jssettings"
+msgstr ""
+
+#. Default: "Label column"
+#: ../fields/doclink.py:46
+msgid "CMFPlomino_label_labelcolumn"
+msgstr ""
+
+#. Default: "Format"
+#: ../fields/number.py:48
+msgid "CMFPlomino_label_number_format"
+msgstr ""
+
+#. Default: "Size"
+#: ../fields/number.py:41
+msgid "CMFPlomino_label_number_size"
+msgstr ""
+
+#. Default: "Type"
+#: ../fields/number.py:33
+msgid "CMFPlomino_label_number_type"
+msgstr ""
+
+#. Default: "On create document"
+#: ../contents/form.py:182
+msgid "CMFPlomino_label_onCreateDocument"
+msgstr "Beim Erstellen eines Dokuments"
+
+#. Default: "On delete document"
+#: ../contents/form.py:217
+msgid "CMFPlomino_label_onDeleteDocument"
+msgstr "Beim Löschen eines Dokuments"
+
+#. Default: "On display"
+#: ../contents/form.py:173
+msgid "CMFPlomino_label_onDisplay"
+msgstr ""
+
+#. Default: "On open document"
+#: ../contents/form.py:191
+msgid "CMFPlomino_label_onOpenDocument"
+msgstr "Beim Öffnen eines Dokuments"
+
+#. Default: "On open view"
+#: ../contents/view.py:87
+msgid "CMFPlomino_label_onOpenView"
+msgstr ""
+
+#. Default: "On save document"
+#: ../contents/form.py:209
+msgid "CMFPlomino_label_onSaveDocument"
+msgstr "Beim Speichern eines Dokuments"
+
+#. Default: "On submission of search form"
+#: ../contents/form.py:226
+msgid "CMFPlomino_label_onSearch"
+msgstr ""
+
+#. Default: "Preserve carriage returns"
+#: ../fields/text.py:46
+msgid "CMFPlomino_label_preserve_carriage_returns"
+msgstr ""
+
+#. Default: "Restrict to group"
+#: ../fields/name.py:46
+msgid "CMFPlomino_label_restricttogroup"
+msgstr ""
+
+#. Default: "Search"
+#: ../browser/templates/actions.pt:93
+#: ../browser/templates/opendatabase.pt:34
+msgid "CMFPlomino_label_search"
+msgstr ""
+
+#. Default: "Selection list"
+#: ../fields/selection.py:50
+msgid "CMFPlomino_label_selectionlist"
+msgstr ""
+
+#. Default: "Selection list formula"
+#: ../fields/selection.py:60
+msgid "CMFPlomino_label_selectionlistformula"
+msgstr ""
+
+#. Default: "Selection mode"
+#: ../fields/name.py:38
+msgid "CMFPlomino_label_selector"
+msgstr ""
+
+#. Default: "Separator"
+#: ../fields/doclink.py:61
+#: ../fields/name.py:53
+#: ../fields/selection.py:67
+msgid "CMFPlomino_label_separator"
+msgstr ""
+
+#. Default: "Type"
+#: ../fields/attachment.py:23
+msgid "CMFPlomino_label_single_or_multiple"
+msgstr ""
+
+#. Default: "Size"
+#: ../fields/text.py:39
+msgid "CMFPlomino_label_size"
+msgstr ""
+
+#. Default: "Source view"
+#: ../fields/doclink.py:39
+msgid "CMFPlomino_label_sourceview"
+msgstr ""
+
+#. Default: "Starting year"
+#: ../fields/datetime.py:44
+msgid "CMFPlomino_label_startingyear"
+msgstr ""
+
+#. Default: "Static rendering"
+#: ../contents/view.py:134
+msgid "CMFPlomino_label_static_rendering"
+msgstr ""
+
+#. Default: "Type"
+#: ../fields/name.py:26
+msgid "CMFPlomino_label_type"
+msgstr ""
+
+#. Default: "Widget"
+#: ../fields/boolean.py:23
+#: ../fields/datagrid.py:28
+#: ../fields/datetime.py:29
+msgid "CMFPlomino_label_widget"
+msgstr ""
+
+#. Default: "If you don't specify a column formula, you need to select a field."
+#: ../contents/column.py:43
+msgid "CMFPlomino_validation_column"
+msgstr ""
+
+#: ../browser/templates/replication.pt:88
+msgid "CSV File"
+msgstr ""
+
+#: ../browser/templates/replication.pt:17
+msgid "CSV Importation"
+msgstr ""
+
+#: ../browser/templates/design.pt:58
+#: ../browser/templates/design_portlet.pt:128
+msgid "Caches"
+msgstr ""
+
+#: ../browser/templates/acl.pt:108
+msgid "Change"
+msgstr ""
+
+#: ../browser/templates/acl.pt:227
+msgid "Change rights"
+msgstr ""
+
+#: ../browser/templates/acl.pt:82
+msgid "Change to"
+msgstr ""
+
+#: ../fields/selection.py:39
+msgid "Checkboxes"
+msgstr ""
+
+#: ../browser/templates/replication.pt:68
+msgid "Choose columns separator. Text separator : double quote (\")."
+msgstr ""
+
+#: ../browser/templates/actions.pt:171
+#: ../browser/templates/tinymce/valid.pt:31
+#: ../config.py:64
+msgid "Close"
+msgstr "Schliessen"
+
+#: ../browser/templates/design_portlet.pt:67
+msgid "Column"
+msgstr ""
+
+#: ../browser/templates/replication.pt:56
+msgid "Column values stored as items in document and document is saved with selected form"
+msgstr ""
+
+#: ../browser/templates/design.pt:83
+#: ../browser/templates/design_portlet.pt:153
+msgid "Columns"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Comment about the last transition"
+msgstr ""
+
+#: ../config.py:55
+msgid "Computed"
+msgstr ""
+
+#: ../config.py:57
+msgid "Computed for display"
+msgstr ""
+
+#: ../config.py:56
+msgid "Computed on creation"
+msgstr ""
+
+#: ../config.py:58
+msgid "Computed on save"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:58
+msgid "Create a view based on the current form definition"
+msgstr ""
+
+#: ../browser/templates/acl.pt:82
+msgid "Current access right"
+msgstr ""
+
+#: ../contents/agent.py:37
+msgid "Current user"
+msgstr ""
+
+#: ../browser/templates/acl.pt:234
+msgid "Current workflow state"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:10
+msgid "Database"
+msgstr ""
+
+#: ../design.py:328
+msgid "Database is not cataloged"
+msgstr ""
+
+#: ../browser/portlet.py:103
+msgid "Database path"
+msgstr ""
+
+#: ../config.py:43
+msgid "Datagrid"
+msgstr ""
+
+#: ../config.py:42
+msgid "Date/Time"
+msgstr ""
+
+#: ../fields/number.py:31
+msgid "Decimal"
+msgstr ""
+
+#: ../contents/field.py:60
+#: ../fields/datetime.py:26
+msgid "Default"
+msgstr ""
+
+#: ../contents/field.py:58
+msgid "Default (%s)"
+msgstr ""
+
+#: ../browser/templates/replication.pt:82
+msgid "Default is UTF-8."
+msgstr ""
+
+#: ../browser/templates/actions.pt:123
+msgid "Delete"
+msgstr "Löschen"
+
+#: ../browser/templates/acl.pt:215
+msgid "Delete document action"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:7
+msgid "Design"
+msgstr ""
+
+#: ../browser/templates/acl.pt:40
+msgid "Designers"
+msgstr ""
+
+#: ../browser/portlet.py:15
+msgid "Display design tree"
+msgstr ""
+
+#: ../browser/templates/design.pt:219
+msgid "Do not refresh database after design update:"
+msgstr ""
+
+#. Default: "Do you really want to delete this document"
+#: ../browser/templates/action.pt
+msgid "Do you really want to delete this document"
+msgstr ""
+
+#. Default: "Do you really want to delete those documents"
+#: ../browser/templates/action.pt
+msgid "Do you really want to delete those documents"
+msgstr ""
+
+#: ../config.py:47
+msgid "Doclink"
+msgstr ""
+
+#: ../browser/templates/design.pt:124
+msgid "Documents folder"
+msgstr ""
+
+# Action bar buttons
+#: ../browser/templates/actions.pt:12
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: ../browser/templates/design.pt:53
+#: ../browser/templates/design_portlet.pt:123
+msgid "Edit Action"
+msgstr ""
+
+#: ../browser/templates/design.pt:111
+#: ../browser/templates/design_portlet.pt:181
+msgid "Edit Agent"
+msgstr ""
+
+#: ../browser/templates/design.pt:62
+#: ../browser/templates/design_portlet.pt:132
+msgid "Edit Cache"
+msgstr ""
+
+#: ../browser/templates/design.pt:86
+#: ../browser/templates/design_portlet.pt:156
+msgid "Edit Column"
+msgstr ""
+
+#: ../browser/templates/design.pt:35
+#: ../browser/templates/design_portlet.pt:105
+msgid "Edit Field"
+msgstr ""
+
+#: ../browser/templates/design.pt:27
+#: ../browser/templates/design_portlet.pt:97
+msgid "Edit Form"
+msgstr ""
+
+#: ../browser/templates/design.pt:44
+#: ../browser/templates/design_portlet.pt:114
+msgid "Edit Hide when"
+msgstr ""
+
+#: ../browser/templates/design.pt:78
+#: ../browser/templates/design_portlet.pt:148
+msgid "Edit View"
+msgstr ""
+
+#: ../browser/portlet.py:211
+msgid "Edit a Plomino Element Portlet"
+msgstr ""
+
+#: ../browser/portlet.py:89
+msgid "Edit the Plomino Design Portlet"
+msgstr ""
+
+#: ../config.py:54
+msgid "Editable"
+msgstr ""
+
+#: ../browser/templates/acl.pt:34
+msgid "Editors"
+msgstr ""
+
+#: ../browser/portlet.py:107
+msgid "Element ID"
+msgstr ""
+
+#: ../browser/portlet.py:16
+msgid "Embed the full design tree in the portlet."
+msgstr ""
+
+#: ../fields/doclink.py:28
+msgid "Embedded view"
+msgstr ""
+
+#: ../browser/templates/replication.pt:81
+msgid "Encoding"
+msgstr ""
+
+#: ../browser/templates/design.pt:185
+msgid "Entire design"
+msgstr ""
+
+#: ../contents/form.py:158
+msgid "Events"
+msgstr ""
+
+#: ../browser/templates/design.pt:112
+#: ../browser/templates/design_portlet.pt:182
+msgid "Execute the agent formula"
+msgstr ""
+
+#: ../browser/templates/design.pt:232
+#: ../browser/templates/replication.pt:162
+msgid "Export"
+msgstr ""
+
+#: ../browser/templates/design.pt:81
+#: ../browser/templates/design_portlet.pt:151
+msgid "Export CSV file"
+msgstr ""
+
+#: ../browser/templates/replication.pt:173
+msgid "Exported file will only contain documents listed in this view."
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:47
+msgid "Field"
+msgstr ""
+
+#: ../browser/templates/design.pt:31
+#: ../browser/templates/design_portlet.pt:101
+msgid "Fields"
+msgstr ""
+
+#: ../config.py:46
+msgid "File attachment"
+msgstr ""
+
+#: ../browser/templates/replication.pt:95
+msgid "File containing documents to import"
+msgstr ""
+
+#: ../fields/name.py:36
+msgid "Fill a field"
+msgstr ""
+
+#: ../fields/number.py:30
+msgid "Float"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:32
+msgid "Form"
+msgstr ""
+
+#: ../document.py:633
+msgid "Form %s does not exist."
+msgstr ""
+
+#: ../contents/form.py:868
+msgid "Form %s id missing"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:200
+msgid "Form and fields"
+msgstr ""
+
+#: ../browser/templates/replication.pt:49
+msgid "Form used to create documents"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:201
+msgid "Form, fields, and formulas"
+msgstr ""
+
+#: ../browser/templates/design.pt:22
+#: ../browser/templates/design_portlet.pt:92
+msgid "Forms"
+msgstr "Formulare"
+
+#: ../browser/templates/replication.pt:124
+msgid "From a JSON file"
+msgstr ""
+
+#: ../browser/templates/design.pt:150
+msgid "From file"
+msgstr ""
+
+#: ../browser/templates/design.pt:166
+msgid "From remote server"
+msgstr ""
+
+#: ../browser/templates/design.pt:158
+#: ../browser/templates/replication.pt:139
+msgid "From server folder"
+msgstr ""
+
+#: ../contents/form.py:57
+msgid "GET"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:58
+#: ../profiles/default/types/PlominoForm.xml
+msgid "Generate view"
+msgstr ""
+
+#: ../browser/templates/acl.pt:82
+msgid "Generic user"
+msgstr ""
+
+#: ../browser/templates/acl.pt:79
+msgid "Generic users access rights"
+msgstr ""
+
+#: ../browser/templates/errors.pt:16
+msgid "Go back"
+msgstr "Zurück"
+
+#: ../config.py:48
+msgid "Google chart"
+msgstr ""
+
+#: ../config.py:49
+msgid "Google visualization"
+msgstr ""
+
+#: ../fields/text.py:29
+msgid "Hidden"
+msgstr ""
+
+#: ../browser/templates/design.pt:40
+#: ../browser/templates/design_portlet.pt:50
+msgid "Hide when"
+msgstr ""
+
+#: ../browser/portlet.py:108
+msgid "ID of the form to be displayed"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:15
+msgid "IDE"
+msgstr ""
+
+#: ../browser/templates/design.pt:142
+#: ../browser/templates/replication.pt:104
+msgid "Import"
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:62
+msgid "Import a template"
+msgstr ""
+
+#: ../browser/templates/replication.pt:22
+msgid "Import report"
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:70
+msgid "Import template"
+msgstr ""
+
+#: ../browser/templates/design.pt:141
+#: ../browser/templates/design_portlet.pt:24
+#: ../profiles/default/types/PlominoDatabase.xml
+msgid "Import/export"
+msgstr ""
+
+#: ../design.py:1034
+msgid "Importing design"
+msgstr ""
+
+#: ../design.py:1099
+msgid "Importing design (%d%%)"
+msgstr ""
+
+#: ../replication.py:514
+msgid "Importing documents (%d%%)"
+msgstr ""
+
+#: ../replication.py:522
+msgid "Importing documents (%s)"
+msgstr ""
+
+#: ../replication.py:447
+msgid "Importing documents (0%)"
+msgstr ""
+
+#: ../browser/templates/design.pt:297
+msgid "Include db settings"
+msgstr ""
+
+#: ../browser/templates/design.pt:123
+msgid "Index (ZMI)"
+msgstr ""
+
+#: ../configure.zcml:23
+msgid "Installs the Products.CMFPlomino add-on."
+msgstr ""
+
+#: ../fields/number.py:29
+msgid "Integer"
+msgstr ""
+
+#: ../fields/datetime.py:27
+msgid "JQuery datetime widget"
+msgstr ""
+
+#: ../browser/templates/replication.pt:118
+msgid "JSON import/export"
+msgstr ""
+
+#: ../browser/templates/acl.pt:218
+msgid "Keep unchanged"
+msgstr ""
+
+#: ../browser/templates/replication.pt:27
+msgid "Line"
+msgstr ""
+
+#: ../config.py:70
+msgid "Link"
+msgstr ""
+
+#. Default: "Loading..."
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid "Loading..."
+msgstr ""
+
+#: ../fields/text.py:28
+msgid "Long text"
+msgstr ""
+
+#: ../browser/templates/design.pt:121
+msgid "Manage"
+msgstr ""
+
+#: ../profiles/default/types/PlominoDatabase.xml
+msgid "Manage access"
+msgstr ""
+
+#: ../profiles/default/types/PlominoDatabase.xml
+msgid "Manage design"
+msgstr ""
+
+#: ../browser/templates/acl.pt:46
+msgid "Managers"
+msgstr ""
+
+#: ../browser/templates/replication.pt:29
+msgid "Message"
+msgstr ""
+
+#: ../fields/name.py:24
+msgid "Multi valued"
+msgstr ""
+
+#: ../fields/doclink.py:27
+#: ../fields/selection.py:38
+msgid "Multi-selection list"
+msgstr ""
+
+#: ../fields/attachment.py:22
+msgid "Multiple files"
+msgstr ""
+
+#: ../config.py:44
+msgid "Name"
+msgstr ""
+
+#: ../browser/portlet.py:18
+msgid "No"
+msgstr ""
+
+#: ../browser/templates/acl.pt:87
+msgid "No access"
+msgstr ""
+
+#: ../browser/templates/editbaredocument.pt:62
+#: ../browser/templates/editdocument.pt:69
+msgid "No form defined to display this document."
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:198
+msgid "None"
+msgstr ""
+
+#: ../browser/templates/acl.pt:235
+msgid "Note: Plone workflow state might impact Plomino access right settings."
+msgstr ""
+
+#: ../config.py:40
+msgid "Number"
+msgstr ""
+
+#: ../config.py:62
+msgid "Open form"
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:35
+msgid "Open this form"
+msgstr ""
+
+#: ../config.py:63
+msgid "Open view"
+msgstr ""
+
+#: ../contents/form.py:57
+msgid "POST"
+msgstr ""
+
+#: ../browser/templates/profiling.pt:11
+msgid "PROFILING"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:12
+msgid "Parameters"
+msgstr ""
+
+#: ../browser/templates/design.pt:180
+msgid "Password"
+msgstr ""
+
+#: ../browser/templates/design.pt:161
+msgid "Path"
+msgstr ""
+
+#: ../browser/portlet.py:104
+msgid "Path of the database where the element is stored"
+msgstr ""
+
+# Please log in
+#: ../browser/templates/openbareform.pt:53
+#: ../browser/templates/openform.pt:58
+msgid "Please log in"
+msgstr "Bitte einloggen"
+
+#: ../browser/portlet.py:117
+msgid "Plomino Element Display"
+msgstr ""
+
+#: ../browser/templates/design.pt:153
+msgid "Plomino JSON file or in zip file"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Plomino Workflow"
+msgstr ""
+
+#: ../browser/portlet.py:27
+msgid "Plomino design portlet"
+msgstr ""
+
+#: ../profiles/default/types/PlominoAction.xml
+msgid "PlominoAction"
+msgstr "Plomino: Aktion"
+
+#: ../profiles/default/types/PlominoAgent.xml
+msgid "PlominoAgent"
+msgstr ""
+
+#: ../browser/templates/acl.pt:71
+msgid "PlominoAuthor"
+msgstr ""
+
+#: ../profiles/default/types/PlominoColumn.xml
+msgid "PlominoColumn"
+msgstr "Plomino: Spalte"
+
+#: ../profiles/default/types/PlominoDatabase.xml
+msgid "PlominoDatabase"
+msgstr "Plomino: Datenbank"
+
+#: ../browser/templates/acl.pt:73
+msgid "PlominoDesigner"
+msgstr ""
+
+#: ../browser/templates/acl.pt:72
+msgid "PlominoEditor"
+msgstr ""
+
+#: ../profiles/default/types/PlominoField.xml
+msgid "PlominoField"
+msgstr "Plomino: Feld"
+
+#: ../profiles/default/types/PlominoForm.xml
+msgid "PlominoForm"
+msgstr "Plomino: Formular"
+
+#: ../profiles/default/types/PlominoHidewhen.xml
+msgid "PlominoHidewhen"
+msgstr "Plomino: Verbergen, wenn"
+
+#: ../browser/templates/acl.pt:74
+msgid "PlominoManager"
+msgstr ""
+
+#: ../browser/templates/acl.pt:70
+msgid "PlominoReader"
+msgstr ""
+
+#: ../profiles/default/types/PlominoView.xml
+msgid "PlominoView"
+msgstr "Plomino: Ansicht"
+
+#: ../browser/portlet.py:99
+msgid "Portlet header"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Previous transition"
+msgstr ""
+
+#: ../configure.zcml:23
+msgid "Products.CMFPlomino"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:190
+msgid "Profiling"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Provides access to workflow history"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Published"
+msgstr ""
+
+#: ../config.py:66
+msgid "Python script"
+msgstr ""
+
+#: ../fields/selection.py:40
+msgid "Radio buttons"
+msgstr ""
+
+#: ../browser/templates/design.pt:131
+#: ../design.py:268
+msgid "Re-compute documents"
+msgstr ""
+
+#: ../design.py:281
+msgid "Re-compute documents (%d%%)"
+msgstr ""
+
+#: ../design.py:287
+msgid "Re-compute documents: %d documents computed successfully, %d errors(s)"
+msgstr ""
+
+#: ../browser/templates/design.pt:134
+msgid "Re-index documents in portal catalog"
+msgstr ""
+
+#: ../index/index.py:153
+msgid "Re-indexing"
+msgstr ""
+
+#: ../design.py:236
+msgid "Re-indexing %s (%d%%)"
+msgstr ""
+
+#: ../design.py:209
+msgid "Re-indexing %s (0%%)"
+msgstr ""
+
+#: ../browser/templates/acl.pt:22
+msgid "Readers"
+msgstr ""
+
+#: ../design.py:182
+#: ../events.py:19
+#: ../index/index.py:155
+msgid "Ready"
+msgstr ""
+
+#: ../config.py:67
+msgid "Redirect formula"
+msgstr ""
+
+#: ../browser/templates/design.pt:215
+msgid "Refresh"
+msgstr ""
+
+#: ../browser/templates/design.pt:128
+msgid "Refresh database"
+msgstr ""
+
+#: ../design.py:92
+msgid "Refreshing design"
+msgstr ""
+
+#: ../browser/templates/acl.pt:147
+msgid "Remove"
+msgstr ""
+
+#: ../browser/templates/acl.pt:179
+msgid "Remove role from user:"
+msgstr ""
+
+#: ../browser/templates/acl.pt:53
+msgid "Remove selected users"
+msgstr ""
+
+#: ../browser/templates/acl.pt:139
+msgid "Remove user role:"
+msgstr ""
+
+#: ../browser/templates/design.pt:223
+msgid "Replace mode:"
+msgstr ""
+
+#: ../browser/templates/design.pt:122
+msgid "Resources folder (ZMI)"
+msgstr ""
+
+#: ../browser/templates/replication.pt:166
+msgid "Restrict to view"
+msgstr ""
+
+#: ../config.py:41
+msgid "Rich text"
+msgstr ""
+
+#: ../browser/templates/acl.pt:152
+msgid "Role:"
+msgstr ""
+
+#: ../browser/templates/acl.pt:118
+msgid "Roles"
+msgstr ""
+
+#: ../browser/templates/actions.pt:46
+#: ../config.py:65
+msgid "Save"
+msgstr "Speichern"
+
+#. Default: "Search"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid "Search"
+msgstr "Suche"
+
+#: ../fields/name.py:35
+msgid "Select in a list"
+msgstr ""
+
+#: ../config.py:45
+#: ../fields/doclink.py:26
+#: ../fields/selection.py:37
+msgid "Selection list"
+msgstr ""
+
+#: ../browser/templates/replication.pt:67
+msgid "Separator"
+msgstr ""
+
+#: ../browser/templates/design.pt:28
+#: ../browser/templates/design_portlet.pt:98
+msgid "Show Form"
+msgstr ""
+
+#: ../browser/templates/design.pt:79
+#: ../browser/templates/design_portlet.pt:149
+msgid "Show View"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:204
+msgid "Show results"
+msgstr ""
+
+#: ../fields/boolean.py:21
+msgid "Single checkbox"
+msgstr ""
+
+#: ../fields/attachment.py:22
+msgid "Single file"
+msgstr ""
+
+#: ../fields/name.py:23
+msgid "Single valued"
+msgstr ""
+
+#: ../browser/templates/design.pt:169
+msgid "Source URL"
+msgstr ""
+
+#: ../browser/templates/acl.pt:209
+msgid "Specific action rights"
+msgstr ""
+
+#: ../browser/templates/acl.pt:237
+#: ../browser/templates/replication.pt:28
+msgid "State"
+msgstr ""
+
+#: ../fields/datagrid.py:26
+msgid "Static in read mode"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:77
+msgid "Status"
+msgstr ""
+
+#: ../browser/templates/design.pt:17
+msgid "Structure"
+msgstr ""
+
+#: ../config.py:71
+msgid "Submit button"
+msgstr ""
+
+#: ../browser/templates/design.pt:256
+msgid "Target URL"
+msgstr ""
+
+#: ../config.py:39
+#: ../fields/text.py:27
+msgid "Text"
+msgstr ""
+
+#: ../index/index.py:187
+msgid "The %s index does not allow sorting"
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "The ID of the user who performed the previous transition"
+msgstr ""
+
+#: ../browser/templates/opendatabase.pt:57
+msgid "The database is empty"
+msgstr ""
+
+#: ../browser/portlet.py:201
+msgid "This portlet displays an element of a Plomino database."
+msgstr ""
+
+#: ../browser/portlet.py:77
+msgid "This portlet provides access to Plomino design features."
+msgstr ""
+
+#: ../browser/portlet.py:100
+msgid "Title of the rendered portlet"
+msgstr ""
+
+#: ../browser/templates/design.pt:237
+#: ../browser/templates/replication.pt:184
+msgid "To JSON file"
+msgstr ""
+
+#: ../browser/templates/design.pt:241
+msgid "To ZIP file"
+msgstr ""
+
+#: ../browser/templates/design.pt:253
+msgid "To remote server"
+msgstr ""
+
+#: ../browser/templates/design.pt:245
+#: ../browser/templates/replication.pt:194
+msgid "To server folder"
+msgstr ""
+
+#: ../browser/templates/acl.pt:114
+msgid "User roles"
+msgstr ""
+
+#: ../browser/templates/acl.pt:160
+msgid "User:"
+msgstr ""
+
+#: ../browser/templates/design.pt:175
+msgid "Username"
+msgstr ""
+
+#: ../browser/templates/acl.pt:21
+msgid "Users"
+msgstr ""
+
+#: ../browser/templates/acl.pt:19
+msgid "Users access rights"
+msgstr ""
+
+# ErrorsMessages
+#: ../browser/templates/errors.pt:9
+msgid "Validation failed"
+msgstr "Formal falsche Eingabe!"
+
+#: ../browser/templates/design_portlet.pt:35
+msgid "View"
+msgstr ""
+
+#: ../browser/templates/design.pt:73
+#: ../browser/templates/design_portlet.pt:143
+msgid "Views"
+msgstr "Ansichten"
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "Visible to everyone, editable by the owner."
+msgstr ""
+
+#: ../profiles/default/workflows/plomino_workflow/definition.xml
+msgid "When the previous transition was performed"
+msgstr ""
+
+#: ../browser/templates/acl.pt:237
+msgid "Workflow"
+msgstr ""
+
+#: ../browser/portlet.py:18
+#: ../browser/templates/design.pt:186
+msgid "Yes"
+msgstr ""
+
+#: ../contents/database.py:247
+msgid "You cannot delete this document."
+msgstr ""
+
+#: ../browser/templates/replication.pt:175
+msgid "[All documents]"
+msgstr ""
+
+#: ../replication.py:29
+msgid "comma (,)"
+msgstr ""
+
+#: ../replication.py:33
+msgid "dash (-)"
+msgstr ""
+
+#: ../design.py:1272
+msgid "distinct formulas"
+msgstr ""
+
+#: ../replication.py:32
+msgid "end of line"
+msgstr ""
+
+#: ../replication.py:57
+msgid "error while importing: %s%s"
+msgstr ""
+
+#: ../design.py:1267
+msgid "formulas"
+msgstr ""
+
+# Error messages
+#. Default: "is mandatory"
+#: ../document.py:718
+msgid "is mandatory"
+msgstr "Erforderlich"
+
+#. Default: "(Required)"
+#: ../browser/templates/replication.pt:50
+msgid "label_required"
+msgstr ""
+
+#: ../browser/templates/design_portlet.pt:57
+msgid "or"
+msgstr ""
+
+#: ../browser/templates/design.pt:189
+msgid "or elements"
+msgstr ""
+
+#: ../replication.py:28
+msgid "semicolon (;)"
+msgstr ""
+
+#: ../replication.py:30
+msgid "tabulation"
+msgstr ""
+
+#. Default: "Required"
+#: ../browser/templates/replication.pt:50
+msgid "title_required"
+msgstr ""
+
+#: ../replication.py:31
+msgid "white space"
+msgstr ""

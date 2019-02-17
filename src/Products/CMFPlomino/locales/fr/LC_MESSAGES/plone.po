@@ -1,49 +1,103 @@
 msgid ""
-msgstr
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-01-28 03:02+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
 
-msgid "PlominoAction"
-msgstr "Plomino: Action"
-
-#. Default: "Plomino: Cache"
-msgid "PlominoCache"
+#: ../profiles/default/portlets.xml
+msgid "Add/manage design items"
 msgstr ""
 
-msgid "PlominoColumn"
-msgstr "Plomino: Colonne"
+#: ../profiles/default/registry.xml
+msgid "Bold|bold|bold"
+msgstr ""
 
-msgid "PlominoDatabase"
-msgstr "Plomino: Database"
+#: ../profiles/default/registry.xml
+msgid "Code|code|code"
+msgstr ""
 
-msgid "PlominoDocument"
-msgstr "Plomino: Document"
+#: ../profiles/default/portlets.xml
+msgid "Display Plomino elements"
+msgstr ""
 
-msgid "PlominoField"
-msgstr "Plomino: Champ"
+#: ../profiles/default/registry.xml
+msgid "Displayed content types"
+msgstr ""
 
-msgid "PlominoForm"
-msgstr "Plomino: Formulaire"
+#: ../profiles/default/registry.xml
+msgid "Enter a JSON-formatted style format configuration. A format is for example the style that get applied when you press the bold button inside the editor. See http://www.tinymce.com/wiki.php/Configuration:formats"
+msgstr ""
 
-msgid "PlominoHidewhen"
-msgstr "Plomino: Cacher quand"
+#: ../profiles/default/registry.xml
+msgid "Formats"
+msgstr ""
 
-msgid "PlominoView"
-msgstr "Plomino: Vue"
+#: ../profiles/default/registry.xml
+msgid "Inline styles"
+msgstr ""
 
-msgid "Forms"
-msgstr "Formulaires"
+#: ../profiles/default/registry.xml
+msgid "Italic|italic|italic"
+msgstr ""
 
-msgid "Views"
-msgstr "Vues"
+#: ../profiles/default/registry.xml
+msgid "Name|format|icon"
+msgstr ""
 
-msgid "ACL"
-msgstr "ACL"
+#: ../profiles/default/registry.xml
+msgid "Plomino action|plominoaction|plominoaction"
+msgstr ""
 
-msgid "About"
-msgstr "A propos"
+#: ../profiles/default/portlets.xml
+msgid "Plomino design portlet"
+msgstr ""
 
-msgid "Using"
-msgstr "Aide"
+#: ../profiles/default/portlets.xml
+msgid "Plomino element portlet"
+msgstr ""
 
-msgid "Compose"
-msgstr "Rédiger"
+#: ../profiles/default/registry.xml
+msgid "Plomino field|plominofield|plominofield"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Plomino hide-when|plominohidewhen|plominohidewhen"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Plomino label|plominolabel|plominolabel"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Plomino subform|plominosubform|plominosubform"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Strikethrough|strikethrough|strikethrough"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Subscript|subscript|subscript"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Superscript|superscript|superscript"
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "The content types that should be shown in the navigation and site map."
+msgstr ""
+
+#: ../profiles/default/registry.xml
+msgid "Underline|underline|underline"
+msgstr ""

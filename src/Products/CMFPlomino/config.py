@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from . import _
 import os
 import logging
 logger = logging.getLogger('Plomino')
@@ -33,40 +36,40 @@ MSG_SEPARATOR = '\n'
 PLOMINO_RESOURCE_NAME = "plomino"
 
 FIELD_TYPES = {
-    "TEXT": ["Text", "FieldIndex"],
-    "NUMBER": ["Number", "FieldIndex"],
-    "RICHTEXT": ["Rich text", "ZCTextIndex"],
-    "DATETIME": ["Date/Time", "DateIndex"],
-    "DATAGRID": ["Datagrid", "ZCTextIndex"],
-    "NAME": ["Name", "FieldIndex"],
-    "SELECTION": ["Selection list", "KeywordIndex"],
-    "ATTACHMENT": ["File attachment", "ZCTextIndex"],
-    "DOCLINK": ["Doclink", "KeywordIndex"],
-    "GOOGLECHART": ["Google chart", "FieldIndex"],
-    "GOOGLEVISUALIZATION": ["Google visualization", "FieldIndex"],
-    "BOOLEAN": ["Boolean", "FieldIndex"],
+    "TEXT": [_("Text"), "FieldIndex"],
+    "NUMBER": [_("Number"), "FieldIndex"],
+    "RICHTEXT": [_("Rich text"), "ZCTextIndex"],
+    "DATETIME": [_("Date/Time"), "DateIndex"],
+    "DATAGRID": [_("Datagrid"), "ZCTextIndex"],
+    "NAME": [_("Name"), "FieldIndex"],
+    "SELECTION": [_("Selection list"), "KeywordIndex"],
+    "ATTACHMENT": [_("File attachment"), "ZCTextIndex"],
+    "DOCLINK": [_("Doclink"), "KeywordIndex"],
+    "GOOGLECHART": [_("Google chart"), "FieldIndex"],
+    "GOOGLEVISUALIZATION": [_("Google visualization"), "FieldIndex"],
+    "BOOLEAN": [_("Boolean"), "FieldIndex"],
 }
 
 FIELD_MODES = [
-    ["EDITABLE", "Editable"],
-    ["COMPUTED", "Computed"],
-    ["CREATION", "Computed on creation"],
-    ["DISPLAY", "Computed for display"],
-    ["COMPUTEDONSAVE", "Computed on save"],
+    ["EDITABLE", _("Editable")],
+    ["COMPUTED", _("Computed")],
+    ["CREATION", _("Computed on creation")],
+    ["DISPLAY", _("Computed for display")],
+    ["COMPUTEDONSAVE", _("Computed on save")],
 ]
 
 ACTION_TYPES = [
-    ["OPENFORM", "Open form"],
-    ["OPENVIEW", "Open view"],
-    ["CLOSE", "Close"],
-    ["SAVE", "Save"],
-    ["PYTHON", "Python script"],
-    ["REDIRECT", "Redirect formula"]
+    ["OPENFORM", _("Open form")],
+    ["OPENVIEW", _("Open view")],
+    ["CLOSE", _("Close")],
+    ["SAVE", _("Save")],
+    ["PYTHON", _("Python script")],
+    ["REDIRECT", _("Redirect formula")]
 ]
 ACTION_DISPLAY = [
-    ["LINK", "Link"],
-    ["SUBMIT", "Submit button"],
-    ["BUTTON", "Button"]
+    ["LINK", _("Link")],
+    ["SUBMIT", _("Submit button")],
+    ["BUTTON", _("Button")]
 ]
 
 RENAME_AFTER_CREATION_ATTEMPTS = 100

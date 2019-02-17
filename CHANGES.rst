@@ -4,7 +4,12 @@ Changelog
 2.0b8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed Error downloading extends for URL 
+  https://launchpad.net/plone/5.1/5.0.10/+download/Plone-5.0.10-UnifiedInstaller.tgz: 
+  HTTP Error 404: Not Found [macagua]
+- Updated Spanish translation [macagua]
+- Added support for plomino.tinymce domain [macagua]
+- Added more improvements about i18n [macagua]
 
 
 2.0b7 (2017-02-15)

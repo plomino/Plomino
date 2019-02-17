@@ -17,6 +17,9 @@ from zope import component
 from zope.interface import implements
 
 import interfaces
+
+_ = MessageFactory('Products.CMFPlomino')
+
 from config import (
     ADD_DESIGN_PERMISSION,
     ADD_CONTENT_PERMISSION,
@@ -29,8 +32,6 @@ from config import (
     PLOMINO_RESOURCE_NAME,
 )
 from utils import StringToDate
-
-_ = MessageFactory('Products.CMFPlomino')
 
 
 # Override default JSONEncoder/JSONDecoder classes in jsonutil to handle

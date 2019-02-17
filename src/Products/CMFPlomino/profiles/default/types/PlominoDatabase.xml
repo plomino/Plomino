@@ -46,17 +46,17 @@
     url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="Manage design" action_id="manage_db" category="object_buttons" condition_expr=""
+  <action title="Manage design" i18n:attributes="title" action_id="manage_db" category="object_buttons" condition_expr=""
     description="" icon_expr="" link_target=""
     url_expr="string:${object_url}/DatabaseDesign" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="Manage access" action_id="manage_acl" category="object_buttons" condition_expr=""
+  <action title="Manage access" i18n:attributes="title" action_id="manage_acl" category="object_buttons" condition_expr=""
     description="" icon_expr="" link_target=""
     url_expr="string:${object_url}/DatabaseACL" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="Import/export" action_id="manage_replication" category="object_buttons" condition_expr=""
+  <action title="Import/export" i18n:attributes="title" action_id="manage_replication" category="object_buttons" condition_expr=""
     description="" icon_expr="" link_target=""
     url_expr="string:${object_url}/DatabaseReplication" visible="True">
     <permission value="Modify portal content"/>

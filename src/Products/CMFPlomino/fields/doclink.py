@@ -23,36 +23,45 @@ class IDoclinkField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Selection list", "SELECT"),
-            ("Multi-selection list", "MULTISELECT"),
-            ("Embedded view", "VIEW"),
+            (_("Selection list"), "SELECT"),
+            (_("Multi-selection list"), "MULTISELECT"),
+            (_("Embedded view"), "VIEW"),
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget', 
+            default="Widget"),
+        description=_('CMFPlomino_help_widget', 
+            default="Field rendering"),
         default="SELECT",
         required=True)
 
     sourceview = schema.Choice(
         vocabulary='Products.CMFPlomino.fields.vocabularies.get_views',
-        title=u'Source view',
-        description=u'View containing the linkable documents',
+        title=_('CMFPlomino_label_sourceview', 
+            default="Source view"),
+        description=_('CMFPlomino_help_sourceview', 
+            default="View containing the linkable documents"),
         required=False)
 
     labelcolumn = schema.TextLine(
-        title=u'Label column',
-        description=u'View column used as label',
+        title=_('CMFPlomino_label_labelcolumn', 
+            default="Label column"),
+        description=_('CMFPlomino_help_labelcolumn', 
+            default="View column used as label"),
         required=False)
 
     form.widget('documentslistformula', klass='plomino-formula')
     documentslistformula = schema.Text(
-        title=u'Documents list formula',
-        description=u"Formula to compute the linkable documents list "
-        "(must return a list of 'label|docid_or_path')",
+        title=_('CMFPlomino_label_documentslistformula', 
+            default="Documents list formula"),
+        description=_('CMFPlomino_help_documentslistformula', 
+            default="Formula to compute the linkable documents list (must return a list of 'label|docid_or_path')"),
         required=False)
 
     separator = schema.TextLine(
-        title=u'Separator',
-        description=u'Only apply if multiple values will be displayed',
+        title=_('CMFPlomino_label_separator', 
+            default="Separator"),
+        description=_('CMFPlomino_help_separator', 
+            default="Only apply if multiple values will be displayed"),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

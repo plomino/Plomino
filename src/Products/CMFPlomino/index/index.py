@@ -10,6 +10,7 @@ from Products.PortalTransforms.libtransforms.utils import MissingBinary
 from Products.PortalTransforms.utils import TransformException
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 
+from .. import _
 from ..config import DESIGN_PERMISSION, READ_PERMISSION
 from ..contents.field import get_field_types
 from .catalog import PlominoCatalog
@@ -149,9 +150,9 @@ class PlominoIndex(UniqueObject, CatalogTool):
         """
         """
         if not self.no_refresh:
-            self.getParentDatabase().setStatus("Re-indexing")
+            self.getParentDatabase().setStatus(_("Re-indexing"))
             self.refreshCatalog()
-            self.getParentDatabase().setStatus("Ready")
+            self.getParentDatabase().setStatus(_("Ready"))
 
     security.declarePublic('dbsearch')
 
@@ -183,7 +184,7 @@ class PlominoIndex(UniqueObject, CatalogTool):
             # AttributeError about 'documentToKeyMap'
             if hasattr(self, 'REQUEST'):
                 self.writeMessageOnPage(
-                    "The %s index does not allow sorting" % sortindex,
+                    _("The %s index does not allow sorting") % sortindex,
                     self.REQUEST,
                     error=True)
             results = self.search(request, None, reverse, limit)

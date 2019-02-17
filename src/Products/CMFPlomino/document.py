@@ -630,7 +630,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
         if not form:
             if request is not None and formname:
                 self.writeMessageOnPage(
-                    "Form %s does not exist." % formname,
+                    _("Form %s does not exist.") % formname,
                     request,
                     True)
         return form

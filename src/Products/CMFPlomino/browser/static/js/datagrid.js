@@ -43,7 +43,7 @@ require([
                     value = value.datetime ? value.datetime : value;
                     edit_url += '&' + self.fields[k] + '=' + value;
                 }
-                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>';
+                html += '<tr><td class="actions"><a class="edit-row" href="' + edit_url + '"><i class="icon-pencil"></i></a>'; // TODO: Add WAI and i18n support
                 html += '<a class="remove-row" href="#"><i class="icon-cancel"></i></a>';
                 html += '<a class="up-row" href="#"><i class="icon-up-dir"></i></a>';
                 html += '<a class="down-row" href="#"><i class="icon-down-dir"></i></a></td>';
@@ -53,7 +53,7 @@ require([
                 }
                 html += '</tr>';
             }
-            html += '<tr><td class="actions"><a class="add-row" href="'+self.form_url+'"><i class="icon-plus"></i></a></td></tr>';
+            html += '<tr><td class="actions"><a class="add-row" href="'+self.form_url+'"><i class="icon-plus"></i></a></td></tr>'; // TODO: Add WAI and i18n support
             table.html(html);
             var add_modal = new Modal(self.$el.find('.add-row'), {
                 actions: {

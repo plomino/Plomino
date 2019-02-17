@@ -18,8 +18,10 @@ class IGooglechartField(model.Schema):
 
 
     editrows = schema.TextLine(
-        title=u'Rows',
-        description=u'Size of the editable text area',
+        title=_('CMFPlomino_label_editrows', 
+            default="Rows"),
+        description=_('CMFPlomino_help_editrows', 
+            default="Size of the editable text area"),
         default=u"6",
         required=False)
 

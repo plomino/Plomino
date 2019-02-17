@@ -2,31 +2,31 @@
   <record name="plone.inline_styles" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="inline_styles">
     <field type="plone.registry.field.List">
       <default>
-        <element>Bold|bold|bold</element>
-        <element>Italic|italic|italic</element>
-        <element>Underline|underline|underline</element>
-        <element>Strikethrough|strikethrough|strikethrough</element>
-        <element>Superscript|superscript|superscript</element>
-        <element>Subscript|subscript|subscript</element>
-        <element>Code|code|code</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Bold|bold|bold</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Italic|italic|italic</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Underline|underline|underline</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Strikethrough|strikethrough|strikethrough</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Superscript|superscript|superscript</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Subscript|subscript|subscript</element>
+        <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Code|code|code</element>
       </default>
       <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Name|format|icon</description>
       <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Inline styles</title>
       <value_type type="plone.registry.field.TextLine"/>
     </field>
     <value>
-      <element>Bold|bold|bold</element>
-      <element>Italic|italic|italic</element>
-      <element>Underline|underline|underline</element>
-      <element>Strikethrough|strikethrough|strikethrough</element>
-      <element>Superscript|superscript|superscript</element>
-      <element>Subscript|subscript|subscript</element>
-      <element>Code|code|code</element>
-      <element>Plomino action|plominoaction|plominoaction</element>
-      <element>Plomino field|plominofield|plominofield</element>
-      <element>Plomino label|plominolabel|plominolabel</element>
-      <element>Plomino hide-when|plominohidewhen|plominohidewhen</element>
-      <element>Plomino subform|plominosubform|plominosubform</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Bold|bold|bold</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Italic|italic|italic</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Underline|underline|underline</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Strikethrough|strikethrough|strikethrough</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Superscript|superscript|superscript</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Subscript|subscript|subscript</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Code|code|code</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Plomino action|plominoaction|plominoaction</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Plomino field|plominofield|plominofield</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Plomino label|plominolabel|plominolabel</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Plomino hide-when|plominohidewhen|plominohidewhen</element>
+      <element xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Plomino subform|plominosubform|plominosubform</element>
     </value>
   </record>
   <record name="plone.formats" interface="Products.CMFPlone.interfaces.controlpanel.ITinyMCESchema" field="formats">

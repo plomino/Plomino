@@ -1,0 +1,52 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-01-26 23:55+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: Products.CMFPlomino\n"
+
+#. Default: "Do you really want to delete this document"
+#: ../browser/templates/action.pt
+msgid "Do you really want to delete this document"
+msgstr ""
+
+#. Default: "Do you really want to delete those documents"
+#: ../browser/templates/action.pt
+msgid "Do you really want to delete those documents"
+msgstr ""
+
+#. Default: "Loading..."
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid "Loading..."
+msgstr ""
+
+#. Default: " documents"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid " documents"
+msgstr ""
+
+#. Default: " document"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid " document"
+msgstr ""
+
+#. Default: "Search"
+#: ../browser/static/js/plomino-compiled.js
+#: ../browser/static/js/table.js
+msgid "Search"
+msgstr ""

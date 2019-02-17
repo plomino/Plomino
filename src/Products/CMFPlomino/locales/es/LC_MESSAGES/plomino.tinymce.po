@@ -1,0 +1,273 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-02-10 02:46+0000\n"
+"PO-Revision-Date: 2019-02-15 08:54-0400\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
+"Language-Team: Spanish Team\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"Language-Code: es\n"
+"Language-Name: Spanish\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: plomino.tinymce\n"
+"X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
+
+#: ../browser/templates/tinymce/action.pt:21
+msgid "Add/edit a Plomino Action"
+msgstr "Agregar/editar un Plomino: Acción"
+
+#: ../browser/templates/tinymce/field.pt:20
+msgid "Add/edit a Plomino Field"
+msgstr "Agregar/editar un Plomino: Campo"
+
+#: ../browser/templates/tinymce/hidewhen.pt:19
+msgid "Add/edit a Plomino Hide-when"
+msgstr "Agregar/editar un Plomino: Ocultar cuando"
+
+#: ../browser/templates/tinymce/label.pt:43
+msgid "By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may customise the label text above."
+msgstr "Por defecto, el título del campo se utilizará como etiqueta. Si el título del campo no tiene sentido como etiqueta, puede personalizar el texto de la etiqueta de arriba."
+
+#: ../browser/templates/tinymce/action.pt:96
+#: ../browser/templates/tinymce/field.pt:85
+#: ../browser/templates/tinymce/hidewhen.pt:65
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../browser/templates/tinymce/label.pt:40
+msgid "Custom Label Text"
+msgstr "Personalizar Texto de Etiqueta"
+
+#: ../browser/templates/tinymce/action.pt:95
+#: ../browser/templates/tinymce/field.pt:84
+#: ../browser/templates/tinymce/hidewhen.pt:64
+msgid "Insert"
+msgstr "Insertar"
+
+#: ../browser/templates/tinymce/subform.pt:18
+msgid "Insert a Sub-form"
+msgstr "Insertar un Sub-formulario"
+
+#: ../browser/templates/tinymce/label.pt:19
+msgid "Insert/edit a Plomino Label"
+msgstr "Insertar/editar un Plomino: Etiqueta"
+
+#. Default: "Action title"
+#: ../browser/templates/tinymce/action.pt:55
+msgid "plominoaction_actiontitle"
+msgstr "Título de Acción"
+
+#. Default: "Action code"
+#: ../browser/templates/tinymce/action.pt:78
+msgid "plominoaction_code"
+msgstr "Código de Acción"
+
+#. Default: "Create a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:45
+msgid "plominoaction_createaction"
+msgstr "Crear un Plomino: Acción"
+
+#. Default: "Action display"
+#: ../browser/templates/tinymce/action.pt:69
+msgid "plominoaction_display"
+msgstr "Mostrar Acción"
+
+#. Default: "Edit Action Properties"
+#: ../browser/templates/tinymce/action.pt:52
+msgid "plominoaction_edit"
+msgstr "Editar Propiedades de Acción"
+
+#. Default: "Hide-when formula"
+#: ../browser/templates/tinymce/action.pt:83
+msgid "plominoaction_hidewhen"
+msgstr "Fórmula de Ocultar cuando"
+
+#. Default: "Action ID"
+#: ../browser/templates/tinymce/action.pt:30
+msgid "plominoaction_id"
+msgstr "ID de Acción"
+
+#. Default: "Display action in action bar"
+#: ../browser/templates/tinymce/action.pt:90
+msgid "plominoaction_inactionbar"
+msgstr "Mostrar acción en la barra de acciones"
+
+#. Default: "Select a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:26
+msgid "plominoaction_selection"
+msgstr "Seleccione un Plomino: Acción"
+
+#. Default: "Add/edit a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:7
+msgid "plominoaction_title"
+msgstr "Agregar/editar un Plomino: Acción"
+
+#. Default: "Action type"
+#: ../browser/templates/tinymce/action.pt:60
+msgid "plominoaction_type"
+msgstr "Tipo de Acción"
+
+#. Default: "The action name is incorrect."
+#: ../browser/templates/tinymce/error.pt:21
+msgid "plominoerror_noaction"
+msgstr "El nombre de la acción es incorrecto."
+
+#. Default: "The cache name is incorrect."
+#: ../browser/templates/tinymce/error.pt:23
+msgid "plominoerror_nocache"
+msgstr "El nombre de la caché es incorrecto."
+
+#. Default: "The field name is incorrect."
+#: ../browser/templates/tinymce/error.pt:20
+msgid "plominoerror_nofield"
+msgstr "El nombre del campo es incorrecto."
+
+#. Default: "The hide-when name is incorrect."
+#: ../browser/templates/tinymce/error.pt:22
+msgid "plominoerror_nohidewhen"
+msgstr "El nombre del ocultar cuando es incorrecto."
+
+#. Default: "An object with the same name already exists."
+#: ../browser/templates/tinymce/error.pt:24
+msgid "plominoerror_objectexists"
+msgstr "Un objecto con el mismo nombre ya existe."
+
+#. Default: "Error in submitted data"
+#: ../browser/templates/tinymce/error.pt:14
+msgid "plominoerror_subtitle"
+msgstr "Error en data enviada"
+
+#. Default: "Error message"
+#: ../browser/templates/tinymce/error.pt:7
+msgid "plominoerror_title"
+msgstr "Mensaje de error"
+
+#. Default: "Advanced edition"
+#: ../browser/templates/tinymce/field.pt:40
+#: ../browser/templates/tinymce/valid.pt:18
+msgid "plominofield_advanced"
+msgstr "Edición avanzada"
+
+#. Default: "Create a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:51
+msgid "plominofield_createfield"
+msgstr "Crear un Plomino: Campo"
+
+#. Default: "Edit Field Properties"
+#: ../browser/templates/tinymce/field.pt:58
+msgid "plominofield_edit"
+msgstr "Editar Propiedades de Campo"
+
+#. Default: "Edit the field settings"
+#: ../browser/templates/tinymce/valid.pt:25
+msgid "plominofield_editfieldsettings"
+msgstr "Editar las configuraciones del campo"
+
+#. Default: "Formula"
+#: ../browser/templates/tinymce/field.pt:79
+msgid "plominofield_formula"
+msgstr "Fórmula"
+
+#. Default: "Field ID"
+#: ../browser/templates/tinymce/field.pt:28
+msgid "plominofield_id"
+msgstr "ID de campo"
+
+#. Default: "Main parameters"
+#: ../browser/templates/tinymce/field.pt:42
+msgid "plominofield_mainsettings"
+msgstr "Parámetros principales"
+
+#. Default: "Field mode"
+#: ../browser/templates/tinymce/field.pt:70
+msgid "plominofield_mode"
+msgstr "Modo de campo"
+
+#. Default: "Select a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:24
+msgid "plominofield_selection"
+msgstr "Seleccione un Plomino: Campo"
+
+#. Default: "Add/edit a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:7
+#: ../browser/templates/tinymce/valid.pt:9
+msgid "plominofield_title"
+msgstr "Agregar/editar un Plomino: Campo"
+
+#. Default: "Field type"
+#: ../browser/templates/tinymce/field.pt:61
+msgid "plominofield_type"
+msgstr "Tipo de campo"
+
+#. Default: "Create a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:42
+msgid "plominohidewhen_creation"
+msgstr "Crear un Plomino: Ocultar cuando"
+
+#. Default: "Dynamic hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:59
+msgid "plominohidewhen_dynamic"
+msgstr "Ocultar cuando dinámico"
+
+#. Default: "Edit Hide-when Formula"
+#: ../browser/templates/tinymce/hidewhen.pt:49
+msgid "plominohidewhen_editformula"
+msgstr "Editar Fórmula Ocultar cuando"
+
+#. Default: "Hide-when Formula"
+#: ../browser/templates/tinymce/hidewhen.pt:52
+msgid "plominohidewhen_formula"
+msgstr "Fórmula Ocultar cuando"
+
+#. Default: "Hide-when ID"
+#: ../browser/templates/tinymce/hidewhen.pt:27
+msgid "plominohidewhen_id"
+msgstr "ID de Ocultar cuando"
+
+#. Default: "Select a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:23
+msgid "plominohidewhen_selection"
+msgstr "Seleccione un Plomino: Ocultar cuando"
+
+#. Default: "Add/edit a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:7
+msgid "plominohidewhen_title"
+msgstr "Agregar/editar un Plomino: Ocultar cuando"
+
+#. Default: "Field"
+#: ../browser/templates/tinymce/label.pt:30
+msgid "plominolabel_selection"
+msgstr "Campo"
+
+#. Default: "Select a Field"
+#: ../browser/templates/tinymce/label.pt:25
+msgid "plominolabel_subtitle"
+msgstr "Seleccione un Campo"
+
+#. Default: "Insert/edit a Plomino Label"
+#: ../browser/templates/tinymce/label.pt:7
+msgid "plominolabel_title"
+msgstr "Insertar/editar un Plomino: Etiqueta"
+
+#. Default: "Sub-form"
+#: ../browser/templates/tinymce/subform.pt:29
+msgid "plominosubform_selection"
+msgstr "Sub-formulario"
+
+#. Default: "Select a Form"
+#: ../browser/templates/tinymce/subform.pt:24
+msgid "plominosubform_subtitle"
+msgstr "Seleccione un Formulario"
+
+#. Default: "Insert a Plomino Sub-form"
+#: ../browser/templates/tinymce/subform.pt:7
+msgid "plominosubform_title"
+msgstr "Inserte un Plomino: Sub-Formulario"

@@ -501,7 +501,8 @@ A name field allow to select a user in the Plone portal members list::
     >>> db.frm2.form_layout = RichTextValue("""9 <p>Who: <span class="plominoFieldClass">buyer</span></p>""", 'text/plain', 'text/html')
     >>> db.cleanRequestCache()
     >>> db.frm2.displayDocument(None, True, True).replace('\n', '').replace('\t', '')
-    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[\':\']">            </input>                                </span></p>'
+    u'<input type=\'hidden\' name=\'Form\' value=\'frm2\' />9 <p>Who: <span>                            <input type="text" class="pat-select2" id="buyer" name="buyer" data-pat-select2="vocabularyUrl:http://nohost/plone/mydb/frm2/buyer/filterusers;multiple:true;initialValues:[\':\']"
+                    />                                </span></p>'
 
 # TO BE FIXED
 # Doclink field:

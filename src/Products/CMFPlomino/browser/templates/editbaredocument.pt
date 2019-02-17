@@ -59,8 +59,8 @@
         </tal:has_form>
 
         <tal:no_form condition="not:form">
-            <h3>No form defined to display this document.</h3>
-            <br/>A Plomino document always needs a Plomino form in order to be displayed or edited.
+            <h3 i18n:translate="">No form defined to display this document.</h3>
+            <br/><i18n:block i18n:translate="">A Plomino document always needs a Plomino form in order to be displayed or edited.</i18n:block>
         </tal:no_form>
     </div>
 </body>

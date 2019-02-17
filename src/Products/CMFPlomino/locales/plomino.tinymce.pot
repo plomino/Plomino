@@ -1,0 +1,270 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-02-10 02:46+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: plomino.tinymce\n"
+
+#: ../browser/templates/tinymce/action.pt:21
+msgid "Add/edit a Plomino Action"
+msgstr ""
+
+#: ../browser/templates/tinymce/field.pt:20
+msgid "Add/edit a Plomino Field"
+msgstr ""
+
+#: ../browser/templates/tinymce/hidewhen.pt:19
+msgid "Add/edit a Plomino Hide-when"
+msgstr ""
+
+#: ../browser/templates/tinymce/label.pt:43
+msgid "By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may customise the label text above."
+msgstr ""
+
+#: ../browser/templates/tinymce/action.pt:96
+#: ../browser/templates/tinymce/field.pt:85
+#: ../browser/templates/tinymce/hidewhen.pt:65
+msgid "Cancel"
+msgstr ""
+
+#: ../browser/templates/tinymce/label.pt:40
+msgid "Custom Label Text"
+msgstr ""
+
+#: ../browser/templates/tinymce/action.pt:95
+#: ../browser/templates/tinymce/field.pt:84
+#: ../browser/templates/tinymce/hidewhen.pt:64
+msgid "Insert"
+msgstr ""
+
+#: ../browser/templates/tinymce/subform.pt:18
+msgid "Insert a Sub-form"
+msgstr ""
+
+#: ../browser/templates/tinymce/label.pt:19
+msgid "Insert/edit a Plomino Label"
+msgstr ""
+
+#. Default: "Action title"
+#: ../browser/templates/tinymce/action.pt:55
+msgid "plominoaction_actiontitle"
+msgstr ""
+
+#. Default: "Action code"
+#: ../browser/templates/tinymce/action.pt:78
+msgid "plominoaction_code"
+msgstr ""
+
+#. Default: "Create a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:45
+msgid "plominoaction_createaction"
+msgstr ""
+
+#. Default: "Action display"
+#: ../browser/templates/tinymce/action.pt:69
+msgid "plominoaction_display"
+msgstr ""
+
+#. Default: "Edit Action Properties"
+#: ../browser/templates/tinymce/action.pt:52
+msgid "plominoaction_edit"
+msgstr ""
+
+#. Default: "Hide-when formula"
+#: ../browser/templates/tinymce/action.pt:83
+msgid "plominoaction_hidewhen"
+msgstr ""
+
+#. Default: "Action ID"
+#: ../browser/templates/tinymce/action.pt:30
+msgid "plominoaction_id"
+msgstr ""
+
+#. Default: "Display action in action bar"
+#: ../browser/templates/tinymce/action.pt:90
+msgid "plominoaction_inactionbar"
+msgstr ""
+
+#. Default: "Select a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:26
+msgid "plominoaction_selection"
+msgstr ""
+
+#. Default: "Add/edit a Plomino Action"
+#: ../browser/templates/tinymce/action.pt:7
+msgid "plominoaction_title"
+msgstr ""
+
+#. Default: "Action type"
+#: ../browser/templates/tinymce/action.pt:60
+msgid "plominoaction_type"
+msgstr ""
+
+#. Default: "The action name is incorrect."
+#: ../browser/templates/tinymce/error.pt:21
+msgid "plominoerror_noaction"
+msgstr ""
+
+#. Default: "The cache name is incorrect."
+#: ../browser/templates/tinymce/error.pt:23
+msgid "plominoerror_nocache"
+msgstr ""
+
+#. Default: "The field name is incorrect."
+#: ../browser/templates/tinymce/error.pt:20
+msgid "plominoerror_nofield"
+msgstr ""
+
+#. Default: "The hide-when name is incorrect."
+#: ../browser/templates/tinymce/error.pt:22
+msgid "plominoerror_nohidewhen"
+msgstr ""
+
+#. Default: "An object with the same name already exists."
+#: ../browser/templates/tinymce/error.pt:24
+msgid "plominoerror_objectexists"
+msgstr ""
+
+#. Default: "Error in submitted data"
+#: ../browser/templates/tinymce/error.pt:14
+msgid "plominoerror_subtitle"
+msgstr ""
+
+#. Default: "Error message"
+#: ../browser/templates/tinymce/error.pt:7
+msgid "plominoerror_title"
+msgstr ""
+
+#. Default: "Advanced edition"
+#: ../browser/templates/tinymce/field.pt:40
+#: ../browser/templates/tinymce/valid.pt:18
+msgid "plominofield_advanced"
+msgstr ""
+
+#. Default: "Create a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:51
+msgid "plominofield_createfield"
+msgstr ""
+
+#. Default: "Edit Field Properties"
+#: ../browser/templates/tinymce/field.pt:58
+msgid "plominofield_edit"
+msgstr ""
+
+#. Default: "Edit the field settings"
+#: ../browser/templates/tinymce/valid.pt:25
+msgid "plominofield_editfieldsettings"
+msgstr ""
+
+#. Default: "Formula"
+#: ../browser/templates/tinymce/field.pt:79
+msgid "plominofield_formula"
+msgstr ""
+
+#. Default: "Field ID"
+#: ../browser/templates/tinymce/field.pt:28
+msgid "plominofield_id"
+msgstr ""
+
+#. Default: "Main parameters"
+#: ../browser/templates/tinymce/field.pt:42
+msgid "plominofield_mainsettings"
+msgstr ""
+
+#. Default: "Field mode"
+#: ../browser/templates/tinymce/field.pt:70
+msgid "plominofield_mode"
+msgstr ""
+
+#. Default: "Select a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:24
+msgid "plominofield_selection"
+msgstr ""
+
+#. Default: "Add/edit a Plomino Field"
+#: ../browser/templates/tinymce/field.pt:7
+#: ../browser/templates/tinymce/valid.pt:9
+msgid "plominofield_title"
+msgstr ""
+
+#. Default: "Field type"
+#: ../browser/templates/tinymce/field.pt:61
+msgid "plominofield_type"
+msgstr ""
+
+#. Default: "Create a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:42
+msgid "plominohidewhen_creation"
+msgstr ""
+
+#. Default: "Dynamic hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:59
+msgid "plominohidewhen_dynamic"
+msgstr ""
+
+#. Default: "Edit Hide-when Formula"
+#: ../browser/templates/tinymce/hidewhen.pt:49
+msgid "plominohidewhen_editformula"
+msgstr ""
+
+#. Default: "Hide-when Formula"
+#: ../browser/templates/tinymce/hidewhen.pt:52
+msgid "plominohidewhen_formula"
+msgstr ""
+
+#. Default: "Hide-when ID"
+#: ../browser/templates/tinymce/hidewhen.pt:27
+msgid "plominohidewhen_id"
+msgstr ""
+
+#. Default: "Select a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:23
+msgid "plominohidewhen_selection"
+msgstr ""
+
+#. Default: "Add/edit a Plomino Hide-when"
+#: ../browser/templates/tinymce/hidewhen.pt:7
+msgid "plominohidewhen_title"
+msgstr ""
+
+#. Default: "Field"
+#: ../browser/templates/tinymce/label.pt:30
+msgid "plominolabel_selection"
+msgstr ""
+
+#. Default: "Select a Field"
+#: ../browser/templates/tinymce/label.pt:25
+msgid "plominolabel_subtitle"
+msgstr ""
+
+#. Default: "Insert/edit a Plomino Label"
+#: ../browser/templates/tinymce/label.pt:7
+msgid "plominolabel_title"
+msgstr ""
+
+#. Default: "Sub-form"
+#: ../browser/templates/tinymce/subform.pt:29
+msgid "plominosubform_selection"
+msgstr ""
+
+#. Default: "Select a Form"
+#: ../browser/templates/tinymce/subform.pt:24
+msgid "plominosubform_subtitle"
+msgstr ""
+
+#. Default: "Insert a Plomino Sub-form"
+#: ../browser/templates/tinymce/subform.pt:7
+msgid "plominosubform_title"
+msgstr ""

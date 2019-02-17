@@ -1,0 +1,115 @@
+# CMFPlomino POT File
+# [Eric BREHAULT] <[ebrehault@gmail.com]>, 2006.
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: CMFPlomino\n"
+"POT-Creation-Date: 2019-01-28 03:02+0000\n"
+"PO-Revision-Date: 2019-02-15 08:52-0400\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
+"Language-Team: Spanish Team\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"Language-Code: es\n"
+"Language-Name: Spanish\n"
+"Preferred-Encodings: utf-8\n"
+"Domain: plone\n"
+"X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
+
+#: ../profiles/default/portlets.xml
+msgid "Add/manage design items"
+msgstr "Agregar/administrar elementos de diseño"
+
+#: ../profiles/default/registry.xml
+msgid "Bold|bold|bold"
+msgstr "Negrita|bold|bold"
+
+#: ../profiles/default/registry.xml
+msgid "Code|code|code"
+msgstr "Código|code|code"
+
+#: ../profiles/default/portlets.xml
+msgid "Display Plomino elements"
+msgstr "Mostrar elementos Plomino"
+
+#: ../profiles/default/registry.xml
+msgid "Displayed content types"
+msgstr "Tipos de contenidos mostrados"
+
+#: ../profiles/default/registry.xml
+msgid "Enter a JSON-formatted style format configuration. A format is for example the style that get applied when you press the bold button inside the editor. See http://www.tinymce.com/wiki.php/Configuration:formats"
+msgstr ""
+"Introduzca una configuración de formato de estilo con formato JSON. Un "
+"formato es, por ejemplo, el estilo que se aplica al presionar el botón en "
+"negrita dentro del editor. Consulte "
+"http://www.tinymce.com/wiki.php/Configuration:formats"
+
+#: ../profiles/default/registry.xml
+msgid "Formats"
+msgstr "Formatos"
+
+#: ../profiles/default/registry.xml
+msgid "Inline styles"
+msgstr "Estilos en línea"
+
+#: ../profiles/default/registry.xml
+msgid "Italic|italic|italic"
+msgstr "Cursiva|italic|italic"
+
+#: ../profiles/default/registry.xml
+msgid "Name|format|icon"
+msgstr "Nombre|formato|icono"
+
+#: ../profiles/default/registry.xml
+msgid "Plomino action|plominoaction|plominoaction"
+msgstr "Plomino: acción|plominoaction|plominoaction"
+
+#: ../profiles/default/portlets.xml
+msgid "Plomino design portlet"
+msgstr "Portlet diseño Plomino"
+
+#: ../profiles/default/portlets.xml
+msgid "Plomino element portlet"
+msgstr "Portlet de elemento Plomino"
+
+#: ../profiles/default/registry.xml
+msgid "Plomino field|plominofield|plominofield"
+msgstr "Plomino: Campo|plominofield|plominofield"
+
+#: ../profiles/default/registry.xml
+msgid "Plomino hide-when|plominohidewhen|plominohidewhen"
+msgstr "Plomino: Ocultar cuando|plominohidewhen|plominohidewhen"
+
+#: ../profiles/default/registry.xml
+msgid "Plomino label|plominolabel|plominolabel"
+msgstr "Plomino: Etiqueta|plominolabel|plominolabel"
+
+#: ../profiles/default/registry.xml
+msgid "Plomino subform|plominosubform|plominosubform"
+msgstr "Plomino: sub-formulario|plominosubform|plominosubform"
+
+#: ../profiles/default/registry.xml
+msgid "Strikethrough|strikethrough|strikethrough"
+msgstr "Tachado|strikethrough|strikethrough"
+
+#: ../profiles/default/registry.xml
+msgid "Subscript|subscript|subscript"
+msgstr "Subíndice|subscript|subscript"
+
+#: ../profiles/default/registry.xml
+msgid "Superscript|superscript|superscript"
+msgstr "Superíndice|superscript|superscript"
+
+#: ../profiles/default/registry.xml
+msgid "The content types that should be shown in the navigation and site map."
+msgstr ""
+"El tipo de contenido que debería ser mostrado en la navegación y en el mapa "
+"del sitio."
+
+#: ../profiles/default/registry.xml
+msgid "Underline|underline|underline"
+msgstr "Subrayado|underline|underline"

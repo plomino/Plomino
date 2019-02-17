@@ -34,33 +34,40 @@ class ISelectionField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Selection list", "SELECT"),
-            ("Multi-selection list", "MULTISELECT"),
-            ("Checkboxes", "CHECKBOX"),
-            ("Radio buttons", "RADIO"),
+            (_("Selection list"), "SELECT"),
+            (_("Multi-selection list"), "MULTISELECT"),
+            (_("Checkboxes"), "CHECKBOX"),
+            (_("Radio buttons"), "RADIO"),
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget', 
+            default="Widget"),
+        description=_('CMFPlomino_help_widget', 
+            default="Field rendering"),
         default="SELECT",
         required=True)
 
     selectionlist = schema.List(
-        title=u'Selection list',
-        description=u"List of values to select, one per line, "
-        "formatted as 'label|value'",
+        title=_('CMFPlomino_label_selectionlist', 
+            default="Selection list"),
+        description=_('CMFPlomino_help_selectionlist', 
+            default="List of values to select, one per line, formatted as 'label|value'"),
         required=False,
         default=[],
         value_type=schema.TextLine(title=u'Entry'))
 
     form.widget('selectionlistformula', klass='plomino-formula')
     selectionlistformula = schema.Text(
-        title=u'Selection list formula',
-        description=u'Formula to compute the selection list elements',
+        title=_('CMFPlomino_label_selectionlistformula', 
+            default="Selection list formula"),
+        description=_('CMFPlomino_help_selectionlistformula', 
+            default="Formula to compute the selection list elements"),
         required=False)
 
     separator = schema.TextLine(
-        title=u'Separator',
-        description=u'Only apply if multiple values will be displayed',
+        title=_('CMFPlomino_label_separator', 
+            default="Separator"),
+        description=_('CMFPlomino_help_separator', 
+            default="Only apply if multiple values will be displayed"),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

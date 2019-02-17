@@ -22,23 +22,29 @@ class IDatagridField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Always dynamic", "REGULAR"),
-            ("Static in read mode", "READ_STATIC"),
+            (_("Always dynamic"), "REGULAR"),
+            (_("Static in read mode"), "READ_STATIC"),
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget', 
+            default="Widget"),
+        description=_('CMFPlomino_help_widget', 
+            default="Field rendering"),
         default="REGULAR",
         required=True)
 
     associated_form = schema.Choice(
         vocabulary='Products.CMFPlomino.fields.vocabularies.get_forms',
-        title=u'Associated form',
-        description=u'Form to use to create/edit rows',
+        title=_('CMFPlomino_label_associated_form', 
+            default="Associated form"),
+        description=_('CMFPlomino_help_associated_form', 
+            default="Form to use to create/edit rows"),
         required=False)
 
     field_mapping = schema.TextLine(
-        title=u'Fields/columns mapping',
-        description=u'Field ids from the associated form, separated by commas.',
+        title=_('CMFPlomino_label_field_mapping', 
+            default="Fields/columns mapping"),
+        description=_('CMFPlomino_help_field_mapping', 
+            default="Field ids from the associated form, separated by commas."),
         required=False)
 
 # bug in plone.autoform means order_after doesn't moves correctly

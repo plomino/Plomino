@@ -24,18 +24,22 @@ class ITextField(model.Schema):
 
     widget = schema.Choice(
         vocabulary=SimpleVocabulary.fromItems([
-            ("Text", "TEXT"),
-            ("Long text", "TEXTAREA"),
-            ("Hidden", "HIDDEN")
+            (_("Text"), "TEXT"),
+            (_("Long text"), "TEXTAREA"),
+            (_("Hidden"), "HIDDEN")
         ]),
-        title=u'Widget',
-        description=u'Field rendering',
+        title=_('CMFPlomino_label_widget',
+            default='Widget'),
+        description=_('CMFPlomino_help_widget',
+            default='Field rendering'),
         default="TEXT",
         required=True)
 
     size = schema.TextLine(
-        title=u'Size',
-        description=u'Length or rows (depending on the widget)',
+        title=_('CMFPlomino_label_size',
+            default='Size'),
+        description=_('CMFPlomino_help_size',
+            default='Length or rows (depending on the widget)'),
         required=False)
 
     preserve_carriage_returns = schema.Bool(

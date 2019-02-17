@@ -11,6 +11,7 @@ import os
 import transaction
 from ZPublisher.HTTPRequest import FileUpload
 
+from . import _
 from .config import (
     CREATE_PERMISSION,
     EDIT_PERMISSION,
@@ -24,12 +25,12 @@ from .utils import StringToDate, DateToString
 logger = logging.getLogger("Replication")
 
 PLOMINO_IMPORT_SEPARATORS = {
-    'semicolon (;)': ';',
-    'comma (,)': ',',
-    'tabulation': '\t',
-    'white space': ' ',
-    'end of line': '\n',
-    'dash (-)': '-',
+    _('semicolon (;)'): ';',
+    _('comma (,)'): ',',
+    _('tabulation'): '\t',
+    _('white space'): ' ',
+    _('end of line'): '\n',
+    _('dash (-)'): '-',
 }
 
 
@@ -53,11 +54,11 @@ class ReplicationManager:
             try:
                 infoMsg = self.processImport(REQUEST)
             except PlominoReplicationException, e:
-                infoMsg = 'error while importing: %s%s' % (
+                infoMsg = _('error while importing: %s%s') % (
                     e, MSG_SEPARATOR)
                 error = True
         else:
-            infoMsg = '%s: unmanaged action%s' % (
+            infoMsg = _('%s: unmanaged action%s') % (
                 actionType, MSG_SEPARATOR)
             error = True
 
@@ -114,8 +115,8 @@ class ReplicationManager:
 
         nbDocDone, nbDocFailed = self.importCsv(fileContent)
 
-        infoMsg = ("%s processed: %s document(s) imported, "
-            "%s document(s) failed." % (
+        infoMsg = (_("%s processed: %s document(s) imported, "
+            "%s document(s) failed.") % (
                 fileToImport.filename,
                 nbDocDone,
                 nbDocFailed))
@@ -409,8 +410,8 @@ class ReplicationManager:
         """
         (imports, errors) = self.importFromJSON(REQUEST=REQUEST)
         self.writeMessageOnPage(
-            "%d documents imported successfully, "
-            "%d document(s) not imported" % (
+            _("%d documents imported successfully, "
+            "%d document(s) not imported") % (
                 imports, errors),
             REQUEST, error=False)
         REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseReplication")
@@ -443,7 +444,7 @@ class ReplicationManager:
         """
         # TODO: This calling protocol is too complicated.
         logger.info("Start documents import")
-        self.setStatus("Importing documents (0%)")
+        self.setStatus(_("Importing documents (0%)"))
         txn = transaction.get()
         json_sources = []
         if jsonstring:
@@ -510,7 +511,7 @@ class ReplicationManager:
                     errors = errors + 1
                 docs_counter = docs_counter + 1
                 if docs_counter == 100:
-                    self.setStatus("Importing documents (%d%%)" %
+                    self.setStatus(_("Importing documents (%d%%)") %
                             (100 * docs_counter / total_docs))
                     txn.savepoint(optimistic=True)
                     docs_counter = 0
@@ -518,14 +519,14 @@ class ReplicationManager:
                             "%d errors(s) ... (still running)" % (
                                 imports, errors))
             if files_counter == 100:
-                self.setStatus("Importing documents (%s)" % files_counter)
+                self.setStatus(_("Importing documents (%s)") % files_counter)
                 txn.savepoint(optimistic=True)
                 files_counter = 0
                 logger.info("%d documents imported successfully, "
                         "%d errors(s) ... (still running)" % (
                             imports, errors))
 
-        self.setStatus("Ready")
+        self.setStatus(_("Ready"))
         logger.info("Importation finished: "
                 "%d documents imported successfully, "
                 "%d document(s) not imported" % (imports, errors))

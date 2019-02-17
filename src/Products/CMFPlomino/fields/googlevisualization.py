@@ -31,8 +31,10 @@ class IGooglevisualizationField(model.Schema):
 
     form.widget('jssettings', klass='plomino-formula')
     jssettings = schema.Text(
-        title=u'Javascript settings',
-        description=u'Google Vizualization code',
+        title=_('CMFPlomino_label_jssettings', 
+            default="Javascript settings"),
+        description=_('CMFPlomino_help_jssettings', 
+            default="Google Vizualization code"),
         default=u"""
 google.load('visualization', '1', {packages: ['corechart']});
 google.setOnLoadCallback(gvisudata_drawChart);
@@ -64,9 +66,10 @@ function gvisudata_drawChart() {
         required=False)
 
     chartid = schema.TextLine(
-        title=u'Chart id',
-        description=u"Used to name the javascript variable/functions "
-        "and the DIV element",
+        title=_('CMFPlomino_label_chartid', 
+            default="Chart id"),
+        description=_('CMFPlomino_help_chartid', 
+            default="Used to name the javascript variable/functions and the DIV element"),
         required=True,
         default=u'gvisudata')
 

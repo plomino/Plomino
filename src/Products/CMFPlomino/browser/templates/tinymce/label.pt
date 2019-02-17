@@ -16,7 +16,7 @@
         <div class="plone-modal-dialog">
             <div class="plone-modal-content">
                 <div class="plone-modal-header">
-                    <h2 class="plone-modal-title">Insert/edit a Plomino Label</h2>
+                    <h2 class="plone-modal-title" i18n:translate="">Insert/edit a Plomino Label</h2>
                 </div>
                 <div class="plone-modal-body">
                     <!-- Form which adds the label -->
@@ -37,10 +37,10 @@
                             </p>
                             <p>
                                 <br />
-                                <label for="plominoLabelCustom">Custom Label Text</label>
+                                <label for="plominoLabelCustom" i18n:translate="">Custom Label Text</label>
                                 <input type="text" id="plominoLabelCustom" name="labeltext" tal:attributes="value labeltext"/>
                             </p>
-                            <p>
+                            <p i18n:translate="">
                                 By default the Title of the field will be used as the label. If the Title of the field doesn't make sense as a label you may customise the label text above.
                             </p>
                         </fieldset>

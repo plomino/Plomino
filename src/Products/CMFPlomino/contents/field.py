@@ -55,9 +55,9 @@ def get_index_types(obj):
     types = get_field_types()
     if isinstance(obj, PlominoField):
         default_index = types[obj.field_type][1]
-        indexes = [('Default (%s)' % default_index, 'DEFAULT'), ]
+        indexes = [(_('Default (%s)') % default_index, 'DEFAULT'), ]
     else:
-        indexes = [('Default', 'DEFAULT'), ]
+        indexes = [(_('Default'), 'DEFAULT'), ]
     db = obj.getParentDatabase()
     idx = db.getIndex()
     index_ids = [i['name'] for i in idx.Indexes.filtered_meta_types()]
@@ -67,9 +67,9 @@ def get_index_types(obj):
             continue
         label = "%s%s" % (
             i, {
-                "FieldIndex": " (match exact value)",
-                "ZCTextIndex": " (match any contained words)",
-                "KeywordIndex": " (match list elements)"
+                "FieldIndex": _(" (match exact value)"),
+                "ZCTextIndex": _(" (match any contained words)"),
+                "KeywordIndex": _(" (match list elements)")
             }.get(i, '')
         )
         indexes.append((label, i))

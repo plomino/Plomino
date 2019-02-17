@@ -91,7 +91,7 @@
         <tal:block metal:use-macro="context/plomino_actions/macros/CloseAction">display
         close action</tal:block>
         <input type="submit" class="context plominoSearch" value="Search" name="plomino_search"
-            i18n:domain="Products.CMFPlomino" i18n:attributes="value" />
+            i18n:domain="Products.CMFPlomino" i18n:attributes="value CMFPlomino_label_search" />
     </tal:defaultactions>
         <tal:block
             tal:repeat="action_tuple python:[(a, parent_id) for a, parent_id in view.form.getActions(view.target, True) if a.in_action_bar==True]">
@@ -125,7 +125,7 @@ function selected_documents()
             tal:condition="python:view.target.hasRemovePermission(view.target)==True"
             tal:define="
                 plominotranslate nocall:modules/Products/CMFPlomino/utils/PlominoTranslate;
-                msg python:plominotranslate('Do you really want to delete those documents', view.target, domain='CMFPlomino');"
+                msg python:plominotranslate('Do you really want to delete those documents', view.target, domain='Products.CMFPlomino');"
             tal:attributes="onclick string:if (confirm('${msg} ?')) {location.href='./manage_deleteDocuments?deldocs='+selected_documents()}" />
     </tal:defaultactions>
     <tal:block
@@ -156,7 +156,6 @@ function selected_documents()
   </tal:submit>
   <tal:button tal:condition="python:not(plominoaction.action_type=='SAVE')">
   <input class="context"
-
     type="button"
     tal:attributes="onclick python:'location.href=\''+plominoaction.executeAction(plominotarget, plomino_parent_id)+'\'';
                     id python:plominoaction.id;
@@ -185,7 +184,7 @@ function selected_documents()
     i18n:attributes="value"
     tal:define="
         plominotranslate nocall:modules/Products/CMFPlomino/utils/PlominoTranslate;
-        msg python:plominotranslate('Do you really want to delete this document', view.target, domain='CMFPlomino');
+        msg python:plominotranslate('Do you really want to delete this document', view.target, domain='Products.CMFPlomino');
         token python:view.target.restrictedTraverse('@@authenticator').token()"
     tal:attributes="onclick python:'if(confirm(\''+msg+' ?\')){location.href=\''+view.target.absolute_url()+'/delete?_authenticator='+token+'&returnurl='+view.target.getParentDatabase().absolute_url()+'\'}'" />
     </tal:block>

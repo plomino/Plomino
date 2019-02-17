@@ -41,7 +41,7 @@ from .config import (
     MSG_SEPARATOR,
     TIMEZONE,
 )
-from . import plomino_profiler, get_utils, get_resource_directory
+from . import _, plomino_profiler, get_utils, get_resource_directory
 from .config import SCRIPT_ID_DELIMITER
 import contents
 from .exceptions import PlominoDesignException, PlominoScriptException
@@ -89,7 +89,7 @@ class DesignManager:
         logger.info('Refreshing database ' + self.id)
         report = []
 
-        self.setStatus("Refreshing design")
+        self.setStatus(_("Refreshing design"))
         # migrate to current version
         messages = migrate(self)
         for msg in messages:
@@ -179,7 +179,7 @@ class DesignManager:
         self.refreshWorkflowState()
         self.refreshPlominoRolesPermissions()
 
-        self.setStatus("Ready")
+        self.setStatus(_("Ready"))
         return report
 
     security.declareProtected(DESIGN_PERMISSION, 'reindexDocuments')
@@ -206,7 +206,7 @@ class DesignManager:
             label = "items"
         if views_only:
             label = "views"
-        self.setStatus("Re-indexing %s (0%%)" % label)
+        self.setStatus(_("Re-indexing %s (0%%)") % label)
 
         indexes = plomino_index.indexes()
         view_indexes = [idx for idx in indexes
@@ -233,7 +233,7 @@ class DesignManager:
                 logger.info("Ouch! \n%s\n%s" % (e, repr(d)))
             counter = counter + 1
             if counter == 100:
-                self.setStatus("Re-indexing %s (%d%%)" % (
+                self.setStatus(_("Re-indexing %s (%d%%)") % (
                     label,
                     int(100 * (total + errors) / total_docs)))
                 counter = 0
@@ -265,7 +265,7 @@ class DesignManager:
         total = 0
         counter = 0
         errors = 0
-        self.setStatus("Re-compute documents")
+        self.setStatus(_("Re-compute documents"))
         for d in documents:
             try:
                 txn = transaction.get()
@@ -278,17 +278,17 @@ class DesignManager:
             counter = counter + 1
             if counter == 10:
                 self.setStatus(
-                    "Re-compute documents (%d%%)" %
+                    _("Re-compute documents (%d%%)") %
                     (int(100 * (total + errors) / total_docs)))
                 counter = 0
                 logger.info("Re-compute documents: "
                     "%d computed successfully, "
                     "%d errors(s) ..." % (total, errors))
-        msg = ("Re-compute documents: "
+        msg = (_("Re-compute documents: "
             "%d documents computed successfully, "
-            "%d errors(s)" % (total, errors))
+            "%d errors(s)") % (total, errors))
         logger.info(msg)
-        self.setStatus("Ready")
+        self.setStatus(_("Ready"))
         if REQUEST:
             self.writeMessageOnPage(msg, REQUEST, False)
             REQUEST.RESPONSE.redirect(self.absolute_url() + "/DatabaseDesign")
@@ -311,7 +311,7 @@ class DesignManager:
                 portal_catalog.catalog_object(
                     d,
                     "/".join(self.getPhysicalPath() + (d.id,)))
-            msg = '%d documents re-cataloged' % total_docs
+            msg = _('%d documents re-cataloged') % total_docs
         else:
             logger.info(
                 'Database %s does not allow portal catalog indexing.' %
@@ -325,7 +325,7 @@ class DesignManager:
                     portal_catalog.uncatalog_object(d.getPath())
                 logger.info(
                     'Related portal catalog entries have been removed.')
-            msg = 'Database is not cataloged'
+            msg = _('Database is not cataloged')
 
         logger.info(msg)
         if REQUEST:
@@ -1031,7 +1031,7 @@ class DesignManager:
         """
         """
         logger.info("Start design import")
-        self.setStatus("Importing design")
+        self.setStatus(_("Importing design"))
         self.getIndex().no_refresh = True
         txn = transaction.get()
         json_strings = []
@@ -1096,7 +1096,7 @@ class DesignManager:
                 total = total + 1
                 if count == 10:
                     self.setStatus(
-                        "Importing design (%d%%)" % int(
+                        _("Importing design (%d%%)") % int(
                             100 * total / total_elements))
                     logger.info(
                         "(%d elements committed, still running...)" % total)
@@ -1104,7 +1104,7 @@ class DesignManager:
                     count = 0
 
         logger.info("(%d elements imported)" % total)
-        self.setStatus("Ready")
+        self.setStatus(_("Ready"))
         txn.commit()
         self.getIndex().no_refresh = False
 
@@ -1114,7 +1114,7 @@ class DesignManager:
         """Import the design from a zip file
         """
         logger.info("Start design import")
-        self.setStatus("Importing design")
+        self.setStatus(_("Importing design"))
         self.getIndex().no_refresh = True
         txn = transaction.get()
         count = 0
@@ -1156,7 +1156,7 @@ class DesignManager:
                 count = count + 1
                 total = total + 1
                 if count == 10:
-                    self.setStatus("Importing design (%d%%)" % int(
+                    self.setStatus(_("Importing design (%d%%)") % int(
                         100 * total / total_elements))
                     logger.info(
                         "(%d elements committed, still running...)" % total)
@@ -1164,7 +1164,7 @@ class DesignManager:
                     count = 0
 
         logger.info("(%d elements imported)" % total)
-        self.setStatus("Ready")
+        self.setStatus(_("Ready"))
         txn.commit()
         self.getIndex().no_refresh = False
 
@@ -1264,12 +1264,12 @@ class DesignManager:
             return {}
         if 'formulas' in profiling.keys():
             grouped_formulas = {}
-            for (id, duration) in profiling['formulas']:
+            for (id, duration) in profiling[_('formulas')]:
                 grouped = grouped_formulas.setdefault(id, [0, 0])
                 grouped[0] = grouped[0] + 1
                 grouped[1] = grouped[0] + duration
                 grouped_formulas[id] = grouped
-            profiling['distinct formulas'] = [
+            profiling[_('distinct formulas')] = [
                 [
                     "%s (%d times)" % (
                         id,

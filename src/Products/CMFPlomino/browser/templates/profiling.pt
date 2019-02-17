@@ -8,7 +8,7 @@
 <body>
 
 <metal:content fill-slot="main">
-    <h1 class="documentFirstHeading">PROFILING</h1>
+    <h1 class="documentFirstHeading" i18n:translate="">PROFILING</h1>
     <tal:aspects tal:repeat="aspect python:here.profiling_results().items()">
         <div><dl class="collapsible inline collapsedOnLoad">
             <dt class="collapsibleHeader" tal:content="python:'%s (%d)' % (aspect[0], len(aspect[1])) ">aspect name</dt>
