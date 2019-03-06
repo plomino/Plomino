@@ -569,12 +569,26 @@ def actual_context(context, search="PlominoDocument"):
 
 
 def is_email(email):
-    if re.match(
-            '^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.'
-            '([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$', email):
+    """ Validate an email address. No value validates as it is technically not
+        an invalid email address and would be covered by a mandatory field
+        check
+    """
+    if email is None or len(email) == 0:
         return True
-    else:
-        return False
+    # Regex is pulled from https://stackoverflow.com/questions/201323/how-to-validate-an-email-address-using-a-regular-expression # noqa
+    # which is RFC5322 compliant.
+    if re.match(
+        '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)'
+        '*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|'
+        '\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9]'
+        '(?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|'
+        '\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}'
+        '(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|'
+        '[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|'
+        '\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])',
+            email):
+        return True
+    return False
 
 
 def translate(context, content, i18n_domain=None):
