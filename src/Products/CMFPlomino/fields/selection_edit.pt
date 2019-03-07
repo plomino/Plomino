@@ -38,7 +38,7 @@
             </select>
          </tal:block>
         <tal:block tal:condition="python:field.allow_other_value">
-            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join(v for v in [tags, initialValues] if v); value python:','.join(currentaslist"/>
+            <input type="text" class="pat-select2" tal:attributes="id field/id;name field/id;  data-pat-select2 python:';;'.join(v for v in [tags, initialValues] if v); value python:','.join(currentaslist)"/>
         </tal:block>
     </tal:widget>
     <tal:widget tal:condition="python:widget=='CHECKBOX'">
