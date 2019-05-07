@@ -16,3 +16,4 @@ develop-eggs
 *.mo
 *.pyc
 bin
+test*

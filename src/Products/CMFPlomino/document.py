@@ -582,10 +582,15 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                 if result and hasattr(self, 'REQUEST'):
                     self.REQUEST.set('plominoredirecturl', result)
             except PlominoScriptException, e:
+                if form.preventSaveOnError:
+                    #TODO: show error to the user
+                    raise
                 if hasattr(self, 'REQUEST'):
                     e.reportError('Document saved, but onSave event failed.')
                     doc_path = self.REQUEST.physicalPathToURL(self.doc_path())
                     self.REQUEST.RESPONSE.redirect(doc_path)
+                else:
+                    raise
 
         if refresh_index:
             # update index

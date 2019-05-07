@@ -297,6 +297,14 @@ class IPlominoForm(model.Schema):
         default=u'',
     )
 
+    preventSaveOnError = schema.Bool(
+        title=_('CMFPlomino_label_preventSaveOnError',
+                default="Prevent Save On Error"),
+        description=_('CMFPlomino_help_preventSaveOnError',
+                      default="If any formula fails then prevent the display or save of the form"),
+        required=False,
+        default=False,
+    )
 
 class PlominoForm(Container):
     implements(IPlominoForm, IPlominoContext)

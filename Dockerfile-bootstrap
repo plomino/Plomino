@@ -1,6 +1,9 @@
-FROM plone:5.0
+FROM plone:5 as robot_tests
 USER root
-RUN apt-get update && apt-get install -y curl git libjpeg-dev #virtualenv git gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev # python-dev libjpeg-turbo8-dev
+RUN apt-get update && apt-get install -y --no-install-recommends curl git libyaml-dev zlib1g-dev libjpeg-dev gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev
+# libjpeg-turbo8-dev
+#virtualenv
+# python-dev
 
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 6.1
@@ -28,11 +31,14 @@ ENV ZSERVER_HOST  0.0.0.0
 #RUN cd /buildout && virtualenv . && bin/pip install zc.buildout==2.2.5 setuptools==8.3 && bin/buildout -c download.cfg install download install
 #RUN ls /buildout/buildout-cache/eggs /buildout/buildout-cache/downloads
 
-WORKDIR /plone/instance
+#RUN mkdir -p /plone/.buildout && printf "[buildout]\neggs-directory=/plone/buildout-cache/eggs\ndownload-cache=/plone/buildout-cache/downloads\n" > ~/.buildout/default.cfg
+
+
+#WORKDIR /plone/instance
 
 #COPY . /buildout/
 #RUN chown -R sappuser.appuser /buildout
 
-USER plone
+#USER plone
 #RUN cd /buildout && bin/buildout -c travis.cfg install test resources robot instance
 #RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /buildout/ide && npm install && npm run build"]

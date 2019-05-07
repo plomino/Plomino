@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
+
+import transaction
 from plone import api
+from plone.app.async.interfaces import IAsyncDatabase, IQueueReady
+from plone.app.async.subscribers import notifyQueueReady, configureQueue
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
+from plone.app.async.testing import PLONE_APP_ASYNC_FUNCTIONAL_TESTING, PLONE_APP_ASYNC_INTEGRATION_TESTING, AsyncLayer, \
+    PLONE_APP_ASYNC_FIXTURE, cleanUpDispatcher, _dispatcher_uuid, registerAsyncLayers
 from plone.app.testing import applyProfile, ploneSite
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -10,6 +16,12 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
 from plone.testing import z2, Layer
 import logging, sys
+
+from zope import component
+
+from zc.async.interfaces import IDispatcherActivated
+from zc.async.subscribers import agent_installer
+from zope.configuration import xmlconfig
 
 import Products.CMFPlomino
 from Products.Sessions.SessionDataManager import SessionDataManager
@@ -68,6 +80,7 @@ class ProductsCmfplominoLayer(PloneSandboxLayer):
         field_1.field_mode = "EDITABLE"
 
         db.createDocument("doc1")
+        transaction.commit()
 
 PRODUCTS_CMFPLOMINO_FIXTURE = ProductsCmfplominoLayer()
 
@@ -136,6 +149,36 @@ class TestDBsLayer(Layer):
                 db.importFromJSON(from_file=os.path.join(dir,data_import))
 
 
+class AsyncLayer(ProductsCmfplominoLayer):
+
+    #defaultBases = (PRODUCTS_CMFPLOMINO_FIXTURE,)
+
+    def setUpZope(self, app, configurationContext):
+        # self._stuff = Zope2.bobo_application._stuff
+        #z2.installProduct(app, 'Products.PythonScripts')
+        import plone.app.async
+        xmlconfig.file('configure.zcml', package=plone.app.async, context=self['configurationContext'])
+        import plone.app.async.tests
+        xmlconfig.file('view.zcml', package=plone.app.async.tests, context=self['configurationContext'])
+        super(AsyncLayer, self).setUpZope(app, configurationContext)
+
+    def tearDown(self):
+        """ Second magical thing to remember in this layer:
+            Be sure not to have any transaction ongoing
+            Unless that you ll have::
+
+            ZODB.POSException.StorageTransactionError:
+                Duplicate tpc_begin calls for same transaction
+        """
+        cleanUpDispatcher(_dispatcher_uuid)
+        gsm = component.getGlobalSiteManager()
+        gsm.unregisterHandler(agent_installer, [IDispatcherActivated])
+        gsm.unregisterHandler(notifyQueueReady, [IDispatcherActivated])
+        gsm.unregisterHandler(configureQueue, [IQueueReady])
+        db = gsm.getUtility(IAsyncDatabase)
+        gsm.unregisterUtility(db, IAsyncDatabase)
+        transaction.commit()
+        super(AsyncLayer,self).tearDown()
 
 PRODUCTS_MACROS_FIXTURE = ProductsMacrosLayer()
 
@@ -152,6 +195,25 @@ PRODUCTS_CMFPLOMINO_FUNCTIONAL_TESTING = FunctionalTesting(
     name='ProductsCmfplominoLayer:FunctionalTesting'
 )
 
+PLONE_APP_ASYNC_FIXTURE = AsyncLayer()
+
+PRODUCTS_CMFPLOMINO_INTEGRATION_ASYNC_TESTING = IntegrationTesting(
+    bases=(PLONE_APP_ASYNC_FIXTURE,
+           #PRODUCTS_CMFPLOMINO_FIXTURE,
+           ),
+    name='ProductsCmfplominoAsyncLayer:IntegrationTesting'
+)
+
+registerAsyncLayers([
+    PLONE_APP_ASYNC_FIXTURE,
+    PRODUCTS_CMFPLOMINO_INTEGRATION_ASYNC_TESTING,
+    ]
+)
+
+# PRODUCTS_CMFPLOMINO_FUNCTIONAL_ASYNC_TESTING = FunctionalTesting(
+#     bases=(PRODUCTS_CMFPLOMINO_FIXTURE, PLONE_APP_ASYNC_FUNCTIONAL_TESTING, ),
+#     name='ProductsCmfplominoAsyncLayer:FunctionalTesting'
+# )
 
 PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(
@@ -163,3 +225,4 @@ PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING = FunctionalTesting(
     ),
     name='ProductsCmfplominoLayer:AcceptanceTesting'
 )
+

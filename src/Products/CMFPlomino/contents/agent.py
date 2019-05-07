@@ -96,50 +96,56 @@ class PlominoAgent(Item):
     def runAgent(self, *args, **kwargs):
         """ Execute the agent formula.
         """
+
         plominoContext = self
         plominoReturnURL = self.getParentDatabase().absolute_url()
         request = getattr(self, 'REQUEST', None)
         if request:
+            #TODO: this is too general. shouldn't be here
             alsoProvides(request, IDisableCSRFProtection)
+        if self.run_as == "OWNER":
+            # Remember the current user
+            member = self.getCurrentMember()
+            if member.__class__.__name__ == "SpecialUser":
+                user = member
+            else:
+                user = member.getUser()
+
+            # Switch to the agent's owner
+            owner = self.getOwner()
+            newSecurityManager(None, owner)
         try:
-            if self.run_as == "OWNER":
-                # Remember the current user
-                member = self.getCurrentMember()
-                if member.__class__.__name__ == "SpecialUser":
-                    user = member
-                else:
-                    user = member.getUser()
-
-                # Switch to the agent's owner
-                owner = self.getOwner()
-                newSecurityManager(None, owner)
-
             result = self.runFormulaScript(
                 SCRIPT_ID_DELIMITER.join(["agent", self.id,"content"]),
                 plominoContext,
                 self.content,
                 True,
-                *args
+                *args,
+                **kwargs
             )
-
-            # Switch back to the original user
-            if self.run_as == "OWNER":
-                newSecurityManager(None, user)
-
-            if request:
-                if request.get('REDIRECT', False):
-                    # result is supposed to be an URL
-                    plominoReturnURL = result or plominoReturnURL
-                    request.RESPONSE.redirect(plominoReturnURL)
-
-                if "application/json" in request.getHeader('Accept', ''):
-                    # result will be serialized in JSON
-                    return json.dumps(result)
-
         except PlominoScriptException, e:
             # Exception logged already in runFormulaScript
             if request and request.get('RESPONSE'):
                 request.RESPONSE.setHeader(
                     'content-type',
                     'text/plain; charset=utf-8')
-            return e.message
+                return e.message
+            else:
+                raise
+        finally:
+            # Switch back to the original user
+            if self.run_as == "OWNER":
+                newSecurityManager(None, user)
+
+        if request:
+            if request.get('REDIRECT', False):
+                # result is supposed to be an URL
+                plominoReturnURL = result or plominoReturnURL
+                request.RESPONSE.redirect(plominoReturnURL)
+
+            if "application/json" in request.getHeader('Accept', ''):
+                # result will be serialized in JSON
+                return json.dumps(result)
+        else:
+            return result
+

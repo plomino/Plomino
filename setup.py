@@ -56,6 +56,8 @@ setup(
             'plone.app.testing',
             'plone.app.contenttypes',
             'plone.app.robotframework[debug]',
+            'plone.app.form', #required by plone.app.async
+            'plone.app.async',
         ],
     },
     entry_points="""

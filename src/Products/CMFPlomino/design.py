@@ -6,9 +6,16 @@ from AccessControl.requestmethod import postonly
 from AccessControl.SecurityManagement import newSecurityManager
 import base64
 from os.path import isfile
+
+from ZODB.utils import u64
 from plone.behavior.interfaces import IBehaviorAssignable
 from z3c.form.interfaces import IDataManager
+from zc.twist import Failure
 from zope.component import getMultiAdapter
+
+from Products.CMFPlomino.contents.agent import IPlominoAgent
+from Products.CMFPlomino.contents.field import IPlominoField
+from Products.CMFPlomino.contents.form import IPlominoForm
 from Products.CMFPlomino.events import afterFieldModified
 from zope.globalrequest import getRequest
 import codecs
@@ -55,6 +62,7 @@ from Products.CMFPlomino import contents
 from Products.CMFPlomino.exceptions import PlominoDesignException, PlominoScriptException
 from Products.CMFPlomino.HttpUtils import authenticateAndLoadURL, authenticateAndPostToURL
 from Products.CMFPlomino.index.index import PlominoIndex
+from Products.CMFPlomino.interfaces import IPlominoDocument
 from Products.CMFPlomino.migration import migrate
 from Products.CMFPlomino.utils import (
     _expandIncludes,
@@ -62,6 +70,11 @@ from Products.CMFPlomino.utils import (
     DateToString,
 )
 from collections import defaultdict
+try:
+    from plone.app.async.interfaces import IAsyncService
+except ImportError:
+    IAsyncService = None
+import persistent
 
 logger = logging.getLogger('Plomino')
 
@@ -129,6 +142,67 @@ class Bundle:
 
     def addContent(self, obj_id, obj_type, content, file_path=None):
         self.contentList.append((obj_id, obj_type, content, file_path))
+
+
+
+def makePythonScript(code, context=None):
+    ps = PythonScript('ps')  # TODO: should it VerifiedPythonScript?
+    #ps.ZBindings_edit(dict(context=context))
+    ps.write(code)
+    ps._makeFunction()
+    if ps.errors:
+        raise SyntaxError, ps.errors[0]
+    if context is not None:
+        return ps.__of__(context)
+    return ps
+
+
+def asyncExecute(executable, *args, **kwargs):
+    __async_script__ = kwargs.pop('__async_script__', None)
+    __document_id__ = kwargs.pop('__document_id__', None)
+    original_request = kwargs.pop('original_request', None)
+    if IPlominoAgent.providedBy(executable):
+        return executable.runAgent(*args, **kwargs)
+    elif IPlominoForm.providedBy(executable):
+        form = executable
+        # for forms we run the ondisplay
+        db = form.getParentDatabase()
+        if __document_id__ is not None:
+            context = db.getDocument(__document_id__)
+        else:
+            context = form
+        try:
+            response = db.runFormulaScript(
+                SCRIPT_ID_DELIMITER.join([
+                    'form', form.id, 'ondisplay']),
+                context,
+                form.onDisplay)
+        except PlominoScriptException, e:
+            response = None
+            e.reportError('onDisplay formula failed')
+        # If the onDisplay event returned something, return it
+        # We could do extra handling of the response here if needed
+        return response
+    elif IPlominoField.providedBy(executable):
+        field = executable
+        form = field.aq_parent
+        db = form.getParentDatabase()
+        if __document_id__ is not None:
+            context = db.getDocument(__document_id__)
+        else:
+            context = form
+
+        return form.computeFieldValue(field.id, context)
+
+    elif __async_script__ is not None:
+        # In this case we will run it as a pythonscript
+        ps = makePythonScript(__async_script__, executable)
+        return ps(*args, **kwargs)
+
+    else:
+        # assume its a callable
+        return executable(*args, **kwargs)
+
 
 class DesignManager:
 
@@ -723,8 +797,13 @@ class DesignManager:
 
     security.declarePublic('getFormulaScript')
 
-    def getFormulaScript(self, script_id):
-        return self.scripts._getOb(script_id, None)
+    def getFormulaScript(self, script_id, formula=None):
+
+        ps = self.scripts._getOb(script_id, None)
+        if ps is not None and formula is not None and getattr(ps, '_formula_hash', None) != hash(formula):
+            return None
+        return ps
+
 
     security.declarePublic('cleanFormulaScripts')
 
@@ -789,6 +868,7 @@ class DesignManager:
             'formula': formula
         }
         ps.write(str_formula)
+        ps._formula_hash = hash(formula) #TODO: should be incldes too
         if self.debugMode:
             logger.info(script_id + " compiled")
 
@@ -801,15 +881,17 @@ class DesignManager:
 
     @plomino_profiler('formulas')
     def runFormulaScript(self, script_id, context, formula,
-            with_args=False, *args):
+            with_args=False, *args, **kwargs):
         formula_str = formula or ''
         compilation_errors = []
-        ps = self.getFormulaScript(script_id)
+        ps = self.getFormulaScript(script_id, formula)
         if not ps:
             ps = self.compileFormulaScript(
                 script_id,
                 formula_str,
                 with_args)
+        if ps and getattr(ps, 'errors', None):
+            compilation_errors = ps.errors
 
         request_context = context
         script_type, obj_id, _ = script_id.split(SCRIPT_ID_DELIMITER, 2)
@@ -888,7 +970,7 @@ class DesignManager:
         try:
             contextual_ps = ps.__of__(context)
             if with_args:
-                result = contextual_ps(*args)
+                result = contextual_ps(*args, **kwargs)
             else:
                 result = contextual_ps()
             if (self.debugMode and
@@ -900,8 +982,6 @@ class DesignManager:
                     str(contextual_ps.errors)))
 
         except Exception, e:
-            if ps and getattr(ps, 'errors', None):
-                compilation_errors = ps.errors
             logger.info(
                 "Plomino Script Exception: %s, %s" % (
                     formula_str,
@@ -929,6 +1009,113 @@ class DesignManager:
         permission.
         """
         return self.getRequestCache('_plomino_run_as_owner_')
+
+    def queue_run(self, executable, doc=None, *args, **kwargs):
+        """
+        use p.a.async or other async lib to queue executing code.
+        Code is text of a pythonscript, or a Form or and Agent
+        """
+        if IAsyncService is None:
+            raise ImportError("plone.app.async is not installed")
+        async = component.getUtility(IAsyncService)
+        #TODO: limit what extra args we pass in
+        #TODO: check callable to make sure it doesn't let us bypass security
+
+        # if there is an extra context check its a document
+        if doc is not None:
+            if IPlominoDocument.providedBy(doc):
+                kwargs['__document_id__'] = doc.id
+
+        if IPlominoAgent.providedBy(executable):
+            context = executable
+        elif IPlominoForm.providedBy(executable):
+            context = executable
+            if not hasattr(context, 'onDisplay') or not context.onDisplay:
+                raise SyntaxError("Form must have onDisplay formula to queue it")
+        elif IPlominoField.providedBy(executable):
+            context = executable
+            if not hasattr(context, 'formula') or not context.formula:
+                raise SyntaxError("Field must have a formula to queue it")
+        elif IPlominoDocument.providedBy(executable):
+            doc = executable
+            kwargs['__document_id__'] = doc.id #ignore any doc that was passsed in
+            form = doc.getForm()
+            if not hasattr(form, 'onDisplay') or not form.onDisplay:
+                raise SyntaxError("Form must have onDisplay formula to queue it")
+            context = form
+        elif type(executable) == type(""):
+            if doc is not None:
+                context = doc
+            else:
+                context = self
+            try:
+                ps = makePythonScript(executable)
+            except SyntaxError:
+                # better we raise this before the job is queued
+                raise
+            kwargs['__async_script__'] = unicode(executable)
+        else:
+            # TODO: do we allow other things?
+            context = executable
+
+        request = dict(getattr(context, 'REQUEST', {}))
+        if request:
+            for k, v in request.items():
+                if type(v) not in [str, unicode]:
+                    del request[k]
+
+
+        job = async.queueJob(asyncExecute, context, original_request=request, *args, **kwargs)
+        # we will turn the job into an id so it can be retrieved later
+        job_id = u64(job._p_oid)
+        return job_id
+
+    def queue_status(self, job_id):
+        if not job_id:
+            raise ValueError("Invalid job_id")
+        if IAsyncService is None:
+            raise ImportError("plone.app.async is not installed")
+        status, job = self._find_job(job_id)
+        if status:
+            return status, job.result
+        else:
+            return None, None
+
+    def _find_job(self, job_id):
+        service = component.getUtility(IAsyncService)
+        queue = service.getQueues()['']
+        def ours(job):
+            return u64(job._p_oid) == job_id
+                   #and job.args[0].startswith(self.absolute_path())
+        for status, job in self._find_jobs():
+            if ours(job):
+                return job.status, job
+        return None, None
+
+    def _find_jobs(self):
+        service = component.getUtility(IAsyncService)
+        queue = service.getQueues()['']
+        for job in queue:
+            yield 'queued', job
+        for da in queue.dispatchers.values():
+            for agent in da.values():
+                for job in agent:
+                    yield 'active', job
+                for job in agent.completed:
+                    if isinstance(job.result, Failure):
+                        yield 'dead', job
+                    else:
+                        yield 'completed', job
+
+    def _filter_jobs(self):
+        for job_status, job in self._find_jobs():
+            if len(job.args) == 0:
+                continue
+            job_context = job.args[0]
+            if type(job_context) == tuple and \
+                    job_context[:len(self.portal_path)] == self.portal_path:
+                yield job_status, job
+
 
     security.declarePrivate('traceRenderingErr')
 
