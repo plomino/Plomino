@@ -162,7 +162,13 @@ def asyncExecute(executable, *args, **kwargs):
     __document_id__ = kwargs.pop('__document_id__', None)
     original_request = kwargs.pop('original_request', None)
     if IPlominoAgent.providedBy(executable):
-        return executable.runAgent(*args, **kwargs)
+        try:
+            return executable.runAgent(*args, **kwargs)
+        except PlominoScriptException, e:
+            msg = str(e)
+            logger.error("Formula error: %s", msg)
+            # PlominoScriptException have context object which screws up async as its from another connection.
+            raise Exception(msg)
     elif IPlominoForm.providedBy(executable):
         form = executable
         # for forms we run the ondisplay
@@ -178,8 +184,10 @@ def asyncExecute(executable, *args, **kwargs):
                 context,
                 form.onDisplay)
         except PlominoScriptException, e:
-            response = None
-            e.reportError('onDisplay formula failed')
+            msg = str(e)
+            logger.error(msg)
+            # PlominoScriptException have context object which screws up async as its from another connection.
+            raise Exception(msg)
         # If the onDisplay event returned something, return it
         # We could do extra handling of the response here if needed
         return response
@@ -192,7 +200,13 @@ def asyncExecute(executable, *args, **kwargs):
         else:
             context = form
 
-        return form.computeFieldValue(field.id, context)
+        try:
+            return form.computeFieldValue(field.id, context, report=False)
+        except PlominoScriptException, e:
+            msg = str(e)
+            logger.error(msg)
+            # PlominoScriptException have context object which screws up async as its from another connection.
+            raise Exception(msg)
 
     elif __async_script__ is not None:
         # In this case we will run it as a pythonscript

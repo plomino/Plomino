@@ -1944,6 +1944,8 @@ class PlominoForm(Container):
                     exc_info=True)
                 if report:
                     e.reportError('%s field formula failed' % fieldname)
+                else:
+                    raise e
 
         return fieldvalue
 

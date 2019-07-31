@@ -3,6 +3,7 @@ import transaction
 import Missing
 import unittest
 
+import zc
 from AccessControl.unauthorized import Unauthorized
 from DateTime import DateTime
 from decimal import Decimal
@@ -89,6 +90,21 @@ class PlominoAsyncTest(AsyncTestCase):
         status, result = self.db.queue_status(job_id)
         self.assertEqual(result, 42)
 
+    def test_queue_form_with_exception(self):
+
+        form = self.db.frm_test
+        form.onDisplay = """raise Exception()"""
+
+        job_id = self.db.getParentDatabase().queue_run(form)
+        transaction.commit()
+
+        _, job = self.db._find_job(job_id)
+        wait_for_result(job)
+
+        status, result = self.db.queue_status(job_id)
+        self.assertIsInstance(result, zc.twist.Failure)
+
+
     def test_queue_script(self):
 
         formula = """return 42"""
@@ -132,6 +148,20 @@ class PlominoAsyncTest(AsyncTestCase):
         status, result = self.db.queue_status(job_id)
         self.assertEqual(result, 42)
 
+    def test_queue_script_with_exception(self):
+
+        formula = """raise Exception()"""
+
+        job_id = self.db.getParentDatabase().queue_run(formula)
+        transaction.commit()
+
+        _, job = self.db._find_job(job_id)
+        wait_for_result(job)
+
+        status, result = self.db.queue_status(job_id)
+        self.assertIsInstance(result, zc.twist.Failure)
+
+
 
     def test_queue_agent(self):
 
@@ -169,6 +199,25 @@ class PlominoAsyncTest(AsyncTestCase):
 
         status, result = self.db.queue_status(job_id)
         self.assertEqual(result, 42)
+
+    def test_queue_agent_with_exception(self):
+
+        agent = api.content.create(
+            type='PlominoAgent',
+            id='myagent3',
+            title='myagent',
+            content="""raise Exception()""",
+            container=self.db)
+
+        job_id = self.db.getParentDatabase().queue_run(agent, None, 42)
+        transaction.commit()
+
+        _, job = self.db._find_job(job_id)
+        wait_for_result(job, 10)
+
+        status, result = self.db.queue_status(job_id)
+        self.assertIsInstance(result, zc.twist.Failure)
+        #self.assertRegexpMatches(repr(result), "<zc.twist.Failure exceptions.Exception: RuntimeError: Script (Python) agent.*")
 
 
     def test_queue_from_formula(self):
@@ -216,4 +265,17 @@ class PlominoAsyncTest(AsyncTestCase):
         status, result = self.db.queue_status(job_id)
         self.assertEqual(result, 42)
 
+    def test_queue_field_with_exception(self):
+
+        form = self.db.frm_test
+        form.field_1.formula = """raise Exception()"""
+
+        job_id = self.db.getParentDatabase().queue_run(form.field_1)
+        transaction.commit()
+
+        _, job = self.db._find_job(job_id)
+        wait_for_result(job)
+
+        status, result = self.db.queue_status(job_id)
+        self.assertIsInstance(result, zc.twist.Failure)
 
