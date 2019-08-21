@@ -11,7 +11,7 @@ COPY --chown=plone:plone . /plone/instance/
 
 SHELL ["/bin/bash", "-c"]
 USER plone
-RUN cd /plone/instance && buildout -c buildout.cfg install test resources robot instance && source $NVM_DIR/nvm.sh && cd /plone/instance/ide  && npm install && npm run build || true
+RUN cd /plone/instance && bin/buildout -c buildout.cfg install test resources robot instance && source $NVM_DIR/nvm.sh && cd /plone/instance/ide  && npm install && npm run build || true
 USER root
 RUN chown -R --from=root:root plone:plone .
 #RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /plone/instance/ide  && npm install && npm run build"]

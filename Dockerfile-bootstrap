@@ -1,4 +1,4 @@
-FROM plone:5 as robot_tests
+FROM plone:5.0 as robot_tests
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends curl git libyaml-dev zlib1g-dev libjpeg-dev gcc  build-essential autoconf  libxml2-dev libxslt1-dev libsasl2-dev  libssl-dev
 # libjpeg-turbo8-dev

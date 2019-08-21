@@ -3,7 +3,7 @@
 version: '3'
 services:
   selenium:
-    image: selenium/standalone-chrome
+    image: selenium/standalone-chrome:3.141.59-oxygen
     volumes:
       - /dev/shm:/dev/shm
     privileged: true
@@ -83,7 +83,7 @@ services:
 # doesn't work with remote docker
 #      - ./test/testoutput:/buildout/parts/test
 #      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
-    command: /bin/sh -c "bin/test -vv -s Products.CMFPlomino && bin/test --all -vv -t robot -s Products.CMFPlomino"
+    command: /bin/sh -c "/plone/instance/bin/test -vv -s Products.CMFPlomino && /plone/instance/bin/test --all -vv -t robot -s Products.CMFPlomino"
     depends_on:
       - "selenium"
 
