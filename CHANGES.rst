@@ -132,6 +132,7 @@ Changelog
 - Enable 'Allow other value' on selection field using select2 widget [quang]
 - Optionally don't display results on initial search form load. New setting [quang]
 - Display DB name in IDE title bar
+- Validate selection input [instification]
 - Update email validation to be RFC5322 compliant [instification]
 - Fix bug where whitespace causes redirect actions to fail [instification]
 

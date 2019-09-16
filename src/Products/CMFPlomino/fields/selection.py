@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
+from Products.CMFPlomino import _
 from jsonutil import jsonutil as json
 from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider, ORDER_KEY
@@ -173,3 +174,25 @@ class SelectionField(BaseField):
         """ Return a JSON table storing documents to be displayed
         """
         return json.dumps([v.split('|')[::-1] for v in selection])
+
+    def validate(self, submitted_value):
+        errors = []
+
+        # Macros are problematic as the selection list is not derived from
+        # the context of the selection formula. It seems that on submission
+        # of a macro form the correct context is not set, preventing us from
+        # knowing what the list presented in the macro was.
+        # See https://github.com/pretagov/PlominoWorkflow/issues/176
+        # For now we skip validation of macros...
+        if self.context.REQUEST.get('Plomino_Macro_Context', None):
+            return errors
+
+        allow_other = getattr(self.context, 'allow_other_value', False)
+        if submitted_value is not None:
+            select_opts = \
+                [i.split('|')[-1] for i in self.getSelectionList(None)]
+            if submitted_value not in select_opts and allow_other is False:
+                errors.append(_(u'Submitted value (%s) does not match '
+                                u'available selection options' %
+                                submitted_value))
+        return errors

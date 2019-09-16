@@ -2297,9 +2297,8 @@ class PlominoForm(Container):
                             PlominoTranslate("is mandatory", self)))
             #
             # STEP 2: check validation formula
-            #
             # This may massage the submitted value e.g. to make it pass
-            # STEP 3
+            #
             formula = f.validation_formula
             if formula:
                 error_msg = ''
@@ -2316,6 +2315,7 @@ class PlominoForm(Container):
                     field_errors.append(error_msg)
                 # May have been changed by formula
                 submittedValue = REQUEST.get(fieldname)
+
             #
             # STEP 3: check data types
             #
