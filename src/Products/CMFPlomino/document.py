@@ -1165,7 +1165,8 @@ class TemporaryDocument(PlominoDocument):
                 for f in mapped_field_ids:
                     self.setItem(f.strip(), rowdata[mapped_field_ids.index(f)])
             else:
-                form.validateInputs(REQUEST, self)
+                if validation_mode is True:
+                    form.validateInputs(REQUEST, self)
                 form.readInputs(self, REQUEST, validation_mode=validation_mode)
 
     security.declareProtected(READ_PERMISSION, 'getfile')
