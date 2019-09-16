@@ -179,15 +179,15 @@ class AccessControl:
         """ Returns the current user Plomino rights.
         """
         try:
-            userid = self.getCurrentUserId()
-            if userid == 'Anonymous':
+            user_name = self.getCurrentMember().getUserName()
+            if user_name == 'Anonymous':
                 return [getattr(self, "AnomynousAccessRight", "NoAccess")]
 
-            rights = self.get_local_roles_for_userid(userid)
-
+            rights = self.get_local_roles_for_userid(user_name)
             # we append group rights
             groupstool = self.portal_groups
-            usergroups = [g.id for g in groupstool.getGroupsByUserId(userid)]
+            usergroups = [g.id for g in
+                          groupstool.getGroupsByUserId(user_name)]
             for g in usergroups:
                 rights = rights + self.get_local_roles_for_userid(g)
 

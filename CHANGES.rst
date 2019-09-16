@@ -134,6 +134,7 @@ Changelog
 - Display DB name in IDE title bar
 - Validate selection input [instification]
 - Update email validation to be RFC5322 compliant [instification]
+- Fix issue when checking user rights. #178 [instification]
 - Fix bug where whitespace causes redirect actions to fail [instification]
 
 
