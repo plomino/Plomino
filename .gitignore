@@ -30,4 +30,4 @@ log.html
 report.html
 bin
 test/*
-src/Products/CMFPlomino/browser/static/ide
+package-lock.json
