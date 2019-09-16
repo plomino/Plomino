@@ -159,14 +159,15 @@ class PlominoAction(Item):
     def executeAction(self, target, form_id):
         """ Return the URL for this action.
         """
+        content = self.content.rstrip()
         db = self.getParentDatabase()
         if self.action_type == "OPENFORM":
-            formid = self.content
+            formid = content
             if not formid:
                 return ""
             return db.absolute_url() + '/' + formid + '/OpenForm'
         elif self.action_type == "OPENVIEW":
-            viewid = self.content
+            viewid = content
             if not viewid:
                 return ""
             return db.absolute_url() + '/' + viewid + '/OpenView'
@@ -186,7 +187,7 @@ class PlominoAction(Item):
                         'action', self.getParentNode().id, self.id,
                         'script']),
                     target,
-                    self.content,
+                    content,
                     True,
                     form_id)
                 return str(redirecturl)

@@ -133,6 +133,7 @@ Changelog
 - Optionally don't display results on initial search form load. New setting [quang]
 - Display DB name in IDE title bar
 - Update email validation to be RFC5322 compliant [instification]
+- Fix bug where whitespace causes redirect actions to fail [instification]
 
 
 2.0b4 (2016-05-27)
