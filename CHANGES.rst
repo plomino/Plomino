@@ -136,6 +136,7 @@ Changelog
 - Update email validation to be RFC5322 compliant [instification]
 - Fix issue when checking user rights. #178 [instification]
 - Fix bug where whitespace causes redirect actions to fail [instification]
+- Import/Export resources as separate files [instification]
 
 
 2.0b4 (2016-05-27)

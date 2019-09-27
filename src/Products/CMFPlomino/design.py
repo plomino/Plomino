@@ -626,8 +626,16 @@ class DesignManager:
                         id.split('/')[-1] + '.json')
                     jsonstring = self.exportDesignAsJSON(
                         elementids=[id],
-                        dbsettings=False)
+                        dbsettings=False,
+                        bundle=True)
                     self.saveFile(path, jsonstring)
+                    path = os.path.join(
+                        resources_exportpath,
+                        id.split('/')[-1] + '.py')
+                    filestring = self.exportResourceAsPy(
+                        self.resources[id.split('/')[-1]])
+                    self.saveFile(path, filestring)
+
                 else:
                     bundle = self.exportDesignAsBundle(
                         elementid=id)
@@ -1236,8 +1244,16 @@ class DesignManager:
                     id.split('/')[-1] + '.json')
                 jsonstring = self.exportDesignAsJSON(
                     elementids=[id],
-                    dbsettings=False)
+                    dbsettings=False,
+                    bundle=True)
                 zip_file.writestr(filename, jsonstring)
+                filename = os.path.join(
+                    db_id,
+                    'resources',
+                    id.split('/')[-1] + '.py')
+                filestring = self.exportResourceAsPy(
+                    self.resources[id.split('/')[-1]])
+                zip_file.writestr(filename, filestring)
             else:
                 bundle = self.exportDesignAsBundle(
                     elementid=id)
@@ -1257,7 +1273,7 @@ class DesignManager:
     security.declareProtected(DESIGN_PERMISSION, 'exportDesignAsJSON')
 
     def exportDesignAsJSON(
-        self, elementids=None, REQUEST=None, dbsettings=True
+        self, elementids=None, REQUEST=None, dbsettings=True, bundle=False
     ):
         """
         """
@@ -1302,7 +1318,7 @@ class DesignManager:
                 if callable(resource_id):
                     resource_id = resource_id()
                 design['resources'][resource_id] = self.exportResourceAsJSON(
-                    element)
+                    element, bundle=bundle)
 
         data['design'] = design
         data['id'] = self.id
@@ -1442,7 +1458,7 @@ class DesignManager:
 
     security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsJSON')
 
-    def exportResourceAsJSON(self, obj):
+    def exportResourceAsJSON(self, obj, bundle=False):
         """
         """
         id = obj.id
@@ -1453,6 +1469,8 @@ class DesignManager:
             'type': obj.meta_type,
             'title': obj.title,
         })
+        if bundle is True:
+            return data
         if hasattr(obj, 'read'):
             data['data'] = obj.read()
         elif isinstance(obj, Folder):
@@ -1464,6 +1482,22 @@ class DesignManager:
             if not hasattr(stream, "encode"):
                 stream = stream.data
             data['data'] = stream.encode('base64')
+
+        return data
+
+    security.declareProtected(DESIGN_PERMISSION, 'exportResourceAsPy')
+
+    def exportResourceAsPy(self, obj):
+        if hasattr(obj, 'read'):
+            data = obj.read()
+        elif isinstance(obj, Folder):
+            for name, sub_obj in obj.objectItems():
+                data = self.exportResourceAsPy(sub_obj)
+        else:
+            stream = obj.data
+            if not hasattr(stream, "encode"):
+                stream = stream.data
+            data = stream.encode('base64')
 
         return data
 
@@ -1593,7 +1627,8 @@ class DesignManager:
                     self.importDbSettingsFromJSON(element)
                 elif name == 'resources':
                     for (res_id, res) in design['resources'].items():
-                        logger.info("Import resource" + res_id)
+                        logger.info("Import resource: " + res_id)
+                        self.loadScriptIntoResource(res_id, res, bundle)
                         self.importResourceFromJSON(
                             self.resources, res_id, res)
                 else:
@@ -1645,6 +1680,12 @@ class DesignManager:
             elif not start_reg and not end_reg and inside:
                 content+= line+"\n"
 
+    security.declareProtected(DESIGN_PERMISSION, 'loadScriptIntoResource')
+
+    def loadScriptIntoResource(self, res_id, res, bundle):
+        for contentId, _, pythonScript in bundle.contents("py"):
+            if contentId == res_id:
+                res['data'] = pythonScript
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
