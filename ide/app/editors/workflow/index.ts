@@ -243,7 +243,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
       const aloneCondition = targetItem.type === WF.CONDITION
         && targetItem.children.length === 1;
       if (aloneBranch || aloneCondition) {
-        this.elementService.awaitForConfirm('One branch. Remove just division?')
+        this.elementService.awaitForConfirm({text: 'One branch. Remove just division?'})
         .then(() => {
           const idParent = tree.getItemParentById(targetItem.id).id;
           const idChildren = targetItem.children.length 
@@ -259,10 +259,10 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
           this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
         })
         .catch(() => {
-          this.elementService.awaitForConfirm(
-            targetItem.type === WF.CONDITION 
+          this.elementService.awaitForConfirm({
+            text: targetItem.type === WF.CONDITION 
               ? 'This action will remove the branches below'
-              : 'This action will remove the branch below')
+              : 'This action will remove the branch below'})
           .then(() => {
             tree.deleteBranchByTopItemId(targetItem.id);
             this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);
@@ -272,10 +272,14 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
       }
       else {
         /* else */
-        this.elementService.awaitForConfirm(
-          targetItem.type === WF.CONDITION 
-            ? 'This action will remove the branches below'
-            : 'This action will remove the branch below')
+        this.elementService.awaitForConfirm({
+          dialogTitle: targetItem.type === WF.CONDITION 
+            ? "Delete branch"
+            : "Delete branches",
+          text: "This will permanently delete all items after this branch. Do you wish to continue?",
+          confirmBtnText: "Delete",
+          cancelBtnText: "Cancel"
+        })
         .then(() => {
           tree.deleteBranchByTopItemId(targetItem.id);
           this.buildWFTree(tree, AUTOSAVE, AUTOUPGRADE);

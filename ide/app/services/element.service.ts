@@ -11,6 +11,14 @@ import {
 
 import { Observable } from 'rxjs/Rx';
 
+interface ConfirmationDialogOptions {
+  text: string
+  dialogTitle?: string
+  cancelBtnText?: string
+  confirmBtnText?: string
+  dialogWidth?: string
+}
+
 @Injectable()
 export class ElementService {
 
@@ -29,22 +37,17 @@ export class ElementService {
       document.querySelector('#confirm-dialog');
   }
 
-  awaitForConfirm(
-    text = 'Do you agree to delete this object?',
-    cancelBtnText = 'Disagree',
-    confirmBtnText = 'Agree',
-    dialogWidth = '280px'
-  ): Promise<boolean> {
-    this.confirmDialog
-      .querySelector('.mdl-dialog__content')
-      .innerHTML = text;
-    this.confirmDialog
-      .querySelector('button.close')
-      .innerHTML = cancelBtnText;
-    this.confirmDialog
-      .querySelector('button.agree')
-      .innerHTML = confirmBtnText;
-    this.confirmDialog.style.width = dialogWidth;
+  awaitForConfirm(options: ConfirmationDialogOptions): Promise<boolean> {
+    const dialogTitle = options.dialogTitle ? options.dialogTitle : "Confirm?";
+    const confirmButtonText = options.confirmBtnText ? options.confirmBtnText : "Agree";
+    const cancelButtonText = options.cancelBtnText ? options.cancelBtnText : "Disagee";
+    const dialogWidth = options.dialogWidth ? options.dialogWidth : "280px";
+
+    this.confirmDialog.querySelector('.mdl-dialog__content').innerHTML = options.text;
+    this.confirmDialog.querySelector('.mdl-dialog__title').innerHTML = dialogTitle;
+    this.confirmDialog.querySelector('button.close').innerHTML = cancelButtonText;
+    this.confirmDialog.querySelector('button.agree').innerHTML = confirmButtonText;
+    this.confirmDialog.style.width = dialogWidth
     this.confirmDialog.showModal();
     return new Promise((resolve, reject) => {
       $(this.confirmDialog)

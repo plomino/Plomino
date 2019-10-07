@@ -116,12 +116,14 @@ export class PlominoTabsComponent implements OnInit {
         || this.isTabDirty(tab)
       )
     ) {
-      this.elementService.awaitForConfirm(
-        'You have unsaved changes. Would you like to save your changes?',
-        'Cancel/Discard Changes',
-        'Save',
-        '400px'
-      )
+      // There should be a way to cancel this action, not just save or discard the changes
+      this.elementService.awaitForConfirm({
+        dialogTitle: "Discard changes?",
+        text: 'You have unsaved changes in this tab. Would you like to save your changes?',
+        confirmBtnText: 'Save',
+        cancelBtnText: 'Discard',
+        dialogWidth: '350px'
+      })
       .then(() => {
         this.tabsManagerService.closeTab(tab);
       })

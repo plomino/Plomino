@@ -463,8 +463,14 @@ export class PlominoSaveManagerService {
     return new Promise((resolve, reject) => {
 
       const showUnsavedConfirmDialog = () => {
-        return this.elementService
-          .awaitForConfirm('The changes are not saved, continue?');
+        return this.elementService.awaitForConfirm({
+          dialogTitle: "Discard changes?",
+          text:
+            "You have selected another field but the current field has unsaved changes. Would you like to discard the changes?",
+          confirmBtnText: "Discard changes",
+          cancelBtnText: "Continue editing",
+          dialogWidth: "500px"
+        });
       };
 
       const resolveAndConfirm = (_iframe: boolean) => {

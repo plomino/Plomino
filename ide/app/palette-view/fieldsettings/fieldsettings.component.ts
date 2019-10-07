@@ -682,7 +682,13 @@ export class FieldSettingsComponent implements OnInit {
       if (!this.activeEditorService.getActive()) {
         return false;
       }
-      this.elementService.awaitForConfirm()
+      this.elementService.awaitForConfirm({
+        dialogTitle: "Delete group?",
+        text: "Do you want to delete the selected group?",
+        confirmBtnText: "Delete group",
+        cancelBtnText: "Cancel",
+        dialogWidth: "350px"
+      })
       .then(() => {
         const $group = $(this.activeEditorService.getActive().getBody())
           .find(`.plominoGroupClass[data-groupid="${ this.field.id }"]`);
@@ -744,7 +750,12 @@ export class FieldSettingsComponent implements OnInit {
     }
 
     private deleteField() {
-      this.elementService.awaitForConfirm()
+      this.elementService.awaitForConfirm({
+        dialogTitle: "Delete field?",
+        text: "Do you want to delete the selected field?",
+        confirmBtnText: "Delete field",
+        cancelBtnText: "Cancel"
+      })
       .then(() => {
         this.elementService.deleteElement(this.field.url)
         .subscribe(() => {

@@ -285,9 +285,11 @@ export class FormSettingsComponent implements OnInit {
             /**
              * warn the user of any unsaved changes
              */
-            return this.elementService.awaitForConfirm(
-              'The Form has unsaved changes, do you want to show preview anyway?'
-            );
+            return this.elementService.awaitForConfirm({
+              text: 'This form has unsaved changes, do you want to show the preview anyway?',
+              confirmBtnText: 'Preview',
+              cancelBtnText: 'Cancel'
+            });
           }
 
           return Promise.resolve();
@@ -302,9 +304,16 @@ export class FormSettingsComponent implements OnInit {
       }
     }
 
-    private deleteForm(tabData: PlominoTab) {
-      const tab = this.tab;
-      this.elementService.awaitForConfirm()
+  private deleteForm(tabData: PlominoTab) {
+    const tab = this.tab;
+    this.elementService
+      .awaitForConfirm({
+        dialogTitle: "Delete form?",
+        text:
+          "This will permanently delete the current form. Do you wish to continue?",
+        confirmBtnText: "Delete form",
+        cancelBtnText: "Cancel"
+      })
       .then(() => {
         const editor = tinymce.get(tabData.url.split('/').pop());
         if (editor && editor.selection) {
@@ -335,9 +344,8 @@ export class FormSettingsComponent implements OnInit {
             this.treeService.updateTree();
             this.changeDetector.markForCheck();
           });
-      })
-      .catch(() => null);
-    }
+      }).catch(() => null);
+  }
 
     private updateMacroses() {
       if (this.formSettings) {
