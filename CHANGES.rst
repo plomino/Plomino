@@ -4,7 +4,7 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
-- Update CI config
+- Move CI to GitHub Actions [JeffersonBledsoe]
 - Edit document button goes to current page [quang]
 - Restore View custom template
 - Unquote plus signs when reading input [instification]

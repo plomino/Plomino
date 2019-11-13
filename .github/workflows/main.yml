@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - "master"
+      - "releases/**"
+
+jobs:
+  build:
+    container:
+      image: docker:stable-git
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          apk add --no-cache py-pip
+          pip install \
+            docker-compose==1.16.1 \
+            awscli==1.11.76
+      - name: Build application Docker image
+        run: |
+          docker build --no-cache -t robot_tests . || (docker build --no-cache -t robot_tests -f Dockerfile-bootstrap .; docker build --no-cache -t robot_tests .)
+      - name: Run tests
+        timeout-minutes: 60
+        run: |
+          export NODES=1 VIDEO=false
+          mkdir -p test; chown 1000:1000 test; ls -al test
+          docker-compose -f docker-compose.test.yml -p grid up -d selenium
+          docker-compose -f docker-compose.test.yml -p grid up --abort-on-container-exit --exit-code-from=plominotest plominotest
+      - name: Clean up tests
+        if: always()
+        run: |
+          docker cp  grid_plominotest_1:/plone/instance/parts/test .
+          docker cp  grid_plominotest_1:/plone/instance/var/log .
+          ls -al test
+          docker-compose -f docker-compose.test.yml -p grid down
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: test_results
+          path: ./test
