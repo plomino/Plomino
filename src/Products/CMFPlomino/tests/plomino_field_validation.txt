@@ -465,3 +465,69 @@ Fill the form, save the data and see if the field validate
     >>> browser.getControl('Next').click()
     >>> 'Validation failed' in browser.contents
     True
+
+
+====
+Test selection values are correctly validated
+====
+
+Create a form with selections
+
+    >>> id = db.invokeFactory('PlominoForm', id='selection_form', title='Selection Form')
+    >>> id = db.selection_form.invokeFactory('PlominoField',
+    ...             id='selection_1',
+    ...             title='Selection 1',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> id = db.selection_form.invokeFactory('PlominoField',
+    ...             id='selection_2',
+    ...             title='Selection 2',
+    ...             field_type="SELECTION",
+    ...             field_mode="EDITABLE")
+    >>> db.selection_form.form_layout = """
+    ...    <p><label for="selection_1">Selection 1</label><span class="plominoFieldClass">selection_1</span></p>
+    ...    <p><label for="selection_2">Selection 2</label><span class="plominoFieldClass">selection_2</span></p>
+    ... """
+    >>> db.selection_form.selection_1.selectionlist = ['apple','orange']
+    >>> db.selection_form.selection_2.selectionlist = ['apple','orange']
+    >>> db.selection_form.selection_2.widget = 'MULTISELECT'
+    >>> transaction.commit()
+    >>> selection_form_url = portal_url +'/mydb' +'/selection_form'
+
+Check valid select inputs are allowed
+
+    >>> browser.open(selection_form_url)
+    >>> browser.getControl(name='selection_1').value = ['apple']
+    >>> browser.getControl('Save').click()
+    >>> browser.contents
+    '...<p><label for="selection_1">Selection 1</label>\n    apple\n    \n\n\n</p>...'
+
+Add an invalid select option and check it is caught as invalid
+ 
+    >>> browser.open(selection_form_url)
+    >>> from mechanize import Item
+    >>> selection = browser.getControl(name='selection_1')
+    >>> ret = Item(selection.mech_control, {"contents": "banana", "value": "banana"})
+    >>> selection.value = ['banana']
+    >>> browser.getControl('Save').click()
+    >>> browser.contents
+    '...<li id="error_selection_1">Submitted value (banana) does not match available selection options</li>...'
+
+Check valid multi-select inputs are allowed
+
+    >>> browser.open(selection_form_url)
+    >>> browser.getControl(name='selection_2').value = ['apple', 'orange']
+    >>> browser.getControl('Save').click()
+    >>> browser.contents
+    '...<p><label for="selection_2">Selection 2</label>\n    apple\n    \n\n    orange\n    \n\n\n</p>...'
+
+Add an invalid multi-select option and check it is caught as invalid
+
+    >>> browser.open(selection_form_url)
+    >>> from mechanize import Item
+    >>> selection = browser.getControl(name='selection_2')
+    >>> ret = Item(selection.mech_control, {"contents": "banana", "value": "banana"})
+    >>> selection.value = ['apple', 'banana']
+    >>> browser.getControl('Save').click()
+    >>> browser.contents
+    '...<li id="error_selection_2">Submitted values (banana, apple) do not match available selection options</li>...'

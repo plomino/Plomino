@@ -189,10 +189,21 @@ class SelectionField(BaseField):
 
         allow_other = getattr(self.context, 'allow_other_value', False)
         if submitted_value is not None:
+            plural = False
             select_opts = \
                 [i.split('|')[-1] for i in self.getSelectionList(None)]
-            if submitted_value not in select_opts and allow_other is False:
-                errors.append(_(u'Submitted value (%s) does not match '
+            if type(submitted_value) == str:
+                values_match = submitted_value in select_opts
+                pretty_value = submitted_value
+            else:
+                values_match = all(i in select_opts for i in submitted_value)
+                pretty_value = ', '.join(submitted_value)
+                if len(submitted_value) > 1:
+                    plural = True
+            if values_match is False and allow_other is False:
+                errors.append(_(u'Submitted value%s (%s) do%s not match '
                                 u'available selection options' %
-                                submitted_value))
+                                (plural is True and 's' or '', 
+                                 pretty_value,
+                                 plural is False and 'es' or '')))
         return errors
