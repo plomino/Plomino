@@ -609,8 +609,13 @@ export class FieldSettingsComponent implements OnInit {
 
     private getSelectedSubform() {
       const $select: any = $('#form-widgets-subform-id');
+
+    if ($select.hasClass('select2-hidden-accessible')) {
       return $select.select2().val();
     }
+
+    return ''
+  }
 
     private getSelectedRelatedField() {
       const $select: any = $('#form-widgets-label-relation');
@@ -823,8 +828,9 @@ export class FieldSettingsComponent implements OnInit {
           const $select = $('#form-widgets-subform-id');
           if ($select.length) {
             const $select2 = (<any>$select).select2('destroy').select2({
-              placeholder: 'Select the form'
             });
+            placeholder: 'Select a subform',
+            width: '85%',
 
             $select.off('change.sfevents');
             $select2.val('').trigger('change');
