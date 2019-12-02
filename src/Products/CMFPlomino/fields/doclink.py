@@ -41,8 +41,9 @@ class IDoclinkField(model.Schema):
         required=False)
 
     labelcolumn = schema.TextLine(
-        title=u'Label column',
-        description=u'View column used as label',
+        title=u'Display Fields',
+        description=u'A comma separated list of values to be displayed. '
+        u'The first value in this list will be used for search when editng the doclink',
         required=False)
 
     associated_form = schema.Choice(
@@ -168,10 +169,13 @@ class DoclinkField(BaseField):
             return ''
         if self.context.sourceview and self.context.labelcolumn:
             v = db.getView(self.context.sourceview)
-            label_key = v.getIndexKey(self.context.labelcolumn)
+            label_key = v.getIndexKey(self._getLabelColumnFilterByValue())
             if not label_key:
                 return docId
             return getattr(doc, label_key, '')
+        elif self.context.labelcolumn:
+            label_field_id = self._getLabelColumnFilterByValue()
+            return doc.getItem(label_field_id, docId)
         else:
             return docId
 
@@ -203,7 +207,7 @@ class DoclinkField(BaseField):
             query = {'SearchableText': '%s*' % filter, 'Form':  self.context.associated_form}
             for brain in index.dbsearch(query,limit=MAX_ITEM):
                 if self.context.labelcolumn:
-                    val = getMetadata(brain, self.context.labelcolumn)
+                    val = getMetadata(brain, self._getLabelColumnFilterByValue())
                     if not val:
                         val = brain.id
                 else:
@@ -216,7 +220,7 @@ class DoclinkField(BaseField):
         # Otherwise, get result from the view
         elif self.context.sourceview:
             v = self.context.getParentDatabase().getView(self.context.sourceview)
-            label_key = v.getIndexKey(self.context.labelcolumn)
+            label_key = v.getIndexKey(self._getLabelColumnFilterByValue())
             if not label_key:
                 return []
             for doc in v.getAllDocuments(getObject=False):
@@ -411,6 +415,25 @@ class DoclinkField(BaseField):
                 else:
                     lists = _lists
         # TODO: need some better result if not settings. Should be all data? or just a id?
+
+        # If labelcolumn is a list of comma separated values, use the list to define the columns
+        # TODO: Sourceview returns formid/fieldid. Sourceview did not work at time of coding
+        #         so lable filtering doesn't work for sourceviews
+        if self.context.labelcolumn and "," in self.context.labelcolumn:
+            label_column_field_ids = [label.strip() for label in self.context.labelcolumn.split(",")]
+            all_field_ids = lists[0]
+            all_field_titles = lists[1]
+            filtered_field_ids = ()
+            filtered_field_titles = ()
+
+            for field_id in label_column_field_ids:
+                if field_id in all_field_ids:
+                    field_index = all_field_ids.index(field_id)
+                    filtered_field_ids = filtered_field_ids + (field_id,)        
+                    filtered_field_titles = filtered_field_titles + (all_field_titles[field_index],)
+
+            lists = [filtered_field_ids, filtered_field_titles]
+
         return lists
 
     def getSourceView(self):
@@ -422,3 +445,12 @@ class DoclinkField(BaseField):
     def getFieldMapping(self):
         fields,_ = self.getColumns()
         return ','.join(fields)
+
+    def _getLabelColumnFilterByValue(self):
+        label_field_id = self.context.labelcolumn
+
+        if "," not in label_field_id:
+            return label_field_id
+
+        label_column_field_ids = [label.strip() for label in self.context.labelcolumn.split(",")]
+        return label_column_field_ids[0]
