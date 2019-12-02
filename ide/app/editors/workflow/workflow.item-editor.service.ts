@@ -153,7 +153,7 @@ export class PlominoWorkflowItemEditorService {
     (<HTMLElement> this.itemSettingsDialog).dataset.itemId = item.id.toString();
     this.itemSettingsDialog
       .querySelector('#wf-item-settings-dialog__form')
-      .innerHTML = '<option value=""></option>' + this.formsList.getFiltered()
+      .innerHTML = '<option value=""></option>' + this.formsList.getForms()
         .map((f: any) => `<option>${ f.url.split('/').pop() }</option>`)
         .join('');
 

@@ -24,7 +24,8 @@ export class PlominoFormsListService {
   getFiltered() {
     const active = this.activeEditorService.getActive();
     return this.getForms().filter((form) => {
-      return !active || active.id !== form.url;
+      const formId = (<string>form.url).split("/").pop()
+      return !active || active.id !== formId;
     });
   }
 }

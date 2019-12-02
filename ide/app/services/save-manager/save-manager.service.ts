@@ -179,7 +179,7 @@ export class PlominoSaveManagerService {
     var fieldSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__field');
     var viewIdInput = this.createCustomViewDialog.querySelector('#new-view-dialog__id');
     var viewTitleInput = this.createCustomViewDialog.querySelector('#new-view-dialog__title');
-    formSelect.innerHTML =  this.formsList.getFiltered()
+    formSelect.innerHTML =  this.formsList.getForms()
         .map((form: any) => `<option value="${ form.url.split('/').pop() }">${form.label}</option>`)
         .join('');
 
@@ -188,7 +188,7 @@ export class PlominoSaveManagerService {
     $(formSelect).change( (evt) => {
       $(fieldSelect).val([]);
       var formId = $(formSelect).val();
-       this.formsList.getFiltered().forEach((form) => {
+       this.formsList.getForms().forEach((form) => {
         if (form.url.split('/').pop() == formId ) {
           // select all field of that form
           fieldSelect.innerHTML =  form.children
