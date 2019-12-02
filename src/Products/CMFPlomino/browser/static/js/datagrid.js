@@ -43,7 +43,7 @@ require([
           self.emit('render');
           self.options.render.apply(self, [options]);
           self.emit('rendered');
-          $(this.$modalDialog.find('.plominoClose')).attr('onclick', '$(".plone-modal-close").click()');
+          $(this.$modalDialog.find('.plominoClose')).attr('onclick', '$(".plone-modal-close")[0].click()');
         }
       });
 
@@ -273,7 +273,7 @@ require([
           self.emit('render');
           self.options.render.apply(self, [options]);
           self.emit('rendered');
-          $(this).find('.plominoClose').attr('onclick', '$(".plone-modal-close").click()');
+          $(this).find('.plominoClose').attr('onclick', '$(".plone-modal-close")[0].click()');
         }
       });
     },
