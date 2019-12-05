@@ -4,7 +4,12 @@
 from AccessControl.Permission import registerPermissions
 from DateTime import DateTime
 import decimal
-from Globals import DevelopmentMode
+try:
+    from Globals import DevelopmentMode
+except ImportError:
+    from App.config import getConfiguration
+
+    DevelopmentMode = getConfiguration().debug_mode
 from json import JSONDecoder, JSONEncoder
 from jsonutil import jsonutil as json
 import Missing
