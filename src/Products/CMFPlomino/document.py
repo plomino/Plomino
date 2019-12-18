@@ -558,7 +558,7 @@ class PlominoDocument(CatalogAware, CMFBTreeFolder, Contained):
                     db.documents.manage_renameObject(self.id, new_id)
 
             # As it happend only during creation request, we save temporary files and clean it
-            if creation:
+            if creation and hasattr(self, "REQUEST"):
                 self.saveTempAttachmentToDocument(form, self.REQUEST)
 
         # update the Plomino_Authors field with the current user name
