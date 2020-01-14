@@ -866,6 +866,8 @@ class DesignManager:
             self.scripts._setObject(script_id, ps)
         ps = self.getFormulaScript(script_id)
 
+        ps._formula_hash = hash(formula) #TODO: should be incldes too
+
         if with_args:
             ps._params = "*args"
         safe_utils = get_utils()
@@ -890,7 +892,6 @@ class DesignManager:
             'formula': formula
         }
         ps.write(str_formula)
-        ps._formula_hash = hash(formula) #TODO: should be incldes too
         if self.debugMode:
             logger.info(script_id + " compiled")
 

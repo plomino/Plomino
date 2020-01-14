@@ -138,6 +138,7 @@ Changelog
 - Fix bug where whitespace causes redirect actions to fail [instification]
 - Import/Export resources as separate files [instification]
 
+- Fix issue with script caching [instification]
 
 2.0b4 (2016-05-27)
 ------------------
