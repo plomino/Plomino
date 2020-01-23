@@ -62,7 +62,7 @@
                     (dragstart)="workflowMode ? dragSubformToWorkflow($event, typeName.url, typeName.label, typeName.typeLabel) : null"
                     (click)="treeArrowClick($event, typeName)">
                     
-                    <span class="tree-node__child-type-image">
+                    <span class="tree-node__child-type-image" aria-hidden="true">
                       <img [src]="getTypeImage(typeName)">
                     </span>
                     
