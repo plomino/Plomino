@@ -6,7 +6,7 @@ from setuptools import setup
 
 
 long_description = (
-    open('README.rst').read()
+    open('README.md').read()
     + '\n' +
     'Contributors\n'
     '============\n'
