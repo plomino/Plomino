@@ -1,3 +1,5 @@
+![Build status](https://github.com/pretagov/PlominoWorkflow/workflows/CI/badge.svg?branch=advanced_ide_workflow)
+
 Introduction
 ============
 
