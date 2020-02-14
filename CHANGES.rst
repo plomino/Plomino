@@ -1,128 +1,88 @@
 Changelog
 =========
- 
-2.0b5 (unreleased)
-------------------
+
+PretaForm Releases
+==================
+
+0.9.34.dev0 (unreleased)
+------------------------
 
 - Fix dragging and dropping of existing elements within the TinyMCE editor [jeffersonbledsoe]
 - Fix dragging vertical resizer not keeping up with mouse movemetns [jeffersonbledsoe]
 - Remove the database ID from a database export [jeffersonbledsoe]
 - Upgrade TypeScript to 3.7.5 [jeffersonbledsoe]
 - Add ESlint rules [jeffersonbledsoe]
+
+0.9.33 (2020-01-23)
+-------------------
+
+- Fix issue with script caching [instification]
+- Add aria-hidden attribute to tree view icons [jeffersonbledsoe]
+
+0.9.32 (2019-12-08)
+-------------------
+
+- Allow the customisation of a docklink's columns order [jeffersonbledsoe]
+- Fix the initial size of the "select subform" dropdown [jeffersonbledsoe]
+- Fix being able to select the current form as a subform [jeffersonbledsoe]
+- Fix close button js on datagrid modal [quang]
+- Make PlominoDocument.save safe to use when running in async [jeffersonbledsoe]
+
+0.9.31 (2019-11-13)
+-------------------
+
+- Make alert dialogs more specific [jeffersonbledsoe]
 - Move CI to GitHub Actions [JeffersonBledsoe]
-- Edit document button goes to current page [quang]
-- Restore View custom template
-- Unquote plus signs when reading input [instification]
-- Add option to send plain text emails [instification]
+- Add validation and tests for multiselect fields [jeffersonbledsoe]
 
-- CSV download macro can now be used on ViewA to download data from ViewB [ivanteoh]
-- fixed IDE issues with reordering and adding removing macros [ivanm]
-- Refresh code editor on save if is not dirty [ivanm]
-- Fix "hang when creating new form from editor (+ icon next to tabs)" [ivanm]
+0.9.30 (2019-09-27)
+-------------------
 
-- fixed exception caused by unicode in Title when inserted into a label in the final html [ivanteoh]
-- fixed "saving form scrolls to top. Also editing label then clicking field scrolls to the top" [ivanm]
-- fix errors in catalog indexes caused by views or columns containing '_' and also being renamed.
-  Renaming either now updates the indexes. [djay]
-- new multi-file import/export format which seperates formulas and layouts into .py and .html files [quang]
-- fix errors caused by runasowner when script is called inside a script [ivanteoh]
+- Import/Export resources as separate files [instification]
 
-- fields with the same name forms/views no longer cause problems when used in view columns [djay]
-- Bug fixes to macros [quang]
-- Bug fixes to views [ivanteoh]
-- Test suite improvements [ivanteoh]
-- Bug fix for set permission macro [ivanteoh]
-- Bug fixes to import/export [quang]
-- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
-- Display lists from selection field in a text field in a nice way[quang]
-- fixed a bug in openbareform that was preventing pdfs from rendering [djay]
-- Modify macro select_db_element to allow select field from subform [quang]
+0.9.29 (2019-09-16)
+-------------------
 
-- Allow select 'current field' from selection field macro [quang]
-- Allow macro condition field to select 'current field' from field list [quang]
-- Add Match text macro that support platform-dependant regular expression library [quang]
-- Modify macro_number_range to use single field [quang]
+- Fix bug where whitespace causes redirect actions to fail [instification]
+- Respect validation_mode when handling temporary documents [instification]
+- Validate selection input [instification]
+- Fix issue when checking user rights. #178 [instification]
 
-- fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
-- Remove macro 'Select user data' to move it outside of basic macros [quang]
-- Add dynamic title for macro 'Match text' that will display as 'Field-name contains expression-value'
+0.9.28 (2019-7-31)
+------------------
 
-- Allow select field from sub-form [quang]
-- Modify macro select_db_element to allow select field from subform [quang]
-- Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
-- Add test case for Plomino Browser, which test on escape characters [quang]
-- fix handling of empty values in datagrid rendering [instification]
-- Fix bug that open new form when closing modal input dialog of datagrid [quang]
-- Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
-- Fix datagrid screwing up data when field mapping is set [quang]
-- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
-- Apply macro select_db_element to conditional macro to enable select field from subform [quang]
+- Fix pickling issue with async jobs [instification]
 
-- Add test case for Plomino Browser, testing escape characters [quang]
-- Fix a bug when closing the input dialog of a datagrid [quang]
-- Fix the parsing of formid preventing users from editing a datagrid row [quang]
-- Fix datagrid field mapping bugs [quang]
-- Add multiple tests [apallar]
+0.9.27 (2019-05-07)
+-------------------
 
-- Further fixes to datagrid field mapping bugs [quang]
-- Fix but where selection list formula is not showing in the IDE [quang]
-- Display list values nicely during CSV export [ivanteoh]
-- Add IDE feature to generate view from form with selected fields [quang]
-- Fix to export function, causing additional lines in exported python [djay]
-- Add search form functionality [quang]
+- Add support for plone.app.async [djay]
 
-- Bug fix for extra space on triple quote statement [ivanteoh]
-- Allow user to submit document, redirect to another form and access the document in that form [quang]
-- Fix only last item in array is passed to dynamic_evaluation URL [ivanteoh]
-- Fix missing code in IDE dynamic.js for reseting data in a hidewhen [ivanteoh]
-- Fix refresh macro bug [quang]
+0.9.26 (2019-03-06)
+-------------------
 
-- Fix dynamic rendering computed on display text broken [ivanteoh]
-- Fix hide checkbox in search view based from view [ivanteoh]
-- Fix to view from form when custom theme is used [quang]
-- Fix to re-ordering columns when custom theme is used [quang]
+- Update email validation to be RFC5322 compliant [instification]
 
-- Fix to respect Plone Setting many_user or service setting do_not_list_users enabled [quang]
-- Handle file attachments being cleared during validation errors in single and multipage forms [quang]
-- Recompile Plomino for attachment script [quang]
-- Remove select user macro [ivanteoh]
+0.9.25 (2019-02-18)
+-------------------
 
-- Fix to ide when loading large forms [quang]
-- Fix "Filter View by Form' macro causing an unresponsive error [quang]
-- Improvement to 'redirect' macro, providing submitted data to target forms [quang]
-- Merge 'redirect on save' and 'redirect on load' into one macro [quang]
+- Fix datagrid column of docklink display document field out of order [quang]
+- Display info message when search result is empty [quang]
+- Enable 'Allow other value' on selection field using select2 widget [quang]
+- Optionally don't display results on initial search form load. New setting [quang]
+- Display DB name in IDE title bar [quang]
 
-- Re-index document after renaming database using event subscription [quang]
-- Fix error with selectionlistformula lost while saving field layout by add property NO_CHANGE to selection widget [quang]
-- Add event subscriber to unindex document after being deleted [quang]
-- Call to unindexing document after being indeleted regardless it is deleted with Plone API or not [quang]
-- Fix regression with form onDisplay to accept different type of returned value [quang]
+0.9.24 (2018-12-24)
+-------------------
 
-- Update macro redirect_on_save to have a separate choice for redirect on_save and on_load [quang]
-- cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
-- Update do_not_list_user DB setting to follow Plone many_user setting [quang]
-
-- revert: cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
-- Set default redirect_type value in redirect_onsave macro. Fixes previous regression in redirect macros [instification, quang]
-
-- Fix redirect macro regression. Set default code value. [instification]
-- Fix error while saving form with selection list by adding default value to selectionlistformula [quang]
-- Fix to better handle form refreshes and browser button navigation [quang, instification]
-- Update CMFPlone to 5.0.9 [quang]
-- Fix 'selection field not saving data' while editing documents by how missing values are process for booleans, doclinks and selection when its an add form. [quang]
-
-
-- Export agents to zip file [instification]
-- Edit document button goes to current page [quang]
-- Fix next page not appearing on search page [djay]
-- Views and searchs links to documents work properly and close will go back [djay]
-- Left over indexes no longer result in no data displayed in views [djay]
-- Searches should render more kinds of fields properly [djay]
-- fix selection fields in search forms [djay]
 - Add datagrid style widget to doclinks [djay]
 - Add the ability to add and edit documents in a popup when using datagrid widget with doclinks [djay]
 - Enable caching on value return by selectionlist field [quang]
 - Extend datagrid widget for doclink to select and display document [quang]
+
+0.9.23 (2018-12-07)
+-------------------
+
 - Remove getSelectionList from doclink [quang]
 - Add option to not load data on search form on intial display [quang]
 - Fix timeout issue with searching docklink on-the-fly [quang]
@@ -132,18 +92,193 @@ Changelog
 - Fix close button on the datagrid popup not closing [quang]
 - Remove error message displaying in console when docklink is used with widget rather than multi-select [quang]
 - Fix select2 exception when on-the-fly searching return results containing empty display text [quang]
-- Fix datagrid column of docklink display document field out of order [quang]
-- Display info message when search result is empty [quang]
-- Enable 'Allow other value' on selection field using select2 widget [quang]
-- Optionally don't display results on initial search form load. New setting [quang]
-- Display DB name in IDE title bar
-- Validate selection input [instification]
-- Update email validation to be RFC5322 compliant [instification]
-- Fix issue when checking user rights. #178 [instification]
-- Fix bug where whitespace causes redirect actions to fail [instification]
-- Import/Export resources as separate files [instification]
 
-- Fix issue with script caching [instification]
+0.9.22 (2018-07-13)
+-------------------
+
+- Fix next page not appearing on search page [djay]
+- Views and searchs links to documents work properly and close will go back [djay]
+- Left over indexes no longer result in no data displayed in views [djay]
+- Searches should render more kinds of fields properly [djay]
+- fix selection fields in search forms [djay]
+
+0.9.21 (2018-06-22)
+-------------------
+
+- Fix 'selection field not saving data' while editing documents by how missing values are process for booleans, doclinks and selection when its an add form. [quang]
+- Export agents to zip file [instification]
+- Edit document button goes to current page [quang]
+
+0.9.20 (2018-01-29)
+-------------------
+
+- Update CMFPlone to 5.0.9 [quang]
+
+0.9.19 (2017-12-20)
+-------------------
+
+- Fix redirect macro regression. Set default code value. [instification]
+- Fix error while saving form with selection list by adding default value to selectionlistformula [quang]
+- Fix to better handle form refreshes and browser button navigation [quang, instification]
+
+
+0.9.18 (2017-12-07)
+-------------------
+
+- revert: cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
+- Set default redirect_type value in redirect_onsave macro. Fixes previous regression in redirect macros [instification, quang]
+
+0.9.17 (2017-12-01)
+-------------------
+
+- Update macro redirect_on_save to have a separate choice for redirect on_save and on_load [quang]
+- cache and optmise calls to validation and hidewhen formulas and temporary document creation during form load, and next page. Further optimisaiton on save required. [djay]
+- Update do_not_list_user DB setting to follow Plone many_user setting [quang]
+
+0.9.16 (2017-11-29)
+-------------------
+
+- Re-index document after renaming database using event subscription [quang]
+- Fix error with selectionlistformula lost while saving field layout by add property NO_CHANGE to selection widget [quang]
+- Add event subscriber to unindex document after being deleted [quang]
+- Call to unindexing document after being indeleted regardless it is deleted with Plone API or not [quang]
+- Fix regression with form onDisplay to accept different type of returned value [quang]
+
+0.9.15 (2017-11-14)
+-------------------
+
+- Fix to ide when loading large forms [quang]
+- Fix "Filter View by Form' macro causing an unresponsive error [quang]
+- Improvement to 'redirect' macro, providing submitted data to target forms [quang]
+- Merge 'redirect on save' and 'redirect on load' into one macro [quang]
+
+0.9.14 (2017-11-14)
+-------------------
+
+- Fix to respect Plone Setting many_user or service setting do_not_list_users enabled [quang]
+- Handle file attachments being cleared during validation errors in single and multipage forms [quang]
+- Recompile Plomino for attachment script [quang]
+- Remove select user macro [ivanteoh]
+
+0.9.13 (2017-10-23)
+-------------------
+
+- Fix dynamic rendering computed on display text broken [ivanteoh]
+- Fix hide checkbox in search view based from view [ivanteoh]
+- Fix to view from form when custom theme is used [quang]
+- Fix to re-ordering columns when custom theme is used [quang]
+
+0.9.12 (2017-10-18)
+-------------------
+
+- Bugfix for dynamic evaluation and hidewhens [instification]
+
+0.9.11 (2017-10-18)
+-------------------
+
+- Bug fix for extra space on triple quote statement [ivanteoh]
+- Allow user to submit document, redirect to another form and access the document in that form [quang]
+- Fix only last item in array is passed to dynamic_evaluation URL [ivanteoh]
+- Fix missing code in IDE dynamic.js for reseting data in a hidewhen [ivanteoh]
+- Fix refresh macro bug [quang]
+
+0.9.10 (2017-10-02)
+-------------------
+
+- Further fixes to datagrid field mapping bugs [quang]
+- Fix but where selection list formula is not showing in the IDE [quang]
+- Display list values nicely during CSV export [ivanteoh]
+- Add IDE feature to generate view from form with selected fields [quang]
+- Fix to export function, causing additional lines in exported python [djay]
+- Add search form functionality [quang]
+
+0.9.9 (2017-09-25)
+------------------
+
+- Add test case for Plomino Browser, testing escape characters [quang]
+- Fix a bug when closing the input dialog of a datagrid [quang]
+- Fix the parsing of formid preventing users from editing a datagrid row [quang]
+- Fix datagrid field mapping bugs [quang]
+- Add multiple tests [apallar]
+
+0.9.8 (2017-09-25)
+------------------
+
+- Fix bug that open new form when closing modal input dialog of datagrid [quang]
+- Fix the parsing formid in input sent from server that prevent user from editing datagrid row [quang]
+- Fix datagrid screwing up data when field mapping is set [quang]
+- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
+- Apply macro select_db_element to conditional macro to enable select field from subform [quang]
+
+0.9.7 (2017-09-11)
+------------------
+
+- Allow select field from sub-form [quang]
+- Modify macro select_db_element to allow select field from subform [quang]
+- Fix the macros for field selection such that they let you pick all fields including those in any form or subsubforms [quang]
+- Add test case for Plomino Browser, which test on escape characters [quang]
+- fix handling of empty values in datagrid rendering [instification]
+- Add dynamic title for macro 'Match text' that will display as 'Field-name contains expression-value'
+
+0.9.6 (2017-09-04)
+------------------
+
+- fix sync of catalog when deleting views and columns and prevent leftover metadata columns from preventing saves [djay]
+- Remove macro 'Select user data' to move it outside of basic macros [quang]
+
+0.9.5 (2017-08-31)
+------------------
+
+- Allow select 'current field' from selection field macro [quang]
+- Allow macro condition field to select 'current field' from field list [quang]
+- Add Match text macro that support platform-dependant regular expression library [quang]
+- Modify macro_number_range to use single field [quang]
+- Modify macro select_db_element to allow select field from subform [quang]
+
+0.9.4 (2017-08-28)
+------------------
+
+- fields with the same name forms/views no longer cause problems when used in view columns [djay]
+- Bug fixes to macros [quang]
+- Bug fixes to views [ivanteoh]
+- Test suite improvements [ivanteoh]
+- Bug fix for set permission macro [ivanteoh]
+- Bug fixes to import/export [quang]
+
+0.9.3 (2017-08-25)
+------------------
+
+- Fix exception issue with IDE when adding new column, re-ordering column in view [quang]
+- Display lists from selection field in a text field in a nice way[quang]
+- fixed a bug in openbareform that was preventing pdfs from rendering [djay]
+
+
+0.9.2 (2017-08-23)
+------------------
+
+- fixed exception caused by unicode in Title when inserted into a label in the final html [ivanteoh]
+- fixed "saving form scrolls to top. Also editing label then clicking field scrolls to the top" [ivanm]
+- fix errors in catalog indexes caused by views or columns containing '_' and also being renamed.
+  Renaming either now updates the indexes. [djay]
+- new multi-file import/export format which seperates formulas and layouts into .py and .html files [quang]
+- fix errors caused by runasowner when script is called inside a script [ivanteoh]
+
+
+0.9.1 (2017-08-23)
+------------------
+
+- Edit document button goes to current page [quang]
+- Restore View custom template
+- Unquote plus signs when reading input [instification]
+- Add option to send plain text emails [instification]
+- CSV download macro can now be used on ViewA to download data from ViewB [ivanteoh]
+- fixed IDE issues with reordering and adding removing macros [ivanm]
+- Refresh code editor on save if is not dirty [ivanm]
+- Fix "hang when creating new form from editor (+ icon next to tabs)" [ivanm]
+
+
+Plomino Open Source Changes
+===========================
 
 2.0b4 (2016-05-27)
 ------------------
