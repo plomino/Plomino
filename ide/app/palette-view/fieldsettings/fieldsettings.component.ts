@@ -828,9 +828,9 @@ export class FieldSettingsComponent implements OnInit {
           const $select = $('#form-widgets-subform-id');
           if ($select.length) {
             const $select2 = (<any>$select).select2('destroy').select2({
+              placeholder: 'Select a subform',
+              width: '85%',
             });
-            placeholder: 'Select a subform',
-            width: '85%',
 
             $select.off('change.sfevents');
             $select2.val('').trigger('change');
