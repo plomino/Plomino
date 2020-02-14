@@ -9,15 +9,7 @@
       </nav>
     </div>
   </header>
-  <div class="mdl-layout__drawer">
-    <!--<span class="mdl-layout-title">Title</span>
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-    </nav>-->
-  </div>
+  <div class="mdl-layout__drawer"></div>
   <main class="mdl-layout__content" style="width: 100%">
     <div class="page-content">
       <plomino-block-preloader [loading]="false"></plomino-block-preloader>
@@ -32,7 +24,7 @@
           </div>
           
           <div class="tree-wrapper">
-            <plomino-resize-divider [listen]="[DIRECTION_DOWN, DIRECTION_UP]"
+            <plomino-resize-divider listen="VERTICAL"
               (move)="resizeTree($event)"></plomino-resize-divider>
             <div class="content">
               <plomino-tree [data]="data" 
@@ -44,11 +36,12 @@
         </div>
 
         <plomino-resize-divider
-          [listen]="[DIRECTION_LEFT, DIRECTION_RIGHT]"
+          listen="HORIZONTAL"
           [columnResize]="true"
           (move)="resizeColumns($event)"></plomino-resize-divider>
         
-        <div class="main-app panel"  style="height: 100%; overflow-y: scroll">
+        <!-- This should really be in a component -->
+        <div class="main-app panel"  style="height: 100%; overflow-y: scroll; flex: 1">
           <div class="drop-zone-container"        
             *ngIf="isDragging && 
                   dragData !== null &&
@@ -70,66 +63,8 @@
 
           <!-- Tabs -->
           <plomino-tabs></plomino-tabs>
-          
-          <!--<tabset>
-            <tab *ngFor="let tabz of tabs" 
-                [heading]="" 
-                [removable]="true" 
-                [active]="tabz.active"
-                (removed)="closeTab($event, tabz)"
-                (select)="onTabSelect(tabz)">
-              
-              <template tabHeading>
-                  <span class="tab-trigger" [class.tabunsaved]="tabz.isdirty"
-                    [attr.data-editor]="tabz.editor"
-                    [attr.id]="'tab_' + tabz.url"
-                    [attr.data-url]="tabz.url" [attr.data-active]="tabz.active">
-                    <loading *ngIf="tabz.isloading"></loading>
-                    <span *ngIf="tabz.isdirty === true">* </span>
-                    <span *ngIf="tabz.editor !== 'workflow'" class="tab-type-image">
-                      <img [src]="getTabTypeImage(tabz.editor)">
-                    </span>
-                    <i style="position: relative; top: 4px;" 
-                      *ngIf="tabz.editor === 'workflow'"
-                      class="material-icons">work</i>
-                    <span class="tab-name">{{tabz.url | extractName}}</span>
-                  </span>
-                  <div class="mdl-tooltip mdl-tooltip--large"
-                    [attr.data-mdl-for]="'tab_' + tabz.url">
-                    {{ tabz.title }}
-                  </div>
-              </template>
-              
-              <plomino-tiny-mce *ngIf="tabz.editor==='layout'" 
-                  [id]="tabz.url"
-                  [item]="tabz"
-                  (isLoading)="tabz.isloading=$event"
-                  (isDirty)="setTabzAsDirty(tabz, $event)"
-                  (fieldSelected)="fieldSelected($event)">
-              </plomino-tiny-mce>
-
-              <plomino-workflow-editor *ngIf="tabz.editor==='workflow'" 
-                  [id]="tabz.url"
-                  [item]="tabz">
-              </plomino-workflow-editor>
-
-              <plomino-view-editor *ngIf="tabz.editor==='view'" 
-                  [id]="tabz.url"
-                  [item]="tabz"
-                  (isLoading)="tabz.isloading=$event">
-              </plomino-view-editor>
-              
-              <plomino-ace-editor *ngIf="tabz.editor==='code'" 
-                  [url]="tabz.url" 
-                  [path]="tabz.path" 
-                  [aceNumber]="aceNumber" 
-                  (isDirty)="tabz.isdirty=$event">
-              </plomino-ace-editor>
-            </tab>
-          </tabset>-->
         </div>
       </div>
-
     </div>
   </main>
 </div>

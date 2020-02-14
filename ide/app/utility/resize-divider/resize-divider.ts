@@ -1,9 +1,7 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
 
-export const DIRECTION_RIGHT = 'right';
-export const DIRECTION_LEFT = 'left';
-export const DIRECTION_UP = 'up';
-export const DIRECTION_DOWN = 'down';
+export const HORIZONTAL = 'HORIZONTAL';
+export const VERTICAL = 'VERTICAL';
 
 declare let tinymce: any;
 
@@ -21,8 +19,7 @@ declare let tinymce: any;
 })
 export class ResizeDividerComponent {
     @Input() columnResize = false;
-    @Input() listen: string[] = 
-        [DIRECTION_RIGHT, DIRECTION_LEFT, DIRECTION_UP, DIRECTION_DOWN];
+    @Input() listen: string;
     @Output() move: EventEmitter<any> = new EventEmitter();
     
     private currentPos: { x: number; y: number } = null;
@@ -57,41 +54,23 @@ export class ResizeDividerComponent {
             return;
         }
 
-        const directions: string[] = [];
-        const difference: {x: number; y: number} = { x: 0, y: 0 };
-
-        const needed = (direction: string) => {
-            return this.listen.indexOf(direction) !== -1;
+        var amountToDrag: { x: number; y: number } = {
+          x: pos.x - this.currentPos.x,
+          y: pos.y - this.currentPos.y
         };
 
-        if (pos.x < this.currentPos.x && needed(DIRECTION_LEFT)) {
-            directions.push(DIRECTION_LEFT);
-            difference.x = this.currentPos.x - pos.x;
+        if (this.listen === "HORIZONTAL") {
+          amountToDrag.y = 0;
         }
-        else if (pos.x > this.currentPos.x && needed(DIRECTION_RIGHT)) {
-            directions.push(DIRECTION_RIGHT);
-            difference.x = pos.x - this.currentPos.x;
-        }
-
-        if (pos.y < this.currentPos.y && needed(DIRECTION_UP)) {
-            directions.push(DIRECTION_UP);
-            difference.y= this.currentPos.y - pos.y;
-        }
-        else if (pos.y > this.currentPos.y && needed(DIRECTION_DOWN)) {
-            directions.push(DIRECTION_DOWN);
-            difference.y = pos.y - this.currentPos.y;
+        else if (this.listen === "VERTICAL") {
+          amountToDrag.x = 0;
+        }       
+        else {
+          amountToDrag = {x: 0, y: 0};
         }
 
-        if (difference.x > 5) {
-            difference.x = 5;
-        }
-
-        // if (difference.y > 5) {
-        //     difference.y = 5;
-        // }
-
+        this.move.emit(amountToDrag);
         this.currentPos = pos;
-        this.move.emit({ directions, difference });
     }
 
     private stopDragging(e: MouseEvent) {
@@ -103,6 +82,6 @@ export class ResizeDividerComponent {
     }
 
     private getMousePos (e: MouseEvent): { x: number; y: number } {
-        return typeof e.clientX !== "number" ? null : { x: e.clientX, y: e.clientY };
+        return typeof e.screenX !== "number" ? null : { x: e.screenX, y: e.screenY };
     }
 }

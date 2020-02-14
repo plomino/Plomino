@@ -133,11 +133,8 @@ export class AppComponent implements OnInit {
   isDragging = false;
   dragData: any = null;
 
-  DIRECTION_DOWN = 'down';
-  DIRECTION_UP = 'up';
-  DIRECTION_LEFT = 'left';
-  DIRECTION_RIGHT = 'right';
-  wrapperWidth = 464;
+  /* Should be able to bind value to here: ide/app/app.component.css#L307 */
+  wrapperWidth = 600;
   addDialog: HTMLDialogElement;
   dbName = 'Plomino IDE';
 
@@ -301,52 +298,22 @@ export class AppComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  resizeColumns(event: { directions: string[]; difference: {x: number; y: number} }) {
-    const directions = event.directions;
-    const difference = event.difference;
-
-    const contains = (direction: string) => {
-      return directions.indexOf(direction) !== -1;
-    };
-
-    if (!directions.length) { return; }
-
+  resizeColumns(amountToDrag: {x: number, y: number}) {
     const $wrapper = $('.well.sidebar');
     const attribute = 'width';
-    let width = this.wrapperWidth;
+    const width = this.wrapperWidth;
+    const newWidth = width + amountToDrag.x;
 
-    if (contains(this.DIRECTION_LEFT)) {
-      width = width - difference.x - 1;
-    }
-    else if (contains(this.DIRECTION_RIGHT)) {
-      width = width + difference.x + 1;
-    }
-
-    this.wrapperWidth = width;
-    $wrapper.css(attribute, `${ width }px`);
+    this.wrapperWidth = newWidth;
+    $wrapper.css(attribute, `${ newWidth }px`);
   }
 
-  resizeTree(event: { directions: string[]; difference: {x: number; y: number} }) {
-    const directions = event.directions;
-    const difference = event.difference;
-
-    const contains = (direction: string) => {
-      return directions.indexOf(direction) !== -1;
-    };
-
-    if (!directions.length) { return; }
-
+  resizeTree(amountToDrag: {x: number; y: number}) {
     const $wrapper = $('.palette-wrapper .mdl-tabs__panel');
-    let height = parseInt($wrapper.css('height').replace('px', ''), 10);
+    const height = parseInt($wrapper.css('height').replace('px', ''), 10);
+    const newHeight = height + amountToDrag.y
 
-    if (contains(this.DIRECTION_UP)) {
-      height = height - difference.y - 0.5;
-    }
-    else if (contains(this.DIRECTION_DOWN)) {
-      height = height + difference.y;
-    }
-
-    $wrapper.css('height', `${ height }px`);
+    $wrapper.css('height', `${ newHeight }px`);
     this.paletteManager.resizeInnerScrollingContainers();
   }
 

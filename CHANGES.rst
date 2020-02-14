@@ -4,6 +4,7 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
+- Fix dragging vertical resizer not keeping up with mouse movemetns [jeffersonbledsoe]
 - Remove the database ID from a database export [jeffersonbledsoe]
 - Upgrade TypeScript to 3.7.5 [jeffersonbledsoe]
 - Add ESlint rules [jeffersonbledsoe]

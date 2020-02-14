@@ -304,6 +304,7 @@ tab {
 .well,
 plomino-palette,
 plomino-tree {
+  /* Should be able to bind this value to the wrapperWidth property in app.component.ts */
    width: 600px;
    transition: none;
 }
