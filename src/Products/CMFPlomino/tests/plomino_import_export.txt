@@ -436,3 +436,32 @@ Check that that if we export again, no extra lines etc are added.
     >>> print macro_field_number_between_old_style.document_title
     doc = plominoContext
     ...
+
+Check that we can import and export database into other Databases
+    >>> import json, os, filecmp
+    >>> from os import listdir
+    >>> from os.path import isfile, join
+
+    # Output the current database to a folder
+    >>> dir, _ = os.path.split(os.path.abspath(__file__))
+    >>> dir = os.path.join(dir,'tmp_export')
+    >>> output_dir = os.path.join(dir,'mydb')
+    >>> db.exportDesign(targettype='folder', targetfolder=dir)
+
+    # Create a new database and import the exported database from the previous steps
+    >>> new_db_id = portal.invokeFactory('PlominoDatabase', id='test_import_export_between_databases')
+    >>> inputdir = os.path.join(dir,'mydb')
+    >>> newdb = portal.get(new_db_id)
+    >>> newdb.importDesignFromJSON(from_folder=inputdir, replace = True)
+
+    # Export the database from the new database
+    >>> newdb_output_dir = os.path.join(dir, 'newdb')
+    >>> db.exportDesign(targettype='folder', targetfolder=newdb_output_dir)
+
+    # Compare the two database exports
+    >>> directory_comparison = filecmp.dircmp(output_dir, os.path.join(newdb_output_dir, 'mydb'))
+    >>> directory_comparison.diff_files
+    []
+
+    >>> directory_comparison.same_files
+    [...]

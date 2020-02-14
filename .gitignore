@@ -1,6 +1,7 @@
 *.egg-info
 *.mo
 *.pyc
+**.DS_Store
 .installed.cfg
 .mr.developer.cfg
 .project
@@ -31,3 +32,6 @@ report.html
 bin
 test/*
 package-lock.json
+
+# Created during tests
+src/Products/CMFPlomino/tests/tmp_export 

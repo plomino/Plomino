@@ -4,6 +4,7 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
+- Remove the database ID from a database export [jeffersonbledsoe]
 - Upgrade TypeScript to 3.7.5 [jeffersonbledsoe]
 - Add ESlint rules [jeffersonbledsoe]
 - Move CI to GitHub Actions [JeffersonBledsoe]

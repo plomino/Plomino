@@ -1322,7 +1322,6 @@ class DesignManager:
                     element, bundle=bundle)
 
         data['design'] = design
-        data['id'] = self.id
 
         if REQUEST:
             REQUEST.RESPONSE.setHeader(
@@ -1377,7 +1376,6 @@ class DesignManager:
         design['resources'] = OrderedDict()
         design[rootElement.id] = self.exportElementAsJSON(rootElement, isDatabase = False, stripFlag=True)
         data['design'] = design
-        data['id'] = self.id
 
         # Python JSON lib bug: JSON dump with indent option appending trailing space after comma
         # Temporary fix by applying regex on json string
