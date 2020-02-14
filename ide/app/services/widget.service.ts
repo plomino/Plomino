@@ -9,22 +9,22 @@ import { Response } from '@angular/http';
 @Injectable()
 export class WidgetService {
 
-  isTemplate: boolean = true;
+  isTemplate = true;
 
   widgetsCache: {
     [formUrl: string]: {
       [id: string]: {
-        [widget_type: string]: string
-      }
-    }
+        [widget_type: string]: string;
+      };
+    };
   } = {};
 
   zombiesInformation: {
     [formUrl: string]: {
       [id: string]: {
-        [widget_type: string]: boolean
-      }
-    }
+        [widget_type: string]: boolean;
+      };
+    };
   } = {};
 
   constructor(private http: PlominoHTTPAPIService,
@@ -104,15 +104,15 @@ export class WidgetService {
     $('body').append($groupLayout);
     $groupLayout = $(`#tmp-group-layout-id${input.id}`);
 
-    let $elements = $groupLayout
+    const $elements = $groupLayout
       .find('.plominoFieldClass, .plominoHidewhenClass, ' +
       '.plominoActionClass, .plominoLabelClass, .plominoSubformClass');
-    let resultingElementsString = '';
-    let contents = input.group_contents;
-    let items$: PlominoIteratingLayoutElement[] = [];
+    const resultingElementsString = '';
+    const contents = input.group_contents;
+    const items$: PlominoIteratingLayoutElement[] = [];
 
     $elements.each((index: number, element: HTMLElement) => {
-      let $element = $(element);
+      const $element = $(element);
       let itemPromiseResolve: (value?: {} | PromiseLike<{}>) => void;
       const itemPromise = new Promise((resolve, reject) => {
         itemPromiseResolve = resolve;
@@ -192,9 +192,9 @@ export class WidgetService {
 
         $groupLayout
         .find('p > span.mceEditable > .plominoLabelClass').each((i, lElement) => {
-          let $tmpLabel = $(lElement);
+          const $tmpLabel = $(lElement);
           if ($tmpLabel.next().length && $tmpLabel.next().prop('tagName') === 'BR') {
-            let $parentPTag = $tmpLabel.parent().parent();
+            const $parentPTag = $tmpLabel.parent().parent();
             $parentPTag.replaceWith($parentPTag.html());
           }
         });
@@ -235,16 +235,16 @@ export class WidgetService {
     // this.log.info('getFormLayout called', baseUrl);
     // const $edIFrame = $(`iframe[id="${ baseUrl }_ifr"]`).contents();
     $edIFrame.css('opacity', 0);
-    let $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
+    const $elements = $edIFrame.find('.plominoGroupClass, .plominoSubformClass, ' +
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' +
       '.plominoHidewhenClass:not(.plominoGroupClass .plominoHidewhenClass), ' +
       '.plominoActionClass:not(.plominoGroupClass .plominoActionClass),' +
       ' .plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');
 
     const context = this;
-    let promiseList: any[] = [];
+    const promiseList: any[] = [];
 
-    const widgetQueryData: { widget_type: string, id: string }[] = [];
+    const widgetQueryData: { widget_type: string; id: string }[] = [];
     const widgetQuerySet: Set<string> = new Set();
 
     const $widgets = $edIFrame.find(
@@ -291,8 +291,8 @@ export class WidgetService {
     const labelsRegistry = this.labelsRegistry.getRegistry();
 
     $elements.each(function () {
-      let $element = $(this);
-      let $class = $element.attr('class').split(' ')[0];
+      const $element = $(this);
+      const $class = $element.attr('class').split(' ')[0];
       let $groupId = '';
 
       if ($class === 'plominoGroupClass') {
@@ -387,11 +387,11 @@ export class WidgetService {
   }
 
   private convertFormGroups(
-    base: string, element: any, groupId: any, labelsRegistry?: Map<string, Object>
+    base: string, element: any, groupId: any, labelsRegistry?: Map<string, Record<string, any>>
   ): Observable<any> {
     // this.log.info('convertFormGroups');
-    let $groupId = element.attr('data-groupid');
-    let fields$: any[] = [];
+    const $groupId = element.attr('data-groupid');
+    const fields$: any[] = [];
 
     const randomId = Math.floor(Math.random() * 1e5) + 1e4 + 1;
 
@@ -407,7 +407,7 @@ export class WidgetService {
     $('body').append($groupLayout);
     $groupLayout = $(`#tmp-cgroup-layout-id${randomId}`);
 
-    let $elements = $groupLayout
+    const $elements = $groupLayout
       .find('.plominoGroupClass, .plominoSubformClass, ' + 
       '.plominoFieldClass:not(.plominoGroupClass .plominoFieldClass), ' + 
       '.plominoHidewhenClass:not(.plominoGroupClass .plominoHidewhenClass), ' + 
@@ -415,12 +415,12 @@ export class WidgetService {
       '.plominoLabelClass:not(.plominoGroupClass .plominoLabelClass)');
 
     $elements.each((index: number, element: any) => {
-      let $element = $(element);
+      const $element = $(element);
       let itemPromiseResolve: any;
       const itemPromise = new Promise((resolve, reject) => {
         itemPromiseResolve = resolve;
       });
-      let $class = $element.attr('class').split(' ')[0];
+      const $class = $element.attr('class').split(' ')[0];
       let $groupId = '';
 
       if ($class === 'plominoGroupClass') {
@@ -507,9 +507,9 @@ export class WidgetService {
 
         $groupLayout
         .find('p > span.mceEditable > .plominoLabelClass').each((i, lElement) => {
-          let $tmpLabel = $(lElement);
+          const $tmpLabel = $(lElement);
           if ($tmpLabel.next().length && $tmpLabel.next().prop('tagName') === 'BR') {
-            let $parentPTag = $tmpLabel.parent().parent();
+            const $parentPTag = $tmpLabel.parent().parent();
             $parentPTag.replaceWith($parentPTag.html());
           }
         });
@@ -548,8 +548,8 @@ export class WidgetService {
   ): Observable<string> {
     // this.log.info('convertGroupFields', ids);
     const classList = element.get(0).classList;
-    let $class = classList.length ? classList[0] : '';
-    let $type = $class.slice(7, -5).toLowerCase();
+    const $class = classList.length ? classList[0] : '';
+    const $type = $class.slice(7, -5).toLowerCase();
 
     const $idData = this.findId(ids, element.text());
     let $id: any;
@@ -567,7 +567,7 @@ export class WidgetService {
       ? this.getWidget(base, $type, $id, template) 
       : this.getWidget(base, $type, $id)
       ).map((response) => {
-      let $response = $(response);
+      const $response = $(response);
       let container = 'span';
       let content = '';
 
@@ -593,14 +593,14 @@ export class WidgetService {
     ids: PlominoFormGroupContent[], base: string, element: JQuery,
     template?: PlominoFormGroupTemplate): Observable<string> {
     const classList = element.get(0).classList;
-    let $class = classList.length ? classList[0] : '';
-    let $type = $class.slice(7, -5).toLowerCase();
-    let $position = element.text().split(':')[0];
-    let $id = element.text().split(':')[1];
-    let $newId = this.findId(ids, $id).id;
+    const $class = classList.length ? classList[0] : '';
+    const $type = $class.slice(7, -5).toLowerCase();
+    const $position = element.text().split(':')[0];
+    const $id = element.text().split(':')[1];
+    const $newId = this.findId(ids, $id).id;
 
-    let container = 'span';
-    let content = `<${container} class="${$class} mceNonEditable" 
+    const container = 'span';
+    const content = `<${container} class="${$class} mceNonEditable" 
                               data-present-method="convertGroupHidewhens"
                               data-mce-resize="false"
                               data-plomino-position="${$position}" 
@@ -654,12 +654,12 @@ export class WidgetService {
   private convertFormHidewhens(base: string, element: any,
   template?: PlominoFormGroupTemplate): Observable<string> {
     const classList = element.get(0).classList;
-    let $class = classList.length ? classList[0] : '';
-    let $position = element.text().split(':')[0];
-    let $id = element.text().split(':')[1];
+    const $class = classList.length ? classList[0] : '';
+    const $position = element.text().split(':')[0];
+    const $id = element.text().split(':')[1];
   
-    let container = 'span';
-    let content = `<${container} class="${$class} mceNonEditable" 
+    const container = 'span';
+    const content = `<${container} class="${$class} mceNonEditable" 
                               data-mce-resize="false"
                               data-present-method="convertFormHidewhens"
                               data-plomino-position="${$position}" 
@@ -672,8 +672,8 @@ export class WidgetService {
 
   private convertFormSubform(base: string, element: JQuery): Observable<string> {
     const classList = element.get(0).classList;
-    let $class = classList.length ? classList[0] : '';
-    let $id = element.text().trim();
+    const $class = classList.length ? classList[0] : '';
+    const $id = element.text().trim();
 
     return this.getWidget(
       base, 'subform',
@@ -695,11 +695,11 @@ export class WidgetService {
   private convertLabel(
     base: string, element: JQuery, 
     type: 'form' | 'group', ids: PlominoFormGroupContent[] = [],
-    labelsRegistry?: Map<string, Object>
+    labelsRegistry?: Map<string, Record<string, any>>
   ): Observable<string> {
     const classList = element.get(0).classList;
-    let $class = classList.length ? classList[0] : '';
-    let $type = $class.slice(7, -5).toLowerCase();
+    const $class = classList.length ? classList[0] : '';
+    const $type = $class.slice(7, -5).toLowerCase();
 
     // if (element.parent().attr('contenteditable') !== 'false') {
     //   element.parent().attr('contenteditable', 'false');
@@ -760,7 +760,7 @@ export class WidgetService {
   }
 
   private wrapIntoEditable(content: string): string {
-    let $wrapper = $('<span />');
+    const $wrapper = $('<span />');
     return $wrapper.html(content)
               .addClass('mceEditable')
               .wrap('<div />')
@@ -770,7 +770,7 @@ export class WidgetService {
 
   private wrapIntoGroup(content: string, groupId: string): string {
     // console.info('wrap', content, groupId);
-    let $wrapper = $('<div />');
+    const $wrapper = $('<div />');
     return $wrapper.html(content)
               .addClass('plominoGroupClass mceNonEditable')
               .attr('data-groupid', groupId)

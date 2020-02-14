@@ -48,7 +48,7 @@ export class ViewsSettingsComponent {
         categorized: boolean,
         reverseSorting: boolean,
         staticRendering: boolean) {
-            let element = {
+            const element = {
                 "title": title,
                 "description": description,
                 "hide_default_actions": hideDefaultActions,

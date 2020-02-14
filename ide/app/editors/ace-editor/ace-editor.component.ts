@@ -1,12 +1,12 @@
 import { LogService } from './../../services/log.service';
 import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
-import { Component, OnInit, OnDestroy, AfterViewInit, 
+import { Component, OnInit, OnDestroy, 
   Input, Output, EventEmitter } from '@angular/core';
 import { PopoverComponent } from '../popover';
-import { ElementService, TabsService, PlominoDBService } from '../../services';
+import { ElementService, PlominoDBService } from '../../services';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
-declare var ace: any;
+declare let ace: any;
 
 @Component({
     selector: 'plomino-ace-editor',
@@ -88,7 +88,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
             this._elementService
               .getElementCode(`${ dbLink }/code?${ this.fullType }=${ this.name }`)
               .subscribe((code: string) => {
-                let parsed = JSON.parse(code);
+                const parsed = JSON.parse(code);
                 if (stateData) {
                   this.log.info('state restored', codeId);
                 }
@@ -127,9 +127,9 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: true
         });
-        let staticWordCompleter = {
+        const staticWordCompleter = {
             getCompletions: (editor: any, session: any, pos: any, prefix: any, callback: any) => {
-                var wordList = this.getMethodList();
+                const wordList = this.getMethodList();
                 callback(null, wordList.map(function(word: any) {
                     return {
                         caption: word.caption,
@@ -176,7 +176,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
                 this.isDirty.emit(false);
             }
             if (response.type == "Error") {
-                let annotations = this.editor.getSession().getAnnotations();
+                const annotations = this.editor.getSession().getAnnotations();
                 annotations.push({
                     row: response.line-1,
                     html: response.error,
@@ -188,12 +188,12 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
     }
 
     addMethodInfos() {
-        let methods: any[] = [];
+        const methods: any[] = [];
         for (let i = this.editor.getSession().getLength(); i >= 0; i--) {
             if (this.editor.getSession().getLine(i).match(/^##.START.*{$/) != null) {
-                let id = this.editor.getSession().getLine(i)
+                const id = this.editor.getSession().getLine(i)
                     .match(/^##.START(.*){$/).pop().trim();
-                let {name, desc, error} = this.getMethodInfos(id);
+                const {name, desc, error} = this.getMethodInfos(id);
                 methods.push({
                     row: i,
                     html: "<strong>" + name + "</strong> <br>" + desc,
@@ -205,7 +205,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
     }
 
     getMethodInfos(id: string) {
-        for (let method of this.methodList) {
+        for (const method of this.methodList) {
             if (method.id === id) {
                 return {
                     name: method.name,
@@ -222,7 +222,7 @@ export class ACEEditorComponent implements OnDestroy, OnInit {
     }
 
     getMethodList(): any[] {
-        let buildMethod = (name: string) => {
+        const buildMethod = (name: string) => {
             return {
                 caption: name,
                 value: "## START " + name + " {\n\n## END " + name + " }",

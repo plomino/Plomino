@@ -1,5 +1,3 @@
-import { PlominoTabsComponent } from './utility/tabs/plomino-tabs.component';
-import { PlominoTabComponent } from './utility/tabs/tab/plomino-tab.component';
 import 'babel-polyfill';
 import { enableProdMode } from '@angular/core';
 import { HTTP_PROVIDERS } from '@angular/http';

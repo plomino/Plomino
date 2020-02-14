@@ -49,7 +49,7 @@ export class FormsSettingsComponent {
         searchView: string,
         resourcesJS: string,
         resourcesCSS: string) {
-            let element = {
+            const element = {
                 "title": title,
                 "description": description,
                 "form_method": formMethod,

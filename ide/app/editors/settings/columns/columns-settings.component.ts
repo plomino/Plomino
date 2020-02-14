@@ -40,7 +40,7 @@ export class ColumnsSettingsComponent {
     }
 
     onSubmit(id: string, title: string, description: string, hiddenColumn: boolean) {
-        let element = {
+        const element = {
             "title": title,
             "description": description,
             "hidden_column": hiddenColumn

@@ -8,5 +8,5 @@ import {Component, Input} from '@angular/core';
 export class PopoverComponent {
     @Input() name: string;
     @Input() desc: string;
-    @Input() infos: boolean = false;
+    @Input() infos = false;
 }

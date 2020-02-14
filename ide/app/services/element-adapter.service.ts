@@ -170,7 +170,7 @@ export class PlominoElementAdapterService {
             const $allTheSame = $(this.activeEditorService.getActive().getBody())
               .find(`.plominoLabelClass[data-plominoid="${ selectedId }"]`)
               .filter((i, element) => element !== $element.get(0) 
-                && !Boolean($(element).attr('data-advanced')));
+                && !$(element).attr('data-advanced'));
   
             $allTheSame.html(temporaryTitle);
           }

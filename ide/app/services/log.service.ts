@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class LogService {
-  debugMode: boolean = false;
+  debugMode = false;
   ieMode: boolean = '-ms-scroll-limit' in document.documentElement.style 
         && '-ms-ime-align' in document.documentElement.style;
 

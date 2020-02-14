@@ -2,8 +2,8 @@ import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.s
 import { TreeStructure } from './tree-structure';
 import { Injectable, NgZone } from '@angular/core';
 import { WF_ITEM_TYPE as WF } from './tree-builder';
-import { PlominoFormsListService, LogService, ObjService, PlominoDBService,
-  FormsService, DraggingService, PlominoSaveManagerService, PlominoHTTPAPIService
+import { PlominoFormsListService, ObjService, PlominoDBService,
+  FormsService, PlominoSaveManagerService, PlominoHTTPAPIService
 } from '../../services';
 import { PlominoWorkflowTreeService } from './workflow-tree.service';
 
@@ -105,7 +105,7 @@ export class PlominoWorkflowItemEditorService {
   getTopItemWithForm(itemId: number, tree: TreeStructure): false|PlominoWorkflowItem {
     const result = tree.searchParentItemOfItemByCondition(
       tree.getItemById(itemId), 
-      (item: PlominoWorkflowItem): Boolean => 
+      (item: PlominoWorkflowItem): boolean => 
         Boolean(item.form) || Boolean(item.view)
       );
     return result;
@@ -142,7 +142,7 @@ export class PlominoWorkflowItemEditorService {
     return this.selectedItemRef;
   }
 
-  selectedItemIsNothing(): Boolean {
+  selectedItemIsNothing(): boolean {
     return !this.selectedItemRef || typeof this.selectedItemRef === 'undefined';
   }
 
@@ -189,9 +189,9 @@ export class PlominoWorkflowItemEditorService {
           || (input.dataset.key === 'view' && item.type === WF.VIEW_TASK)
         ) {
           $('.wf-item-settings-dialog__create-btn')
-            .css('visibility', Boolean(item[input.dataset.key]) ? 'hidden' : 'visible');
+            .css('visibility', item[input.dataset.key] ? 'hidden' : 'visible');
           $('.wf-item-settings-dialog__edit-btn')
-            .css('visibility', Boolean(!item[input.dataset.key]) ? 'hidden' : 'visible');
+            .css('visibility', !item[input.dataset.key] ? 'hidden' : 'visible');
           
           $(input).change((eventData) => {
             if ($(input).val()) {

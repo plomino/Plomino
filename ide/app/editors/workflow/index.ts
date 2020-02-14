@@ -1,13 +1,12 @@
 import { Subscription } from 'rxjs/Rx';
 import { PlominoWorkflowItemEditorService } from './workflow.item-editor.service';
-import { WFDragControllerService, DS_TYPE, DS_FROM_PALETTE } from './drag-controller';
+import { WFDragControllerService, DS_TYPE } from './drag-controller';
 import { TreeStructure } from './tree-structure';
 import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { Component, ElementRef, ViewChild, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { PlominoBlockPreloaderComponent } from '../../utility';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 import { treeBuilder, WF_ITEM_TYPE as WF } from './tree-builder';
-import { PlominoWorkflowNodeSettingsComponent } from "../../palette-view";
 import { PlominoWorkflowChangesNotifyService } from './workflow.changes.notify.service';
 import { PlominoDBService, ElementService, LogService, 
   FormsService, DraggingService } from '../../services';
@@ -29,7 +28,7 @@ const AUTOUPGRADE = true;
 export class PlominoWorkflowComponent implements OnInit, OnDestroy {
   @ViewChild('workflowEditorNode') workflowEditorNode: ElementRef;
   latestTree: TreeStructure = null;
-  editorOffset: { top: number, left: number };
+  editorOffset: { top: number; left: number };
   subscriptions: Subscription[] = [];
 
   constructor(
@@ -60,7 +59,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
 
     /* listen to forms ids update */
     this.subscriptions.push(this.formsService.formIdChanged$
-      .subscribe((data: { oldId: string, newId: string }) => {
+      .subscribe((data: { oldId: string; newId: string }) => {
         const item = this.findWFItemByFormOrViewId(data.oldId.split('/').pop());
         if (item !== null) {
           item[
@@ -116,7 +115,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
     /**
      * garbage collection + prevent multiple subscribe bugs
      */
-    for (let subscription of this.subscriptions) {
+    for (const subscription of this.subscriptions) {
       subscription.unsubscribe();
     }
   }
@@ -301,7 +300,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
    * @param {JQuery} parentItem - closest .workflow-node to the mouse cursor
    * @see this.onDrop
    */
-  dragInsertPreview($parentItem: JQuery, dragData: { title: string, type: string }) {
+  dragInsertPreview($parentItem: JQuery, dragData: { title: string; type: string }) {
     if ($parentItem.hasClass('workflow-node--dropping')) {
       return false; // do nothing
     }
@@ -318,7 +317,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
 
     /* current preview way is just a way to temporary change the tree */
     const nodeId = +$parentItem.attr('data-node-id') || 1;
-    let parentItem = sandboxTree.getItemById(nodeId);
+    const parentItem = sandboxTree.getItemById(nodeId);
 
     if (!parentItem) {
       return;
@@ -405,7 +404,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
    * @param wfItemClosest closest .workflow-node's JQuery object
    * @param dType drag type name
    */
-  isDropAllowed($wfItemClosest: JQuery, dType: string): Boolean {
+  isDropAllowed($wfItemClosest: JQuery, dType: string): boolean {
     let allowedDrag = true;
     const closestExists = Boolean($wfItemClosest.length);
     const onGoto = closestExists && $wfItemClosest.hasClass('workflow-node--goto');
@@ -429,7 +428,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
     }
 
     if (allowedDrag && isGotoDrag) {
-      allowedDrag = !Boolean($('[data-node-level="' + (lvl + 1) + '"]').length);
+      allowedDrag = !$('[data-node-level="' + (lvl + 1) + '"]').length;
     }
 
     return allowedDrag;
@@ -440,7 +439,7 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
    * @param itemA first item which begin swapping with itemB
    * @param itemB target item, which begin swapped with itemA
    */
-  isSwapAllowed(itemA: PlominoWorkflowItem, itemB: PlominoWorkflowItem): Boolean {
+  isSwapAllowed(itemA: PlominoWorkflowItem, itemB: PlominoWorkflowItem): boolean {
     const isBranch = (item: PlominoWorkflowItem) => 
       item.type === WF.PROCESS;
     const isCondition = (item: PlominoWorkflowItem) => 
@@ -450,9 +449,9 @@ export class PlominoWorkflowComponent implements OnInit, OnDestroy {
     const isLowestElementInBranch = (item: PlominoWorkflowItem) => 
       !item.children.length;
 
-    const bothItems = (query: (item: PlominoWorkflowItem) => Boolean) => 
+    const bothItems = (query: (item: PlominoWorkflowItem) => boolean) => 
       query(itemA) && query(itemB);
-    const oneOfItems = (query: (item: PlominoWorkflowItem) => Boolean) => 
+    const oneOfItems = (query: (item: PlominoWorkflowItem) => boolean) => 
       query(itemA) || query(itemB);
     
     if (bothItems(isBranch)) {

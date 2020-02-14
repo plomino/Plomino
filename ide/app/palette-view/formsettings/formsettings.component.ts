@@ -1,17 +1,11 @@
 import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { PlominoPaletteManagerService } from './../../services/palette-manager/palette-manager';
-import { PlominoHTTPAPIService } from './../../services/http-api.service';
-import { PlominoFormSaveProcess } from './../../services/save-manager/form-save-process';
 import { PlominoSaveManagerService } from './../../services/save-manager/save-manager.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import {
     Component,
-    Input,
-    Output,
-    EventEmitter,
     OnInit,
-    OnChanges,
     ChangeDetectorRef,
     NgZone,
     ViewChild,
@@ -53,14 +47,14 @@ export class FormSettingsComponent implements OnInit {
 
     // This needs to handle both views and forms
     heading: string;
-    formSettings: string = '';
+    formSettings = '';
 
     /**
      * display block preloader
      */
-    loading: boolean = false;
+    loading = false;
     
-    private formLayout: string = '';
+    private formLayout = '';
 
     constructor(
       private objService: ObjService,
@@ -112,7 +106,7 @@ export class FormSettingsComponent implements OnInit {
         });
 
         this.formsService.onFormContentBeforeSave$
-          .subscribe((data:{id:any, content:any}) => {
+          .subscribe((data: {id: any; content: any}) => {
             
             if (this.tab.url !== data.id)
                 return;
@@ -132,7 +126,7 @@ export class FormSettingsComponent implements OnInit {
       this.log.startTimer('save_' + isViewURL ? 'view' : 'form' + '_hold');
       let newUrl: string;
     
-      const flatMapCallback = ((responseData: {html: string, url: string}) => {
+      const flatMapCallback = ((responseData: {html: string; url: string}) => {
         if (responseData.html !== "<div id='ajax_success'/>") {
             return Observable.of(responseData.html);
         } else {
@@ -170,7 +164,7 @@ export class FormSettingsComponent implements OnInit {
       
       this.log.info(this.tab.url, 'loading fst process started...');
       process.start()
-        .flatMap((responseData: {html: string, url: string}) => 
+        .flatMap((responseData: {html: string; url: string}) => 
           flatMapCallback(responseData))
         .map((settingsHTML: string) => {
           this.log.info(this.tab.url, 'fst response received...');
@@ -236,7 +230,7 @@ export class FormSettingsComponent implements OnInit {
       this.saveManager.detectNewFormSave();
     }
 
-    saveForm(data:{content:any,cb:any}) {
+    saveForm(data: {content: any;cb: any}) {
       this.log.info('saveForm CALLED!');
       // let $form: any = $(this.formElem.nativeElement);
       // let form: HTMLFormElement = $form.find('form').get(0);
@@ -364,7 +358,7 @@ export class FormSettingsComponent implements OnInit {
           }
 
           this.macrosWidgetTimer = <any> setTimeout(() => { // for exclude bugs
-            let $el = $('.form-settings-wrapper ' + 
+            const $el = $('.form-settings-wrapper ' + 
             '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
             if ($el.length) {
               this.zone.runOutsideAngular(() => {
@@ -373,7 +367,7 @@ export class FormSettingsComponent implements OnInit {
                 }
                 catch (e) {
                   setTimeout(() => {
-                    let $el = $('.form-settings-wrapper ' + 
+                    const $el = $('.form-settings-wrapper ' + 
                       '#formfield-form-widgets-IHelpers-helpers > ul.plomino-macros');
                     new MacroWidget($el);
                   }, 100);

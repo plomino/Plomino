@@ -5,15 +5,8 @@ import { PlominoWorkflowNodeSettingsComponent } from './workflow-node-settings/i
 import { LogService } from './../services/log.service';
 import { 
     Component, 
-    Input, 
-    Output, 
-    EventEmitter, 
-    ViewChildren,
     OnInit, 
-    OnChanges, 
-    ContentChild,
     ChangeDetectorRef,
-    NgZone,
     ChangeDetectionStrategy
 } from '@angular/core';
 
@@ -58,7 +51,7 @@ import {FormsService} from "../services/forms.service";
 export class PaletteComponent implements OnInit {
     selectedTab: PlominoTab = null;    
     selectedField: any = null;
-    workflowMode: boolean = false;
+    workflowMode = false;
 
     tabs: Array<any> = [
         { title: 'Add', id: 'add', active: true },
@@ -152,10 +145,10 @@ export class PaletteComponent implements OnInit {
 
         let j = 0;
 
-        this.formsService.paletteTabChange$.subscribe((tabIndex:number) => {
+        this.formsService.paletteTabChange$.subscribe((tabIndex: number) => {
           j++;
           let activeChanged = false;
-          let x: any = [];
+          const x: any = [];
           this.tabs.forEach((tab, index) => {
             x.push([tabIndex, index, tab.active]);
             const isActive = (index === tabIndex);
@@ -202,12 +195,12 @@ export class PaletteComponent implements OnInit {
 
     setActiveTab(ev: MouseEvent, tabIndex: number) {
       this.formsService.changePaletteTab(tabIndex);
-    };
+    }
 
     private updateTabs(showAddTab: boolean, tabs: any[], activeTabType: string, activeFieldType?: string): any[] {
-        let clonnedTabs = tabs.slice(0);
-        let group = _.find(clonnedTabs, { id: 'group' });
-        let field = _.find(clonnedTabs, { id: 'item' });
+        const clonnedTabs = tabs.slice(0);
+        const group = _.find(clonnedTabs, { id: 'group' });
+        const field = _.find(clonnedTabs, { id: 'item' });
 
         if (!activeTabType && group.title === 'View Settings' 
           && (activeFieldType === 'PlominoColumn'
@@ -228,7 +221,7 @@ export class PaletteComponent implements OnInit {
             && activeFieldType !== 'label'
             && activeFieldType !== 'group'
           ) {
-            let tempTitle = activeFieldType.slice(7).toLowerCase();
+            const tempTitle = activeFieldType.slice(7).toLowerCase();
             title = tempTitle.slice(0, 1).toUpperCase() + tempTitle.slice(1);
           }
           else if (activeFieldType === 'label') {

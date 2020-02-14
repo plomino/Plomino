@@ -14,18 +14,18 @@ export class PlominoTabsManagerService {
   public saveClosingTab = true;
 
   private tabOpenEvents: Subject<PlominoTabUnit> = new Subject();
-  private tabIdUpdateEvents: Subject<{prevId: string, nextId: string}> 
-    = new Subject<{prevId: string, nextId: string}>();
-  private tabIdAfterUpdateEvents: Subject<{prevId: string, nextId: string}> 
-    = new Subject<{prevId: string, nextId: string}>();
+  private tabIdUpdateEvents: Subject<{prevId: string; nextId: string}> 
+    = new Subject<{prevId: string; nextId: string}>();
+  private tabIdAfterUpdateEvents: Subject<{prevId: string; nextId: string}> 
+    = new Subject<{prevId: string; nextId: string}>();
   private tabActiveChangedEvents: Subject<PlominoTabUnit> = new Subject();
   private tabCloseEvents: Subject<PlominoTabUnit> = new Subject();
   private activeTabDirtyReceiver: Subject<boolean> = new Subject();
-  private tabDirtyReceiver: Subject<{tab: PlominoTabUnit, state: boolean}> 
-    = new Subject<{tab: PlominoTabUnit, state: boolean}>();
+  private tabDirtyReceiver: Subject<{tab: PlominoTabUnit; state: boolean}> 
+    = new Subject<{tab: PlominoTabUnit; state: boolean}>();
 
-  private tabContentStates: Map<string, { content: string, pattern?: string }> 
-    = new Map<string, { content: string, pattern?: string }>();
+  private tabContentStates: Map<string, { content: string; pattern?: string }> 
+    = new Map<string, { content: string; pattern?: string }>();
 
   private dirtyTabs: Set<string> = new Set();
 
@@ -105,11 +105,11 @@ export class PlominoTabsManagerService {
     return this.tabActiveChangedEvents.asObservable();
   }
 
-  getUpdateIdOfTab(): Observable<{prevId: string, nextId: string}> {
+  getUpdateIdOfTab(): Observable<{prevId: string; nextId: string}> {
     return this.tabIdUpdateEvents.asObservable();
   }
 
-  getAfterUpdateIdOfTab(): Observable<{prevId: string, nextId: string}> {
+  getAfterUpdateIdOfTab(): Observable<{prevId: string; nextId: string}> {
     return this.tabIdAfterUpdateEvents.asObservable();
   }
 
@@ -121,11 +121,11 @@ export class PlominoTabsManagerService {
     return this.activeTabDirtyReceiver.asObservable();
   }
 
-  getTabDirty(): Observable<{tab: PlominoTabUnit, state: boolean}> {
+  getTabDirty(): Observable<{tab: PlominoTabUnit; state: boolean}> {
     return this.tabDirtyReceiver.asObservable();
   }
 
-  saveTabContentState(tabId: string, data: { content: string, pattern?: string }) {
+  saveTabContentState(tabId: string, data: { content: string; pattern?: string }) {
     this.tabContentStates.set(tabId, data);
   }
 

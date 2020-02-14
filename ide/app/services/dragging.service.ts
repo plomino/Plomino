@@ -20,13 +20,13 @@ export class DraggingService {
   currentDraggingTemplateCode: string;
   target: JQuery = null;
   targetRange: Range = null;
-  targetSideBottom: boolean = true;
+  targetSideBottom = true;
 
   subformDragEvent: Subject<MouseEvent> = new Subject<MouseEvent>();
   subformDragEvent$: Observable<MouseEvent> = this.subformDragEvent.asObservable();
-  treeFieldDragEvent: Subject<{ mouseEvent: MouseEvent, fieldType: string }> 
-    = new Subject<{ mouseEvent: MouseEvent, fieldType: string }>();
-  treeFieldDragEvent$: Observable<{ mouseEvent: MouseEvent, fieldType: string }> 
+  treeFieldDragEvent: Subject<{ mouseEvent: MouseEvent; fieldType: string }> 
+    = new Subject<{ mouseEvent: MouseEvent; fieldType: string }>();
+  treeFieldDragEvent$: Observable<{ mouseEvent: MouseEvent; fieldType: string }> 
     = this.treeFieldDragEvent.asObservable();
   dndType: any;
 
@@ -47,7 +47,7 @@ export class DraggingService {
     if (data !== false && data !== null) {
       this.currentDraggingData = <PlominoDraggingData>data;
       // preload the widget code
-      let {parent, templateId} = this.currentDraggingData;
+      const {parent, templateId} = this.currentDraggingData;
 
       if (data['@type'] === 'PlominoTemplate' && !this.currentDraggingData.resolved) {
         this.log.info('this.currentDraggingData', this.currentDraggingData);
@@ -87,7 +87,7 @@ export class DraggingService {
         `;
 
         if (this.currentDraggingData.eventData) {
-          let $dragCursor = $(this.currentDraggingTemplateCode);
+          const $dragCursor = $(this.currentDraggingTemplateCode);
   
           $dragCursor.css({
             position: 'absolute',
@@ -376,7 +376,7 @@ export class DraggingService {
     }
   }
 
-  private getMousePos(e: MouseEvent): { x: number, y: number } {
+  private getMousePos(e: MouseEvent): { x: number; y: number } {
     return typeof e.clientX !== "number" ? null : { x: e.clientX, y: e.clientY };
   }
 }

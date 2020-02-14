@@ -43,8 +43,8 @@ export class ActionsSettingsComponent {
       this.log.extra('actions-settings.component.ts getElement');
     }
 
-    onSubmit(id: string, title: string, description: string, actionType:string, actionDisplay:string, inActionBar: boolean) {
-        let element = {
+    onSubmit(id: string, title: string, description: string, actionType: string, actionDisplay: string, inActionBar: boolean) {
+        const element = {
             "title": title,
             "description": description,
             "action_type": actionType,

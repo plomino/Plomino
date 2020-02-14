@@ -1,4 +1,3 @@
-import { PlominoSaveManagerService } from './../../../services/save-manager/save-manager.service';
 import { PlominoTabsManagerService } from './../../../services/tabs-manager/index';
 import { ACEEditorComponent } from './../../../editors/ace-editor/ace-editor.component';
 import { PlominoViewEditorComponent } from './../../../editors/view-editor/view-editor.component';
@@ -18,8 +17,8 @@ import { Component, Input, OnChanges, NgZone } from '@angular/core';
 })
 
 export class PlominoTabComponent implements OnChanges {
-  @Input() isActive: boolean = true;
-  @Input() isDirty: boolean = false;
+  @Input() isActive = true;
+  @Input() isDirty = false;
   @Input() id: string;
   @Input() url: string;
   @Input() label: string;

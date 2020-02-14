@@ -1,5 +1,5 @@
 interface PlominoVocabularyViewData {
-  results: { Type: string, id: string }[];
+  results: { Type: string; id: string }[];
   total: number;
 }
 

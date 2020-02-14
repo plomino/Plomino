@@ -1,6 +1,5 @@
 import { LogService } from './../../../services/log.service';
 import { Injectable } from '@angular/core';
-import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { ElementService } from '../../../services';
 
@@ -18,7 +17,7 @@ export class UpdateFieldService {
    */
   updateField(item: PlominoUpdatingItemData): Observable<PlominoLayoutElementReplaceData> {
     if (item.type === 'Hidewhen') {
-      let result = Object.assign({}, { 
+      const result = Object.assign({}, { 
         newTemplate: this.wrapHidewhen2(item.type, item.newId, item.oldTemplate),
         item: item
       }, { 
@@ -79,8 +78,8 @@ export class UpdateFieldService {
   }
 
   private wrapFieldOrAction(elType: string, id: string, contentString: string) {  
-    let $response = $(contentString);
-    let $class = `plomino${elType}Class`;
+    const $response = $(contentString);
+    const $class = `plomino${elType}Class`;
 
     let container = 'span';
     let content = '';
@@ -114,12 +113,12 @@ export class UpdateFieldService {
   }
 
   private wrapHidewhen2(elType: string, id: string, contentString: HTMLElement) {
-    let $element = $(contentString); 
-    let $class = $element.attr('class');
-    let $position = $element.data('plominoPosition');
+    const $element = $(contentString); 
+    const $class = $element.attr('class');
+    const $position = $element.data('plominoPosition');
   
-    let container = 'span';
-    let content = `
+    const container = 'span';
+    const content = `
       <${container} class="${$class}"
         data-present-method="convertFormHidewhens" 
         data-mce-resize="false"
@@ -133,13 +132,13 @@ export class UpdateFieldService {
   }
 
   private wrapHidewhen(elType: string, id: string, contentString: string) {
-    let $element = $(contentString); 
-    let $class = $element.attr('class');
-    let $position = $element.text().split(':')[0];
-    let $id = $element.text().split(':')[1];
+    const $element = $(contentString); 
+    const $class = $element.attr('class');
+    const $position = $element.text().split(':')[0];
+    const $id = $element.text().split(':')[1];
   
-    let container = 'span';
-    let content = `
+    const container = 'span';
+    const content = `
       <${container} class="${$class}"
         data-present-method="convertFormHidewhens" 
         data-mce-resize="false"

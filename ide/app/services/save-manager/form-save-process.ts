@@ -4,7 +4,6 @@ import { FakeFormData } from './../../utility/fd-helper/fd-helper';
 import { WidgetService } from './../widget.service';
 import { PlominoActiveEditorService } from './../active-editor.service';
 import { PlominoHTTPAPIService } from './../http-api.service';
-import { ElementService } from './../element.service';
 import { LabelsRegistryService } from './../../editors/tiny-mce/services/labels-registry.service';
 import { Observable, Observer } from 'rxjs/Rx';
 import { Response } from '@angular/http';
@@ -25,12 +24,12 @@ export class PlominoFormSaveProcess {
   /**
    * is the process started
    */
-  protected started: boolean = false;
+  protected started = false;
 
   /**
    * is the process prevented
    */
-  protected prevented: boolean = false;
+  protected prevented = false;
 
   /**
    * the FormData js-object from form-settings html form

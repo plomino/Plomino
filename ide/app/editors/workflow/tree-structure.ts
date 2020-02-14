@@ -3,7 +3,7 @@ export class TreeStructure {
   private latestIdNumber: number;
   private tree: PlominoWorkflowItem;
   private indexOfNodes: Array<PlominoNodeIndexKey>;
-  private mapOfIndex: Map<number, { indx: PlominoNodeIndexKey, i: number }>;
+  private mapOfIndex: Map<number, { indx: PlominoNodeIndexKey; i: number }>;
 
   constructor(tree: PlominoWorkflowItem = null) {
     this.tree = tree ? tree : this.getEmptyTree();
@@ -26,7 +26,7 @@ export class TreeStructure {
     return new TreeStructure(jQuery.extend(true, {}, this.tree));
   }
 
-  public isEmptySpace(): Boolean {
+  public isEmptySpace(): boolean {
     return !(this.tree && this.tree.children.length);
   }
 
@@ -43,7 +43,7 @@ export class TreeStructure {
     }
   }
 
-  public pushNewItemToParentById(item: PlominoWorkflowItem, parentItemId: number): Boolean {
+  public pushNewItemToParentById(item: PlominoWorkflowItem, parentItemId: number): boolean {
     if (this.mapOfIndex.has(parentItemId)) {
       const parentNodeIndex = this.mapOfIndex.get(parentItemId);
 
@@ -153,7 +153,7 @@ export class TreeStructure {
 
   public searchParentItemOfItemByCondition(
     item: PlominoWorkflowItem,
-    condition: (currentItem: PlominoWorkflowItem) => Boolean
+    condition: (currentItem: PlominoWorkflowItem) => boolean
   ): PlominoWorkflowItem|false {
     let currentItem = item;
     while (this.mapOfIndex.get(currentItem.id).indx.parent.id !== 1) {
@@ -165,7 +165,7 @@ export class TreeStructure {
     return false;
   }
 
-  public deleteNodeById(id: number): Boolean {
+  public deleteNodeById(id: number): boolean {
     if (this.mapOfIndex.has(id)) {
       /* 1. get index writing */
       const x = this.mapOfIndex.get(id);
@@ -196,7 +196,7 @@ export class TreeStructure {
     return false;
   }
 
-  public deleteBranchByTopItemId(id: number): Boolean {
+  public deleteBranchByTopItemId(id: number): boolean {
     if (this.mapOfIndex.has(id)) {
       const x = this.mapOfIndex.get(id);
       if (x.indx.parent.children.length === 1) {
@@ -220,7 +220,7 @@ export class TreeStructure {
     return false;
   }
 
-  public moveNodeToAnotherParentById(itemId: number, newParentId: number): Boolean {
+  public moveNodeToAnotherParentById(itemId: number, newParentId: number): boolean {
     if (this.mapOfIndex.has(itemId) && this.mapOfIndex.has(newParentId)) {
       const itemCopy = $.extend({}, this.getItemById(itemId));
       itemCopy.children = [];
@@ -231,7 +231,7 @@ export class TreeStructure {
     return false;
   }
 
-  public swapNodesByIds(idA: number, idB: number): Boolean {
+  public swapNodesByIds(idA: number, idB: number): boolean {
     if (this.mapOfIndex.has(idA) && this.mapOfIndex.has(idB)) {
       const a = this.mapOfIndex.get(idA);
       const b = this.mapOfIndex.get(idB);
@@ -285,7 +285,7 @@ export class TreeStructure {
   public iterate(calllbc: (item: PlominoWorkflowItem, 
     parent: PlominoWorkflowItem, indexInParentChildren: number) => any
   ) {
-    for (let e of this.indexOfNodes) {
+    for (const e of this.indexOfNodes) {
       calllbc(e.item, e.parent, e.parentIndex);
     }
   }
@@ -301,7 +301,7 @@ export class TreeStructure {
       indexInParentChildren: number) => void,
     tree: PlominoWorkflowItem = this.tree,
     parent: PlominoWorkflowItem = null,
-    parentIndex: number = 0,
+    parentIndex = 0,
   ) {
     let result = calllbc(tree, parent, parentIndex);
     for (let i = 0; i < tree.children.length; i++) {

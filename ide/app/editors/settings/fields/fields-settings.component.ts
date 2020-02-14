@@ -92,13 +92,13 @@ export class FieldsSettingsComponent {
     onSubmit(id: string,
             title: string,
             description: string,
-            fieldMode:string,
+            fieldMode: string,
             indexType: string,
             readTemplate: string,
             editTemplate: string,
             mandatory: boolean,
             toBeIndexed: boolean) {
-                let element = {
+                const element = {
                     "title": title,
                     "description": description,
                     "field_type": this.fieldTypeValue,
@@ -202,7 +202,7 @@ export class FieldsSettingsComponent {
     }
 
     patchConditional() {
-        let element = JSON.parse(JSON.stringify(this.conditional[this.fieldTypeValue.toLowerCase()]));
+        const element = JSON.parse(JSON.stringify(this.conditional[this.fieldTypeValue.toLowerCase()]));
         if (this.fieldTypeValue === "SELECTION") {
             element.selectionlist = this.conditional.selection.selectionlist.split('\n');
         }

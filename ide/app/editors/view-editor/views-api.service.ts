@@ -1,5 +1,4 @@
 import { PlominoDBService } from './../../services/db.service';
-import { Subject } from 'rxjs/Subject';
 import { ElementService } from './../../services/element.service';
 import { Observable } from 'rxjs/Rx';
 import { Headers, Response, RequestOptions } from '@angular/http';

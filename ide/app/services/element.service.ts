@@ -12,11 +12,11 @@ import {
 import { Observable } from 'rxjs/Rx';
 
 interface ConfirmationDialogOptions {
-  text: string
-  dialogTitle?: string
-  cancelBtnText?: string
-  confirmBtnText?: string
-  dialogWidth?: string
+  text: string;
+  dialogTitle?: string;
+  cancelBtnText?: string;
+  confirmBtnText?: string;
+  dialogWidth?: string;
 }
 
 @Injectable()
@@ -126,7 +126,7 @@ export class ElementService {
   }
 
   postElementCode(url: string, type: string, id: string, code: string) {
-    let headers = new Headers()
+    const headers = new Headers()
     headers.append('Content-Type', 'application/json');
     return this.http.postWithOptions(
       url, JSON.stringify({"Type": type, "Id": id, "Code": code}),
@@ -157,7 +157,7 @@ export class ElementService {
   // http://plonerestapi.readthedocs.io/en/latest/content.html#creating-a-resource-with-post
 
   postElement(url: string, newElement: InsertFieldEvent): Observable<AddFieldResponse> {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     if(newElement['@type']=='PlominoField') {
         url = url + '/@@add-field'

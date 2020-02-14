@@ -69,7 +69,7 @@ export class PlominoTabsComponent implements OnInit {
 
     this.tabsManagerService.getUpdateIdOfTab()
       .subscribe((data) => {
-        let updated: boolean = false;
+        let updated = false;
         const prevExp = new RegExp(`^(.+?/)${ data.prevId }$`);
         this.tabsCollection.forEach((tab, index) => {
           if (tab.id === data.prevId) {

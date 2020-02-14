@@ -23,13 +23,13 @@ export class TreeService {
         return this.tree$.asObservable();
     }
 
-    addUniqueIdsForForms(data:any) {
+    addUniqueIdsForForms(data: any) {
         if(!Array.isArray(data) || !data[0])
             return data;
 
         // let id = 1;
 
-        data[0].children.forEach((item:any) => {
+        data[0].children.forEach((item: any) => {
           item.formUniqueId = this.generateHash(
             item.url + item.type
           );
@@ -75,7 +75,7 @@ export class TreeService {
     }
 
     private generateHash(str: string): number {
-      var hash = 0, i, chr;
+      let hash = 0, i, chr;
       if (str.length === 0) return hash;
       for (i = 0; i < str.length; i++) {
         chr   = str.charCodeAt(i);

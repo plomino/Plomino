@@ -15,7 +15,7 @@ export const DS_FROM_PALETTE = [
 @Injectable()
 export class WFDragControllerService {
 
-  private wfEditorOffset: { left: number, top: number };
+  private wfEditorOffset: { left: number; top: number };
   private hovered: PlominoWorkflowItem;
   private hoveredId: number;
 
@@ -31,10 +31,10 @@ export class WFDragControllerService {
   private drop: Subject<ReceiverEvent> = new Subject();
   drop$ = this.drop.asObservable();
 
-  private rebuildWorkflow: Subject<Boolean> = new Subject();
+  private rebuildWorkflow: Subject<boolean> = new Subject();
   rebuildWorkflow$ = this.rebuildWorkflow.asObservable();
 
-  private swapItems: Subject<{ a: number, b: number }> = new Subject();
+  private swapItems: Subject<{ a: number; b: number }> = new Subject();
   swapItems$ = this.swapItems.asObservable();
 
   constructor() {
@@ -173,7 +173,7 @@ export class WFDragControllerService {
       });
   }
 
-  registerWorkflowOffset(offset: { left: number, top: number }) {
+  registerWorkflowOffset(offset: { left: number; top: number }) {
     this.wfEditorOffset = offset;
   }
 

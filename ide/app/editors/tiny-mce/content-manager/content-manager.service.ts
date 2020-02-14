@@ -38,7 +38,7 @@ export class TinyMCEFormContentManagerService {
     interface OneInTimeObservable<PlominoIFrameMouseMove> 
       extends Observable<PlominoIFrameMouseMove> {
       oneInTime: (delay: any) => Observable<PlominoIFrameMouseMove>;
-    };
+    }
 
     (<any>Observable).prototype.oneInTime = function (delay: any) {
      return this.take(1).merge(Observable.empty().delay(delay)).repeat();
@@ -146,7 +146,7 @@ export class TinyMCEFormContentManagerService {
       $(this.activeEditorService.getActive().getBody())
         .find('.drag-autopreview').remove();
 
-      let $preview = $(dragging.currentDraggingTemplateCode);
+      const $preview = $(dragging.currentDraggingTemplateCode);
       // if (!hoverAtBottom) {
       //   $preview.css({
       //     top: `-${ groupHeight * 2 + 25 }px`,
@@ -208,7 +208,7 @@ export class TinyMCEFormContentManagerService {
 
   setContent(editorId: any, contentHTML: string, dragging?: any): void {
     // console.warn('setContent called', editorId);
-    let editor = this.getEditor(editorId);
+    const editor = this.getEditor(editorId);
     
     if (!editor) {
       this.logService.warn('setContent', 'error: editor not found', editorId);

@@ -40,7 +40,7 @@ export class HideWhenSettingsComponent {
     }
 
     onSubmit(id: string, title: string, description: string, isDynamicHidewhen: boolean) {
-        let element = { title, description, isDynamicHidewhen };
+        const element = { title, description, isDynamicHidewhen };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {
                 this.titleChanged.emit(this.data.title);

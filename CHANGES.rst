@@ -4,6 +4,8 @@ Changelog
 2.0b5 (unreleased)
 ------------------
 
+- Upgrade TypeScript to 3.7.5 [jeffersonbledsoe]
+- Add ESlint rules [jeffersonbledsoe]
 - Move CI to GitHub Actions [JeffersonBledsoe]
 - Edit document button goes to current page [quang]
 - Restore View custom template

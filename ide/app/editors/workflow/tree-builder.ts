@@ -85,7 +85,7 @@ export const treeBuilder = {
           childrenTree = childrenTree.splice(-5, 0, bbtn);
         }
         
-        for (let child of item.children) {
+        for (const child of item.children) {
           if (!child) { 
             console.error('child missed');
            }

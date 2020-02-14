@@ -12,20 +12,12 @@ import {
 // Core
 import { 
   Component, 
-  ViewChild,
   NgZone, 
   OnInit,
-  AfterViewInit,
   ChangeDetectorRef,
-  trigger,
-  animate,
-  state,
-  style,
-  transition
 } from '@angular/core';
 
 // External Components
-import { TAB_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 import { DND_DIRECTIVES } from 'ng2-dnd';
 // import {DndModule} from 'ng2-dnd';
 
@@ -34,8 +26,6 @@ import { TreeComponent } from './tree-view';
 import { PaletteComponent, PlominoWorkflowNodeSettingsComponent } from './palette-view';
 
 import {
-  TinyMCEComponent,
-  ACEEditorComponent,
   FormsSettingsComponent,
   FieldsSettingsComponent,
   ActionsSettingsComponent,
@@ -43,8 +33,6 @@ import {
   ViewsSettingsComponent,
   ColumnsSettingsComponent,
   AgentsSettingsComponent,
-  PlominoWorkflowComponent,
-  PlominoViewEditorComponent
 } from './editors';
 
 // Services
@@ -72,9 +60,6 @@ import {
 
 // Pipes 
 import { ExtractNamePipe } from './pipes';
-
-// Interfaces
-import { IField } from './interfaces';
 
 // Utility Components
 import {
@@ -142,17 +127,17 @@ import { LoadingComponent } from "./editors/loading/loading.component";
 export class AppComponent implements OnInit {
 
   data: any;
-  isModalOpen: boolean = false;
+  isModalOpen = false;
   modalData: any;
 
-  isDragging: boolean = false;
+  isDragging = false;
   dragData: any = null;
 
   DIRECTION_DOWN = 'down';
   DIRECTION_UP = 'up';
   DIRECTION_LEFT = 'left';
   DIRECTION_RIGHT = 'right';
-  wrapperWidth: number = 464;
+  wrapperWidth = 464;
   addDialog: HTMLDialogElement;
   dbName = 'Plomino IDE';
 
@@ -203,7 +188,7 @@ export class AppComponent implements OnInit {
       });
     }
 
-  collapseTreeElements(data:any, oldData:any) {
+  collapseTreeElements(data: any, oldData: any) {
     if (!Array.isArray(data) || Array.isArray(oldData)) {
       return data;
     }
@@ -316,7 +301,7 @@ export class AppComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  resizeColumns(event: { directions: string[], difference: {x: number, y: number} }) {
+  resizeColumns(event: { directions: string[]; difference: {x: number; y: number} }) {
     const directions = event.directions;
     const difference = event.difference;
 
@@ -341,7 +326,7 @@ export class AppComponent implements OnInit {
     $wrapper.css(attribute, `${ width }px`);
   }
 
-  resizeTree(event: { directions: string[], difference: {x: number, y: number} }) {
+  resizeTree(event: { directions: string[]; difference: {x: number; y: number} }) {
     const directions = event.directions;
     const difference = event.difference;
 
@@ -366,7 +351,7 @@ export class AppComponent implements OnInit {
   }
 
   indexOf(type: any) {
-    let index: any = {};
+    const index: any = {};
     let parentToSearch: any;
 
     if (type.parent === undefined)
@@ -424,7 +409,7 @@ export class AppComponent implements OnInit {
   }
 
   allowDrop() {
-    let dataType = this.dragData['@type'];
+    const dataType = this.dragData['@type'];
     return () => dataType === 'PlominoForm' || dataType === 'PlominoView' || dataType === 'PlominoView/custom';
   }
 
@@ -435,7 +420,7 @@ export class AppComponent implements OnInit {
   onModalClose(event: any) {
     this.isModalOpen = false;
     
-    let newElement: any = {
+    const newElement: any = {
       "@type": event.type,
       "title": event.name
     };
@@ -450,7 +435,7 @@ export class AppComponent implements OnInit {
     .subscribe(data => this.treeService.updateTree());
   }
 
-  private addNewView(event: MouseEvent, custom: boolean = false) {
+  private addNewView(event: MouseEvent, custom = false) {
     event.preventDefault();
     if (custom)
       this.saveManager.createNewCustomView();

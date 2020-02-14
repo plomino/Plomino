@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class PlominoApplicationLoaderService {
 
   private shouldBeLoaded: string[] = ['app.component', 'material'];
-  private isLoaded: boolean = false;
+  private isLoaded = false;
 
   constructor(
     private urlManager: URLManagerService,

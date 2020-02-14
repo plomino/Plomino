@@ -8,11 +8,11 @@ export class PloneHtmlPipe {
         this.sanitizer = sanitizer;
     }
 
-    transform(html:string) {
+    transform(html: string) {
         // We only want the html inside the outer-wrapper
         if (html) {
-            var start = html.indexOf('<div class="outer-wrapper">');
-            var end = html.indexOf('<!--/outer-wrapper -->');
+            let start = html.indexOf('<div class="outer-wrapper">');
+            let end = html.indexOf('<!--/outer-wrapper -->');
 
             if (start === -1) {
               start = html.indexOf('<article id="portal-column-content">');

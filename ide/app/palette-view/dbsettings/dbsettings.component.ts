@@ -6,9 +6,6 @@ import { LogService } from './../../services/log.service';
 import { PlominoHTTPAPIService } from './../../services/http-api.service';
 import { 
     Component, 
-    Input, 
-    Output,
-    EventEmitter, 
     ViewChild, 
     ElementRef,
     ChangeDetectorRef,
@@ -16,7 +13,6 @@ import {
 } from '@angular/core';
 
 import { 
-    Http, 
     Headers, 
     Response, 
     RequestOptions 
@@ -39,9 +35,9 @@ import { PlominoBlockPreloaderComponent } from "../../utility";
 
 export class DBSettingsComponent {
 
-    @ViewChild('dbform') el:ElementRef;
+    @ViewChild('dbform') el: ElementRef;
 
-    dbForm: string = '';
+    dbForm = '';
     importExportDialog: HTMLDialogElement;
     aclDialog: HTMLDialogElement;
     okDialog: HTMLDialogElement;
@@ -51,7 +47,7 @@ export class DBSettingsComponent {
     /**
      * display block preloader
      */
-    loading: boolean = false;
+    loading = false;
 
     constructor(private objService: ObjService,
       private saveManager: PlominoSaveManagerService,
@@ -105,8 +101,8 @@ export class DBSettingsComponent {
         // action. If the response is <div class="ajax_success">, we re-fetch
         // the form. Otherwise we update the displayed form with the response
         // (which may have validation failures etc.) 
-        let form: HTMLFormElement = <HTMLFormElement> $(this.el.nativeElement).find('form').get(0);
-        let formData: FormData = new FormData(form);
+        const form: HTMLFormElement = <HTMLFormElement> $(this.el.nativeElement).find('form').get(0);
+        const formData: FormData = new FormData(form);
         
         formData.append('form.buttons.save', 'Save');
         this.loading = true;
@@ -227,7 +223,7 @@ export class DBSettingsComponent {
             })
           )
           .subscribe((response: Response) => {
-            let result = response.text();
+            const result = response.text();
             updateACLContent(result);
           });
         });
@@ -321,9 +317,9 @@ export class DBSettingsComponent {
             if (response.url.indexOf('AsJSON') !== -1) {
               window.URL = window.URL || (<any> window).webkitURL;
               const jsonString = JSON.stringify(response.json(), undefined, 2);
-              var link = document.createElement('a');
+              const link = document.createElement('a');
               link.download = 'data.json';
-              var blob = new Blob([jsonString], { type: 'text/plain' });
+              const blob = new Blob([jsonString], { type: 'text/plain' });
               link.href = window.URL.createObjectURL(blob);
               link.click();
             }
@@ -450,9 +446,9 @@ export class DBSettingsComponent {
                 if (targetFiletype !== null) {
                   window.URL = window.URL || (<any> window).webkitURL;
                   const jsonString = JSON.stringify(response.json(), undefined, 2)
-                  var link = document.createElement('a');
+                  const link = document.createElement('a');
                   link.download = 'data.' + targetFiletype;
-                  var blob = new Blob([jsonString], { type: targetFiletypeMime });
+                  const blob = new Blob([jsonString], { type: targetFiletypeMime });
                   link.href = window.URL.createObjectURL(blob);
                   link.click();
                 }

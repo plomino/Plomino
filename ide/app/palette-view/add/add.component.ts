@@ -2,7 +2,7 @@ import { PlominoTabsManagerService } from './../../services/tabs-manager/index';
 import { PlominoDBService } from './../../services/db.service';
 import { PlominoWorkflowChangesNotifyService } from './../../editors/workflow/workflow.changes.notify.service';
 import { WF_ITEM_TYPE } from './../../editors/workflow/tree-builder';
-import { Subscription, Observable, Subject } from 'rxjs/Rx';
+import { Observable, Subject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './../../services/active-editor.service';
 import { PlominoViewsAPIService } from './../../editors/view-editor/views-api.service';
 import { PlominoBlockPreloaderComponent } from './../../utility/block-preloader';
@@ -11,11 +11,8 @@ import {
 } from './../../editors/tiny-mce/services/labels-registry.service';
 import { 
     Component, 
-    Input, 
-    Output, 
     OnInit, 
     AfterViewInit,
-    EventEmitter,
     ChangeDetectorRef,
     ElementRef,
     ChangeDetectionStrategy
@@ -66,9 +63,9 @@ export class AddComponent implements OnInit, AfterViewInit {
     /**
      * display block preloader
      */
-    loading: boolean = false;
+    loading = false;
 
-    workflowMode: boolean = false;
+    workflowMode = false;
 
     constructor(private elementService: ElementService,
                 private treeService: TreeService,
@@ -286,7 +283,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               });
 
               this.draggingService.treeFieldDragEvent$
-              .subscribe((e: { mouseEvent: MouseEvent, fieldType: string }) => {
+              .subscribe((e: { mouseEvent: MouseEvent; fieldType: string }) => {
                 $('#drag-data-cursor').remove();
                 this.simulateDrag(e.mouseEvent, e.fieldType);
               });
@@ -327,7 +324,7 @@ export class AddComponent implements OnInit, AfterViewInit {
       // XXX: For updating the tree, can that be handled via the ElementService?
       // If the POST that creates the new object happens over there, can there be
       // something that the main app/tree subscribes to so it refreshes automatically?
-      let randomId: number = Math.round((Math.random() * 999 - 0));
+      const randomId: number = Math.round((Math.random() * 999 - 0));
       let field: InsertFieldEvent;
 
       const existingId = this.draggingService
@@ -365,7 +362,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               }
               this.elementService.postElement(this.activeTab.url, field)
               .subscribe((response: AddFieldResponse) => {
-                let extendedField: InsertFieldEvent = Object.assign({}, field, {
+                const extendedField: InsertFieldEvent = Object.assign({}, field, {
                   name: `${this.activeTab.url}/${response.created}`
                 });
 
@@ -380,7 +377,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               });
             }
             else {
-              let url = `${this.activeTab.url}/${existingId}`;
+              const url = `${this.activeTab.url}/${existingId}`;
               this.fieldsService.insertField({
                 title: this.labelsRegistry.get(url),
                 '@type': 'PlominoField',
@@ -457,7 +454,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                */
               this.elementService.postElement(this.activeTab.url, field)
               .subscribe((response: AddFieldResponse) => {
-                let extendedField = Object.assign({}, field, {
+                const extendedField = Object.assign({}, field, {
                   name: response['@id'],
                   target
                 });
@@ -469,7 +466,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               });
             }
             else {
-              let url = `${this.activeTab.url}/${existingId}`;
+              const url = `${this.activeTab.url}/${existingId}`;
               this.fieldsService.insertField({
                 title: this.labelsRegistry.get(url),
                 '@type': 'PlominoHidewhen',
@@ -488,7 +485,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               }
               this.elementService.postElement(this.activeTab.url, field)
               .subscribe((response: AddFieldResponse) => {
-                let extendedField = Object.assign({}, field, {
+                const extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });
                 this.fieldsService.insertField(extendedField);
@@ -496,7 +493,7 @@ export class AddComponent implements OnInit, AfterViewInit {
                 })
             }
             else {
-              let url = `${this.activeTab.url}/${existingId}`;
+              const url = `${this.activeTab.url}/${existingId}`;
               this.fieldsService.insertField({
                 title: this.labelsRegistry.get(url),
                 '@type': 'PlominoAction',
@@ -517,7 +514,7 @@ export class AddComponent implements OnInit, AfterViewInit {
               this.viewsAPIService.addNewAction(this.activeTab.url)
               .subscribe((response: AddFieldResponse) => {
                 this.fieldsService.viewActionInserted.next(this.activeTab.url);
-                let extendedField = Object.assign({}, field, {
+                const extendedField = Object.assign({}, field, {
                     name: response['@id']
                 });
                  

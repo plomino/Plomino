@@ -1,4 +1,4 @@
-declare function require(arg:string): any;
+declare function require(arg: string): any;
 
 interface PlominoFormSaveProcessOptions {
   immediately: boolean;
@@ -29,11 +29,11 @@ interface PlominoTab {
 }
 
 interface HTMLDialogElement extends HTMLElement {
-  open: boolean,
-  returnValue: any,
-  close: (returnValue?: any)=>void,
-  show: ()=>void,
-  showModal: ()=>void
+  open: boolean;
+  returnValue: string;
+  close: (returnValue?: string) => void;
+  show: () => void;
+  showModal: () => void;
 }
 
 interface PlominoFormDataAPIResponse {
@@ -57,7 +57,7 @@ interface PlominoFormDataAPIResponse {
   isMulti: boolean;
   isPage: boolean;
   isSearchForm: boolean;
-  items: { '@id': string, '@type': string, description: string, title: string }[];
+  items: { '@id': string; '@type': string; description: string; title: string }[];
   items_total: number;
   modified: string;
   onCreateDocument: string;
@@ -66,7 +66,7 @@ interface PlominoFormDataAPIResponse {
   onOpenDocument: string;
   onSaveDocument: string;
   onSearch: string;
-  parent: { '@id': string, '@type': string, description: string, title: string };
+  parent: { '@id': string; '@type': string; description: string; title: string };
   resources_css: any;
   resources_js: any;
   review_state: string;
@@ -185,7 +185,7 @@ interface AddFieldResponse {
   '@id'?: string;
   id?: string;
   formUniqueId?: string;
-  parent?: { '@id': string }
+  parent?: { '@id': string };
 }
 
 interface PlominoIteratingLayoutElement {
@@ -194,51 +194,51 @@ interface PlominoIteratingLayoutElement {
   baseUrl: string;
   el: JQuery;
   templateMode: boolean;
-  itemPromise: Promise<any>
+  itemPromise: Promise<any>;
   itemPromiseResolve: (value?: {} | PromiseLike<{}>) => void;
 }
 
 interface TinyMceObservable {
-  off: (name?: string, callback?: Function) => Object
-  on: (name: string, callback: Function) => Object
-  fire: (name: string, args?: Object, bubble?: boolean) => Event
+  off: (name?: string, callback?: Function) => Record<string, any>;
+  on: (name: string, callback: Function) => Record<string, any>;
+  fire: (name: string, args?: Record<string, any>, bubble?: boolean) => Event;
 }
 
 interface TinyMceEditor extends TinyMceObservable {
-  destroy: (automatic: boolean) => void
-  remove: () => void
-  onInit: { add: ((func: () => void) => void) }
-  onChange: { add: ((func: (e: any) => void) => void) }
-  onKeyDown: { add: ((func: (e: KeyboardEvent) => void) => void) }
-  onKeyUp: { add: ((func: (e: KeyboardEvent) => void) => void) }
-  onNodeChange: { add: ((func: (nodeChangeEvent: any) => void) => void) }
-  onActivate: { add: ((func: (e: any) => void) => void) }
-  onMouseDown: { add: ((func: (ev: MouseEvent) => void) => void) }
-  hide: () => void
-  setDirty: (dirty: boolean) => void
-  isDirty: () => boolean
-  show: () => void
-  getContent: (args?: Object) => string
-  getContainer: (args?: Object) => HTMLElement
-  getBody: () => string
-  getDoc: () => any
-  setContent: (content: string, args?: Object) => string
-  onSaveContent: any
-  addMenuItem: any
-  focus: (skip_focus?: boolean) => void
-  undoManager: TinyMceUndoManager
-  settings: Object
-  selection?: any
-  buttons?: any
-  dom?: any
-  id?: string
-  execCommand: (command: string, user_interface: boolean, value: string, extra?: any) => boolean
+  destroy: (automatic: boolean) => void;
+  remove: () => void;
+  onInit: { add: ((func: () => void) => void) };
+  onChange: { add: ((func: (e: any) => void) => void) };
+  onKeyDown: { add: ((func: (e: KeyboardEvent) => void) => void) };
+  onKeyUp: { add: ((func: (e: KeyboardEvent) => void) => void) };
+  onNodeChange: { add: ((func: (nodeChangeEvent: any) => void) => void) };
+  onActivate: { add: ((func: (e: any) => void) => void) };
+  onMouseDown: { add: ((func: (ev: MouseEvent) => void) => void) };
+  hide: () => void;
+  setDirty: (dirty: boolean) => void;
+  isDirty: () => boolean;
+  show: () => void;
+  getContent: (args?: Record<string, any>) => string;
+  getContainer: (args?: Record<string, any>) => HTMLElement;
+  getBody: () => string;
+  getDoc: () => any;
+  setContent: (content: string, args?: Record<string, any>) => string;
+  onSaveContent: any;
+  addMenuItem: any;
+  focus: (skip_focus?: boolean) => void;
+  undoManager: TinyMceUndoManager;
+  settings: Record<string, any>;
+  selection?: any;
+  buttons?: any;
+  dom?: any;
+  id?: string;
+  execCommand: (command: string, user_interface: boolean, value: string, extra?: any) => boolean;
 }
 
 interface TinyMceUndoManager {
-  undo: () => Object
-  clear: () => void
-  hasUndo: () => boolean
+  undo: () => Record<string, any>;
+  clear: () => void;
+  hasUndo: () => boolean;
 }
 
 interface TinyMceEvent {
@@ -246,7 +246,7 @@ interface TinyMceEvent {
 }
 
 interface TinyMceStatic extends TinyMceObservable {
-  init: (settings: Object) => void;
+  init: (settings: Record<string, any>) => void;
   
   /**
    * This will execute the specified command on the currently selected editor instance
@@ -261,21 +261,21 @@ interface TinyMceStatic extends TinyMceObservable {
   dom: any;
 }
 
-declare var tinymce: TinyMceStatic;
-declare var dialogPolyfill: any;
+declare let tinymce: TinyMceStatic;
+declare let dialogPolyfill: any;
 
 // Type definitions for material-design-lite v1.1.3
 // Project: https://getmdl.io
 // Definitions by: Brad Zacher <https://github.com/bradzacher/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare module MaterialDesignLite {
+declare namespace MaterialDesignLite {
   interface ComponentHandler {
     /**
      * Searches existing DOM for elements of our component type and upgrades them
      * if they have not already been upgraded.
      */
-    upgradeDom() : void;
+    upgradeDom(): void;
     /**
      * Searches existing DOM for elements of our component type and upgrades them
      * if they have not already been upgraded.
@@ -283,7 +283,7 @@ declare module MaterialDesignLite {
      * @param {string} jsClass the programatic name of the element class we
      * need to create a new instance of.
      */
-    upgradeDom(jsClass : string) : void;
+    upgradeDom(jsClass: string): void;
     /**
      * Searches existing DOM for elements of our component type and upgrades them
      * if they have not already been upgraded.
@@ -293,14 +293,14 @@ declare module MaterialDesignLite {
      * @param {string} cssClass the name of the CSS class elements of this
      * type will have.
      */
-    upgradeDom(jsClass : string, cssClass : string) : void;
+    upgradeDom(jsClass: string, cssClass: string): void;
 
     /**
      * Upgrades a specific element rather than all in the DOM.
      *
      * @param {!Element} element The element we wish to upgrade.
      */
-    upgradeElement(element : HTMLElement) : void;
+    upgradeElement(element: HTMLElement): void;
     /**
      * Upgrades a specific element rather than all in the DOM.
      *
@@ -308,7 +308,7 @@ declare module MaterialDesignLite {
      * @param {string} jsClass Optional name of the class we want to upgrade
      * the element to.
      */
-    upgradeElement(element : HTMLElement, jsClass : string) : void;
+    upgradeElement(element: HTMLElement, jsClass: string): void;
 
     /**
      * Upgrades a specific list of elements rather than all in the DOM.
@@ -316,34 +316,34 @@ declare module MaterialDesignLite {
      * @param {!Element} elements
      * The elements we wish to upgrade.
      */
-    upgradeElements(elements : HTMLElement) : void;
+    upgradeElements(elements: HTMLElement): void;
     /**
      * Upgrades a specific list of elements rather than all in the DOM.
      *
      * @param {!Array<!Element>} elements
      * The elements we wish to upgrade.
      */
-    upgradeElements(elements : Array<HTMLElement>) : void;
+    upgradeElements(elements: Array<HTMLElement>): void;
     /**
      * Upgrades a specific list of elements rather than all in the DOM.
      *
      * @param {!NodeList} elements
      * The elements we wish to upgrade.
      */
-    upgradeElements(elements : NodeList) : void;
+    upgradeElements(elements: NodeList): void;
     /**
      * Upgrades a specific list of elements rather than all in the DOM.
      *
      * @param {!HTMLCollection} elements
      * The elements we wish to upgrade.
      */
-    upgradeElements(elements : HTMLCollection) : void;
+    upgradeElements(elements: HTMLCollection): void;
 
     /**
      * Upgrades all registered components found in the current DOM. This is
      * automatically called on window load.
      */
-    upgradeAllRegistered() : void;
+    upgradeAllRegistered(): void;
 
     /**
      * Allows user to be alerted to any upgrades that are performed for a given
@@ -355,43 +355,43 @@ declare module MaterialDesignLite {
      * upgrade. This function should expect 1 parameter - the HTMLElement which
      * got upgraded.
      */
-    registerUpgradedCallback(jsClass : string, callback : (element : HTMLElement) => any) : void;
+    registerUpgradedCallback(jsClass: string, callback: (element: HTMLElement) => any): void;
 
     /**
      * Registers a class for future use and attempts to upgrade existing DOM.
      *
      * @param {componentHandler.ComponentConfigPublic} config the registration configuration
      */
-    register(config : ComponentConfigPublic) : void;
+    register(config: ComponentConfigPublic): void;
 
     /**
      * Downgrade either a given node, an array of nodes, or a NodeList.
      *
      * @param {!Node} nodes The list of nodes.
      */
-    downgradeElements(nodes : Node) : void;
+    downgradeElements(nodes: Node): void;
     /**
      * Downgrade either a given node, an array of nodes, or a NodeList.
      *
      * @param {!Array<!Node>} nodes The list of nodes.
      */
-    downgradeElements(nodes : Array<Node>) : void;
+    downgradeElements(nodes: Array<Node>): void;
     /**
      * Downgrade either a given node, an array of nodes, or a NodeList.
      *
      * @param {!NodeList} nodes The list of nodes.
      */
-    downgradeElements(nodes : NodeList) : void;
+    downgradeElements(nodes: NodeList): void;
   }
   interface ComponentConfigPublic {
-    constructor(element : HTMLElement) : void;
-    classAsString : string;
-    cssClass : string;
+    constructor(element: HTMLElement): void;
+    classAsString: string;
+    cssClass: string;
     widget? : string | boolean;
   }
 }
 
-declare var componentHandler : MaterialDesignLite.ComponentHandler;
+declare let componentHandler: MaterialDesignLite.ComponentHandler;
 
 interface FormData {
   append(name: any, value: any, blobName?: string): void;

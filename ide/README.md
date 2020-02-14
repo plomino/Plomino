@@ -27,6 +27,13 @@ You may also have to build the Plomino js using
 ```
 NB: if commiting this compiled version ensure you update src/Products/CMFPlomino/profiles/default/registry.xml with the compiled date and reinstall the plugin)
 
+# Linting
+In addition to the typescript compiler providing warnings and error checking, eslint provides additional code checks. To use the linter, run:
+
+```
+$ npm run lint
+```
+
 
 # Run
 

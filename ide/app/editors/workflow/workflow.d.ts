@@ -1,7 +1,7 @@
 interface ReceiverEvent {
-  dragEvent: DragEvent, 
-  eventName: 'enter'|'leave'|'start'|'end'|'drop'|'over', 
-  dragServiceType: string, wfNode?: HTMLElement, item?: PlominoWorkflowItem
+  dragEvent: DragEvent; 
+  eventName: 'enter'|'leave'|'start'|'end'|'drop'|'over'; 
+  dragServiceType: string; wfNode?: HTMLElement; item?: PlominoWorkflowItem;
 }
 
 interface PlominoNodeIndexKey {
@@ -42,8 +42,8 @@ interface PlominoWorkflowItem {
 }
 
 interface WFDragEvent {
-  dragData: { title: string, type: string },
-  mouseEvent: DragEvent
+  dragData: { title: string; type: string };
+  mouseEvent: DragEvent;
 }
 
 interface KVChangeEvent {

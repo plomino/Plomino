@@ -6,8 +6,6 @@ import {
     Component, 
     Input, 
     Output,
-    OnInit,
-    OnChanges,
     OnDestroy, 
     EventEmitter,
     ViewChild,
@@ -18,18 +16,11 @@ import {
     NgZone
 } from '@angular/core';
 
-import { 
-    Http,
-    Response,
-    RequestOptions
-} from '@angular/http';
-
 import {DND_DIRECTIVES} from 'ng2-dnd';
 
 import {
     Subscription,
     Observable,
-    Scheduler
 } from 'rxjs/Rx';
 
 import {
@@ -85,7 +76,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   @ViewChild('theEditor') editorElement: ElementRef;
 
   data: string;
-  isDragged: boolean = false;
+  isDragged = false;
   dragData: any;
   idChanges: any;
   editorInstance: any;
@@ -95,7 +86,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   autoSaveTimer: any = null;
   autoSavedContent: string = null;
 
-  theFormIsSavingNow: boolean = false;
+  theFormIsSavingNow = false;
   loadedFirstTime: boolean = null;
   registry: any;
   tinyMCEPatData: string = null;
@@ -104,7 +95,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   /**
    * display block preloader
    */
-  loading: boolean = true;
+  loading = true;
 
   constructor(private elementService: ElementService,
     private fieldsService: FieldsService,
@@ -135,8 +126,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((insertion: InsertFieldEvent) => {
       this.log.info('fieldsService.getInsertion', insertion);
       this.log.extra('tiny-mce.component.ts this.insertionSubscription');
-      let insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
-      let dataToInsert = Object.assign({}, insertion, { 
+      const insertionParent = insertion.name.slice(0, insertion.name.lastIndexOf('/'));
+      const dataToInsert = Object.assign({}, insertion, { 
         type: insertion['@type']
       });
       this.log.info('insertionSubscription', dataToInsert);
@@ -152,7 +143,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     .subscribe((insertion: InsertTemplateEvent) => {
       this.log.info('templatesService.getInsertion', insertion);
       this.log.extra('tiny-mce.component.ts this.templatesSubscription');
-      let parent = insertion.parent;
+      const parent = insertion.parent;
       if (insertion.parent === this.id) {
         if (insertion.target === null) {
           const $selected = 
@@ -269,7 +260,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
       this.isLoading.emit(true);
 
-      let editor = this.getEditor() || 
+      const editor = this.getEditor() || 
         this.getEditor(this.idChanges && this.idChanges.oldId);
 
       editor.setDirty(false);
@@ -280,7 +271,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.subscriptions.push(contSaveSub);
 
     const formBeforeSaveSub = this.formsService
-      .getFormContentBeforeSave$.subscribe((data:{id:any}) => {
+      .getFormContentBeforeSave$.subscribe((data: {id: any}) => {
       if (data.id !== this.id)
         return;
 
@@ -344,7 +335,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.activeEditorService.setActive(null);
     }
 
-    for (let sub of this.subscriptions) {
+    for (const sub of this.subscriptions) {
       sub.unsubscribe();
     }
     this.subscriptions = [];
@@ -919,7 +910,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       this.adapter.selectPosition($element);
 
       this.zone.run(() => {
-        let eventTarget = <any> ev.target;
+        const eventTarget = <any> ev.target;
 
         if (eventTarget.scrollIntoViewIfNeeded) {
           eventTarget.scrollIntoViewIfNeeded();
@@ -939,7 +930,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
           $element.hasClass('plominoActionClass') ||
           $element.hasClass('plominoHidewhenClass')) &&
           $element.get(0).classList.length &&
-          !Boolean($element.attr('data-plominoid')) &&
+          !$element.attr('data-plominoid') &&
           this.widgetService.isItAZombie(
             this.id, 
             $element.get(0).classList.item(0)
@@ -948,24 +939,24 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             $element.html().trim()
           );
         
-        let $parent = $element.parent();
-        let $grandParent = $parent.parent();
-        let $grandGrandParent = $grandParent.parent();
-        let $closest = $element.closest('[data-mce-selected]');
-        let $elementIsGroup = $element.hasClass('plominoGroupClass');
-        let elementIsLabel = $element.hasClass('plominoLabelClass');
+        const $parent = $element.parent();
+        const $grandParent = $parent.parent();
+        const $grandGrandParent = $grandParent.parent();
+        const $closest = $element.closest('[data-mce-selected]');
+        const $elementIsGroup = $element.hasClass('plominoGroupClass');
+        const elementIsLabel = $element.hasClass('plominoLabelClass');
         let elementIsSubform = $element.hasClass('plominoSubformClass');
-        let parentIsSubform = $parent.hasClass('plominoSubformClass')
+        const parentIsSubform = $parent.hasClass('plominoSubformClass')
           || $grandParent.hasClass('plominoSubformClass')
           || $grandGrandParent.hasClass('plominoSubformClass');
-        let closestIsSubform = $closest.hasClass('plominoSubformClass')
+        const closestIsSubform = $closest.hasClass('plominoSubformClass')
           || ($parent.hasClass('plominoFieldGroup') && 
           $parent.closest('[data-mce-selected]').hasClass('plominoSubformClass'));
-        let parentIsLabel = $parent.hasClass('plominoLabelClass');
+        const parentIsLabel = $parent.hasClass('plominoLabelClass');
 
         let $elementId = $element.attr('data-plominoid');
-        let $parentId = $parent.attr('data-plominoid');
-        let $closestLabel = $element.closest('.plominoLabelClass');
+        const $parentId = $parent.attr('data-plominoid');
+        const $closestLabel = $element.closest('.plominoLabelClass');
 
         this.log.info($element, $parent, $grandParent, $grandGrandParent, $closest);
         this.log.extra('tiny-mce.component.ts editor.on(\'mousedown\', ...)');
@@ -1018,15 +1009,15 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
             id: id, type: 'subform', parent: this.id });
         }
         else if ($elementId || $parentId) {
-          let id = $elementId || $parentId;
+          const id = $elementId || $parentId;
               
-          let $elementType = $element.data('plominoid')
+          const $elementType = $element.data('plominoid')
             ? this.extractClass($element.attr('class')) : null;
 
-          let $parentType = $parent.data('plominoid') 
+          const $parentType = $parent.data('plominoid') 
             ? this.extractClass($parent.attr('class')) : null;
 
-          let type = $elementType || $parentType;
+          const type = $elementType || $parentType;
 
           this.formFieldsSelection.selectField({ 
             id: id, type: type, parent: this.id });
@@ -1093,7 +1084,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     this.log.info('fallLoading from getFormLayout');
 
     const applyHTMLData = (data: string) => {
-      let newData = '';
+      const newData = '';
           
       if (data && data.length) {
         /* here I will replace the tinymce storage to virtual */
@@ -1227,7 +1218,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     else {
       this.elementService.getElementFormLayout(this.id)
       .subscribe((form: PlominoFormDataAPIResponse) => {
-        for (let item of form.items) {
+        for (const item of form.items) {
           this.labelsRegistry.update(item['@id'], item.title, 'title');
           this.labelsRegistry.update(item['@id'], item['@type'], '@type');
         }
@@ -1239,10 +1230,10 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  saveFormLayout(cb:any) {
+  saveFormLayout(cb: any) {
     this.log.info('calling saveFormLayout', cb.toString(), this.id);
-    let tiny = this;
-    let editor = this.getEditor() || this.getEditor(this.idChanges.oldId);
+    const tiny = this;
+    const editor = this.getEditor() || this.getEditor(this.idChanges.oldId);
 
     if (editor !== null) {
       try {
@@ -1358,9 +1349,9 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       let i = 0;
       Observable.from(dataToUpdate).map((element) => {
         /* WTF? */
-        let normalizedType = $(element).attr('class')
+        const normalizedType = $(element).attr('class')
           .split(' ')[0].slice(7, -5);
-        let typeCapitalized = normalizedType[0].toUpperCase() +
+        const typeCapitalized = normalizedType[0].toUpperCase() +
           normalizedType.slice(1);
 
         let newTitle = updateData.newData.title;
@@ -1382,7 +1373,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
       })
       .subscribe((data) => {
         if (data.item && data.item.type === 'Hidewhen') {
-          let $position = $(data.oldTemplate).data('plominoPosition');
+          const $position = $(data.oldTemplate).data('plominoPosition');
           if (hwPos[$position]) {
             return false;
           }
@@ -1424,7 +1415,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     let elementIdName: string;
 
     let elementId: string = element.name.split('/').pop();
-    let baseUrl: string = element.name.slice(0, element.name.lastIndexOf('/'));
+    const baseUrl: string = element.name.slice(0, element.name.lastIndexOf('/'));
     
     switch (element.type) {
       case 'PlominoField':
@@ -1490,8 +1481,8 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
     this.log.info('element.target', element.target);
 
-    let target: any = element.target || null;
-    let subformHTML: string = element.subformHTML || null;
+    const target: any = element.target || null;
+    const subformHTML: string = element.subformHTML || null;
 
     this.insertElement(target, baseUrl, type, elementId, subformHTML);
   }
@@ -1499,13 +1490,13 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
   private insertElement(
     target: any, baseUrl: string, type: string, value: string, option?: string
   ) {
-    let ed = this.getEditor();
+    const ed = this.getEditor();
     let selection: any = ed.selection.getNode();
     let title: string;
     let plominoClass: string;
     let content: string;
 
-    var container = 'span';
+    let container = 'span';
 
     if (type === 'action') {
       plominoClass = 'plominoActionClass';
@@ -1556,7 +1547,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
     else if (plominoClass !== undefined) {
       this.elementService.getWidget(baseUrl, type, value)
       .subscribe((response) => {
-        let responseAsElement = $(response);
+        const responseAsElement = $(response);
         let container = 'span';
 
         selection = ed.selection.getNode();
@@ -1589,21 +1580,21 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 		}
     else if (type == "hidewhen" || type == 'cache') {
       // Insert or replace the selection
-      let cssclass = 'plomino' +
+      const cssclass = 'plomino' +
         type.charAt(0).toUpperCase() +
         type.slice(1) + 'Class';
 
 			// If the node is a <span class="plominoFieldClass"/>, select all its content
 			if (tinymce.DOM.hasClass(selection, cssclass)) {
         // get the old hide-when id
-        let oldId = selection.getAttribute('data-plominoid');
-        let pos = selection.getAttribute('data-plomino-position')
+        const oldId = selection.getAttribute('data-plominoid');
+        const pos = selection.getAttribute('data-plomino-position')
 
 				// get a list of hide-when opening and closing spans
-				let hidewhens = this.contentManager.selectDOM(this.id, 'span.' + cssclass);
+				const hidewhens = this.contentManager.selectDOM(this.id, 'span.' + cssclass);
 
 				// find the selected span
-				var i: number;
+				let i: number;
 				for (i = 0; i < hidewhens.length; i++) {
 					if (hidewhens[i] == selection)
 						break;
@@ -1635,7 +1626,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 					}
 				}
 			} else {
-				let zone = '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
+				const zone = '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
           value + '" data-plomino-position="start">&nbsp;</span>' +
           ed.selection.getContent() +
           '<span class="' + cssclass + ' mceNonEditable" data-plominoid="' + 
@@ -1668,7 +1659,7 @@ export class TinyMCEComponent implements AfterViewInit, OnDestroy {
 
   private extractClass(classString: string): string {
     if (!classString) return null;
-    let type = classString.split(' ')[0].slice(0, -5);
+    const type = classString.split(' ')[0].slice(0, -5);
     return type.indexOf('plomino') > -1 ? type : null;
   }
 

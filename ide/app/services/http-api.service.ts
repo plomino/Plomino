@@ -89,7 +89,7 @@ export class PlominoHTTPAPIService {
     }
     else if (response.url.indexOf('/require_login') !== -1) {
       setTimeout(() => {
-        let redirectURL = response.url.replace(/(came_from=).+?$/, '$1');
+        const redirectURL = response.url.replace(/(came_from=).+?$/, '$1');
         window.location.href = `${ redirectURL }${ encodeURIComponent(window.location.href) }`;
       }, 2000);
       throw 'You are not authenticated';

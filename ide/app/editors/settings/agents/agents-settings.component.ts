@@ -40,7 +40,7 @@ export class AgentsSettingsComponent {
     }
 
     onSubmit(id: string, title: string, description: string, run_as: string) {
-        let element = { title, description, run_as };
+        const element = { title, description, run_as };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {
                 this.titleChanged.emit(this.data.title);

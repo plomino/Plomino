@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 
 @Injectable()
 export class LabelsRegistryService {
-  private labelsRegistry: Map<string, Object> = new Map<string, Object>();
+  private labelsRegistry: Map<string, Record<string, any>> = new Map<string, Record<string, any>>();
   private updated: EventEmitter<any> = new EventEmitter();
 
   constructor() { }

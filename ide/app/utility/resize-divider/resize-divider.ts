@@ -20,12 +20,12 @@ declare let tinymce: any;
     `
 })
 export class ResizeDividerComponent {
-    @Input() columnResize: boolean = false;
+    @Input() columnResize = false;
     @Input() listen: string[] = 
         [DIRECTION_RIGHT, DIRECTION_LEFT, DIRECTION_UP, DIRECTION_DOWN];
     @Output() move: EventEmitter<any> = new EventEmitter();
     
-    private currentPos: { x: number, y: number } = null;
+    private currentPos: { x: number; y: number } = null;
     constructor() { }
 
     private getSVG() {
@@ -58,7 +58,7 @@ export class ResizeDividerComponent {
         }
 
         const directions: string[] = [];
-        const difference: {x: number, y: number} = { x: 0, y: 0 };
+        const difference: {x: number; y: number} = { x: 0, y: 0 };
 
         const needed = (direction: string) => {
             return this.listen.indexOf(direction) !== -1;
@@ -102,7 +102,7 @@ export class ResizeDividerComponent {
         this.currentPos = null;
     }
 
-    private getMousePos (e: MouseEvent): { x: number, y: number } {
+    private getMousePos (e: MouseEvent): { x: number; y: number } {
         return typeof e.clientX !== "number" ? null : { x: e.clientX, y: e.clientY };
     }
 }

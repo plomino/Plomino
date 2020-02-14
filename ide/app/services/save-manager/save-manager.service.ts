@@ -14,7 +14,7 @@ import { Injectable } from '@angular/core';
 import { PlominoHTTPAPIService, ElementService,
   WidgetService, PlominoActiveEditorService } from '../';
 import { LabelsRegistryService } from '../../editors/tiny-mce/services';
-import { Headers, Response, RequestOptions } from '@angular/http';
+import { Response } from '@angular/http';
 
 @Injectable()
 export class PlominoSaveManagerService {
@@ -22,10 +22,10 @@ export class PlominoSaveManagerService {
   private savedStates: Map<string, string> = new Map<string, string>();
   private saveStack: Array<Observable<any>> = [];
   private saveNotifier: Subject<string> = new Subject<string>();
-  private currentFormIsUnsaved: boolean = false;
+  private currentFormIsUnsaved = false;
   private createCustomViewDialog: HTMLDialogElement;
   private $createCustomViewDialog: JQuery;
-  private addCustomView : Subject<any> = new Subject<any>();
+  private addCustomView: Subject<any> = new Subject<any>();
   private addCustomView$: Observable<any> = this.addCustomView.asObservable();
 
   constructor(
@@ -93,9 +93,9 @@ export class PlominoSaveManagerService {
 
   createNewForm(
     callback: (url: string, label: string) => void = null,
-    callbackBeforeOpeningTab: boolean = false
+    callbackBeforeOpeningTab = false
   ) {
-    let formElement: InsertFieldEvent = {
+    const formElement: InsertFieldEvent = {
         '@type': 'PlominoForm',
         'title': 'New Form'
     };
@@ -133,9 +133,9 @@ export class PlominoSaveManagerService {
 
   createNewView(
     callback: (url: string, label: string) => void = null,
-    callbackBeforeOpeningTab: boolean = false
+    callbackBeforeOpeningTab = false
   ) {
-    let viewElement: InsertFieldEvent = {
+    const viewElement: InsertFieldEvent = {
       '@type': 'PlominoView',
       'title': 'New View'
     };
@@ -171,14 +171,14 @@ export class PlominoSaveManagerService {
 
   createNewCustomView(
     callback: (url: string, label: string) => void = null,
-    callbackBeforeOpeningTab: boolean = false
+    callbackBeforeOpeningTab = false
   ) {
     this.setupCreateCustomViewDialog();
-    var error  = this.createCustomViewDialog.querySelector('span.mdl-dialog__error');
-    var formSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__form');
-    var fieldSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__field');
-    var viewIdInput = this.createCustomViewDialog.querySelector('#new-view-dialog__id');
-    var viewTitleInput = this.createCustomViewDialog.querySelector('#new-view-dialog__title');
+    const error  = this.createCustomViewDialog.querySelector('span.mdl-dialog__error');
+    const formSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__form');
+    const fieldSelect = this.createCustomViewDialog.querySelector('#new-view-dialog__field');
+    const viewIdInput = this.createCustomViewDialog.querySelector('#new-view-dialog__id');
+    const viewTitleInput = this.createCustomViewDialog.querySelector('#new-view-dialog__title');
     formSelect.innerHTML =  this.formsList.getForms()
         .map((form: any) => `<option value="${ form.url.split('/').pop() }">${form.label}</option>`)
         .join('');
@@ -187,7 +187,7 @@ export class PlominoSaveManagerService {
     // bind event to select input
     $(formSelect).change( (evt) => {
       $(fieldSelect).val([]);
-      var formId = $(formSelect).val();
+      const formId = $(formSelect).val();
        this.formsList.getForms().forEach((form) => {
         if (form.url.split('/').pop() == formId ) {
           // select all field of that form
@@ -210,7 +210,7 @@ export class PlominoSaveManagerService {
       show: true, backdrop: false
     });
     this.addCustomView$.subscribe(()=> {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('_authenticator',  this.getCSRFToken());
       Array.from(this.createCustomViewDialog
         .querySelectorAll('[data-key]'))
@@ -220,7 +220,7 @@ export class PlominoSaveManagerService {
       this.http
         .postWithOptions(`${this.dbService.getDBLink()}/${$(formSelect).val()}/manage_generateView`, formData, {})
         .subscribe((response: Response) => {
-            let resp = response.json();
+            const resp = response.json();
             console.log(resp);
             if (!resp.success) {
               $(error).attr('display', 'block');
@@ -263,7 +263,7 @@ export class PlominoSaveManagerService {
   }
 
   setupCreateCustomViewDialog() {
-    var self = this;
+    const self = this;
     self.createCustomViewDialog = <HTMLDialogElement>
       document.querySelector('#new-view-dialog');
     self.$createCustomViewDialog = $(self.createCustomViewDialog);
@@ -292,7 +292,7 @@ export class PlominoSaveManagerService {
             self.$createCustomViewDialog.modal('hide');
          });
     });
-    var error  = self.createCustomViewDialog.querySelector('span.mdl-dialog__error');
+    const error  = self.createCustomViewDialog.querySelector('span.mdl-dialog__error');
     $(error).attr('display', 'none');
   }
 

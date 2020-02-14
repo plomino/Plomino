@@ -1,5 +1,4 @@
 import { PlominoTabsManagerService } from './tabs-manager/index';
-import { TabsService } from './tabs.service';
 import { LogService } from './log.service';
 import { Injectable } from '@angular/core';
 
@@ -37,7 +36,7 @@ export class URLManagerService {
       this.tabsManagerService.setOpenedTabActive = false;
       let i = 0;
 
-      for (let urlItem of urlItems) {
+      for (const urlItem of urlItems) {
         if (++i === urlItems.length) {
           this.tabsManagerService.setOpenedTabActive = true;
         }

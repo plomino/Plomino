@@ -180,7 +180,7 @@ export class TemplatesService {
       'You do not have sufficient privileges to view this page'
     ) !== -1) {
       return [];
-    };
+    }
     
     return response.json();
   }

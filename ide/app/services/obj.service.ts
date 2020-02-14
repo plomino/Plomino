@@ -86,7 +86,7 @@ export class ObjService {
    */
   updateFieldSettings(
     formUrl: string, formData: FakeFormData
-  ): Observable<{html: string, url: string}> {
+  ): Observable<{html: string; url: string}> {
     const addNew = formUrl.indexOf('++add++PlominoColumn') !== -1;
     const workingId = formData.get('form.widgets.IShortName.id');
     const context = this;
@@ -108,7 +108,7 @@ export class ObjService {
 
         const $allTheSame = $(this.activeEditorService.getActive().getBody())
           .find(`.plominoLabelClass[data-plominoid="${ workingId }"]`)
-          .filter((i, element) => !Boolean($(element).attr('data-advanced')));
+          .filter((i, element) => !$(element).attr('data-advanced'));
 
         $allTheSame.html(newTitle);
       }
@@ -154,12 +154,12 @@ export class ObjService {
             You do not have sufficient privileges to view this page
           </p>
         </div><!--/outer-wrapper -->`;
-      };
+      }
 
       return response.text();
     }
 
-    extractTextAndUrl(response: Response): {html: string, url: string} {
+    extractTextAndUrl(response: Response): {html: string; url: string} {
       const result = {
         html: response.text(),
         url: response.url.indexOf('@') !== -1 

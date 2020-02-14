@@ -8,8 +8,6 @@ import {
     EventEmitter, 
     ViewChildren,
     OnInit,
-    OnChanges, 
-    ContentChild, 
     ChangeDetectorRef
 } from '@angular/core';
 
@@ -43,8 +41,8 @@ export class TreeComponent implements OnInit {
     
     @Input() selected: any;
     searchResults: any;
-    filtered: boolean = false;
-    workflowMode: boolean = false;
+    filtered = false;
+    workflowMode = false;
     previousSelected: any;
 
     private click2DragDelay: Subscription;
@@ -191,7 +189,7 @@ export class TreeComponent implements OnInit {
 
     scroll() {
         if (this.element != undefined)
-            for (let elt of this.element._results)
+            for (const elt of this.element._results)
                 if (elt.nativeElement.className === 'selected')
                     elt.nativeElement.scrollIntoView();
     }
@@ -244,9 +242,9 @@ export class TreeComponent implements OnInit {
     }
 
     openFieldSettings(fieldData: PlominoFieldTreeObject): void {
-      let id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
+      const id = fieldData.name.slice(fieldData.name.lastIndexOf('/') + 1);
       if ((this.selected && this.selected.url) !== fieldData.parent) {
-        let tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
+        const tabLabel = fieldData.parent.slice(fieldData.parent.lastIndexOf('/') + 1);
         
         this.tabsManagerService.openTab({
           id: fieldData.parent.split('/').pop(),

@@ -1,17 +1,16 @@
 import { PlominoDBService } from './db.service';
 import { FormsService } from './forms.service';
-import { Subject, Observable, BehaviorSubject } from 'rxjs/Rx';
+import { Subject, BehaviorSubject } from 'rxjs/Rx';
 import { PlominoActiveEditorService } from './active-editor.service';
 import { URLManagerService } from './url-manager.service';
 import { LogService } from './log.service';
 import { Injectable, NgZone, ChangeDetectorRef } from '@angular/core';
 import { TreeService } from './tree.service';
-import { PlominoFormFieldsSelectionService } from './form-fields-selection';
 
 @Injectable()
 export class TabsService {
 
-  public closing: boolean = false;
+  public closing = false;
   public refreshCodeTab: Subject<string> = new Subject<string>();
   public onRefreshCodeTab$ = this.refreshCodeTab.asObservable();
 

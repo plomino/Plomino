@@ -20,7 +20,7 @@ import { PlominoFormFieldsSelectionService } from "../../services";
 export class PlominoViewEditorComponent implements OnInit {
   @Input() item: PlominoTab;
   viewSourceTable: SafeHtml;
-  loading: boolean = true;
+  loading = true;
   subsetIds: string[] = [];
   columns: HTMLElement[] = [];
   actions: HTMLElement[] = [];
@@ -65,8 +65,8 @@ export class PlominoViewEditorComponent implements OnInit {
 
     this.fieldsService.onColumnCreated()
       .subscribe((response: {
-          oldId: string, newId: string,
-          newTitle: string, fieldURL: string
+          oldId: string; newId: string;
+          newTitle: string; fieldURL: string;
       }) => {
         const viewColumnElement = $(`[data-url="${ this.item.url }"] [data-column="${ response.oldId }"]`).get(0);
         const newId = response.newId;
@@ -191,7 +191,7 @@ export class PlominoViewEditorComponent implements OnInit {
           .addClass('view-editor__actions')
           .removeClass('formControls');
 
-        let columns:Array<HTMLElement> = [];
+        const columns: Array<HTMLElement> = [];
         let index = 1;
         $html.find('th[data-column]').each((i, columnElement: HTMLElement) => {
           columnElement.classList.add('view-editor__column-header');
@@ -329,7 +329,7 @@ export class PlominoViewEditorComponent implements OnInit {
 
   deleteSelectedColumn() {
     const $x = $(`[data-url="${ this.item.url }"] .view-editor__column-header--selected`);
-    var index = $x.index();
+    const index = $x.index();
     $(`[data-url="${ this.item.url }"] table tr`)
       .find('th:eq(' + index + '),td:eq(' + index + ')' ).remove();
     this.afterLoad();
@@ -366,7 +366,7 @@ export class PlominoViewEditorComponent implements OnInit {
       });
   }
 
-  onDragEnter(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+  onDragEnter(dropData: {dragData: { type: string }; mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
       $('.view-editor__column-header--virtual').remove();
       this.formFieldsSelection.selectField(null);
@@ -395,7 +395,7 @@ export class PlominoViewEditorComponent implements OnInit {
     }
   }
 
-  onDragLeave(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+  onDragLeave(dropData: {dragData: { type: string }; mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
       const $th = $(`[data-url="${ this.item.url }"] table thead tr th.view-editor__column-header--drop-preview`);
       $th.remove();
@@ -408,7 +408,7 @@ export class PlominoViewEditorComponent implements OnInit {
     }
   }
 
-  onDropSuccess(dropData: {dragData: { type: string }, mouseEvent: DragEvent}) {
+  onDropSuccess(dropData: {dragData: { type: string }; mouseEvent: DragEvent}) {
     if (dropData.dragData.type && dropData.dragData.type === 'column') {
       const $_ = 
         $(`[data-url="${ this.item.url }"] [data-column="++add++PlominoColumn"]`);
