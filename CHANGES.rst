@@ -4,8 +4,8 @@ Changelog
 PretaForm Releases
 ==================
 
-0.9.34.dev0 (unreleased)
-------------------------
+0.9.34 (2020-02-14)
+-------------------
 
 - Fix dragging and dropping of existing elements within the TinyMCE editor [jeffersonbledsoe]
 - Fix dragging vertical resizer not keeping up with mouse movemetns [jeffersonbledsoe]
