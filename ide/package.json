@@ -43,7 +43,7 @@
     "reflect-metadata": "0.1.12",
     "rxjs": "^5.0.0-beta.6",
     "select2": "^3.5.1",
-    "tinymce": "git+https://github.com/artursmirnov/tinymce_builded.git#4.3.12",
+    "tinymce": "git+https://github.com/artursmirnov/tinymce_builded.git#4.4.3",
     "underscore": "1.8.3",
     "zone.js": "0.6.12"
   },

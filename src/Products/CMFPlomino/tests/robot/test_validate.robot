@@ -39,6 +39,7 @@ Test Teardown  Test Tear Down
 Scenario: I can add a validation rule to a field
   Given I have a form open
    When I add a "Text" field
+    and I can see the item with the id "text" in the preview
     and I select the field "text"
     # "Field contains text" macro is no longer in the options, changed to "Match text" instead
     and I add a macro "Match text" to "Field Settings"

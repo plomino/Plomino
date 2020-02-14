@@ -100,6 +100,55 @@ Scenario: I can add a field to a form by dnd
     and I select the field "text"
     and I see "text" in "Id" in "Field Settings"
 
+Scenario: I can move a field in a form by drag and drop
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form
+    and I add a "Text" item
+    and I can see the item with the id "text" in the preview
+    # The above 2 lines should be combined into one, but some field templates like "checkboxes" don't have the same default id as their template title
+  When I move the item "field_1" below the item "text"
+    and I save the form as "text_was_dragged_below_field_1"
+  Then I can see that the item "field_1" is below the item "text" in the editor
+  When I preview "text_was_dragged_below_field_1"
+  Then I can see that the item "field_1" is below the item "text" in the current form preview
+
+
+Scenario: I can move a subform in a form by drag and drop
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I add a form by click
+    and I add a "Date" item
+    and I can see the item with the id "date" in the preview
+    and I open the first form
+    and I add a "Text" item
+    and I can see the item with the id "text" in the preview
+    and I create a subform on the current form
+  When I move the item "new-form" above the item "text"
+    and I save the form as "subform_was_dragged_above_text"
+  Then I can see that the item "text" is below the item "new-form" in the editor
+  When I preview "subform_was_dragged_above_text"
+  Then I can see that the item "text" is below the item "date" in the current form preview   # Date exists in the subform
+
+Scenario: I can move the drag and drop handles in a form by drag and drop
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I open the first form
+    and I add a "Hide When" item
+    and I can see the start of the "defaulthidewhen" hidewhen
+    and I can see the end of the "defaulthidewhen" hidewhen
+    and I add a macro "Hide" to "Hidewhen Settings"
+    and I save the macro
+    and I save the hidewhen settings
+    and I add a "Text" item
+    and I can see the item with the id "text" in the preview
+  When I move the end of the "defaulthidewhen" hidewhen below the item "text"
+    and I save the form as "hidewhen_was_dragged_below_field_1"
+  Then I can see that the end handle of the "defaulthidewhen" is below the item "text" in the editor
+  When I open the "Form Settings" tab
+    and I preview "hidewhen_was_dragged_below_field_1"
+  Then I can see that the field "text" is hidden
+
 Scenario: I can change the label and title at the same time
   Given I have a form open
    When I add a "Text" field
@@ -186,7 +235,8 @@ Scenario: I can change to computed and back and select the date
 Scenario: I can change to computed and back and select the date (2 tabs)
   Given I have an empty form open
     and I have an additional form open
-   When I add a "Date" field
+   When I add a "Date" item
+    and I can see the item with the id "date" in the preview
     and I select the field "date"
     and I change the fieldsettings tab to "Advanced"
     and I change the fieldmode to "COMPUTED"

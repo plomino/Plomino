@@ -1,6 +1,6 @@
 *** Settings *****************************************************************
 
-#Resource  plone/app/robotframework/selenium.robot
+Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/saucelabs.robot
 Resource  plone/app/robotframework/keywords.robot
 Resource  description_views.robot
@@ -27,6 +27,31 @@ Plone Test Teardown
     Run Keyword If Test Failed  ${SELENIUM_RUN_ON_FAILURE}
     Report test status
     Close all browsers
+
+# --- Keyword validations -----------------------------------------------------
+Check "${position}" is a valid hidewhen position
+  Run keyword if  '${position}'.lower() not in ['start', 'end']
+  ...  Fail  '${position}' is not a valid hidewhen position. Position must be 'start' or 'end'
+
+Check "${position}" is a valid position
+  Run keyword if  '${position}'.lower() not in ['above', 'below']
+  ...  Fail  '${position}' is not a valid position to drag to. Position must be 'above' or 'below'
+
+# --- Onscreen element positions -----------------------------------------------------
+Check element position with another element
+  [Arguments]    ${element_1_xpath}    ${element_2_xpath}    ${position}
+
+  Check "${position}" is a valid position
+
+  ${element_1_position}=  Get Vertical Position  xpath=${element_1_xpath}
+  ${element_2_position}=  Get Vertical Position  xpath=${element_2_xpath}
+
+  Run keyword if  "${position}" == "above"
+  ...  Should be true  ${element_1_position} < ${element_2_position}  "The element ${element_1_xpath} was not ${position} the element ${element_2_xpath}"
+  ...  ELSE IF  "${position}" == "below"
+  ...  Should be true  ${element_1_position} > ${element_2_position}  "The element ${element_1_xpath} was not ${position} the element ${element_2_xpath}"
+  ...  ELSE
+  ...  Fail
 
 
 # --- Given ------------------------------------------------------------------
@@ -450,6 +475,7 @@ I add a "${field}" field
   Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
   Wait Until Element Is Visible     jquery=.mce-tinymce     60s
 
+## *DEPRECATED!* Use keyword `I add a ${item_title} item` instead.
 I add a "${field}" field by dnd
   sleep  0.3s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
@@ -480,11 +506,13 @@ I open the first form
   Click Element  xpath=//li//li[1]/span[contains(@class,"tree-node--name")]
   wait until form is loaded
 
-I change the fieldsettings tab to "${tab}" 
+I change the fieldsettings tab to "${tab}"
+
   wait until page contains element  jquery=a.mdl-tabs__tab:visible:contains("${tab}")
   Click Element  jquery=a.mdl-tabs__tab:visible:contains("${tab}")
 
-I change the fieldmode to "${mode}" 
+I change the fieldmode to "${mode}"
+
   wait until page contains element  jquery=#form-widgets-field_mode
   Select From List By Value  jquery=#form-widgets-field_mode  ${mode}
 
@@ -832,3 +860,148 @@ I select the "Redirect On Load" radio button
 
 I will see a confirmation message
   Wait Until Page Contains Element    jquery=.plomino-hidewhen p:contains('Please ensure you add a condition to determine when to redirect')
+
+
+
+# --- Using the IDE -------------------------------------------
+I can see the "${tab_text}" tab is active
+  Page Should Contain Element  xpath=//plomino-palette//*[@class="mdl-tabs__tab-bar"]//*[contains(text(), "${tab_text}") and contains(@class, "is-active")]
+
+
+I open the "${tab_text}" tab
+  ${is_open}  ${_}=  Run Keyword And Ignore Error  I can see the "${tab_text}" tab is active
+  Run keyword if  "${is_open}" is "FAIL"
+  ...  Click element  xpath=//plomino-palette//*[@class="mdl-tabs__tab-bar"]//*[contains(text(), "${tab_text}")]
+
+  Wait Until Element Is Visible  xpath=//plomino-palette//*[@class="mdl-tabs__tab-bar"]//*[contains(text(), "${tab_text}")]/*
+
+
+I add a "${item_title}" item
+  I open the "Add" tab
+  Wait Until Element Is Visible     xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
+  Click Element  xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
+  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
+
+
+I press save on the current settings page
+  Wait until element is visible  xpath=//plomino-palette//*[contains(@class, "mdl-tabs__panel") and contains(@class, "is-active")]//a[*//text()="save"]
+  Click Element  xpath=//plomino-palette//*[contains(@class, "mdl-tabs__panel") and contains(@class, "is-active")]//a[*//text()="save"]
+
+I can see the item with the id "${field_id}" in the preview
+  Select frame  jquery=.mce-edit-area iframe:visible
+  Wait until element is visible  xpath=//*[@data-plominoid="${field_id}"]
+  Unselect Frame
+
+
+I can see the ${position} of the "${hidewhen_id}" hidewhen
+  Check "${position}" is a valid hidewhen position
+  Select frame  jquery=.mce-edit-area iframe:visible
+  Wait until element is visible  xpath=//*[contains(@class, "plominoHidewhenClass") and @data-plominoid="${hidewhen_id}" and @data-plomino-position="${position}"]
+  Unselect Frame
+
+
+I can see that the item "${field_to_check_is_below}" is below the item "${field_to_check_is_above}" in the editor
+  Select frame  jquery=.mce-edit-area iframe:visible 
+  Check element position with another element
+  ...  //body[@id="tinymce"]//*[@data-plominoid="${field_to_check_is_below}"]
+  ...  //body[@id="tinymce"]//*[@data-plominoid="${field_to_check_is_above}"]
+  ...  position=below
+  Unselect frame
+
+
+I can see that the ${hidewhen_position} handle of the "${hidewhen_id}" is ${position} the item "${field_to_check_position_against}" in the editor
+  Select frame  jquery=.mce-edit-area iframe:visible
+  Check element position with another element
+  ...  //*[contains(@class, "plominoHidewhenClass") and @data-plominoid="${hidewhen_id}" and @data-plomino-position="${hidewhen_position}"]
+  ...  //*[@id="tinymce"]//*[@data-plominoid="${field_to_check_position_against}"]
+  ...  position=${position}
+  Unselect frame
+
+
+I select the newly added subform in the editor
+  Select frame  jquery=.mce-edit-area iframe:visible 
+  Wait until element is visible  xpath=//body[@id="tinymce"]//*[contains(@class, "plominoSubformClass") and not(@data-plominoid)]
+  Sleep  2 sec  # Bit hacky, but the subform needs to render before it is selectable for some reason
+  Click element  xpath=//body[@id="tinymce"]//*[contains(@class, "plominoSubformClass") and not(@data-plominoid)]
+  Unselect frame
+
+
+I set the form with the title "${form_title}" as the currently selected subform's form
+  Click element  css=#s2id_form-widgets-subform-id a
+  Wait until element is visible  xpath=//li[contains(@class, "select2-result-selectable") and *//text() = "${form_title}"]
+  Click element  xpath=//li[contains(@class, "select2-result-selectable ") and *//text() = "${form_title}"]
+
+
+I create a subform on the current form
+  I add a "Subform" item
+  I select the newly added subform in the editor
+  I set the form with the title "New Form" as the currently selected subform's form
+  I open the "Form Settings" tab
+  I press save on the current settings page
+  Reload page
+  Wait Until page does not contain element  id=application-loader
+  Wait until element is visible  css=.mce-edit-area
+
+
+I move the item "${item_to_move}" ${drag_position} the item "${item_to_move_about}"
+  Check "${drag_position}" is a valid position
+
+  Sleep  2 sec    # Another timing hack. Elements will sometimes remount
+
+  Select frame  jquery=.mce-edit-area iframe:visible
+  ${item_to_move_position}=        Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move}"]
+  ${item_to_move_about_position}=  Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move_about}"]
+  # The below code should work, however it's complaining that "Get Element Size" isn't a keyword (Test written in Robot Framework 3.0)
+  # ${UNUSED}  ${field_to_move_under_height}=  Get Element Size  xpath=//body[@id="tinymce"]//*[contains(@class="plominoFieldClass") and @data-plominoid="${field_to_move_under_id}"]
+  ${item_height}=  Evaluate  250
+
+  ${above_offset_value}=  Evaluate  (${item_to_move_position} - ${item_to_move_about_position}) - ${item_height}
+  ${below_offset_value}=  Evaluate  (${item_to_move_about_position} - ${item_to_move_position}) + ${item_height}
+  ${drag_offset}=  Set variable if  "${drag_position}" == "above"  ${above_offset_value}
+  ${drag_offset}=  Set variable if  "${drag_position}" == "below"  ${below_offset_value}  ${drag_offset}
+
+  Drag And Drop By Offset  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move}"]  0  ${drag_offset}
+  Unselect frame
+
+
+I move the ${hidewhen_position} of the "${hidewhen_id}" hidewhen ${drag_position} the item "${item_id}"
+  Check "${hidewhen_position}" is a valid hidewhen position
+  Check "${drag_position}" is a valid position
+
+  Sleep  2 sec    # Another timing hack. Elements will sometimes remount
+
+  Select frame  jquery=.mce-edit-area iframe:visible
+  ${hidewhen_handle_position}=        Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${hidewhen_id}"]
+  ${item_position}=            Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_id}"]
+  # The below code should work, however it's complaining that "Get Element Size" isn't a keyword (Test written in Robot Framework 3.0)
+  # ${UNUSED}  ${item_height}=  Get Element Size  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_position}"]
+  ${item_height}=  Evaluate  300
+
+  ${above_offset_value}=  Evaluate  (${hidewhen_handle_position} - ${item_position}) - ${item_height}
+  ${below_offset_value}=  Evaluate  (${item_position} - ${hidewhen_handle_position}) + ${item_height}
+
+  ${drag_offset}=  Set variable if  "${drag_position}" == "above"  ${above_offset_value}
+  ${drag_offset}=  Set variable if  "${drag_position}" == "below"  ${below_offset_value}
+
+  Drag And Drop By Offset  xpath=//body[@id="tinymce"]//*[@data-plominoid="${hidewhen_id}" and @data-plomino-position="${hidewhen_position}"]  0  ${drag_offset}
+  Unselect frame
+
+
+
+# --- Viewing the preview of a form --------------------------------------------------------------------
+I can see that the item "${field_to_check_is_below}" is below the item "${field_to_check_is_above}" in the current form preview
+  Check element position with another element
+  ...  //*[@id="main-container"]//form//input[@id="${field_to_check_is_below}"]
+  ...  //*[@id="main-container"]//form//input[@id="${field_to_check_is_above}"]
+  ...  position=below
+
+I can see that the ${hidewhen_position} handle of the "${hidewhen_id}" is ${position} the item "${field_to_check_position_against}" in the current form preview
+  Check element position with another element
+  ...  //*[contains(@class, "plominoHidewhenClass") and @data-plominoid="${hidewhen_id}" and @data-plomino-position="${hidewhen_position}"]
+  ...  //*[@id="main-container"]//form//input[@id="${field_to_check_position_against}"]
+  ...  position=below
+
+I can see that the field "${field_id}" is hidden
+  Element Should Not Be Visible  xpath=//*[@id="main-container"]//form//input[@id="${field_id}"]
+
+

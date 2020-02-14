@@ -107,11 +107,6 @@ I save the current layout
   Sleep   10s
 
 # --- Given ------------------------------------------------------------------
-I have "$formid" open
-  Given a logged-in test user
-  and I open the ide for "mydb"
-  Click Element   jquery=.treeview-wrapper .tree-node .tree-node--collapsible ul li span:contains('$formid')
-
 I added some contents to the form "${formid}"
   I can add contents to "${formid}"
 
@@ -130,6 +125,7 @@ I have a form and some fields saved
     and description_views.I save the form as "form-is-saved"
 
 I save the form as "${form_name}"
+  Sleep  1 sec
   Click Element       jquery=.mdl-tabs .mdl-tabs__tab-bar a:contains('Form Settings')
   Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .form-settings-wrapper .formsettings--control-buttons
   Input Text     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last     ${form_name}
