@@ -5,7 +5,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
+  //  "plugin:prettier/recommended",
   ],
   parserOptions: {
     ecmaVersion: 6,
@@ -21,6 +21,6 @@ module.exports = {
         ignoreRestSiblings: false,
       },
     ],
-    "prettier/prettier": "warn",
+  //  "prettier/prettier": "warn",
   },
 };
