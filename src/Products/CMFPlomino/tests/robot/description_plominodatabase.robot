@@ -496,7 +496,7 @@ I add a form by dnd
   wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("new-form")
   wait until page contains element  jquery=div.mce-edit-area
 
- I open a form "${formid}"
+I open a form "${formid}"
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
   wait until page contains element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
   Click Element  jquery=plomino-tree > div > ul > li > ul > li > span:contains("${formid}"):first
