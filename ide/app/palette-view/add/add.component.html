@@ -1,56 +1,60 @@
 <div class="add-wrapper" style="position: relative">
     <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
-     <div class="templates" *ngIf="!isWorkflowMode()">
-
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-            *ngFor="let template of templates, let i = index"
+    <div class="templates" *ngIf="!isWorkflowMode()">
+        <button
+            class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+            *ngFor="let template of templates; let i = index"
             [hidden]="template.hidewhen(activeTab)"
             (mousedown)="simulateDrag($event, 'template', template)"
             [title]="template.title"
             [attr.data-template-id]="template.id"
-            (mouseup)="runAddTemplate($event, null, template.id)">
-            <span class="small-left-margin">{{template.title}}</span>
+            (mouseup)="runAddTemplate($event, null, template.id)"
+        >
+            <span class="small-left-margin">{{ template.title }}</span>
         </button>
     </div>
 
     <group *ngIf="isWorkflowMode()">
         <div class="item">
-            <div type="button" 
+            <div
+                type="button"
                 *ngFor="let comp of workflowComponents"
                 class="mdl-button mdl-button--raised
                     mdl-button--accent mdl-button--colored mdl-color--purple-900"
-                id="{{comp.type}}"
+                id="{{ comp.type }}"
                 dnd-draggable=""
                 [dragData]="comp"
                 [dragEnabled]="true"
                 (click)="runWfAdd(comp.type)"
                 (onDragStart)="wfStartDrag($event, comp.type)"
                 (onDragEnd)="wfStopDrag()"
-                [title]="comp.title">
-                <span class="small-left-margin">{{comp.title}}</span>
+                [title]="comp.title"
+            >
+                <span class="small-left-margin">{{ comp.title }}</span>
             </div>
         </div>
     </group>
-    
-    <group *ngFor="let group of getAddableComponents()"
-        [hidden]="group.hidden(activeTab)">
+
+    <group *ngFor="let group of getAddableComponents()" [hidden]="group.hidden(activeTab)">
         <div class="item">
-            <div type="button" 
+            <div
+                type="button"
                 *ngFor="let comp of group.components"
                 class="mdl-button mdl-button--raised mdl-button--accent
                     mdl-button--colored mdl-color--purple-900"
-                [class.mdl-color--cyan-900]="group.title === 'Form'" 
-                [class.mdl-color--purple-900]="group.title === 'DB'" 
-                title="Add {{comp.title}}"
-                id="{{comp.type}}"
+                [class.mdl-color--cyan-900]="group.title === 'Form'"
+                [class.mdl-color--purple-900]="group.title === 'DB'"
+                title="Add {{ comp.title }}"
+                id="{{ comp.type }}"
                 dnd-draggable=""
                 [dragEnabled]="true"
                 [dragData]="comp.dragData"
                 (onDragStart)="startDrag($event, comp.type)"
                 (onDragEnd)="endDrag()"
                 [title]="comp.title"
-                (click)="runAdd(comp.type)">
-                <span class="small-left-margin">{{comp.title}}</span>
+                (click)="runAdd(comp.type)"
+            >
+                <span class="small-left-margin">{{ comp.title }}</span>
             </div>
         </div>
     </group>

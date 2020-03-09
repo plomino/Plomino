@@ -1,4 +1,5 @@
-.treeview-wrapper { }
+.treeview-wrapper {
+}
 
 .tree-node {
     padding: 0;
@@ -19,7 +20,7 @@ ul {
     height: 850px;
     width: 280px;
 }
-.tree-node--collapsible > .tree-node--name:before{
+.tree-node--collapsible > .tree-node--name:before {
     display: inline-block;
     content: "▼";
     transition: transform 0.2s;
@@ -35,7 +36,7 @@ ul {
     cursor: pointer;
 }
 .click-cursor:focus {
-  outline: none;
+    outline: none;
 }
 .tree-node__child-type-image {
     display: inline-block;
@@ -46,6 +47,6 @@ ul {
     cursor: pointer;
 }
 .selected {
-    color: #337AB7;
+    color: #337ab7;
     font-weight: bold;
 }

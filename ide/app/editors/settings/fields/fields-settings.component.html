@@ -1,304 +1,404 @@
-<form #theForm (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,fieldMode.value,indexType.value,readTemplate.value,editTemplate.value,mandatory.checked,toBeIndexed.checked)' #form="ngForm">
-  <div class="form-group">
-    <label for="title">Titre</label>
-    <input #title formControlName="form.controls.title" [ngModel]='data?.title' type="text" class="form-control" id="title" required="true">
-  </div>
-  <div class="form-group">
-    <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
-  </div>
-  <div class="form-group">
-    <label for="desc">Description</label>
-    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
-  </div>
-  <div class="form-group">
-    <label>Field mode</label>
-    <p class="help-block">Field mode</p>
-    <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
-      <option value="EDITABLE">Editable</option>
-      <option value="COMPUTED">Computed</option>
-      <option value="CREATION">Computed on creation</option>
-      <option value="DISPLAY">Computed for display</option>
-      <option value="COMPUTEDONSAVE">Computed on save</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Field type</label>
-    <p class="help-block">Field type</p>
-    <select #fieldType name="fieldType" class="form-control" [(ngModel)]="fieldTypeValue">
-      <option value="GOOGLECHART">Google chart</option>
-      <option value="TEXT">Text</option>
-      <option value="NUMBER">Number</option>
-      <option value="DATETIME">Date/Time</option>
-      <option value="DATAGRID">Datagrid</option>
-      <option value="DOCLINK">Doclink</option>
-      <option value="GOOGLEVISUALIZATION">Google visualization</option>
-      <option value="SELECTION">Selection list</option>
-      <option value="NAME">Name</option>
-      <option value="RICHTEXT">Rich text</option>
-      <option value="BOOLEAN">Boolean</option>
-      <option value="ATTACHMENT">File attachment</option>
-    </select>
-  </div>
-  <fieldset class="specificOptions">
-    <legend>{{fieldType.selectedOptions[0]?.text}} options</legend>
-    <!-- **** Google Chart **** -->
-    <div *ngIf="fieldTypeValue === 'GOOGLECHART'">
-      <div class="form-group">
-        <label>Rows</label>
-        <p class="help-block">Size of the editable text area</p>
-        <input type="number" class="form-control" name="rows" [(ngModel)]="conditional.googlechart.editrows">
-      </div>
+<form
+    #theForm
+    (ngSubmit)="
+        onSubmit(
+            data['@id'],
+            title.value,
+            desc.value,
+            fieldMode.value,
+            indexType.value,
+            readTemplate.value,
+            editTemplate.value,
+            mandatory.checked,
+            toBeIndexed.checked
+        )
+    "
+    #form="ngForm"
+>
+    <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+            #title
+            formControlName="form.controls.title"
+            [ngModel]="data?.title"
+            type="text"
+            class="form-control"
+            id="title"
+            required="true"
+        />
     </div>
-    <!-- **** Text **** -->
-    <div *ngIf="fieldTypeValue === 'TEXT'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.text.widget">
-          <option value="TEXT">Text</option>
-          <option value="TEXTAREA">Long text</option>
-          <option value="HIDDEN">Hidden</option>
+    <div class="form-group">
+        <label for="id">ID</label>
+        <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true" />
+    </div>
+    <div class="form-group">
+        <label for="desc">Description</label>
+        <textarea
+            #desc
+            formControlName="form.controls.desc"
+            type="text"
+            class="form-control"
+            id="desc"
+            [value]="data?.description"
+        ></textarea>
+    </div>
+    <div class="form-group">
+        <label>Field mode</label>
+        <p class="help-block">Field mode</p>
+        <select #fieldMode formControlName="form.controls.fieldMode" class="form-control" [value]="data?.field_mode">
+            <option value="EDITABLE">Editable</option>
+            <option value="COMPUTED">Computed</option>
+            <option value="CREATION">Computed on creation</option>
+            <option value="DISPLAY">Computed for display</option>
+            <option value="COMPUTEDONSAVE">Computed on save</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label>Size</label>
-        <p class="help-block">Length or rows (depending on the widget)</p>
-        <input type="number" class="form-control" name="size" [(ngModel)]="conditional.text.size">
-      </div>
-      <div class="checkbox">
+    </div>
+    <div class="form-group">
+        <label>Field type</label>
+        <p class="help-block">Field type</p>
+        <select #fieldType name="fieldType" class="form-control" [(ngModel)]="fieldTypeValue">
+            <option value="GOOGLECHART">Google chart</option>
+            <option value="TEXT">Text</option>
+            <option value="NUMBER">Number</option>
+            <option value="DATETIME">Date/Time</option>
+            <option value="DATAGRID">Datagrid</option>
+            <option value="DOCLINK">Doclink</option>
+            <option value="GOOGLEVISUALIZATION">Google visualization</option>
+            <option value="SELECTION">Selection list</option>
+            <option value="NAME">Name</option>
+            <option value="RICHTEXT">Rich text</option>
+            <option value="BOOLEAN">Boolean</option>
+            <option value="ATTACHMENT">File attachment</option>
+        </select>
+    </div>
+    <fieldset class="specificOptions">
+        <legend>{{ fieldType.selectedOptions[0]?.text }} options</legend>
+        <!-- **** Google Chart **** -->
+        <div *ngIf="fieldTypeValue === 'GOOGLECHART'">
+            <div class="form-group">
+                <label>Rows</label>
+                <p class="help-block">Size of the editable text area</p>
+                <input type="number" class="form-control" name="rows" [(ngModel)]="conditional.googlechart.editrows" />
+            </div>
+        </div>
+        <!-- **** Text **** -->
+        <div *ngIf="fieldTypeValue === 'TEXT'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.text.widget">
+                    <option value="TEXT">Text</option>
+                    <option value="TEXTAREA">Long text</option>
+                    <option value="HIDDEN">Hidden</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Size</label>
+                <p class="help-block">Length or rows (depending on the widget)</p>
+                <input type="number" class="form-control" name="size" [(ngModel)]="conditional.text.size" />
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="carriage" [(ngModel)]="conditional.text.carriage" /> Preserve carriage
+                    returns
+                </label>
+                <p class="help-block">Render carriage returns in HTML</p>
+            </div>
+        </div>
+        <!-- **** Number **** -->
+        <div *ngIf="fieldTypeValue === 'NUMBER'">
+            <div class="form-group">
+                <label>Type</label>
+                <p class="help-block">Number type</p>
+                <select class="form-control" name="number_type" [(ngModel)]="conditional.number.number_type">
+                    <option value="INTEGER">Integer</option>
+                    <option value="FLOAT">Float</option>
+                    <option value="DECIMAL">Decimal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Size</label>
+                <p class="help-block">Length</p>
+                <input type="number" class="form-control" name="size" [(ngModel)]="conditional.number.size" />
+            </div>
+            <div class="form-group">
+                <label>Format</label>
+                <p class="help-block">number formatting (example: %1.2f)</p>
+                <input type="text" class="form-control" name="format" [(ngModel)]="conditional.number.format" />
+            </div>
+        </div>
+        <!-- **** Date / Time **** -->
+        <div *ngIf="fieldTypeValue === 'DATETIME'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.datetime.widget">
+                    <option value="SERVER" selected>Default</option>
+                    <option value="JQUERY">JQuery datetime widget</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Format</label>
+                <p class="help-block">Date/time format (if different than database default format)</p>
+                <input type="text" class="form-control" name="format" [(ngModel)]="conditional.datetime.format" />
+            </div>
+            <div class="form-group">
+                <label>Starting year</label>
+                <p class="help-block">Starting year Oldest year selectable in the calendar widget</p>
+                <input
+                    type="number"
+                    class="form-control"
+                    name="startingyear"
+                    [(ngModel)]="conditional.datetime.startingyear"
+                />
+            </div>
+        </div>
+        <!-- **** Datagrid **** -->
+        <div *ngIf="fieldTypeValue === 'DATAGRID'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.datagrid.widget">
+                    <option value="REGULAR" selected>Always dynamic</option>
+                    <option value="READ_STATIC">Static in read mode</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Associated with</label>
+                <p class="help-block">Form to use to create/edit rows</p>
+                <select class="form-control" name="associated_form" [(ngModel)]="conditional.datagrid.associated_form">
+                    <option [value]="null" selected>No value</option>
+                    <option *ngFor="let form of tree[0]?.children" [value]="form.url.split('/').pop()">{{
+                        form.label
+                    }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fields/columns mapping</label>
+                <p class="help-block">Field ids from the associated form, separated by commas.</p>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="field_mapping"
+                    [(ngModel)]="conditional.datagrid.field_mapping"
+                />
+            </div>
+        </div>
+        <!-- **** Doclink **** -->
+        <div *ngIf="fieldTypeValue === 'DOCLINK'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.doclink.widget">
+                    <option value="SELECT" selected>Selection list</option>
+                    <option value="MULTISELECT">Multi-selection list</option>
+                    <option value="VIEW">Embedded view</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Source view</label>
+                <p class="help-block">View containing the linkable documents</p>
+                <select class="form-control" name="sourceview" [(ngModel)]="conditional.doclink.sourceview">
+                    <option [value]="null" selected>No value</option>
+                    <option *ngFor="let view of tree[1]?.children" [value]="view.url.split('/').pop()">{{
+                        view.label
+                    }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Label column</label>
+                <p class="help-block">View column used as label</p>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="labelcolumn"
+                    [(ngModel)]="conditional.doclink.labelcolumn"
+                />
+            </div>
+            <div class="form-group">
+                <label>Separator</label>
+                <p class="help-block">Only apply if multiple values will be displayed</p>
+                <input type="text" class="form-control" name="separator" [(ngModel)]="conditional.doclink.separator" />
+            </div>
+        </div>
+        <!-- **** Google visualization **** -->
+        <div *ngIf="fieldTypeValue === 'GOOGLEVISUALIZATION'">
+            <div class="form-group">
+                <label>Chart id</label>
+                <p class="help-block">Used to name the javascript variable/functions and the DIV element</p>
+                <input
+                    type="text"
+                    class="form-control"
+                    required
+                    name="chartid"
+                    [(ngModel)]="conditional.googlevisualization.chartid"
+                />
+            </div>
+        </div>
+        <!-- **** Selection **** -->
+        <div *ngIf="fieldTypeValue === 'SELECTION'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.selection.widget">
+                    <option value="SELECT" selected>Selection list</option>
+                    <option value="MULTISELECT">Multi-selection list</option>
+                    <option value="CHECKBOX">Checkboxes</option>
+                    <option value="RADIO">Radio buttons</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Selection list</label>
+                <p class="help-block">List of values to select, one per line, formatted as 'label|value'</p>
+                <textarea
+                    class="form-control"
+                    name="selectionlist"
+                    [(ngModel)]="conditional.selection.selectionlist"
+                ></textarea>
+            </div>
+            <div class="form-group">
+                <label>Separator</label>
+                <p class="help-block">Only apply if multuiple values will be displayed</p>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="separator"
+                    [(ngModel)]="conditional.selection.separator"
+                />
+            </div>
+        </div>
+        <!-- **** Name **** -->
+        <div *ngIf="fieldTypeValue === 'NAME'">
+            <div class="form-group">
+                <label>Type</label>
+                <p class="help-block">Single or multi-valued name field</p>
+                <select class="form-control" name="type" [(ngModel)]="conditional.name.type">
+                    <option value="SINGLE">Single valued</option>
+                    <option value="MULTI">Multi valued</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Selection mode</label>
+                <p class="help-block">How the name is selected</p>
+                <select class="form-control" name="selector" [(ngModel)]="conditional.name.selector">
+                    <option value="LIST">Select in a list</option>
+                    <option value="FIELD">Fill in a field</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Restrict to group</label>
+                <p class="help-block">
+                    The field will only display members of the specified group (empty = no group restriction)
+                </p>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="restricttogroup"
+                    [(ngModel)]="conditional.name.restricttogroup"
+                />
+            </div>
+            <div class="form-group">
+                <label>Seperator</label>
+                <p class="help-block">Only apply if multiple values will be displayed</p>
+                <input type="text" class="form-control" name="separator" [(ngModel)]="conditional.name.separator" />
+            </div>
+        </div>
+        <!-- **** Rich Text **** -->
+        <div *ngIf="fieldTypeValue === 'RICHTEXT'">
+            <div class="form-group">
+                <label>Height</label>
+                <p class="help-block">Height in pixels</p>
+                <input type="number" class="form-control" name="height" [(ngModel)]="conditional.richtext.height" />
+            </div>
+        </div>
+        <!-- **** Boolean **** -->
+        <div *ngIf="fieldTypeValue === 'BOOLEAN'">
+            <div class="form-group">
+                <label>Widget</label>
+                <p class="help-block">Field rendering</p>
+                <select class="form-control" name="widget" [(ngModel)]="conditional.boolean.widget">
+                    <option value="CHECKBOX">Single checkbox</option>
+                </select>
+            </div>
+        </div>
+        <!-- **** Attachment **** -->
+        <div *ngIf="fieldTypeValue === 'ATTACHMENT'">
+            <div class="form-group">
+                <label>Type</label>
+                <p class="help-block">Single or multiple file(s)</p>
+                <select class="form-control" name="type" [(ngModel)]="conditional.attachment.type">
+                    <option value="SINGLE">Single file</option>
+                    <option value="MULTI" selected>Multiple files</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <label for="fieldReadTemplate">Field read template</label>
+        <p class="help-block">Custom rendering template in read mode</p>
+        <input
+            #readTemplate
+            formControlName="form.controls.readTemplate"
+            type="text"
+            class="form-control"
+            id="fieldReadTemplate"
+            [value]="data?.read_template"
+        />
+    </div>
+    <div class="form-group">
+        <label for="fieldEditTemplate">Field edit template</label>
+        <p class="help-block">Custom rendering template in edit mode</p>
+        <input
+            #editTemplate
+            formControlName="form.controls.readTemplate"
+            type="text"
+            class="form-control"
+            id="fieldEditTemplate"
+            [value]="data?.edit_template"
+        />
+    </div>
+    <div class="checkbox">
         <label>
-          <input type="checkbox" name="carriage" [(ngModel)]="conditional.text.carriage"> Preserve carriage returns
+            <input #mandatory formControlName="form.controls.mandatory" type="checkbox" [checked]="data?.mandatory" />
+            Mandatory
         </label>
-        <p class="help-block">Render carriage returns in HTML</p>
-      </div>
+        <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
     </div>
-    <!-- **** Number **** -->
-    <div *ngIf="fieldTypeValue === 'NUMBER'">
-      <div class="form-group">
-        <label>Type</label>
-        <p class="help-block">Number type</p>
-        <select class="form-control" name="number_type" [(ngModel)]="conditional.number.number_type">
-          <option value="INTEGER">Integer</option>
-          <option value="FLOAT">Float</option>
-          <option value="DECIMAL">Decimal</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Size</label>
-        <p class="help-block">Length</p>
-        <input type="number" class="form-control" name="size" [(ngModel)]="conditional.number.size">
-      </div>
-      <div class="form-group">
-        <label>Format</label>
-        <p class="help-block">number formatting (example: %1.2f)</p>
-        <input type="text" class="form-control" name="format" [(ngModel)]="conditional.number.format">
-      </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #toBeIndexed
+                formControlName="form.controls.toBeIndexed"
+                type="checkbox"
+                [checked]="data?.to_be_indexed"
+            />
+            Add to index
+        </label>
+        <p class="help-block">The field will be searchable</p>
     </div>
-    <!-- **** Date / Time **** -->
-    <div *ngIf="fieldTypeValue === 'DATETIME'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.datetime.widget">
-          <option value="SERVER" selected>Default</option>
-          <option value="JQUERY">JQuery datetime widget</option>
+    <div class="form-group">
+        <label>Index type</label>
+        <p class="help-block">The way the field values will be indexed</p>
+        <select
+            #indexType
+            formControlName="form.controls.indexType"
+            class="form-control"
+            [value]="data?.index_type"
+            required
+        >
+            <option value="DEFAULT">Default (FieldIndex)</option>
+            <option value="DATERECURRINGINDEX">DateRecurringIndex</option>
+            <option value="EXTENDEDPATHINDEX">ExtendedPathIndex</option>
+            <option value="FIELDINDEX">FieldIndex (match exact value)</option>
+            <option value="KEYWORDINDEX">KeywordIndex (match list elements)</option>
+            <option value="TOPICINDEX">TopicIndex</option>
+            <option value="DATEINDEX">DateIndex</option>
+            <option value="DATERANGEINDEX">DateRangeIndex</option>
+            <option value="PATHINDEX">PathIndex</option>
+            <option value="BOOLEANINDEX">BooleanIndex</option>
+            <option value="ZCTEXTINDEX">ZCTextIndex (match any contained words)</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label>Format</label>
-        <p class="help-block">Date/time format (if different than database default format)</p>
-        <input type="text" class="form-control" name="format" [(ngModel)]="conditional.datetime.format">
-      </div>
-      <div class="form-group">
-        <label>Starting year</label>
-        <p class="help-block">Starting year Oldest year selectable in the calendar widget</p>
-        <input type="number" class="form-control" name="startingyear" [(ngModel)]="conditional.datetime.startingyear">
-      </div>
     </div>
-    <!-- **** Datagrid **** -->
-    <div *ngIf="fieldTypeValue === 'DATAGRID'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.datagrid.widget">
-          <option value="REGULAR" selected>Always dynamic</option>
-          <option value="READ_STATIC">Static in read mode</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Associated with</label>
-        <p class="help-block">Form to use to create/edit rows</p>
-        <select class="form-control" name="associated_form" [(ngModel)]="conditional.datagrid.associated_form">
-            <option [value]="null" selected>No value</option>
-            <option *ngFor="let form of tree[0]?.children" [value]="form.url.split('/').pop()">{{form.label}}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Fields/columns mapping</label>
-        <p class="help-block">Field ids from the associated form, separated by commas.</p>
-        <input type="text" class="form-control" name="field_mapping" [(ngModel)]="conditional.datagrid.field_mapping">
-      </div>
-    </div>
-    <!-- **** Doclink **** -->
-    <div *ngIf="fieldTypeValue === 'DOCLINK'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.doclink.widget">
-          <option value="SELECT" selected>Selection list</option>
-          <option value="MULTISELECT">Multi-selection list</option>
-          <option value="VIEW">Embedded view</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Source view</label>
-        <p class="help-block">View containing the linkable documents</p>
-        <select class="form-control" name="sourceview" [(ngModel)]="conditional.doclink.sourceview">
-            <option [value]="null" selected>No value</option>
-            <option *ngFor="let view of tree[1]?.children" [value]="view.url.split('/').pop()">{{view.label}}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Label column</label>
-        <p class="help-block">View column used as label</p>
-        <input type="text" class="form-control" name="labelcolumn" [(ngModel)]="conditional.doclink.labelcolumn">
-      </div>
-      <div class="form-group">
-        <label>Separator</label>
-        <p class="help-block">Only apply if multiple values will be displayed</p>
-        <input type="text" class="form-control" name="separator" [(ngModel)]="conditional.doclink.separator">
-      </div>
-    </div>
-    <!-- **** Google visualization **** -->
-    <div *ngIf="fieldTypeValue === 'GOOGLEVISUALIZATION'">
-      <div class="form-group">
-        <label>Chart id</label>
-        <p class="help-block">Used to name the javascript variable/functions and the DIV element</p>
-        <input type="text" class="form-control" required name="chartid" [(ngModel)]="conditional.googlevisualization.chartid">
-      </div>
-    </div>
-    <!-- **** Selection **** -->
-    <div *ngIf="fieldTypeValue === 'SELECTION'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.selection.widget">
-          <option value="SELECT" selected>Selection list</option>
-          <option value="MULTISELECT">Multi-selection list</option>
-          <option value="CHECKBOX">Checkboxes</option>
-          <option value="RADIO">Radio buttons</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Selection list</label>
-        <p class="help-block">List of values to select, one per line, formatted as 'label|value'</p>
-        <textarea class="form-control" name="selectionlist" [(ngModel)]="conditional.selection.selectionlist"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Separator</label>
-        <p class="help-block">Only apply if multuiple values will be displayed</p>
-        <input type="text" class="form-control" name="separator" [(ngModel)]="conditional.selection.separator">
-      </div>
-    </div>
-    <!-- **** Name **** -->
-    <div *ngIf="fieldTypeValue === 'NAME'">
-      <div class="form-group">
-        <label>Type</label>
-        <p class="help-block">Single or multi-valued name field</p>
-        <select class="form-control" name="type" [(ngModel)]="conditional.name.type">
-          <option value="SINGLE">Single valued</option>
-          <option value="MULTI">Multi valued</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Selection mode</label>
-        <p class="help-block">How the name is selected</p>
-        <select class="form-control" name="selector" [(ngModel)]="conditional.name.selector">
-          <option value="LIST">Select in a list</option>
-          <option value="FIELD">Fill in a field</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Restrict to group</label>
-        <p class="help-block">The field will only display members of the specified group (empty = no group restriction)</p>
-        <input type="text" class="form-control" name="restricttogroup" [(ngModel)]="conditional.name.restricttogroup">
-      </div>
-      <div class="form-group">
-        <label>Seperator</label>
-        <p class="help-block">Only apply if multiple values will be displayed</p>
-        <input type="text" class="form-control" name="separator" [(ngModel)]="conditional.name.separator">
-      </div>
-    </div>
-    <!-- **** Rich Text **** -->
-    <div *ngIf="fieldTypeValue === 'RICHTEXT'">
-      <div class="form-group">
-        <label>Height</label>
-        <p class="help-block">Height in pixels</p>
-        <input type="number" class="form-control" name="height" [(ngModel)]="conditional.richtext.height">
-      </div>
-    </div>
-    <!-- **** Boolean **** -->
-    <div *ngIf="fieldTypeValue === 'BOOLEAN'">
-      <div class="form-group">
-        <label>Widget</label>
-        <p class="help-block">Field rendering</p>
-        <select class="form-control" name="widget" [(ngModel)]="conditional.boolean.widget">
-          <option value="CHECKBOX">Single checkbox</option>
-        </select>
-      </div>
-    </div>
-    <!-- **** Attachment **** -->
-    <div *ngIf="fieldTypeValue === 'ATTACHMENT'">
-      <div class="form-group">
-        <label>Type</label>
-        <p class="help-block">Single or multiple file(s)</p>
-        <select class="form-control" name="type" [(ngModel)]="conditional.attachment.type">
-          <option value="SINGLE">Single file</option>
-          <option value="MULTI" selected>Multiple files</option>
-        </select>
-      </div>
-    </div>
-</fieldset>
-  <div class="form-group">
-    <label for="fieldReadTemplate">Field read template</label>
-    <p class="help-block">Custom rendering template in read mode</p>
-    <input #readTemplate formControlName="form.controls.readTemplate" type="text" class="form-control" id="fieldReadTemplate" [value]="data?.read_template">
-  </div>
-  <div class="form-group">
-    <label for="fieldEditTemplate">Field edit template</label>
-    <p class="help-block">Custom rendering template in edit mode</p>
-    <input #editTemplate formControlName="form.controls.readTemplate" type="text" class="form-control" id="fieldEditTemplate" [value]="data?.edit_template">
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #mandatory formControlName="form.controls.mandatory" type="checkbox" [checked]="data?.mandatory"> Mandatory
-    </label>
-    <p class="help-block">Is this field mandatory? (empty value will not be allowed)</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #toBeIndexed formControlName="form.controls.toBeIndexed" type="checkbox" [checked]="data?.to_be_indexed"> Add to index
-    </label>
-    <p class="help-block">The field will be searchable</p>
-  </div>
-  <div class="form-group">
-    <label>Index type</label>
-    <p class="help-block"> The way the field values will be indexed</p>
-    <select #indexType formControlName="form.controls.indexType" class="form-control" [value]="data?.index_type" required>
-      <option value="DEFAULT">Default (FieldIndex)</option>
-      <option value="DATERECURRINGINDEX">DateRecurringIndex</option>
-      <option value="EXTENDEDPATHINDEX">ExtendedPathIndex</option>
-      <option value="FIELDINDEX">FieldIndex (match exact value)</option>
-      <option value="KEYWORDINDEX">KeywordIndex (match list elements)</option>
-      <option value="TOPICINDEX">TopicIndex</option>
-      <option value="DATEINDEX">DateIndex</option>
-      <option value="DATERANGEINDEX">DateRangeIndex</option>
-      <option value="PATHINDEX">PathIndex</option>
-      <option value="BOOLEANINDEX">BooleanIndex</option>
-      <option value="ZCTEXTINDEX">ZCTextIndex (match any contained words)</option>
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

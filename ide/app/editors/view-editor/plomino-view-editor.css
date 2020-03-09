@@ -1,57 +1,57 @@
 .view-editor {
-  position: relative;
+    position: relative;
 }
 
 .view-editor__inner {
-  overflow: auto;
-  position: absolute;
-  max-width: 95%;
-  padding-bottom: 20px;
+    overflow: auto;
+    position: absolute;
+    max-width: 95%;
+    padding-bottom: 20px;
 }
 
 .view-editor__actions {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .view-editor__column-header {
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .view-editor__empty-columns-drop-place {
-  width: 100%;
-  height: 100vh;
-  position: absolute;
-  top: 130px;
-  left: 0;
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 130px;
+    left: 0;
 }
 
 .view-editor__empty-actions-drop-place {
-  width: 100%;
-  height: 129px;
-  position: absolute;
-  top: 0;
-  left: 0;
+    width: 100%;
+    height: 129px;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .view-editor__column-header:hover,
 .view-editor__column-header--selected {
-  background: rgb(63,81,181);
-  color: white !important;
+    background: rgb(63, 81, 181);
+    color: white !important;
 }
 
 .view-editor__column-header--selected,
 .view-editor__column-header--drop-target,
 .view-editor__action--drop-target,
 .view-editor__action--selected {
-  outline: dotted 2px gray;
+    outline: dotted 2px gray;
 }
 
 .view-editor__column-header--drop-preview,
 .view-editor__column-header--virtual,
 .view-editor__action--drop-preview {
-  opacity: 0.35;
-  /*outline: dashed 1px slategray;
+    opacity: 0.35;
+    /*outline: dashed 1px slategray;
   outline-offset: -3px;*/
 }

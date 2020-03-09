@@ -1,2 +1,2 @@
-export { LabelsRegistryService } from './labels-registry.service';
-export { UpdateFieldService } from './update-field.service';
+export { LabelsRegistryService } from "./labels-registry.service";
+export { UpdateFieldService } from "./update-field.service";

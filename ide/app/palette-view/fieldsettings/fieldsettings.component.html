@@ -1,167 +1,194 @@
 <div class="field-settings-wrapper" style="position: relative">
-  <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
-  <div class="fieldsettings--control-buttons" *ngIf="field && field.type == 'group'">
-    <button class="mdl-button mdl-js-button mdl-button--raised
+    <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
+    <div class="fieldsettings--control-buttons" *ngIf="field && field.type == 'group'">
+        <button
+            class="mdl-button mdl-js-button mdl-button--raised
       mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
-      id="ide-groupsettings__save-button"
-      style="white-space: inherit;"
-      (click)="saveGroupPrefix()">
-        <span class="icon material-icons">save</span>
-        Save
-    </button>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-groupsettings__save-button">
-        Save current group
-      </div>
-    <button class="mdl-button mdl-js-button mdl-button--raised
-      mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
-      style="white-space: inherit;"
-      [disabled]="field.id === groupPrefix"
-      id="ide-groupsettings__cancel-button"
-      (click)="cancelGroupPrefixChanges()">
-        <span class="icon material-icons">cancel</span>
-        Cancel
-    </button>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-groupsettings__cancel-button">
-        Cancel current changes
-      </div>
-    <button class="mdl-button mdl-js-button mdl-button--raised
-      mdl-js-ripple-effect mdl-button--accent mdl-color--blue-700"
-      style="white-space: inherit;"
-      id="ide-groupsettings__ungroup-button"
-      (click)="ungroup()">
-        <span class="icon material-icons">subject</span>
-        Ungroup
-    </button>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-groupsettings__ungroup-button">
-        Ungroup
-      </div>
-    <button class="mdl-button mdl-js-button mdl-button--raised
-      mdl-js-ripple-effect mdl-button--accent mdl-color--pink-500"
-      style="white-space: inherit;"
-      id="ide-groupsettings__delete-button"
-      (click)="deleteGroup()">
-        <span class="icon material-icons">delete</span>
-        Delete
-    </button>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-groupsettings__delete-button">
-        Delete the group and all containing elements
-      </div>
-  </div>
-  <div class="fieldsettings--control-buttons" *ngIf="formTemplate && field && field.formUniqueId !== 'zombie' && field.type !== 'subform' && field.type !== 'label' && field.type !== 'group'">
-    <a class="mdl-button mdl-js-button
-      mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
-      *ngIf="formTemplate"
-      id="ide-fieldsettings__save-button"
-      (click)="submitForm()">
-        <span *ngIf="formSaving">
-          <loading class="white"></loading>
-        </span>
-        <span *ngIf="!formSaving">
-          <span class="icon material-icons">save</span>
-          Save
-        </span>
-    </a>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-fieldsettings__save-button">
-        Save current field settings
-      </div>
-    <a class="mdl-button mdl-js-button
-      mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
-      *ngIf="formTemplate"
-      id="ide-fieldsettings__cancel-button"
-      (click)="cancelForm()">
-        <span class="icon material-icons">cancel</span>
-        Cancel
-    </a>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-fieldsettings__cancel-button">
-        Cancel current changes
-      </div>
-    <a class="mdl-button mdl-js-button
-      mdl-button--raised mdl-button--colored mdl-color--blue-700 mdl-button--accent"
-      *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
-      id="ide-fieldsettings__code-button"
-      (click)="openFieldCode()">
-        <span class="icon material-icons">code</span>
-        Code
-    </a>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-fieldsettings__code-button">
-        Show the code of current field
-      </div>
-    <a class="mdl-button mdl-js-button mdl-button--raised
-      mdl-button--colored mdl-color--pink-500"
-      *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
-      id="ide-fieldsettings__delete-button"
-      (click)="deleteField()">
-        <span class="icon material-icons">delete</span>
-        Delete
-    </a>
-    <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-fieldsettings__delete-button">
-        Delete the field
-      </div>
-  </div>
-  <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formTemplate && !(field && field.type === 'label') && !(field && field.type === 'subform') && !(field && field.type === 'group')">
-    <div class="mdl-card__supporting-text">Please select field</div>
-  </div>
-  <div
-    *ngIf="!field || (field && field.type !== 'label' && field.type !== 'subform' && field.type !== 'group')"
-    class="scrolling-container"
-    [class.scrolling-container--66]="!field || (field && field.type !== 'label')"
-    [class.scrolling-container--0]="field && field.type === 'label'"
-    #fieldForm [innerHTML]="formTemplate | safePloneHtml"></div>
-  <div
-    *ngIf="field && field.type === 'subform'"
-    class="scrolling-container scrolling-container--0">
-    <div class="outer-wrapper">
-      <legend style="padding: 0 10px; margin: 15px 0;">
-      Subform settings</legend>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
-        <label for="form-widgets-subform-id"
-          class="horizontal" style="display: block">Select form</label>
-
-        <select id="form-widgets-subform-id"
-          name="form.widgets.subform.id"
-          #selectedFormId
-          class="text-widget asciiline-field">
-          <option></option>
-          <option
-            *ngFor="let form of formsList.getFiltered()"
-            [value]="form.url.split('/').pop()"
-            [innerHTML]="form.label">
-        </select>
-
-      </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
-          (click)="openFormTab(getSelectedSubform())"
-          [disabled]="!getSelectedSubform()">
-          Edit Subform
+            id="ide-groupsettings__save-button"
+            style="white-space: inherit;"
+            (click)="saveGroupPrefix()"
+        >
+            <span class="icon material-icons">save</span>
+            Save
         </button>
-      </div>
-    </div><!--/outer-wrapper -->
-  </div>
-  <div
-    *ngIf="field && field.type === 'group'"
-    class="scrolling-container scrolling-container--0">
-    <div class="outer-wrapper">
-      <legend style="padding: 0 10px; margin: 15px 0;">
-      Group settings</legend>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
-        <label for="form-widgets-group-x-id"
-          class="horizontal" style="display: block">Group prefix</label>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-groupsettings__save-button">
+            Save current group
+        </div>
+        <button
+            class="mdl-button mdl-js-button mdl-button--raised
+      mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
+            style="white-space: inherit;"
+            [disabled]="field.id === groupPrefix"
+            id="ide-groupsettings__cancel-button"
+            (click)="cancelGroupPrefixChanges()"
+        >
+            <span class="icon material-icons">cancel</span>
+            Cancel
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-groupsettings__cancel-button">
+            Cancel current changes
+        </div>
+        <button
+            class="mdl-button mdl-js-button mdl-button--raised
+      mdl-js-ripple-effect mdl-button--accent mdl-color--blue-700"
+            style="white-space: inherit;"
+            id="ide-groupsettings__ungroup-button"
+            (click)="ungroup()"
+        >
+            <span class="icon material-icons">subject</span>
+            Ungroup
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-groupsettings__ungroup-button">
+            Ungroup
+        </div>
+        <button
+            class="mdl-button mdl-js-button mdl-button--raised
+      mdl-js-ripple-effect mdl-button--accent mdl-color--pink-500"
+            style="white-space: inherit;"
+            id="ide-groupsettings__delete-button"
+            (click)="deleteGroup()"
+        >
+            <span class="icon material-icons">delete</span>
+            Delete
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-groupsettings__delete-button">
+            Delete the group and all containing elements
+        </div>
+    </div>
+    <div
+        class="fieldsettings--control-buttons"
+        *ngIf="
+            formTemplate &&
+            field &&
+            field.formUniqueId !== 'zombie' &&
+            field.type !== 'subform' &&
+            field.type !== 'label' &&
+            field.type !== 'group'
+        "
+    >
+        <a
+            class="mdl-button mdl-js-button
+      mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
+            *ngIf="formTemplate"
+            id="ide-fieldsettings__save-button"
+            (click)="submitForm()"
+        >
+            <span *ngIf="formSaving">
+                <loading class="white"></loading>
+            </span>
+            <span *ngIf="!formSaving">
+                <span class="icon material-icons">save</span>
+                Save
+            </span>
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-fieldsettings__save-button">
+            Save current field settings
+        </div>
+        <a
+            class="mdl-button mdl-js-button
+      mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--grey-300"
+            *ngIf="formTemplate"
+            id="ide-fieldsettings__cancel-button"
+            (click)="cancelForm()"
+        >
+            <span class="icon material-icons">cancel</span>
+            Cancel
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-fieldsettings__cancel-button">
+            Cancel current changes
+        </div>
+        <a
+            class="mdl-button mdl-js-button
+      mdl-button--raised mdl-button--colored mdl-color--blue-700 mdl-button--accent"
+            *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
+            id="ide-fieldsettings__code-button"
+            (click)="openFieldCode()"
+        >
+            <span class="icon material-icons">code</span>
+            Code
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-fieldsettings__code-button">
+            Show the code of current field
+        </div>
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised
+      mdl-button--colored mdl-color--pink-500"
+            *ngIf="formTemplate && field.id.indexOf('++add++PlominoColumn') === -1"
+            id="ide-fieldsettings__delete-button"
+            (click)="deleteField()"
+        >
+            <span class="icon material-icons">delete</span>
+            Delete
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-fieldsettings__delete-button">
+            Delete the field
+        </div>
+    </div>
+    <div
+        class="mdl-card mdl-shadow--2dp settings-alert-no-object"
+        *ngIf="
+            !formTemplate &&
+            !(field && field.type === 'label') &&
+            !(field && field.type === 'subform') &&
+            !(field && field.type === 'group')
+        "
+    >
+        <div class="mdl-card__supporting-text">Please select field</div>
+    </div>
+    <div
+        *ngIf="!field || (field && field.type !== 'label' && field.type !== 'subform' && field.type !== 'group')"
+        class="scrolling-container"
+        [class.scrolling-container--66]="!field || (field && field.type !== 'label')"
+        [class.scrolling-container--0]="field && field.type === 'label'"
+        #fieldForm
+        [innerHTML]="formTemplate | safePloneHtml"
+    ></div>
+    <div *ngIf="field && field.type === 'subform'" class="scrolling-container scrolling-container--0">
+        <div class="outer-wrapper">
+            <legend style="padding: 0 10px; margin: 15px 0;">
+                Subform settings
+            </legend>
+            <div class="field" style="padding: 0 10px; margin: 15px 0;">
+                <label for="form-widgets-subform-id" class="horizontal" style="display: block">Select form</label>
 
-        <input type="text"
-          id="form-widgets-group-x-id" [(ngModel)]="groupPrefix">
+                <select
+                    id="form-widgets-subform-id"
+                    name="form.widgets.subform.id"
+                    #selectedFormId
+                    class="text-widget asciiline-field"
+                >
+                    <option></option>
+                    <option
+                        *ngFor="let form of formsList.getFiltered()"
+                        [value]="form.url.split('/').pop()"
+                        [innerHTML]="form.label"
+                    >
+                    </option
+                ></select>
+            </div>
+            <div class="field" style="padding: 0 10px; margin: 15px 0;">
+                <button
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                    (click)="openFormTab(getSelectedSubform())"
+                    [disabled]="!getSelectedSubform()"
+                >
+                    Edit Subform
+                </button>
+            </div>
+        </div>
+        <!--/outer-wrapper -->
+    </div>
+    <div *ngIf="field && field.type === 'group'" class="scrolling-container scrolling-container--0">
+        <div class="outer-wrapper">
+            <legend style="padding: 0 10px; margin: 15px 0;">
+                Group settings
+            </legend>
+            <div class="field" style="padding: 0 10px; margin: 15px 0;">
+                <label for="form-widgets-group-x-id" class="horizontal" style="display: block">Group prefix</label>
 
-      </div>
-      <!--<div class="field" style="padding: 0 10px; margin: 15px 0;">
+                <input type="text" id="form-widgets-group-x-id" [(ngModel)]="groupPrefix" />
+            </div>
+            <!--<div class="field" style="padding: 0 10px; margin: 15px 0;">
           <button
             class="mdl-button mdl-js-button mdl-button--raised
             mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700">
@@ -173,55 +200,65 @@
             </span>
           </button>
       </div>-->
+        </div>
     </div>
-  </div>
-  <div
-    *ngIf="field && field.type === 'label'"
-    class="scrolling-container scrolling-container--0">
-    <div class="outer-wrapper">
-      <legend style="padding: 0 10px; margin: 15px 0;">
-      Label settings</legend>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;">
-        <label for="form-widgets-label-relation"
-          class="horizontal" style="display: block">Label for field</label>
+    <div *ngIf="field && field.type === 'label'" class="scrolling-container scrolling-container--0">
+        <div class="outer-wrapper">
+            <legend style="padding: 0 10px; margin: 15px 0;">
+                Label settings
+            </legend>
+            <div class="field" style="padding: 0 10px; margin: 15px 0;">
+                <label for="form-widgets-label-relation" class="horizontal" style="display: block"
+                    >Label for field</label
+                >
 
-        <select id="form-widgets-label-relation"
-          name="form.widgets.label.relation"
-          style="width: 40%"
-          (change)="labelRelationSelected($event)"
-          class="text-widget asciiline-field">
-          <option></option>
-          <option *ngFor="let key of getCurrentRegistryKeys()"
-            [value]="key.split('/').pop()"
-            [selected]="field.url === key"
-            [innerHTML]="key.split('/').pop()">
-          </option>
-        </select>
+                <select
+                    id="form-widgets-label-relation"
+                    name="form.widgets.label.relation"
+                    style="width: 40%"
+                    (change)="labelRelationSelected($event)"
+                    class="text-widget asciiline-field"
+                >
+                    <option></option>
+                    <option
+                        *ngFor="let key of getCurrentRegistryKeys()"
+                        [value]="key.split('/').pop()"
+                        [selected]="field.url === key"
+                        [innerHTML]="key.split('/').pop()"
+                    >
+                    </option>
+                </select>
+            </div>
+            <div class="field" style="padding: 0 10px; margin: 15px 0;" *ngIf="getSelectedRelatedField()">
+                <span class="option">
+                    <input
+                        id="form-widgets-label-separate"
+                        class="single-checkbox-widget required bool-field"
+                        [(ngModel)]="labelAdvanced"
+                        (change)="labelAdvancedChanged($event)"
+                        value="selected"
+                        type="checkbox"
+                    />
+                    <label for="form-widgets-label-separate">
+                        <span class="label" style="color: black">Advanced label</span>
+                    </label>
+                </span>
+                <div class="formHelp">Use separate title in errors and datagrids</div>
+            </div>
+            <div
+                class="field"
+                style="padding: 0 10px; margin: 15px 0;"
+                *ngIf="getSelectedRelatedField() && !labelAdvanced"
+            >
+                <label for="form-widgets-label-fieldtitle" class="horizontal" style="display: block">Field title</label>
 
-      </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;"
-        *ngIf="getSelectedRelatedField()">
-        <span class="option">
-          <input id="form-widgets-label-separate"
-          class="single-checkbox-widget required bool-field"
-          [(ngModel)]="labelAdvanced"
-          (change)="labelAdvancedChanged($event)"
-          value="selected" type="checkbox">
-          <label for="form-widgets-label-separate">
-            <span class="label" style="color: black">Advanced label</span>
-          </label>
-        </span>
-        <div class="formHelp">Use separate title in errors and datagrids</div>
-      </div>
-      <div class="field" style="padding: 0 10px; margin: 15px 0;"
-        *ngIf="getSelectedRelatedField() && !labelAdvanced">
-        <label for="form-widgets-label-fieldtitle"
-          class="horizontal" style="display: block">Field title</label>
-
-        <input type="text" (input)="updateTemporaryTitle()"
-          id="form-widgets-label-fieldtitle" [(ngModel)]="fieldTitle">
-
-      </div>
+                <input
+                    type="text"
+                    (input)="updateTemporaryTitle()"
+                    id="form-widgets-label-fieldtitle"
+                    [(ngModel)]="fieldTitle"
+                />
+            </div>
+        </div>
     </div>
-  </div>
 </div>

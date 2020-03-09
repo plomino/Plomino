@@ -1,75 +1,80 @@
 <div class="db-settings-wrapper" style="position: relative">
-  <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>  
-  <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions() || hasDesignPermissions()">
-      <button class="mdl-button mdl-js-button
+    <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
+    <div class="dbsettings--control-buttons" *ngIf="hasAuthPermissions() || hasDesignPermissions()">
+        <button
+            class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-button--accent mdl-color--teal-700"
-        style="white-space: normal"
-        id="ide-dbsettings__save-button"
-        [disabled]="!hasAuthPermissions()"
-        (click)="submitForm()">
-          <span class="icon material-icons">save</span>
-          Save
-      </button>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__save-button">
-        Save the database settings
-      </div>
-      <button class="mdl-button mdl-js-button
+            style="white-space: normal"
+            id="ide-dbsettings__save-button"
+            [disabled]="!hasAuthPermissions()"
+            (click)="submitForm()"
+        >
+            <span class="icon material-icons">save</span>
+            Save
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-dbsettings__save-button">
+            Save the database settings
+        </div>
+        <button
+            class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-button--accent mdl-color--grey-300"
-        style="white-space: normal"
-        id="ide-dbsettings__cancel-button"
-        [disabled]="!hasAuthPermissions()"
-        (click)="cancelForm()">
-          <span class="icon material-icons">cancel</span>
-          Cancel
-      </button>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__cancel-button">
-        Cancel current changes
-      </div>
-      <button class="mdl-button mdl-js-button
+            style="white-space: normal"
+            id="ide-dbsettings__cancel-button"
+            [disabled]="!hasAuthPermissions()"
+            (click)="cancelForm()"
+        >
+            <span class="icon material-icons">cancel</span>
+            Cancel
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-dbsettings__cancel-button">
+            Cancel current changes
+        </div>
+        <button
+            class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-button--accent mdl-color--yellow-900"
-        id="ide-dbsettings__export-button"
-        style="white-space: normal"
-        (click)="showImportExport()">
-          <span class="icon material-icons">backup</span>
-          Import/Export
-      </button>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__export-button">
-        Import/export of data
-      </div>
-      <button class="mdl-button mdl-js-button
+            id="ide-dbsettings__export-button"
+            style="white-space: normal"
+            (click)="showImportExport()"
+        >
+            <span class="icon material-icons">backup</span>
+            Import/Export
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-dbsettings__export-button">
+            Import/export of data
+        </div>
+        <button
+            class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-button--accent mdl-color--purple-300"
-        id="ide-dbsettings__acl-button"
-        style="white-space: normal"
-        [disabled]="!hasAuthPermissions()"
-        (click)="showACL()">
-          <span class="icon material-icons">security</span>
-          ACL
-      </button>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__acl-button">
-        Access control lists management
-      </div>
-      <button class="mdl-button mdl-js-button
+            id="ide-dbsettings__acl-button"
+            style="white-space: normal"
+            [disabled]="!hasAuthPermissions()"
+            (click)="showACL()"
+        >
+            <span class="icon material-icons">security</span>
+            ACL
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-dbsettings__acl-button">
+            Access control lists management
+        </div>
+        <button
+            class="mdl-button mdl-js-button
         mdl-button--raised mdl-js-ripple-effect
         mdl-color--green-900"
-        id="ide-dbsettings__wf-button"
-        style="white-space: normal"
-        [disabled]="!hasAuthPermissions()"
-        (click)="designWorkflow()">
-        <span class="icon material-icons">work</span>
-        Workflow
-      </button>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-dbsettings__wf-button">
-        Workflow editor
-      </div>
-  </div>
-  <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>
+            id="ide-dbsettings__wf-button"
+            style="white-space: normal"
+            [disabled]="!hasAuthPermissions()"
+            (click)="designWorkflow()"
+        >
+            <span class="icon material-icons">work</span>
+            Workflow
+        </button>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-dbsettings__wf-button">
+            Workflow editor
+        </div>
+    </div>
+    <div class="scrolling-container scrolling-container--66" #dbform [innerHTML]="dbForm | safePloneHtml"></div>
 </div>

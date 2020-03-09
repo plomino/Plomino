@@ -1,1 +1,1 @@
-export { ViewsSettingsComponent } from './views-settings.component';
+export { ViewsSettingsComponent } from "./views-settings.component";

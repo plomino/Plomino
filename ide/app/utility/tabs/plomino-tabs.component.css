@@ -1,41 +1,42 @@
 .mdl-tabs__tab-bar {
-  -webkit-box-pack: start;
-  -webkit-justify-content: flex-start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-flex-wrap: wrap;
-      -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
-  height: inherit;
+    -webkit-box-pack: start;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    height: inherit;
 }
 .mdl-tabs__tab {
-  text-transform: inherit;
-  padding: 0 12px;
+    text-transform: inherit;
+    padding: 0 12px;
 }
 .mdl-tabs__tab-icon {
-  margin-right: 5px;
+    margin-right: 5px;
 }
 .material-icons {
-  font-size: 18px;
-  position: relative;
-  top: 3px;
+    font-size: 18px;
+    position: relative;
+    top: 3px;
 }
 .mdl-tabs__tab-close-button {
-  background: transparent;
-  border: solid 1px transparent;
-  text-shadow: none;
-  border-radius: 100%;
-  padding: 5px;
-  position: relative;
-  bottom: 2.5px;
-  right: -10px;
-  z-index: 100;
+    background: transparent;
+    border: solid 1px transparent;
+    text-shadow: none;
+    border-radius: 100%;
+    padding: 5px;
+    position: relative;
+    bottom: 2.5px;
+    right: -10px;
+    z-index: 100;
 }
-.mdl-tabs__tab-close-button:hover, .mdl-tabs__tab-close-button:focus {
-  color: #004665;
-  outline: none;
-  box-shadow: none;
+.mdl-tabs__tab-close-button:hover,
+.mdl-tabs__tab-close-button:focus {
+    color: #004665;
+    outline: none;
+    box-shadow: none;
 }
 #add-new-form-tab.is-active:after {
-  display: none !important;
+    display: none !important;
 }

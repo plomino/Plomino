@@ -8,21 +8,21 @@ plomino-palette .tab-container .tab-content {
 }
 
 /deep/ .tab-content {
-  position: relative;
+    position: relative;
 }
 
 /deep/ .scrolling-container {
-  overflow-y: auto;
+    overflow-y: auto;
 }
 
 /deep/ .scrolling-container--66 {
-  height: 283.5px;
+    height: 283.5px;
 }
 
 /deep/ .scrolling-container--0 {
-  min-height: 283.5px;
+    min-height: 283.5px;
 }
 
 /deep/ .scrolling-container--76 {
-  height: 273.5px;
+    height: 273.5px;
 }

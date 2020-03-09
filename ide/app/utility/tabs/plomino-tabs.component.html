@@ -1,35 +1,39 @@
 <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-  <div class="mdl-tabs__tab-bar">
-    <a *ngFor="let tab of tabsCollection" 
-      [id]="'tab_' + tab.id"
-      [attr.href]="'#tab-content_' + tab.id" class="mdl-tabs__tab"
-      (click)="onTabClick($event, tab)"
-      onclick="return false"
-      [class.is-active]="isTabActive(tab)">
-        <span class="mdl-tabs__tab-dirty"
-          *ngIf="isTabDirty(tab)">* </span>
-        <span class="mdl-tabs__tab-icon">
-          <i class="material-icons">{{ getTabTypeIconName(tab.editor) }}</i>
-        </span>
-        <span>{{ tab.id }}</span>
-        <button type="button" class="mdl-tabs__tab-close-button"
-          (click)="onTabRemoveClick($event, tab)">
-          <i class="material-icons">highlight_off</i>
-        </button>
-        <div class="mdl-tooltip mdl-tooltip--large"
-          [attr.data-mdl-for]="'tab_' + tab.id">
-          {{ tab.label || tab.id }}
-        </div>
-    </a>
-    <a class="mdl-tabs__tab" id="add-new-form-tab" href="#add-new">
-      <span class="icon material-icons">add</span>
-    </a>
-  </div>
-  <div class="mdl-tabs__panel" id="add-new" style="display: none !important">
-    Prevent MDL errors
-  </div>
-  <plomino-tab *ngIf="activeTab" [id]="'tab-content_' + activeTab.id" 
-    [editor]="activeTab.editor" [url]="activeTab.url"
-    [label]="activeTab.label"
-    [isDirty]="isTabDirty(activeTab)"></plomino-tab>
+    <div class="mdl-tabs__tab-bar">
+        <a
+            *ngFor="let tab of tabsCollection"
+            [id]="'tab_' + tab.id"
+            [attr.href]="'#tab-content_' + tab.id"
+            class="mdl-tabs__tab"
+            (click)="onTabClick($event, tab)"
+            onclick="return false"
+            [class.is-active]="isTabActive(tab)"
+        >
+            <span class="mdl-tabs__tab-dirty" *ngIf="isTabDirty(tab)">* </span>
+            <span class="mdl-tabs__tab-icon">
+                <i class="material-icons">{{ getTabTypeIconName(tab.editor) }}</i>
+            </span>
+            <span>{{ tab.id }}</span>
+            <button type="button" class="mdl-tabs__tab-close-button" (click)="onTabRemoveClick($event, tab)">
+                <i class="material-icons">highlight_off</i>
+            </button>
+            <div class="mdl-tooltip mdl-tooltip--large" [attr.data-mdl-for]="'tab_' + tab.id">
+                {{ tab.label || tab.id }}
+            </div>
+        </a>
+        <a class="mdl-tabs__tab" id="add-new-form-tab" href="#add-new">
+            <span class="icon material-icons">add</span>
+        </a>
+    </div>
+    <div class="mdl-tabs__panel" id="add-new" style="display: none !important">
+        Prevent MDL errors
+    </div>
+    <plomino-tab
+        *ngIf="activeTab"
+        [id]="'tab-content_' + activeTab.id"
+        [editor]="activeTab.editor"
+        [url]="activeTab.url"
+        [label]="activeTab.label"
+        [isDirty]="isTabDirty(activeTab)"
+    ></plomino-tab>
 </div>

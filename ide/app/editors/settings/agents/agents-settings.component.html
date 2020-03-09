@@ -1,25 +1,40 @@
-<form (ngSubmit)='onSubmit(data["@id"], title.value, desc.value, runAs.value)' #form="ngForm">
-  <div class="form-group">
-    <label for="title">Titre</label>
-    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
-  </div>
-  <div class="form-group">
-    <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
-  </div>
-  <div class="form-group">
-    <label for="desc">Description</label>
-    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
-  </div>
-  <div class="form-group">
-    <label>Run as</label>
-    <p class="help-block">Run the agent using current user access rights, or using the developer access rights.</p>
-    <select formControlName="form.controls.runAs" #runAs class="form-control" [value]="data?.run_as">
-      <option value="CURRENT">Current User</option>
-      <option value="OWNER">Agent Owner</option>
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+<form (ngSubmit)="onSubmit(data['@id'], title.value, desc.value, runAs.value)" #form="ngForm">
+    <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+            #title
+            formControlName="form.controls.title"
+            [value]="data?.title"
+            type="text"
+            class="form-control"
+            id="title"
+            required="true"
+        />
+    </div>
+    <div class="form-group">
+        <label for="id">ID</label>
+        <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true" />
+    </div>
+    <div class="form-group">
+        <label for="desc">Description</label>
+        <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+        <textarea
+            #desc
+            formControlName="form.controls.desc"
+            type="text"
+            class="form-control"
+            id="desc"
+            [value]="data?.description"
+        ></textarea>
+    </div>
+    <div class="form-group">
+        <label>Run as</label>
+        <p class="help-block">Run the agent using current user access rights, or using the developer access rights.</p>
+        <select formControlName="form.controls.runAs" #runAs class="form-control" [value]="data?.run_as">
+            <option value="CURRENT">Current User</option>
+            <option value="OWNER">Agent Owner</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

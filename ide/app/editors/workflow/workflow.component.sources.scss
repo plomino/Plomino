@@ -1,15 +1,15 @@
 body {
-  font-family: sans-serif;
-  font-size: 15px;
+    font-family: sans-serif;
+    font-size: 15px;
 }
 
 $border-width: 2px;
 $line-color: #3f51b5;
-$highlight-color: rgb(63,81,181);
+$highlight-color: rgb(63, 81, 181);
 $selected-color: #4a148c;
-$default-task-color: #00695C;
-$default-task-color-hover: #004D40;
-$default-view-task-color: #00838F;
+$default-task-color: #00695c;
+$default-task-color-hover: #004d40;
+$default-view-task-color: #00838f;
 $default-view-task-color-hover: #006064;
 $line-height: 4em;
 $line-height-condtion: 1em;
@@ -22,664 +22,665 @@ $wfpad-top-bottom: 6px;
 $wfpad-right-left: 7px;
 
 .nav-item:has(#tab_workflow) {
-  height: 42px !important;
-  display: flex !important;
-  align-items: flex-end !important;
+    height: 42px !important;
+    display: flex !important;
+    align-items: flex-end !important;
 }
 
 .plomino-workflow-editor {
-  background: $bg-color;
-  min-height: calc(100vh - 50px);
-  font-family: "Roboto","Helvetica","Arial",sans-serif;
-  font-weight: 500;
+    background: $bg-color;
+    min-height: calc(100vh - 50px);
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
 
-  &__branches {
-    position: relative;
-    padding: $line-height 0; 
-    white-space: nowrap;
-    margin: 0 auto;
-    text-align: center;
-    
-    &--root {
-      padding-top: 2em;
-      max-height: calc(100vh - 50px);
-      min-height: 550px;
-      overflow-y: scroll;
-    }
-
-    &::after {
-      content: '';
-      display: table;
-      clear: both;
-    }
-
-    .plomino-workflow-editor__branches::before {
-      content: '';
-      position: absolute; 
-      top: 1px; 
-      left: 50%;
-      border-left: $border-width solid $line-color;
-      width: 0; 
-      height: calc(#{$line-height} + 1px);
-      z-index: 1;
-    }
-  }
-
-  li.plomino-workflow-editor__branch {
-    display: inline-block; // need white-space fix
-    vertical-align: top;
-    text-align: center;
-    list-style-type: none;
-    position: relative;
-    padding: $line-height .5em 0 .5em;
-    cursor: pointer;
-
-    div.plomino-workflow-editor__branch-add-below-bubble-btn {
-      display: block;
-      cursor: pointer;
-      transition: all 100ms ease-in-out;
-      opacity: 0;
-      background: transparent;
-      position: absolute;
-      top: 15px;
-      left: 50%;
-      margin-left: -12.5px;
-      z-index: 1;
-
-      &>button {
-        width: 26px;
-        min-width: 26px;
-        height: 26px;
-        padding: 0 8px !important;
-        outline: 0 !important;
-      }
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-
-    .plomino-workflow-editor__branch-plus-btn {
-      position: absolute;
-      right: 50px;
-      outline: none !important;
-      top: 18px;
-      cursor: pointer;
-    }
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute; 
-      top: 0; 
-      right: 50%;
-      border-top: $border-width solid $line-color;
-      width: 50%; // calc(50% + 2px)
-      height: $line-height;
-    }
-    &::after {
-      right: auto; 
-      left: 50%;
-      border-left: $border-width solid $line-color;
-    }
-    &:only-of-type::after,
-    &:only-of-type::before {
-      display: none;
-    }
-    &:only-of-type {
-      padding-top: 0;
-    }
-    &:first-of-type::before,
-    &:last-of-type::after {
-      border: 0 none;
-    }
-    &:last-of-type::before{
-      border-right: $border-width solid $line-color;
-      border-radius: 0 5px 0 0;
-      left: 0;
-    }
-    &:last-of-type:not(:only-of-type) .workflow-node::before {
-      left: -1px !important;
-    }
-    &:first-of-type::after{
-      border-radius: 5px 0 0 0;
-    }
-
-    .workflow-node {
-      border: $border-width solid #4A148C;
-      padding: 0;
-      text-decoration: none;
-      display: inline-block;
-      border-radius: 0;
-      color: white;
-      position: relative;
-      top: $border-width;
-      user-select: none;
-      background: #4A148C;
-      border-radius: 4px;
-
-      &:hover .workflow-node__round-1 {
-        background: #3f51b5 !important;
-      }
-
-      &__start-text {
-        color: black;
-        padding-top: 2pt;
-        text-transform: uppercase;
-        font-weight: 500;
-      }
-
-      &:hover {
-        .workflow-node__start-text {
-          color: white;
-        }
-      }
-
-      a {
-        color: whitesmoke;
-
-        &.workflow-node__text-modal-link {
-          text-decoration: underline !important;
-
-          &:hover {
-            color: hsla(0, 0%, 100%, 0.8) !important;
-          }
-        }
-      }
-
-      &.workflow-node--condition {
-        cursor: pointer;
-
-        a {
-          color: black;
-
-          &:hover {
-            color: white;
-          }
-        }
-      }
-
-      &__hover-plus-btn {
-        opacity: 0;
-        position: absolute;
-        right: -50px;
-        transition: all 100ms ease-in-out;
-        z-index: 9999;
-        background: transparent;
-        width: 80px;
-        height: 80px;
-        text-align: right;
-
-        button:focus {
-          outline: none;
-        }
-      }
-
-      &:hover > .workflow-node__hover-plus-btn {
-        opacity: 1;
-      }
-
-      &__text {
+    &__branches {
         position: relative;
-
-        &--task {
-          display: block;
-          word-break: break-word;
-          word-wrap: break-word;
-          white-space: normal;
-          hyphens: auto;
-          width: $wfw - $wfpad-right-left * 2;
-          height: auto;
-          max-height: 40px;
-          overflow-wrap: break-word;
-        }
-
-        &--process {
-          display: block;
-          word-break: break-word;
-          word-wrap: break-word;
-          white-space: normal;
-          hyphens: auto;
-          width: $wfw - $wfpad-right-left * 2;
-          height: auto;
-          max-height: 40px;
-          overflow-wrap: break-word;
-        }
-
-        &--goto {
-          display: block;
-          word-break: break-word;
-          word-wrap: break-word;
-          white-space: normal;
-          hyphens: auto;
-          width: $wfw - $wfpad-right-left * 2;
-          height: auto;
-          max-height: inherit;
-          overflow-wrap: break-word;
-        }
-      }
-
-      &__inner {
-        text-align: center;
-        min-height: $wfh;
-        min-width: $wfw;
-        padding: $wfpad-top-bottom $wfpad-right-left;
-        line-height: $wflh;
-        padding-top: 15px;
-      }
-
-      &__shape-outside {
-        display: none;
-        position: absolute;
-        min-height: $wfh;
-        top: 0;
-        background: black;
-      }
-
-      &__shape-inside {
-        display: none;
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        right: 1px;
-        bottom: 1px;
-        background: white;
-      }
-
-      &__bubble-delete {
-        opacity: 0;
-        transition: all 100ms ease-in-out;
-        color: white !important;
-        position: absolute;
-        right: 5px;
-        top: 5px;
-
-        &:hover button i {
-          color: white !important;
-        }
-      }
-
-      &--branch {
-        .workflow-node__inner {
-          padding: 15px;
-          min-width: 200px;
-          min-height: inherit;
-          text-align: left;
-        }
-      }
-
-      &--task {
-        color: white;
-        background-color: $default-task-color;
-
-        &:hover {
-          background-color: $default-task-color-hover !important;
-        }
-
-        .workflow-node__inner {
-          padding: 15px;
-          min-width: 200px;
-          min-height: inherit;
-          text-align: left;
-        }
-
-        .workflow-node__shape-outside {
-          border-radius: 4px;
-          background: #01579B;
-          display: block;
-          min-width: $wfw;
-          // left: -30px;
-          left: 1px;
-          // clip-path: polygon(4% 0, 96% 0, 90% 100%, 10% 100%);
-        }
-
-        .workflow-node__shape-inside {
-          display: block;
-          background: #01579B;
-          // clip-path: polygon(4% 0, 96% 0, 90% 100%, 10% 100%);
-        }
-      }
-
-      &--form-task, &--ext-task {
-        // background: transparent;
-        // border-radius: 0;
-
-        .workflow-node__shape-outside {
-          min-width: inherit;
-          min-height: inherit;
-          // border-radius: 0;
-          // clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
-        }
-        // .workflow-node__shape-inside {
-        //   clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
-        // }
-      }
-
-      &--ext-task {
-        background-color: #E65100;
-        border-color: #E65100;
-
-        &:hover {
-          background-color: #BF360C !important;
-          border-color: #E65100 !important;
-        }
-      }
-
-      &--view-task {
-        background-color: $default-view-task-color;
-
-        &:hover {
-          background-color: $default-view-task-color-hover !important;
-        }
-
-        .workflow-node__shape-outside {
-          min-width: inherit;
-          min-height: inherit;
-        }
-        // background: transparent;
-        // border-radius: 0;
-        // border-left: solid 1px transparent;
-
-        // .workflow-node__shape-outside {
-        //   border-radius: 0;
-        //   background: #C51162;
-        //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
-        // }
-
-        // .workflow-node__shape-inside {
-        //   background: #C51162;
-        //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
-        // }
-
-        // .workflow-node__round-1 {
-        //   display: block;
-        //   border-radius: 100%;
-        //   width: 100px;
-        //   height: 50px;
-        //   background: #C51162;
-        //   position: absolute;
-        //   left: 1px;
-        //   bottom: -7px;
-        // }
-
-        // .workflow-node__round-2 {
-        //   display: block;
-        //   border-radius: 100%;
-        //   width: 93px;
-        //   height: 50px;
-        //   background: #fafafa;
-        //   position: absolute;
-        //   right: -8px;
-        //   bottom: -25px;
-        //   z-index: 10;
-        // }
-
-        // .workflow-node__shadow-shape-1 {
-        //   background: #FF4081;
-        //   display: block;
-        //   position: absolute;
-        //   height: 74px;
-        //   width: $wfw;
-        //   right: -11px;
-        //   top: -11px;
-        //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
-        // }
-
-        // .workflow-node__shadow-shape-2 {    
-        //   background: #F50057;
-        //   display: block;
-        //   position: absolute;
-        //   height: 72px;
-        //   width: $wfw;
-        //   right: -6px;
-        //   top: -6px;
-        //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
-        // }
-      }
-
-      &--condition {
-        background: transparent;
-        cursor: pointer;
-        transition: all 100ms ease-in-out;
-        // background-color: $line-color;
-
-        &:hover {
-          .workflow-node__text--condition {
-            color: white !important;
-          }
-          .workflow-node__shape-inside {
-            background-color: #4A148E !important;
-          }
-        }
-
-        .workflow-node__inner {
-          min-width: 50px;
-          padding: 0;
-          min-height: 50px;
-          display: flex;
-          height: auto;
-          justify-content: center;
-          align-items: center;
-          align-content: center;
-          // background-color: $line-color;
-        }
-
-        .workflow-node__text--condition {
-          text-align: center;
-          color: white;
-          padding-top: 5px;
-          padding-left: 1px;
-          cursor: pointer;
-        }
-
-        .workflow-node__shape-outside {
-          display: block;
-          min-width: 100%;
-          left: 1px;
-          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-          min-height: inherit;
-          background-color: $line-color;
-        }
-
-        .workflow-node__shape-inside {
-          display: block;
-          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-          background-color: $line-color;
-        }
-
-        .workflow-node__bubble-delete {
-          transition: all 100ms ease-in-out;
-          right: -40px;
-          
-          button i {
-            color: black !important;
-          }
-        }
-      }
-
-      &--goto {
-        background: transparent;
-
-        .workflow-node__inner {
-          width: 100%;
-          display: flex;
-          padding: 0;
-          align-items: center;
-          justify-content: center;
-          align-content: center;
-        }
-
-        .workflow-node__text--goto {
-          // padding-top: 25px;
-          text-align: center;
-          display: block;
-          padding: 0;
-        }
-
-        .workflow-node__shape-outside {
-          display: block;
-          min-width: 100%;
-          height: 100% !important;
-          min-height: inherit !important;
-          background-color: #607D8B;
-          left: 1px;
-          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
-        }
-
-        .workflow-node__shape-inside {
-          background-color: #607D8B;
-          display: block;
-          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
-        }
-      }
-
-      &--as-a-shape {
-        border: none;
-
-        &:hover {
-          color: #fff;
-
-          .workflow-node__shape-inside {
-            background: $highlight-color;
-          }
-
-          .workflow-node__shape-outside {
-            background: $highlight-color;
-          }
-        }
-
-        // &.workflow-node--selected.workflow-node--view-task {
-
-        // }
-
-        &.workflow-node--selected:not(.workflow-node--view-task) {
-          .workflow-node__shape-outside {
-            background: $selected-color !important;
-          }
-
-          .workflow-node__shape-inside {
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
-          }
-        }
-      }
-
-      &--root {
-        display: block;
-        width: 100px;
+        padding: $line-height 0;
+        white-space: nowrap;
         margin: 0 auto;
-        height: 33px;
-        border-radius: 33px;
-        background: white;
-        border: #3f51b5 2px solid;
-      }
+        text-align: center;
 
-      &--selected:not(.workflow-node--as-a-shape) {
-        // outline: solid 2px $selected-color;
-        box-shadow: 0 0 0 2px $selected-color;
-      }
-
-      &--dropping {
-        border-style: dashed;
-        opacity: 0.7;
-        border-color: lightgray;
-      }
-
-      &:not(.workflow-node--root)::before {
-        content: '';
-        display: block;
-        position: absolute;
-        background-color: $line-color;
-        -webkit-mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
-        mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
-        background-repeat: no-repeat;
-        width: 24px;
-        height: 24px;
-        top: -15px;
-        left: 1px;
-        width: 100%;
-        z-index: 1;
-      }
-
-      &--dragging {
-        opacity: 0.7;
-        &::before {
-          visibility: hidden;
+        &--root {
+            padding-top: 2em;
+            max-height: calc(100vh - 50px);
+            min-height: 550px;
+            overflow-y: scroll;
         }
-      }
 
-      &:not(.workflow-node--as-a-shape):hover {
-        background: $highlight-color;
-        color: #fff;
-        border: $border-width solid $highlight-color;
-      }
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
 
-      &:hover {
-        .workflow-node__bubble-delete {
-          opacity: 1;
+        .plomino-workflow-editor__branches::before {
+            content: "";
+            position: absolute;
+            top: 1px;
+            left: 50%;
+            border-left: $border-width solid $line-color;
+            width: 0;
+            height: calc(#{$line-height} + 1px);
+            z-index: 1;
+        }
+    }
 
-          button:focus {
+    li.plomino-workflow-editor__branch {
+        display: inline-block; // need white-space fix
+        vertical-align: top;
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: $line-height 0.5em 0 0.5em;
+        cursor: pointer;
+
+        div.plomino-workflow-editor__branch-add-below-bubble-btn {
+            display: block;
+            cursor: pointer;
+            transition: all 100ms ease-in-out;
+            opacity: 0;
+            background: transparent;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            margin-left: -12.5px;
+            z-index: 1;
+
+            & > button {
+                width: 26px;
+                min-width: 26px;
+                height: 26px;
+                padding: 0 8px !important;
+                outline: 0 !important;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        .plomino-workflow-editor__branch-plus-btn {
+            position: absolute;
+            right: 50px;
             outline: none !important;
-          }
+            top: 18px;
+            cursor: pointer;
         }
-      }
 
-      &--virtual {
-        border: none !important;
-        background: transparent !important;
-
-        &:hover {
-          border: none !important;
-          background: transparent !important;
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: $border-width solid $line-color;
+            width: 50%; // calc(50% + 2px)
+            height: $line-height;
         }
-        
-        button:focus {
-          outline: none !important;
+        &::after {
+            right: auto;
+            left: 50%;
+            border-left: $border-width solid $line-color;
         }
-      }
-    }
+        &:only-of-type::after,
+        &:only-of-type::before {
+            display: none;
+        }
+        &:only-of-type {
+            padding-top: 0;
+        }
+        &:first-of-type::before,
+        &:last-of-type::after {
+            border: 0 none;
+        }
+        &:last-of-type::before {
+            border-right: $border-width solid $line-color;
+            border-radius: 0 5px 0 0;
+            left: 0;
+        }
+        &:last-of-type:not(:only-of-type) .workflow-node::before {
+            left: -1px !important;
+        }
+        &:first-of-type::after {
+            border-radius: 5px 0 0 0;
+        }
 
-    & > .plomino-workflow-editor__branches--virtual {
-      opacity: 0;
-      transition: all 100ms ease-in-out;
-    }
+        .workflow-node {
+            border: $border-width solid #4a148c;
+            padding: 0;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 0;
+            color: white;
+            position: relative;
+            top: $border-width;
+            user-select: none;
+            background: #4a148c;
+            border-radius: 4px;
 
-    &:hover > .plomino-workflow-editor__branches--virtual {
-      opacity: 1;
+            &:hover .workflow-node__round-1 {
+                background: #3f51b5 !important;
+            }
+
+            &__start-text {
+                color: black;
+                padding-top: 2pt;
+                text-transform: uppercase;
+                font-weight: 500;
+            }
+
+            &:hover {
+                .workflow-node__start-text {
+                    color: white;
+                }
+            }
+
+            a {
+                color: whitesmoke;
+
+                &.workflow-node__text-modal-link {
+                    text-decoration: underline !important;
+
+                    &:hover {
+                        color: hsla(0, 0%, 100%, 0.8) !important;
+                    }
+                }
+            }
+
+            &.workflow-node--condition {
+                cursor: pointer;
+
+                a {
+                    color: black;
+
+                    &:hover {
+                        color: white;
+                    }
+                }
+            }
+
+            &__hover-plus-btn {
+                opacity: 0;
+                position: absolute;
+                right: -50px;
+                transition: all 100ms ease-in-out;
+                z-index: 9999;
+                background: transparent;
+                width: 80px;
+                height: 80px;
+                text-align: right;
+
+                button:focus {
+                    outline: none;
+                }
+            }
+
+            &:hover > .workflow-node__hover-plus-btn {
+                opacity: 1;
+            }
+
+            &__text {
+                position: relative;
+
+                &--task {
+                    display: block;
+                    word-break: break-word;
+                    word-wrap: break-word;
+                    white-space: normal;
+                    hyphens: auto;
+                    width: $wfw - $wfpad-right-left * 2;
+                    height: auto;
+                    max-height: 40px;
+                    overflow-wrap: break-word;
+                }
+
+                &--process {
+                    display: block;
+                    word-break: break-word;
+                    word-wrap: break-word;
+                    white-space: normal;
+                    hyphens: auto;
+                    width: $wfw - $wfpad-right-left * 2;
+                    height: auto;
+                    max-height: 40px;
+                    overflow-wrap: break-word;
+                }
+
+                &--goto {
+                    display: block;
+                    word-break: break-word;
+                    word-wrap: break-word;
+                    white-space: normal;
+                    hyphens: auto;
+                    width: $wfw - $wfpad-right-left * 2;
+                    height: auto;
+                    max-height: inherit;
+                    overflow-wrap: break-word;
+                }
+            }
+
+            &__inner {
+                text-align: center;
+                min-height: $wfh;
+                min-width: $wfw;
+                padding: $wfpad-top-bottom $wfpad-right-left;
+                line-height: $wflh;
+                padding-top: 15px;
+            }
+
+            &__shape-outside {
+                display: none;
+                position: absolute;
+                min-height: $wfh;
+                top: 0;
+                background: black;
+            }
+
+            &__shape-inside {
+                display: none;
+                position: absolute;
+                top: 1px;
+                left: 1px;
+                right: 1px;
+                bottom: 1px;
+                background: white;
+            }
+
+            &__bubble-delete {
+                opacity: 0;
+                transition: all 100ms ease-in-out;
+                color: white !important;
+                position: absolute;
+                right: 5px;
+                top: 5px;
+
+                &:hover button i {
+                    color: white !important;
+                }
+            }
+
+            &--branch {
+                .workflow-node__inner {
+                    padding: 15px;
+                    min-width: 200px;
+                    min-height: inherit;
+                    text-align: left;
+                }
+            }
+
+            &--task {
+                color: white;
+                background-color: $default-task-color;
+
+                &:hover {
+                    background-color: $default-task-color-hover !important;
+                }
+
+                .workflow-node__inner {
+                    padding: 15px;
+                    min-width: 200px;
+                    min-height: inherit;
+                    text-align: left;
+                }
+
+                .workflow-node__shape-outside {
+                    border-radius: 4px;
+                    background: #01579b;
+                    display: block;
+                    min-width: $wfw;
+                    // left: -30px;
+                    left: 1px;
+                    // clip-path: polygon(4% 0, 96% 0, 90% 100%, 10% 100%);
+                }
+
+                .workflow-node__shape-inside {
+                    display: block;
+                    background: #01579b;
+                    // clip-path: polygon(4% 0, 96% 0, 90% 100%, 10% 100%);
+                }
+            }
+
+            &--form-task,
+            &--ext-task {
+                // background: transparent;
+                // border-radius: 0;
+
+                .workflow-node__shape-outside {
+                    min-width: inherit;
+                    min-height: inherit;
+                    // border-radius: 0;
+                    // clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+                }
+                // .workflow-node__shape-inside {
+                //   clip-path: polygon(0 11%, 100% 0, 100% 100%, 0% 100%);
+                // }
+            }
+
+            &--ext-task {
+                background-color: #e65100;
+                border-color: #e65100;
+
+                &:hover {
+                    background-color: #bf360c !important;
+                    border-color: #e65100 !important;
+                }
+            }
+
+            &--view-task {
+                background-color: $default-view-task-color;
+
+                &:hover {
+                    background-color: $default-view-task-color-hover !important;
+                }
+
+                .workflow-node__shape-outside {
+                    min-width: inherit;
+                    min-height: inherit;
+                }
+                // background: transparent;
+                // border-radius: 0;
+                // border-left: solid 1px transparent;
+
+                // .workflow-node__shape-outside {
+                //   border-radius: 0;
+                //   background: #C51162;
+                //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+                // }
+
+                // .workflow-node__shape-inside {
+                //   background: #C51162;
+                //   clip-path: polygon(20% 0%, 80% 0%, 100% 0, 100% 100%, 74% 89%, 25% 89%, 0 76%, 0 0)
+                // }
+
+                // .workflow-node__round-1 {
+                //   display: block;
+                //   border-radius: 100%;
+                //   width: 100px;
+                //   height: 50px;
+                //   background: #C51162;
+                //   position: absolute;
+                //   left: 1px;
+                //   bottom: -7px;
+                // }
+
+                // .workflow-node__round-2 {
+                //   display: block;
+                //   border-radius: 100%;
+                //   width: 93px;
+                //   height: 50px;
+                //   background: #fafafa;
+                //   position: absolute;
+                //   right: -8px;
+                //   bottom: -25px;
+                //   z-index: 10;
+                // }
+
+                // .workflow-node__shadow-shape-1 {
+                //   background: #FF4081;
+                //   display: block;
+                //   position: absolute;
+                //   height: 74px;
+                //   width: $wfw;
+                //   right: -11px;
+                //   top: -11px;
+                //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+                // }
+
+                // .workflow-node__shadow-shape-2 {
+                //   background: #F50057;
+                //   display: block;
+                //   position: absolute;
+                //   height: 72px;
+                //   width: $wfw;
+                //   right: -6px;
+                //   top: -6px;
+                //   clip-path: polygon(100% 0, 100% 100%, 89% 78%, 0 100%, 0 0);
+                // }
+            }
+
+            &--condition {
+                background: transparent;
+                cursor: pointer;
+                transition: all 100ms ease-in-out;
+                // background-color: $line-color;
+
+                &:hover {
+                    .workflow-node__text--condition {
+                        color: white !important;
+                    }
+                    .workflow-node__shape-inside {
+                        background-color: #4a148e !important;
+                    }
+                }
+
+                .workflow-node__inner {
+                    min-width: 50px;
+                    padding: 0;
+                    min-height: 50px;
+                    display: flex;
+                    height: auto;
+                    justify-content: center;
+                    align-items: center;
+                    align-content: center;
+                    // background-color: $line-color;
+                }
+
+                .workflow-node__text--condition {
+                    text-align: center;
+                    color: white;
+                    padding-top: 5px;
+                    padding-left: 1px;
+                    cursor: pointer;
+                }
+
+                .workflow-node__shape-outside {
+                    display: block;
+                    min-width: 100%;
+                    left: 1px;
+                    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    min-height: inherit;
+                    background-color: $line-color;
+                }
+
+                .workflow-node__shape-inside {
+                    display: block;
+                    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                    background-color: $line-color;
+                }
+
+                .workflow-node__bubble-delete {
+                    transition: all 100ms ease-in-out;
+                    right: -40px;
+
+                    button i {
+                        color: black !important;
+                    }
+                }
+            }
+
+            &--goto {
+                background: transparent;
+
+                .workflow-node__inner {
+                    width: 100%;
+                    display: flex;
+                    padding: 0;
+                    align-items: center;
+                    justify-content: center;
+                    align-content: center;
+                }
+
+                .workflow-node__text--goto {
+                    // padding-top: 25px;
+                    text-align: center;
+                    display: block;
+                    padding: 0;
+                }
+
+                .workflow-node__shape-outside {
+                    display: block;
+                    min-width: 100%;
+                    height: 100% !important;
+                    min-height: inherit !important;
+                    background-color: #607d8b;
+                    left: 1px;
+                    clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+                }
+
+                .workflow-node__shape-inside {
+                    background-color: #607d8b;
+                    display: block;
+                    clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+                }
+            }
+
+            &--as-a-shape {
+                border: none;
+
+                &:hover {
+                    color: #fff;
+
+                    .workflow-node__shape-inside {
+                        background: $highlight-color;
+                    }
+
+                    .workflow-node__shape-outside {
+                        background: $highlight-color;
+                    }
+                }
+
+                // &.workflow-node--selected.workflow-node--view-task {
+
+                // }
+
+                &.workflow-node--selected:not(.workflow-node--view-task) {
+                    .workflow-node__shape-outside {
+                        background: $selected-color !important;
+                    }
+
+                    .workflow-node__shape-inside {
+                        top: 2px;
+                        left: 2px;
+                        right: 2px;
+                        bottom: 2px;
+                    }
+                }
+            }
+
+            &--root {
+                display: block;
+                width: 100px;
+                margin: 0 auto;
+                height: 33px;
+                border-radius: 33px;
+                background: white;
+                border: #3f51b5 2px solid;
+            }
+
+            &--selected:not(.workflow-node--as-a-shape) {
+                // outline: solid 2px $selected-color;
+                box-shadow: 0 0 0 2px $selected-color;
+            }
+
+            &--dropping {
+                border-style: dashed;
+                opacity: 0.7;
+                border-color: lightgray;
+            }
+
+            &:not(.workflow-node--root)::before {
+                content: "";
+                display: block;
+                position: absolute;
+                background-color: $line-color;
+                -webkit-mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+                mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+                background-repeat: no-repeat;
+                width: 24px;
+                height: 24px;
+                top: -15px;
+                left: 1px;
+                width: 100%;
+                z-index: 1;
+            }
+
+            &--dragging {
+                opacity: 0.7;
+                &::before {
+                    visibility: hidden;
+                }
+            }
+
+            &:not(.workflow-node--as-a-shape):hover {
+                background: $highlight-color;
+                color: #fff;
+                border: $border-width solid $highlight-color;
+            }
+
+            &:hover {
+                .workflow-node__bubble-delete {
+                    opacity: 1;
+
+                    button:focus {
+                        outline: none !important;
+                    }
+                }
+            }
+
+            &--virtual {
+                border: none !important;
+                background: transparent !important;
+
+                &:hover {
+                    border: none !important;
+                    background: transparent !important;
+                }
+
+                button:focus {
+                    outline: none !important;
+                }
+            }
+        }
+
+        & > .plomino-workflow-editor__branches--virtual {
+            opacity: 0;
+            transition: all 100ms ease-in-out;
+        }
+
+        &:hover > .plomino-workflow-editor__branches--virtual {
+            opacity: 1;
+        }
     }
-  }
 }
 
 .plomino-workflow-editor__branches--condition {
-  padding: $line-height-condtion 0;
+    padding: $line-height-condtion 0;
 }
 
 .plomino-workflow-editor__branches .plomino-workflow-editor__branches--condition::before {
-  height: calc(#{$line-height-condtion} + 1px) !important;
+    height: calc(#{$line-height-condtion} + 1px) !important;
 }
 
-@media all and (min--moz-device-pixel-ratio:0) and (min-resolution: 3e1dpcm) {
-  .workflow-node--condition {
-    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTJweCIgaGVpZ2h0PSI1MHB4IiB2aWV3Qm94PSIwIDAgNTIgNTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQyICgzNjc4MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+UG9seWdvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwb2x5Z29uIGlkPSJQb2x5Z29uIiBzdHJva2U9IiMzRjUxQjUiIGZpbGw9IiMzRjUxQjUiIHBvaW50cz0iMjYgMCA1MSAyNSAyNiA1MCAxIDI1Ij48L3BvbHlnb24+CiAgICA8L2c+Cjwvc3ZnPg==') !important;
-    background-repeat: no-repeat !important;
-    background-position: 1px 0px !important;
-    width: 52px !important;
+@media all and (min--moz-device-pixel-ratio: 0) and (min-resolution: 3e1dpcm) {
+    .workflow-node--condition {
+        background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTJweCIgaGVpZ2h0PSI1MHB4IiB2aWV3Qm94PSIwIDAgNTIgNTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQyICgzNjc4MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+UG9seWdvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwb2x5Z29uIGlkPSJQb2x5Z29uIiBzdHJva2U9IiMzRjUxQjUiIGZpbGw9IiMzRjUxQjUiIHBvaW50cz0iMjYgMCA1MSAyNSAyNiA1MCAxIDI1Ij48L3BvbHlnb24+CiAgICA8L2c+Cjwvc3ZnPg==") !important;
+        background-repeat: no-repeat !important;
+        background-position: 1px 0px !important;
+        width: 52px !important;
 
-    .workflow-node__shape-outside {
-      display: none !important;
+        .workflow-node__shape-outside {
+            display: none !important;
+        }
     }
-  }
 
-  .workflow-node--goto {
-    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTgxcHgiIGhlaWdodD0iODFweCIgdmlld0JveD0iMCAwIDE4MSA4MSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDwhLS0gR2VuZXJhdG9yOiBTa2V0Y2ggNDIgKDM2NzgxKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5Qb2x5Z29uPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBvbHlnb24gaWQ9IlBvbHlnb24iIGZpbGw9IiM2MDdEOEIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkwLjAzNDQ5NiwgNDAuMzEzMDgyKSByb3RhdGUoMTgwLjAwMDAwMCkgdHJhbnNsYXRlKC05MC4wMzQ0OTYsIC00MC4zMTMwODIpICIgcG9pbnRzPSI5MC4wMzQ0OTYgMC4zMTMwODIzMDQgMTgwLjAzNDQ5NiAxNi4wMTY3ODk2IDE4MC4wMzQ0OTYgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgMTYuMDE2Nzg5NiI+PC9wb2x5Z29uPgogICAgPC9nPgo8L3N2Zz4=') !important;
-    position: relative !important;
-    background-repeat: no-repeat !important;
-    left: 2px !important;
+    .workflow-node--goto {
+        background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTgxcHgiIGhlaWdodD0iODFweCIgdmlld0JveD0iMCAwIDE4MSA4MSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDwhLS0gR2VuZXJhdG9yOiBTa2V0Y2ggNDIgKDM2NzgxKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5Qb2x5Z29uPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBvbHlnb24gaWQ9IlBvbHlnb24iIGZpbGw9IiM2MDdEOEIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkwLjAzNDQ5NiwgNDAuMzEzMDgyKSByb3RhdGUoMTgwLjAwMDAwMCkgdHJhbnNsYXRlKC05MC4wMzQ0OTYsIC00MC4zMTMwODIpICIgcG9pbnRzPSI5MC4wMzQ0OTYgMC4zMTMwODIzMDQgMTgwLjAzNDQ5NiAxNi4wMTY3ODk2IDE4MC4wMzQ0OTYgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgMTYuMDE2Nzg5NiI+PC9wb2x5Z29uPgogICAgPC9nPgo8L3N2Zz4=") !important;
+        position: relative !important;
+        background-repeat: no-repeat !important;
+        left: 2px !important;
 
-    .workflow-node__shape-outside {
-      display: none !important;
+        .workflow-node__shape-outside {
+            display: none !important;
+        }
     }
-  }
 }

@@ -1,47 +1,48 @@
 group:not([hidden]) .item {
-  margin: 5px 10px;
-  margin-top: 13px;
+    margin: 5px 10px;
+    margin-top: 13px;
 }
 
 group:first-child .item {
-  margin-top: 5px;
+    margin-top: 5px;
 }
 
 .templates {
-  margin: 5px 10px;
+    margin: 5px 10px;
 }
 
 .material-icons {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 .mdl-button {
-  text-shadow: none;
-  margin: 5px;
-  /*width: calc(100% - 10px);*/
-  text-align: left;
-  font-size: small;
-  text-overflow: ellipsis;
-  width: 46%;
+    text-shadow: none;
+    margin: 5px;
+    /*width: calc(100% - 10px);*/
+    text-align: left;
+    font-size: small;
+    text-overflow: ellipsis;
+    width: 46%;
 }
 
 .small-left-margin {
-  margin-left: 5px;
+    margin-left: 5px;
 }
 
-.mdl-button:hover, .mdl-button:active, .mdl-button:visited {
-  text-decoration: none;
-  color: white;
+.mdl-button:hover,
+.mdl-button:active,
+.mdl-button:visited {
+    text-decoration: none;
+    color: white;
 }
 
 /deep/ .plominoGroupClass {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.42857143;
-  color: #4d4d4d;
-  -webkit-font-smoothing: antialiased;
-  cursor: pointer !important;
-  opacity: 0.5;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.42857143;
+    color: #4d4d4d;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer !important;
+    opacity: 0.5;
 }
-

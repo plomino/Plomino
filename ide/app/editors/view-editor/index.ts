@@ -1,1 +1,1 @@
-export { PlominoViewEditorComponent } from './view-editor.component';
+export { PlominoViewEditorComponent } from "./view-editor.component";

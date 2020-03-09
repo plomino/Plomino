@@ -5,79 +5,81 @@
     width: 400px;">
     <code>{{ !tab || tab.url }}</code></pre>-->
 <div class="form-settings-wrapper" style="position: relative">
-  <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
+    <plomino-block-preloader [loading]="loading" [palette]="true"></plomino-block-preloader>
     <div class="formsettings--control-buttons" *ngIf="formSettings && hasAuthPermissions()">
-      <a class="mdl-button mdl-js-button mdl-button--raised 
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised 
         mdl-js-ripple-effect mdl-button--accent mdl-color--teal-700"
-        id="ide-formsettings__save-button"
-        *ngIf="formSettings"
-        (click)="submitForm()">
-          <span *ngIf="loading">
-            <loading class="white"></loading>
-          </span>
-          <span *ngIf="!loading">
-            <span class="icon material-icons">save</span>
-            Save
-          </span>
-      </a>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-formsettings__save-button">
-        Save current {{ tab ? tab.editor.replace('Plomino', '') : '' }}
-      </div>
-      <a class="mdl-button mdl-js-button mdl-button--raised
+            id="ide-formsettings__save-button"
+            *ngIf="formSettings"
+            (click)="submitForm()"
+        >
+            <span *ngIf="loading">
+                <loading class="white"></loading>
+            </span>
+            <span *ngIf="!loading">
+                <span class="icon material-icons">save</span>
+                Save
+            </span>
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-formsettings__save-button">
+            Save current {{ tab ? tab.editor.replace("Plomino", "") : "" }}
+        </div>
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--grey-300"
-        id="ide-formsettings__cancel-button"
-        *ngIf="formSettings"
-        (click)="cancelForm()">
-          <span class="icon material-icons">cancel</span>
-          Cancel
-      </a>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-formsettings__cancel-button">
-        Cancel current changes
-      </div>
-      <a class="mdl-button mdl-js-button mdl-button--raised
+            id="ide-formsettings__cancel-button"
+            *ngIf="formSettings"
+            (click)="cancelForm()"
+        >
+            <span class="icon material-icons">cancel</span>
+            Cancel
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-formsettings__cancel-button">
+            Cancel current changes
+        </div>
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--green-900"
-        id="ide-formsettings__preview-button"
-        *ngIf="formSettings"
-        (click)="openFormPreview(tab.url, tab.type)">
-          <span class="icon material-icons">slideshow</span>
-          Preview
-      </a>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-formsettings__preview-button">
-        Preview the {{ tab ? tab.editor.replace('Plomino', '') : '' }} in a new tab
-      </div>
-      <a class="mdl-button mdl-js-button mdl-button--raised
+            id="ide-formsettings__preview-button"
+            *ngIf="formSettings"
+            (click)="openFormPreview(tab.url, tab.type)"
+        >
+            <span class="icon material-icons">slideshow</span>
+            Preview
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-formsettings__preview-button">
+            Preview the {{ tab ? tab.editor.replace("Plomino", "") : "" }} in a new tab
+        </div>
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--blue-700"
-        id="ide-formsettings__code-button"
-        *ngIf="formSettings"
-        (click)="openFormCode(tab)">
-          <span class="icon material-icons">code</span>
-          Code
-      </a>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-formsettings__code-button">
-        Show code of this {{ tab ? tab.editor.replace('Plomino', '') : '' }}
-      </div>
-      <a class="mdl-button mdl-js-button mdl-button--raised
+            id="ide-formsettings__code-button"
+            *ngIf="formSettings"
+            (click)="openFormCode(tab)"
+        >
+            <span class="icon material-icons">code</span>
+            Code
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-formsettings__code-button">
+            Show code of this {{ tab ? tab.editor.replace("Plomino", "") : "" }}
+        </div>
+        <a
+            class="mdl-button mdl-js-button mdl-button--raised
         mdl-js-ripple-effect mdl-button--colored mdl-color--pink-500"
-        id="ide-formsettings__delete-button"
-        *ngIf="formSettings"
-        (click)="deleteForm(tab)">
-          <span class="icon material-icons">delete</span>
-          Delete
-      </a>
-      <div class="mdl-tooltip mdl-tooltip--large"
-        data-mdl-for="ide-formsettings__delete-button">
-        Delete the {{ tab ? tab.editor.replace('Plomino', '') : '' }}
-      </div>
+            id="ide-formsettings__delete-button"
+            *ngIf="formSettings"
+            (click)="deleteForm(tab)"
+        >
+            <span class="icon material-icons">delete</span>
+            Delete
+        </a>
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="ide-formsettings__delete-button">
+            Delete the {{ tab ? tab.editor.replace("Plomino", "") : "" }}
+        </div>
     </div>
-    <div class="mdl-card mdl-shadow--2dp settings-alert-no-object"
-      *ngIf="!formSettings">
-      <div class="mdl-card__supporting-text">Please select form or view</div>
+    <div class="mdl-card mdl-shadow--2dp settings-alert-no-object" *ngIf="!formSettings">
+        <div class="mdl-card__supporting-text">Please select form or view</div>
     </div>
-    <div class="scrolling-container scrolling-container--76" #formElem 
-        [innerHTML]="formSettings | safePloneHtml">
-    </div>
+    <div class="scrolling-container scrolling-container--76" #formElem [innerHTML]="formSettings | safePloneHtml"></div>
 </div>

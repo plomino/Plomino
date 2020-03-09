@@ -1,306 +1,305 @@
-import { PlominoDBService } from './db.service';
-import { FormsService } from './forms.service';
-import { Subject, BehaviorSubject } from 'rxjs/Rx';
-import { PlominoActiveEditorService } from './active-editor.service';
-import { URLManagerService } from './url-manager.service';
-import { LogService } from './log.service';
-import { Injectable, NgZone, ChangeDetectorRef } from '@angular/core';
-import { TreeService } from './tree.service';
+import { PlominoDBService } from "./db.service";
+import { FormsService } from "./forms.service";
+import { Subject, BehaviorSubject } from "rxjs/Rx";
+import { PlominoActiveEditorService } from "./active-editor.service";
+import { URLManagerService } from "./url-manager.service";
+import { LogService } from "./log.service";
+import { Injectable, NgZone, ChangeDetectorRef } from "@angular/core";
+import { TreeService } from "./tree.service";
 
 @Injectable()
 export class TabsService {
+    public closing = false;
+    public refreshCodeTab: Subject<string> = new Subject<string>();
+    public onRefreshCodeTab$ = this.refreshCodeTab.asObservable();
 
-  public closing = false;
-  public refreshCodeTab: Subject<string> = new Subject<string>();
-  public onRefreshCodeTab$ = this.refreshCodeTab.asObservable();
+    private activeTab$: BehaviorSubject<PlominoTab> = new BehaviorSubject(null);
+    private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
+    private tree: any;
 
-  private activeTab$: BehaviorSubject<PlominoTab> = new BehaviorSubject(null);
-  private tabs$: BehaviorSubject<any[]> = new BehaviorSubject([]);
-  private tree: any;
-  
-  workflowModeChange: Subject<boolean> = new Subject<boolean>();
-  workflowModeChanged$ = this.workflowModeChange.asObservable();
+    workflowModeChange: Subject<boolean> = new Subject<boolean>();
+    workflowModeChanged$ = this.workflowModeChange.asObservable();
 
-  constructor(
-    private treeService: TreeService,
-    private changeDetector: ChangeDetectorRef,
-    private urlManager: URLManagerService,
-    private formsService: FormsService,
-    private activeEditorService: PlominoActiveEditorService,
-    private log: LogService, private zone: NgZone,
-    private dbService: PlominoDBService,
-    // private formFieldsSelection: PlominoFormFieldsSelectionService,
-  ) {
-    this.treeService.getTree()
-      .subscribe((tree) => {
-        this.tree = tree;
-      });
-  }
+    constructor(
+        private treeService: TreeService,
+        private changeDetector: ChangeDetectorRef,
+        private urlManager: URLManagerService,
+        private formsService: FormsService,
+        private activeEditorService: PlominoActiveEditorService,
+        private log: LogService,
+        private zone: NgZone,
+        private dbService: PlominoDBService
+    ) // private formFieldsSelection: PlominoFormFieldsSelectionService,
+    {
+        this.treeService.getTree().subscribe(tree => {
+            this.tree = tree;
+        });
+    }
 
-  // setActiveTabDirty(dirty = true) {
-  //   let tabs = this.tabs$.getValue().slice(0);
-  //   tabs.forEach((tab) => {
-  //     if (tab.active) {
-  //       this.log.info('setActiveTabDirty dirty', tab.url);
-  //       tab.isdirty = dirty;
-  //     }
-  //   });
-  // }
+    // setActiveTabDirty(dirty = true) {
+    //   let tabs = this.tabs$.getValue().slice(0);
+    //   tabs.forEach((tab) => {
+    //     if (tab.active) {
+    //       this.log.info('setActiveTabDirty dirty', tab.url);
+    //       tab.isdirty = dirty;
+    //     }
+    //   });
+    // }
 
-  // setActiveTab(tab: PlominoTab, showAdd = false): void {
+    // setActiveTab(tab: PlominoTab, showAdd = false): void {
 
-  //   const isWorkflowTab = tab.url.split('/').pop() === 'workflow';
-    
-  //   if (tab.active) {
-  //     return;
-  //   }
+    //   const isWorkflowTab = tab.url.split('/').pop() === 'workflow';
 
-  //   let tabs: PlominoTab[] = this.tabs$.getValue().slice(0);
+    //   if (tab.active) {
+    //     return;
+    //   }
 
-  //   // const activeTab = <any> this.activeTab$.getValue();
-  //   // if (activeTab && !activeTab.isdirty) {
-  //   //   setTimeout(() => {
-  //   //     activeTab.isdirty = false;
-  //   //     const ed = tinymce.get(activeTab.url);
-  //   //     if (ed) {
-  //   //       ed.setDirty(false);
-  //   //     }
-  //   //   }, 200);
-  //   // }
+    //   let tabs: PlominoTab[] = this.tabs$.getValue().slice(0);
 
-  //   this.urlManager.rebuildURL(tabs);
-  //   const normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
+    //   // const activeTab = <any> this.activeTab$.getValue();
+    //   // if (activeTab && !activeTab.isdirty) {
+    //   //   setTimeout(() => {
+    //   //     activeTab.isdirty = false;
+    //   //     const ed = tinymce.get(activeTab.url);
+    //   //     if (ed) {
+    //   //       ed.setDirty(false);
+    //   //     }
+    //   //   }, 200);
+    //   // }
 
-  //   if (normalizedTab && tab.editor && tab.editor === 'code') {
-  //     normalizedTab.editor = 'code'; // I don't know why the editor field reduced
+    //   this.urlManager.rebuildURL(tabs);
+    //   const normalizedTab: any = Object.assign({}, this.retrieveTab(this.tree, tab), { showAdd: showAdd });
 
-  //     if (tab.path && tab.path.length > 1 && tab.path[1].type === 'Fields') {
-  //       normalizedTab.isField = true;
-  //     }
-  //   }
+    //   if (normalizedTab && tab.editor && tab.editor === 'code') {
+    //     normalizedTab.editor = 'code'; // I don't know why the editor field reduced
 
-  //   const selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
-    
-  //   tabs.forEach(tab => {
-  //     tab.active = (tab.url === selectedTab.url && selectedTab.editor === tab.editor);
-  //   });
+    //     if (tab.path && tab.path.length > 1 && tab.path[1].type === 'Fields') {
+    //       normalizedTab.isField = true;
+    //     }
+    //   }
 
-  //   if (!isWorkflowTab) {
-  //     // window.location.hash = `#t=${ tab.url.split('/').pop() }`;
-  //     this.activeTab$.next(normalizedTab);
-  //     this.workflowModeChange.next(false);
-  //   }
-  //   else {
-  //     this.workflowModeChange.next(true);
-  //   }
-  //   this.tabs$.next(tabs);
-  // }
+    //   const selectedTab: any = _.find(tabs, { url: tab.url, editor: tab.editor });
 
-  // openTab(tab: any, showAdd = true): void {
-  //   let tabs: any[] = this.tabs$.getValue();
-  //   let tabIsOpen = _.find(tabs, { url: tab.url, editor: tab.editor });
+    //   tabs.forEach(tab => {
+    //     tab.active = (tab.url === selectedTab.url && selectedTab.editor === tab.editor);
+    //   });
 
-  //   const isFormTab = tab.editor !== 'code' && tab.path && Array.isArray(tab.path) 
-  //     && tab.path.length && tab.path[0].type === 'Forms';
+    //   if (!isWorkflowTab) {
+    //     // window.location.hash = `#t=${ tab.url.split('/').pop() }`;
+    //     this.activeTab$.next(normalizedTab);
+    //     this.workflowModeChange.next(false);
+    //   }
+    //   else {
+    //     this.workflowModeChange.next(true);
+    //   }
+    //   this.tabs$.next(tabs);
+    // }
 
-  //   const isActiveForm = isFormTab && this.activeEditorService.getActive()
-  //     && `${ this.dbService.getDBLink() }/${ 
-  //       this.activeEditorService.getActive().id }` === tab.url;
+    // openTab(tab: any, showAdd = true): void {
+    //   let tabs: any[] = this.tabs$.getValue();
+    //   let tabIsOpen = _.find(tabs, { url: tab.url, editor: tab.editor });
 
-  //   if (isActiveForm) {
-  //     return;
-  //   }
+    //   const isFormTab = tab.editor !== 'code' && tab.path && Array.isArray(tab.path)
+    //     && tab.path.length && tab.path[0].type === 'Forms';
 
-  //   if (tabIsOpen) {
-  //     if (tabIsOpen.url !== 'workflow') {
-  //       this.setActiveTab(tab, false);
-  //     }
-  //     else {
-  //       this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
-  //     }
-  //   } else {
-  //     let builtedTab: PlominoTab = this.buildTab(tab, showAdd);
-  //     tabs.forEach((tab) => tab.active = false);
-  //     tabs.push(builtedTab);
-  //     this.tabs$.next(tabs);
-  //     if (builtedTab.url !== 'workflow') {
-  //       this.setActiveTab(tab, showAdd);
-  //       this.workflowModeChange.next(false);
-  //     }
-  //     else {
-  //       this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
-  //       this.formsService.changePaletteTab(0);
-  //       this.workflowModeChange.next(true);
-  //     }
-  //   }
-  // }
+    //   const isActiveForm = isFormTab && this.activeEditorService.getActive()
+    //     && `${ this.dbService.getDBLink() }/${
+    //       this.activeEditorService.getActive().id }` === tab.url;
 
-  // closeTab(tab: any): void {
-  //   let tabs: any[] = this.tabs$.getValue();
-  //   let tabIndex = 0;
-    
-  //   tabs.forEach((value, index) => {
-  //     const accepted = value.url === tab.url/* && value.editor === tab.editor*/;
-  //     if (accepted) {
-  //       tabIndex = index;
-  //       return false;
-  //     }
-  //   });
+    //   if (isActiveForm) {
+    //     return;
+    //   }
 
-  //   if (
-  //     tabs.length === 2 && tabs[tabIndex + 1] 
-  //     && tabs[tabIndex + 1].url === 'workflow'
-  //   ) {
-  //     setTimeout(() => {
-  //       tabs.splice(tabIndex, 1);
-  //     }, 100);
-  //   }
-  //   else {
-  //     tabs.splice(tabIndex, 1);
-  //   }
-    
-  //   if (tabs.length === 0) {
-  //     this.activeTab$.next(null);
-  //     // this.formFieldsSelection.flushActiveField();
-  //   }
+    //   if (tabIsOpen) {
+    //     if (tabIsOpen.url !== 'workflow') {
+    //       this.setActiveTab(tab, false);
+    //     }
+    //     else {
+    //       this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
+    //     }
+    //   } else {
+    //     let builtedTab: PlominoTab = this.buildTab(tab, showAdd);
+    //     tabs.forEach((tab) => tab.active = false);
+    //     tabs.push(builtedTab);
+    //     this.tabs$.next(tabs);
+    //     if (builtedTab.url !== 'workflow') {
+    //       this.setActiveTab(tab, showAdd);
+    //       this.workflowModeChange.next(false);
+    //     }
+    //     else {
+    //       this.urlManager.rebuildURL(this.tabs$.getValue().slice(0));
+    //       this.formsService.changePaletteTab(0);
+    //       this.workflowModeChange.next(true);
+    //     }
+    //   }
+    // }
 
-  //   this.tabs$.next(tabs);
-  //   this.changeDetector.markForCheck();
-  //   this.changeDetector.detectChanges();
-  //   this.urlManager.rebuildURL(tabs);
-  // }
+    // closeTab(tab: any): void {
+    //   let tabs: any[] = this.tabs$.getValue();
+    //   let tabIndex = 0;
 
-  // updateTabId(tab: any, newID: number|string): void {
-  //   // console.warn('UPDATE TAB ID', 'tab', tab, 'newID', newID);
-  //   let tabs = this.tabs$.getValue();
-  //   let updateTab: PlominoTab = _.find(tabs, (item:any) => item.url === tab.url);
-  //   updateTab.url = `${this.getParent(updateTab.url)}/${newID}`;
-  //   tab.url = `${this.getParent(updateTab.url)}/${newID}`;
+    //   tabs.forEach((value, index) => {
+    //     const accepted = value.url === tab.url/* && value.editor === tab.editor*/;
+    //     if (accepted) {
+    //       tabIndex = index;
+    //       return false;
+    //     }
+    //   });
 
-  //   /**
-  //    * update page hash
-  //    */
-  //   if (updateTab.active) {
-  //     this.urlManager.rebuildURL(tabs);
-  //   }
-  // }
+    //   if (
+    //     tabs.length === 2 && tabs[tabIndex + 1]
+    //     && tabs[tabIndex + 1].url === 'workflow'
+    //   ) {
+    //     setTimeout(() => {
+    //       tabs.splice(tabIndex, 1);
+    //     }, 100);
+    //   }
+    //   else {
+    //     tabs.splice(tabIndex, 1);
+    //   }
 
-  // updateTab(tabData: any, id: any): void {
-  //   // console.warn('UPDATE TAB', 'tabData', tabData, 'id', id);
-  //   let tabs = this.tabs$.getValue().slice(0);
-  //   let activeTab = Object.assign({}, this.activeTab$.getValue());
+    //   if (tabs.length === 0) {
+    //     this.activeTab$.next(null);
+    //     // this.formFieldsSelection.flushActiveField();
+    //   }
 
-  //   let tabToUpdate = _.find(tabs, (tab: any) => {
-  //     return tab.url === tabData.url;
-  //   });
+    //   this.tabs$.next(tabs);
+    //   this.changeDetector.markForCheck();
+    //   this.changeDetector.detectChanges();
+    //   this.urlManager.rebuildURL(tabs);
+    // }
 
-  //   tabToUpdate.url = `${this.getParent(tabToUpdate.url)}/${id}`;
-  //   activeTab.url = `${this.getParent(activeTab.url)}/${id}`;
+    // updateTabId(tab: any, newID: number|string): void {
+    //   // console.warn('UPDATE TAB ID', 'tab', tab, 'newID', newID);
+    //   let tabs = this.tabs$.getValue();
+    //   let updateTab: PlominoTab = _.find(tabs, (item:any) => item.url === tab.url);
+    //   updateTab.url = `${this.getParent(updateTab.url)}/${newID}`;
+    //   tab.url = `${this.getParent(updateTab.url)}/${newID}`;
 
-  //   this.tabs$.next(tabs);
-  //   this.activeTab$.next(activeTab);
-  // }
+    //   /**
+    //    * update page hash
+    //    */
+    //   if (updateTab.active) {
+    //     this.urlManager.rebuildURL(tabs);
+    //   }
+    // }
 
-  // getActiveTab(): Observable<PlominoTab> {
-  //   return this.activeTab$.asObservable();
-  // }
+    // updateTab(tabData: any, id: any): void {
+    //   // console.warn('UPDATE TAB', 'tabData', tabData, 'id', id);
+    //   let tabs = this.tabs$.getValue().slice(0);
+    //   let activeTab = Object.assign({}, this.activeTab$.getValue());
 
-  // getTabs(): Observable<any[]> {
-  //   return this.tabs$.asObservable();
-  // }
+    //   let tabToUpdate = _.find(tabs, (tab: any) => {
+    //     return tab.url === tabData.url;
+    //   });
 
-  // private retrieveTab(tree: any[], tab: PlominoTab): any {
-  //   if (!tab.path.length) {
-  //     return tab;
-  //   }
+    //   tabToUpdate.url = `${this.getParent(tabToUpdate.url)}/${id}`;
+    //   activeTab.url = `${this.getParent(activeTab.url)}/${id}`;
 
-  //   let pindex = this.index(tab.path[0].type);
+    //   this.tabs$.next(tabs);
+    //   this.activeTab$.next(activeTab);
+    // }
 
-  //   for (let elt of tree[pindex].children) {
-  //     if (elt.url.split('/').pop() == tab.url.split('/').pop()) {
-  //       if (tab.path.length > 1) {
-  //         let cindex = this.index(tab.path[1].type, pindex);
-  //         for (let celt of elt.children[cindex].children) {
-  //           if (celt.label == tab.path[1].name) {
-  //             return celt;
-  //           }
-  //         }
-  //       } else {
-  //         return elt;
-  //       }
-  //     }
-  //   }
-  // }
+    // getActiveTab(): Observable<PlominoTab> {
+    //   return this.activeTab$.asObservable();
+    // }
 
-  // private index(type: string, parentIndex?: number) {
-  //   if (parentIndex === undefined) {
-      
-  //     switch (type) {
-  //       case 'Forms':
-  //         return 0;
-  //       case 'Views':
-  //         return 1;
-  //       case 'Agents':
-  //         return 2;
-  //       default: 
-  //     }
+    // getTabs(): Observable<any[]> {
+    //   return this.tabs$.asObservable();
+    // }
 
-  //   } else {
-  //     switch (parentIndex) {
-  //       case 0:
-          
-  //         switch (type) {
-  //           case 'Fields':
-  //             return 0;
-  //           case 'Actions':
-  //             return 1;
-  //           case 'Hide Whens':
-  //             return 2;
-  //           default:
-  //         }
+    // private retrieveTab(tree: any[], tab: PlominoTab): any {
+    //   if (!tab.path.length) {
+    //     return tab;
+    //   }
 
-  //         break;
-  //       case 1:
-          
-  //         switch (type) {
-  //           case 'Actions':
-  //             return 0;
-  //           case 'Columns':
-  //             return 1;
-  //           default:
-  //         }
+    //   let pindex = this.index(tab.path[0].type);
 
-  //         break;
-  //       case 2:
-  //         return 0;
-  //     }
-  //   }
-  // }
+    //   for (let elt of tree[pindex].children) {
+    //     if (elt.url.split('/').pop() == tab.url.split('/').pop()) {
+    //       if (tab.path.length > 1) {
+    //         let cindex = this.index(tab.path[1].type, pindex);
+    //         for (let celt of elt.children[cindex].children) {
+    //           if (celt.label == tab.path[1].name) {
+    //             return celt;
+    //           }
+    //         }
+    //       } else {
+    //         return elt;
+    //       }
+    //     }
+    //   }
+    // }
 
-  // private buildTab(tab: any, showAdd: boolean): any {
-  //   let newtab = { 
-  //     title: tab.label, 
-  //     editor: tab.editor, 
-  //     path: tab.path, 
-  //     url: tab.url,
-  //     formUniqueId: tab.formUniqueId,
-  //     active: true,
-  //     showAdd: showAdd 
-  //   };
-    
-  //   /* if (newtab.editor === 'code') {
-  //    *     this.aceNumber++;
-  //    * }
-  //    * What is this code for ?!
-  //    */ 
-  //   return newtab;
-  // }
+    // private index(type: string, parentIndex?: number) {
+    //   if (parentIndex === undefined) {
 
-  // private getParent(url: string): string { 
-  //   return url.slice(0, url.lastIndexOf('/'));
-  // }
+    //     switch (type) {
+    //       case 'Forms':
+    //         return 0;
+    //       case 'Views':
+    //         return 1;
+    //       case 'Agents':
+    //         return 2;
+    //       default:
+    //     }
 
-  // private getId(url: string): string {
-  //   return url.slice(url.lastIndexOf('/') + 1);
-  // }
+    //   } else {
+    //     switch (parentIndex) {
+    //       case 0:
+
+    //         switch (type) {
+    //           case 'Fields':
+    //             return 0;
+    //           case 'Actions':
+    //             return 1;
+    //           case 'Hide Whens':
+    //             return 2;
+    //           default:
+    //         }
+
+    //         break;
+    //       case 1:
+
+    //         switch (type) {
+    //           case 'Actions':
+    //             return 0;
+    //           case 'Columns':
+    //             return 1;
+    //           default:
+    //         }
+
+    //         break;
+    //       case 2:
+    //         return 0;
+    //     }
+    //   }
+    // }
+
+    // private buildTab(tab: any, showAdd: boolean): any {
+    //   let newtab = {
+    //     title: tab.label,
+    //     editor: tab.editor,
+    //     path: tab.path,
+    //     url: tab.url,
+    //     formUniqueId: tab.formUniqueId,
+    //     active: true,
+    //     showAdd: showAdd
+    //   };
+
+    //   /* if (newtab.editor === 'code') {
+    //    *     this.aceNumber++;
+    //    * }
+    //    * What is this code for ?!
+    //    */
+    //   return newtab;
+    // }
+
+    // private getParent(url: string): string {
+    //   return url.slice(0, url.lastIndexOf('/'));
+    // }
+
+    // private getId(url: string): string {
+    //   return url.slice(url.lastIndexOf('/') + 1);
+    // }
 }

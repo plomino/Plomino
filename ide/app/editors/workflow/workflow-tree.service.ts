@@ -1,18 +1,17 @@
-import { TreeStructure } from './tree-structure';
-import { Injectable } from '@angular/core';
+import { TreeStructure } from "./tree-structure";
+import { Injectable } from "@angular/core";
 
 @Injectable()
 export class PlominoWorkflowTreeService {
+    activeTree: TreeStructure = null;
 
-  activeTree: TreeStructure = null;
+    constructor() {}
 
-  constructor() { }
+    setActiveTree(tree: TreeStructure) {
+        this.activeTree = tree;
+    }
 
-  setActiveTree(tree: TreeStructure) {
-    this.activeTree = tree;
-  }
-
-  getActiveTree() {
-    return this.activeTree;
-  }
+    getActiveTree() {
+        return this.activeTree;
+    }
 }

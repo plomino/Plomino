@@ -1,9 +1,7 @@
-define([
-  'mockup-patterns-tinymce-links'
-], function(LinkModal) {
-  'use strict';
-  window.LinkModal = LinkModal;
-  return window.LinkModal;
+define(["mockup-patterns-tinymce-links"], function(LinkModal) {
+    "use strict";
+    window.LinkModal = LinkModal;
+    return window.LinkModal;
 });
 // define([
 //   'jquery',
@@ -352,7 +350,6 @@ define([
 //       prependToContext: true
 //     });
 //   });
-
 
 //   var LinkModal = Base.extend({
 //     name: 'linkmodal',

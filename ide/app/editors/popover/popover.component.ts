@@ -1,9 +1,9 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-    selector: 'plomino-popover',
+    selector: "plomino-popover",
     template: require("./popover.component.html"),
-    styles: [require("./popover.component.css")]
+    styles: [require("./popover.component.css")],
 })
 export class PopoverComponent {
     @Input() name: string;

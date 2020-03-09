@@ -1,1 +1,1 @@
-export { TinyMCEComponent } from './tiny-mce.component';
+export { TinyMCEComponent } from "./tiny-mce.component";

@@ -1,1 +1,1 @@
-export { ColumnsSettingsComponent } from './columns-settings.component';
+export { ColumnsSettingsComponent } from "./columns-settings.component";

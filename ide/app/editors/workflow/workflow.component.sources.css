@@ -1,546 +1,582 @@
 body {
-  font-family: sans-serif;
-  font-size: 15px;
+    font-family: sans-serif;
+    font-size: 15px;
 }
 
 .nav-item:has(#tab_workflow) {
-  height: 42px !important;
-  display: -webkit-box !important;
-  display: -webkit-flex !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
-  -webkit-box-align: end !important;
-  -webkit-align-items: flex-end !important;
-      -ms-flex-align: end !important;
-          align-items: flex-end !important;
+    height: 42px !important;
+    display: -webkit-box !important;
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+    -webkit-box-align: end !important;
+    -webkit-align-items: flex-end !important;
+    -ms-flex-align: end !important;
+    align-items: flex-end !important;
 }
 
 .plomino-workflow-editor {
-  background: #fafafa;
-  min-height: calc(100vh - 50px);
-  font-family: "Roboto","Helvetica","Arial",sans-serif;
-  font-weight: 500;
+    background: #fafafa;
+    min-height: calc(100vh - 50px);
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 500;
 }
 .plomino-workflow-editor__branches {
-  position: relative;
-  padding: 4em 0;
-  white-space: nowrap;
-  margin: 0 auto;
-  text-align: center;
+    position: relative;
+    padding: 4em 0;
+    white-space: nowrap;
+    margin: 0 auto;
+    text-align: center;
 }
 .plomino-workflow-editor__branches--root {
-  padding-top: 2em;
-  max-height: calc(100vh - 50px);
-  min-height: 550px;
-  overflow-y: scroll;
+    padding-top: 2em;
+    max-height: calc(100vh - 50px);
+    min-height: 550px;
+    overflow-y: scroll;
 }
 .plomino-workflow-editor__branches::after {
-  content: '';
-  display: table;
-  clear: both;
+    content: "";
+    display: table;
+    clear: both;
 }
 .plomino-workflow-editor__branches .plomino-workflow-editor__branches::before {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 50%;
-  border-left: 2px solid #3f51b5;
-  width: 0;
-  height: calc(4em + 1px);
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    border-left: 2px solid #3f51b5;
+    width: 0;
+    height: calc(4em + 1px);
+    z-index: 1;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch {
-  display: inline-block;
-  vertical-align: top;
-  text-align: center;
-  list-style-type: none;
-  position: relative;
-  padding: 4em 0.5em 0 0.5em;
-  cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    list-style-type: none;
+    position: relative;
+    padding: 4em 0.5em 0 0.5em;
+    cursor: pointer;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch div.plomino-workflow-editor__branch-add-below-bubble-btn {
-  display: block;
-  cursor: pointer;
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
-  opacity: 0;
-  background: transparent;
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  margin-left: -12.5px;
-  z-index: 1;
+    display: block;
+    cursor: pointer;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
+    opacity: 0;
+    background: transparent;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    margin-left: -12.5px;
+    z-index: 1;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch div.plomino-workflow-editor__branch-add-below-bubble-btn > button {
-  width: 26px;
-  min-width: 26px;
-  height: 26px;
-  padding: 0 8px !important;
-  outline: 0 !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    div.plomino-workflow-editor__branch-add-below-bubble-btn
+    > button {
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 8px !important;
+    outline: 0 !important;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch div.plomino-workflow-editor__branch-add-below-bubble-btn:hover {
-  opacity: 1;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    div.plomino-workflow-editor__branch-add-below-bubble-btn:hover {
+    opacity: 1;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .plomino-workflow-editor__branch-plus-btn {
-  position: absolute;
-  right: 50px;
-  outline: none !important;
-  top: 18px;
-  cursor: pointer;
+    position: absolute;
+    right: 50px;
+    outline: none !important;
+    top: 18px;
+    cursor: pointer;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch::before, .plomino-workflow-editor li.plomino-workflow-editor__branch::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 50%;
-  border-top: 2px solid #3f51b5;
-  width: 50%;
-  height: 4em;
+.plomino-workflow-editor li.plomino-workflow-editor__branch::before,
+.plomino-workflow-editor li.plomino-workflow-editor__branch::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 50%;
+    border-top: 2px solid #3f51b5;
+    width: 50%;
+    height: 4em;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch::after {
-  right: auto;
-  left: 50%;
-  border-left: 2px solid #3f51b5;
+    right: auto;
+    left: 50%;
+    border-left: 2px solid #3f51b5;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch:only-of-type::after, .plomino-workflow-editor li.plomino-workflow-editor__branch:only-of-type::before {
-  display: none;
+.plomino-workflow-editor li.plomino-workflow-editor__branch:only-of-type::after,
+.plomino-workflow-editor li.plomino-workflow-editor__branch:only-of-type::before {
+    display: none;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:only-of-type {
-  padding-top: 0;
+    padding-top: 0;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch:first-of-type::before, .plomino-workflow-editor li.plomino-workflow-editor__branch:last-of-type::after {
-  border: 0 none;
+.plomino-workflow-editor li.plomino-workflow-editor__branch:first-of-type::before,
+.plomino-workflow-editor li.plomino-workflow-editor__branch:last-of-type::after {
+    border: 0 none;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:last-of-type::before {
-  border-right: 2px solid #3f51b5;
-  border-radius: 0 5px 0 0;
-  left: 0;
+    border-right: 2px solid #3f51b5;
+    border-radius: 0 5px 0 0;
+    left: 0;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:last-of-type:not(:only-of-type) .workflow-node::before {
-  left: -1px !important;
+    left: -1px !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:first-of-type::after {
-  border-radius: 5px 0 0 0;
+    border-radius: 5px 0 0 0;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node {
-  border: 2px solid #4A148C;
-  padding: 0;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 0;
-  color: white;
-  position: relative;
-  top: 2px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  background: #4A148C;
-  border-radius: 4px;
+    border: 2px solid #4a148c;
+    padding: 0;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 0;
+    color: white;
+    position: relative;
+    top: 2px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background: #4a148c;
+    border-radius: 4px;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:hover .workflow-node__round-1 {
-  background: #3f51b5 !important;
+    background: #3f51b5 !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__start-text {
-  color: black;
-  padding-top: 2pt;
-  text-transform: uppercase;
-  font-weight: 500;
+    color: black;
+    padding-top: 2pt;
+    text-transform: uppercase;
+    font-weight: 500;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:hover .workflow-node__start-text {
-  color: white;
+    color: white;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a {
-  color: whitesmoke;
+    color: whitesmoke;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a.workflow-node__text-modal-link {
-  text-decoration: underline !important;
+    text-decoration: underline !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node a.workflow-node__text-modal-link:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node.workflow-node--condition {
-  cursor: pointer;
+    cursor: pointer;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node.workflow-node--condition a {
-  color: black;
+    color: black;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node.workflow-node--condition a:hover {
-  color: white;
+    color: white;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__hover-plus-btn {
-  opacity: 0;
-  position: absolute;
-  right: -50px;
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
-  z-index: 9999;
-  background: transparent;
-  width: 80px;
-  height: 80px;
-  text-align: right;
+    opacity: 0;
+    position: absolute;
+    right: -50px;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
+    z-index: 9999;
+    background: transparent;
+    width: 80px;
+    height: 80px;
+    text-align: right;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__hover-plus-btn button:focus {
-  outline: none;
+    outline: none;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:hover > .workflow-node__hover-plus-btn {
-  opacity: 1;
+    opacity: 1;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__text {
-  position: relative;
+    position: relative;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__text--task {
-  display: block;
-  word-break: break-word;
-  word-wrap: break-word;
-  white-space: normal;
-  -webkit-hyphens: auto;
-     -moz-hyphens: auto;
-      -ms-hyphens: auto;
-          hyphens: auto;
-  width: 166px;
-  height: auto;
-  max-height: 40px;
-  overflow-wrap: break-word;
+    display: block;
+    word-break: break-word;
+    word-wrap: break-word;
+    white-space: normal;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    width: 166px;
+    height: auto;
+    max-height: 40px;
+    overflow-wrap: break-word;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__text--process {
-  display: block;
-  word-break: break-word;
-  word-wrap: break-word;
-  white-space: normal;
-  -webkit-hyphens: auto;
-     -moz-hyphens: auto;
-      -ms-hyphens: auto;
-          hyphens: auto;
-  width: 166px;
-  height: auto;
-  max-height: 40px;
-  overflow-wrap: break-word;
+    display: block;
+    word-break: break-word;
+    word-wrap: break-word;
+    white-space: normal;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    width: 166px;
+    height: auto;
+    max-height: 40px;
+    overflow-wrap: break-word;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__text--goto {
-  display: block;
-  word-break: break-word;
-  word-wrap: break-word;
-  white-space: normal;
-  -webkit-hyphens: auto;
-     -moz-hyphens: auto;
-      -ms-hyphens: auto;
-          hyphens: auto;
-  width: 166px;
-  height: auto;
-  max-height: inherit;
-  overflow-wrap: break-word;
+    display: block;
+    word-break: break-word;
+    word-wrap: break-word;
+    white-space: normal;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    width: 166px;
+    height: auto;
+    max-height: inherit;
+    overflow-wrap: break-word;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__inner {
-  text-align: center;
-  min-height: 80px;
-  min-width: 180px;
-  padding: 6px 7px;
-  line-height: 1.4;
-  padding-top: 15px;
+    text-align: center;
+    min-height: 80px;
+    min-width: 180px;
+    padding: 6px 7px;
+    line-height: 1.4;
+    padding-top: 15px;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__shape-outside {
-  display: none;
-  position: absolute;
-  min-height: 80px;
-  top: 0;
-  background: black;
+    display: none;
+    position: absolute;
+    min-height: 80px;
+    top: 0;
+    background: black;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__shape-inside {
-  display: none;
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  right: 1px;
-  bottom: 1px;
-  background: white;
+    display: none;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    background: white;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__bubble-delete {
-  opacity: 0;
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
-  color: white !important;
-  position: absolute;
-  right: 5px;
-  top: 5px;
+    opacity: 0;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
+    color: white !important;
+    position: absolute;
+    right: 5px;
+    top: 5px;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node__bubble-delete:hover button i {
-  color: white !important;
+    color: white !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--branch .workflow-node__inner {
-  padding: 15px;
-  min-width: 200px;
-  min-height: inherit;
-  text-align: left;
+    padding: 15px;
+    min-width: 200px;
+    min-height: inherit;
+    text-align: left;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--task {
-  color: white;
-  background-color: #00695C;
+    color: white;
+    background-color: #00695c;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--task:hover {
-  background-color: #004D40 !important;
+    background-color: #004d40 !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--task .workflow-node__inner {
-  padding: 15px;
-  min-width: 200px;
-  min-height: inherit;
-  text-align: left;
+    padding: 15px;
+    min-width: 200px;
+    min-height: inherit;
+    text-align: left;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--task .workflow-node__shape-outside {
-  border-radius: 4px;
-  background: #01579B;
-  display: block;
-  min-width: 180px;
-  left: 1px;
+    border-radius: 4px;
+    background: #01579b;
+    display: block;
+    min-width: 180px;
+    left: 1px;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--task .workflow-node__shape-inside {
-  display: block;
-  background: #01579B;
+    display: block;
+    background: #01579b;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--form-task .workflow-node__shape-outside, .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--ext-task .workflow-node__shape-outside {
-  min-width: inherit;
-  min-height: inherit;
+.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--form-task .workflow-node__shape-outside,
+.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--ext-task .workflow-node__shape-outside {
+    min-width: inherit;
+    min-height: inherit;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--ext-task {
-  background-color: #E65100;
-  border-color: #E65100;
+    background-color: #e65100;
+    border-color: #e65100;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--ext-task:hover {
-  background-color: #BF360C !important;
-  border-color: #E65100 !important;
+    background-color: #bf360c !important;
+    border-color: #e65100 !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--view-task {
-  background-color: #00838F;
+    background-color: #00838f;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--view-task:hover {
-  background-color: #006064 !important;
+    background-color: #006064 !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--view-task .workflow-node__shape-outside {
-  min-width: inherit;
-  min-height: inherit;
+    min-width: inherit;
+    min-height: inherit;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition {
-  background: transparent;
-  cursor: pointer;
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
+    background: transparent;
+    cursor: pointer;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition:hover .workflow-node__text--condition {
-  color: white !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--condition:hover
+    .workflow-node__text--condition {
+    color: white !important;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition:hover .workflow-node__shape-inside {
-  background-color: #4A148E !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--condition:hover
+    .workflow-node__shape-inside {
+    background-color: #4a148e !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__inner {
-  min-width: 50px;
-  padding: 0;
-  min-height: 50px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: auto;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-align-content: center;
-      -ms-flex-line-pack: center;
-          align-content: center;
+    min-width: 50px;
+    padding: 0;
+    min-height: 50px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    height: auto;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-align-content: center;
+    -ms-flex-line-pack: center;
+    align-content: center;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__text--condition {
-  text-align: center;
-  color: white;
-  padding-top: 5px;
-  padding-left: 1px;
-  cursor: pointer;
+    text-align: center;
+    color: white;
+    padding-top: 5px;
+    padding-left: 1px;
+    cursor: pointer;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__shape-outside {
-  display: block;
-  min-width: 100%;
-  left: 1px;
-  -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  min-height: inherit;
-  background-color: #3f51b5;
+    display: block;
+    min-width: 100%;
+    left: 1px;
+    -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    min-height: inherit;
+    background-color: #3f51b5;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__shape-inside {
-  display: block;
-  -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-          clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  background-color: #3f51b5;
+    display: block;
+    -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    background-color: #3f51b5;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__bubble-delete {
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
-  right: -40px;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
+    right: -40px;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--condition .workflow-node__bubble-delete button i {
-  color: black !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--condition
+    .workflow-node__bubble-delete
+    button
+    i {
+    color: black !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--goto {
-  background: transparent;
+    background: transparent;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__inner {
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding: 0;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-align-content: center;
-      -ms-flex-line-pack: center;
-          align-content: center;
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 0;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-align-content: center;
+    -ms-flex-line-pack: center;
+    align-content: center;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__text--goto {
-  text-align: center;
-  display: block;
-  padding: 0;
+    text-align: center;
+    display: block;
+    padding: 0;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__shape-outside {
-  display: block;
-  min-width: 100%;
-  height: 100% !important;
-  min-height: inherit !important;
-  background-color: #607D8B;
-  left: 1px;
-  -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
-          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+    display: block;
+    min-width: 100%;
+    height: 100% !important;
+    min-height: inherit !important;
+    background-color: #607d8b;
+    left: 1px;
+    -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+    clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--goto .workflow-node__shape-inside {
-  background-color: #607D8B;
-  display: block;
-  -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
-          clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+    background-color: #607d8b;
+    display: block;
+    -webkit-clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
+    clip-path: polygon(100% 0, 100% 80%, 50% 100%, 50% 100%, 0% 80%, 0 0);
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape {
-  border: none;
+    border: none;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape:hover {
-  color: #fff;
+    color: #fff;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape:hover .workflow-node__shape-inside {
-  background: #3f51b5;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--as-a-shape:hover
+    .workflow-node__shape-inside {
+    background: #3f51b5;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape:hover .workflow-node__shape-outside {
-  background: #3f51b5;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--as-a-shape:hover
+    .workflow-node__shape-outside {
+    background: #3f51b5;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape.workflow-node--selected:not(.workflow-node--view-task) .workflow-node__shape-outside {
-  background: #4a148c !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--as-a-shape.workflow-node--selected:not(.workflow-node--view-task)
+    .workflow-node__shape-outside {
+    background: #4a148c !important;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--as-a-shape.workflow-node--selected:not(.workflow-node--view-task) .workflow-node__shape-inside {
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node--as-a-shape.workflow-node--selected:not(.workflow-node--view-task)
+    .workflow-node__shape-inside {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--root {
-  display: block;
-  width: 100px;
-  margin: 0 auto;
-  height: 33px;
-  border-radius: 33px;
-  background: white;
-  border: #3f51b5 2px solid;
+    display: block;
+    width: 100px;
+    margin: 0 auto;
+    height: 33px;
+    border-radius: 33px;
+    background: white;
+    border: #3f51b5 2px solid;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--selected:not(.workflow-node--as-a-shape) {
-  box-shadow: 0 0 0 2px #4a148c;
+    box-shadow: 0 0 0 2px #4a148c;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--dropping {
-  border-style: dashed;
-  opacity: 0.7;
-  border-color: lightgray;
+    border-style: dashed;
+    opacity: 0.7;
+    border-color: lightgray;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:not(.workflow-node--root)::before {
-  content: '';
-  display: block;
-  position: absolute;
-  background-color: #3f51b5;
-  -webkit-mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
-  mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
-  background-repeat: no-repeat;
-  width: 24px;
-  height: 24px;
-  top: -15px;
-  left: 1px;
-  width: 100%;
-  z-index: 1;
+    content: "";
+    display: block;
+    position: absolute;
+    background-color: #3f51b5;
+    -webkit-mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+    mask: url(images/ic_arrow_drop_down_black_24px.svg) no-repeat 50% 50%;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    top: -15px;
+    left: 1px;
+    width: 100%;
+    z-index: 1;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--dragging {
-  opacity: 0.7;
+    opacity: 0.7;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--dragging::before {
-  visibility: hidden;
+    visibility: hidden;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:not(.workflow-node--as-a-shape):hover {
-  background: #3f51b5;
-  color: #fff;
-  border: 2px solid #3f51b5;
+    background: #3f51b5;
+    color: #fff;
+    border: 2px solid #3f51b5;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:hover .workflow-node__bubble-delete {
-  opacity: 1;
+    opacity: 1;
 }
-.plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node:hover .workflow-node__bubble-delete button:focus {
-  outline: none !important;
+.plomino-workflow-editor
+    li.plomino-workflow-editor__branch
+    .workflow-node:hover
+    .workflow-node__bubble-delete
+    button:focus {
+    outline: none !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--virtual {
-  border: none !important;
-  background: transparent !important;
+    border: none !important;
+    background: transparent !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--virtual:hover {
-  border: none !important;
-  background: transparent !important;
+    border: none !important;
+    background: transparent !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch .workflow-node--virtual button:focus {
-  outline: none !important;
+    outline: none !important;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch > .plomino-workflow-editor__branches--virtual {
-  opacity: 0;
-  -webkit-transition: all 100ms ease-in-out;
-          transition: all 100ms ease-in-out;
+    opacity: 0;
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
 }
 .plomino-workflow-editor li.plomino-workflow-editor__branch:hover > .plomino-workflow-editor__branches--virtual {
-  opacity: 1;
+    opacity: 1;
 }
 
 .plomino-workflow-editor__branches--condition {
-  padding: 1em 0;
+    padding: 1em 0;
 }
 
 .plomino-workflow-editor__branches .plomino-workflow-editor__branches--condition::before {
-  height: calc(1em + 1px) !important;
+    height: calc(1em + 1px) !important;
 }
 
 @media all and (min--moz-device-pixel-ratio: 0) and (min-resolution: 30dpcm) {
-  .workflow-node--condition {
-    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTJweCIgaGVpZ2h0PSI1MHB4IiB2aWV3Qm94PSIwIDAgNTIgNTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQyICgzNjc4MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+UG9seWdvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwb2x5Z29uIGlkPSJQb2x5Z29uIiBzdHJva2U9IiMzRjUxQjUiIGZpbGw9IiMzRjUxQjUiIHBvaW50cz0iMjYgMCA1MSAyNSAyNiA1MCAxIDI1Ij48L3BvbHlnb24+CiAgICA8L2c+Cjwvc3ZnPg==") !important;
-    background-repeat: no-repeat !important;
-    background-position: 1px 0px !important;
-    width: 52px !important;
-  }
-  .workflow-node--condition .workflow-node__shape-outside {
-    display: none !important;
-  }
+    .workflow-node--condition {
+        background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTJweCIgaGVpZ2h0PSI1MHB4IiB2aWV3Qm94PSIwIDAgNTIgNTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQyICgzNjc4MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+UG9seWdvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwb2x5Z29uIGlkPSJQb2x5Z29uIiBzdHJva2U9IiMzRjUxQjUiIGZpbGw9IiMzRjUxQjUiIHBvaW50cz0iMjYgMCA1MSAyNSAyNiA1MCAxIDI1Ij48L3BvbHlnb24+CiAgICA8L2c+Cjwvc3ZnPg==") !important;
+        background-repeat: no-repeat !important;
+        background-position: 1px 0px !important;
+        width: 52px !important;
+    }
+    .workflow-node--condition .workflow-node__shape-outside {
+        display: none !important;
+    }
 
-  .workflow-node--goto {
-    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTgxcHgiIGhlaWdodD0iODFweCIgdmlld0JveD0iMCAwIDE4MSA4MSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDwhLS0gR2VuZXJhdG9yOiBTa2V0Y2ggNDIgKDM2NzgxKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5Qb2x5Z29uPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBvbHlnb24gaWQ9IlBvbHlnb24iIGZpbGw9IiM2MDdEOEIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkwLjAzNDQ5NiwgNDAuMzEzMDgyKSByb3RhdGUoMTgwLjAwMDAwMCkgdHJhbnNsYXRlKC05MC4wMzQ0OTYsIC00MC4zMTMwODIpICIgcG9pbnRzPSI5MC4wMzQ0OTYgMC4zMTMwODIzMDQgMTgwLjAzNDQ5NiAxNi4wMTY3ODk2IDE4MC4wMzQ0OTYgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgMTYuMDE2Nzg5NiI+PC9wb2x5Z29uPgogICAgPC9nPgo8L3N2Zz4=") !important;
-    position: relative !important;
-    background-repeat: no-repeat !important;
-    left: 2px !important;
-  }
-  .workflow-node--goto .workflow-node__shape-outside {
-    display: none !important;
-  }
+    .workflow-node--goto {
+        background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTgxcHgiIGhlaWdodD0iODFweCIgdmlld0JveD0iMCAwIDE4MSA4MSIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KICAgIDwhLS0gR2VuZXJhdG9yOiBTa2V0Y2ggNDIgKDM2NzgxKSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5Qb2x5Z29uPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBvbHlnb24gaWQ9IlBvbHlnb24iIGZpbGw9IiM2MDdEOEIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkwLjAzNDQ5NiwgNDAuMzEzMDgyKSByb3RhdGUoMTgwLjAwMDAwMCkgdHJhbnNsYXRlKC05MC4wMzQ0OTYsIC00MC4zMTMwODIpICIgcG9pbnRzPSI5MC4wMzQ0OTYgMC4zMTMwODIzMDQgMTgwLjAzNDQ5NiAxNi4wMTY3ODk2IDE4MC4wMzQ0OTYgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgODAuMzEzMDgyMyAwLjAzNDQ5NTk4OTcgMTYuMDE2Nzg5NiI+PC9wb2x5Z29uPgogICAgPC9nPgo8L3N2Zz4=") !important;
+        position: relative !important;
+        background-repeat: no-repeat !important;
+        left: 2px !important;
+    }
+    .workflow-node--goto .workflow-node__shape-outside {
+        display: none !important;
+    }
 }

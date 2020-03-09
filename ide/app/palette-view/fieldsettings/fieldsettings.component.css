@@ -14,12 +14,15 @@
     justify-content: space-around;
 }
 
-.mdl-button, .mdl-button:hover, .mdl-button:active, .mdl-button:visited {
+.mdl-button,
+.mdl-button:hover,
+.mdl-button:active,
+.mdl-button:visited {
     color: white;
     text-decoration: none;
     -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    -ms-flex: 1;
+    flex: 1;
 }
 .mdl-button--accent {
     margin-right: 16px;
@@ -30,5 +33,5 @@
 } */
 
 /deep/#portal-column-content .select2-container {
-  width: 100% !important;
+    width: 100% !important;
 }

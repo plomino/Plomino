@@ -1,59 +1,126 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,formMethod.value,hideDefaultActions.checked,isPage.checked,searchForm.checked,searchView.value,resourcesJS.value,resourcesCSS.value)' #form="ngForm">
-  <div class="form-group">
-    <label for="title">Titre</label>
-    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
-  </div>
-  <div class="form-group">
-    <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
-  </div>
-  <div class="form-group">
-    <label for="desc">Description</label>
-    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
-  </div>
-  <div class="form-group">
-    <label>Form method</label>
-    <p class="help-block">The form method: GET or POST or Auto (default).</p>
-    <select #formMethod formControlName="form.controls.formMethod" class="form-control" [value]="data?.form_method">
-      <option value="GET"> GET</option>
-      <option value="POST"> POST</option>
-      <option value="Auto"> Auto</option>
-    </select>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #hideDefaultActions formControlName="form.controls.hideDefaultActions" type="checkbox" [checked]="data?.hide_default_actions"> Hide default actions
-    </label>
-    <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #isPage formControlName="form.controls.isPage" type="checkbox" [checked]="data?.isPage"> Page
-    </label>
-    <p class="help-block">A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page, explanations, reports, navigation, etc.</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #searchForm formControlName="form.controls.searchForm" type="checkbox" [checked]="data?.isSearchForm"> Search form
-    </label>
-    <p class="help-block">A search form is only used to search documents, it cannot be saved.</p>
-  </div>
-  <div class="form-group">
-    <label for="formSearchView">Search view</label>
-    <p class="help-block">View used to display the search results</p>
-    <input #searchView formControlName="form.controls.searchView" type="text" class="form-control" id="formSearchView" [value]="data?.search_view">
-  </div>
-  <div class="form-group">
-    <label for="formJS">JavaScripts</label>
-    <p class="help-block">JavaScript resources loaded by this form. Enter one path per line.</p>
-    <textarea #resourcesJS formControlName="form.controls.resourcesJS" type="text" class="form-control" id="formJS">{{data?.resources_js}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="formCSS">CSS</label>
-    <p class="help-block">CSS resources loaded by this form. Enter one path per line.</p>
-    <textarea #resourcesCSS formControlName="form.controls.resourcesCSS" type="text" class="form-control" id="formCSS">{{data?.resources_css}}</textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+<form
+    (ngSubmit)="
+        onSubmit(
+            data['@id'],
+            title.value,
+            desc.value,
+            formMethod.value,
+            hideDefaultActions.checked,
+            isPage.checked,
+            searchForm.checked,
+            searchView.value,
+            resourcesJS.value,
+            resourcesCSS.value
+        )
+    "
+    #form="ngForm"
+>
+    <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+            #title
+            formControlName="form.controls.title"
+            [value]="data?.title"
+            type="text"
+            class="form-control"
+            id="title"
+            required="true"
+        />
+    </div>
+    <div class="form-group">
+        <label for="id">ID</label>
+        <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true" />
+    </div>
+    <div class="form-group">
+        <label for="desc">Description</label>
+        <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+        <textarea
+            #desc
+            formControlName="form.controls.desc"
+            type="text"
+            class="form-control"
+            id="desc"
+            [value]="data?.description"
+        ></textarea>
+    </div>
+    <div class="form-group">
+        <label>Form method</label>
+        <p class="help-block">The form method: GET or POST or Auto (default).</p>
+        <select #formMethod formControlName="form.controls.formMethod" class="form-control" [value]="data?.form_method">
+            <option value="GET"> GET</option>
+            <option value="POST"> POST</option>
+            <option value="Auto"> Auto</option>
+        </select>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #hideDefaultActions
+                formControlName="form.controls.hideDefaultActions"
+                type="checkbox"
+                [checked]="data?.hide_default_actions"
+            />
+            Hide default actions
+        </label>
+        <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input #isPage formControlName="form.controls.isPage" type="checkbox" [checked]="data?.isPage" /> Page
+        </label>
+        <p class="help-block">
+            A page cannot be saved and does not provide any action bar. It can be useful to build a welcome page,
+            explanations, reports, navigation, etc.
+        </p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #searchForm
+                formControlName="form.controls.searchForm"
+                type="checkbox"
+                [checked]="data?.isSearchForm"
+            />
+            Search form
+        </label>
+        <p class="help-block">A search form is only used to search documents, it cannot be saved.</p>
+    </div>
+    <div class="form-group">
+        <label for="formSearchView">Search view</label>
+        <p class="help-block">View used to display the search results</p>
+        <input
+            #searchView
+            formControlName="form.controls.searchView"
+            type="text"
+            class="form-control"
+            id="formSearchView"
+            [value]="data?.search_view"
+        />
+    </div>
+    <div class="form-group">
+        <label for="formJS">JavaScripts</label>
+        <p class="help-block">JavaScript resources loaded by this form. Enter one path per line.</p>
+        <textarea
+            #resourcesJS
+            formControlName="form.controls.resourcesJS"
+            type="text"
+            class="form-control"
+            id="formJS"
+            >{{ data?.resources_js }}</textarea
+        >
+    </div>
+    <div class="form-group">
+        <label for="formCSS">CSS</label>
+        <p class="help-block">CSS resources loaded by this form. Enter one path per line.</p>
+        <textarea
+            #resourcesCSS
+            formControlName="form.controls.resourcesCSS"
+            type="text"
+            class="form-control"
+            id="formCSS"
+            >{{ data?.resources_css }}</textarea
+        >
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

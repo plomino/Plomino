@@ -1,10 +1,10 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
-@Pipe({ 
-  name: 'extractName' 
+@Pipe({
+    name: "extractName",
 })
 export class ExtractNamePipe implements PipeTransform {
-  transform(url: string): string {
-    return url.split('/').pop();
-  }
+    transform(url: string): string {
+        return url.split("/").pop();
+    }
 }

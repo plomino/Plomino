@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../../services';
+import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { REACTIVE_FORM_DIRECTIVES } from "@angular/forms";
+import { ElementService } from "../../../services";
 
 @Component({
-    selector: 'plomino-views-settings',
-    template: require('./views-settings.component.html'),
-    styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
+    selector: "plomino-views-settings",
+    template: require("./views-settings.component.html"),
+    styles: ["form {margin: 15px;} .help-block {font-style: italic;}"],
     providers: [ElementService],
-    directives: [ REACTIVE_FORM_DIRECTIVES ]
+    directives: [REACTIVE_FORM_DIRECTIVES],
 })
 export class ViewsSettingsComponent {
     @Input() id: string;
@@ -15,17 +15,16 @@ export class ViewsSettingsComponent {
     @Output() isDirty = new EventEmitter();
     @Output() titleChanged = new EventEmitter();
     @Output() elementDeleted = new EventEmitter();
-    @ViewChild('form') form: any;
+    @ViewChild("form") form: any;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(private _elementService: ElementService) {}
 
     ngOnInit() {
         this.getElement();
     }
 
     ngAfterViewInit() {
-        this.form.control.valueChanges
-            .subscribe(() => this.isDirty.emit(true));
+        this.form.control.valueChanges.subscribe(() => this.isDirty.emit(true));
     }
 
     getElement() {
@@ -39,7 +38,8 @@ export class ViewsSettingsComponent {
         //     );
     }
 
-    onSubmit(id: string,
+    onSubmit(
+        id: string,
         title: string,
         description: string,
         hideDefaultActions: boolean,
@@ -47,16 +47,17 @@ export class ViewsSettingsComponent {
         keyColumn: string,
         categorized: boolean,
         reverseSorting: boolean,
-        staticRendering: boolean) {
-            const element = {
-                "title": title,
-                "description": description,
-                "hide_default_actions": hideDefaultActions,
-                "sort_column": sortColumn,
-                "key_column": keyColumn,
-                "categorized": categorized,
-                "reverse_sorting": reverseSorting,
-                "static_rendering": staticRendering
+        staticRendering: boolean
+    ) {
+        const element = {
+            title: title,
+            description: description,
+            hide_default_actions: hideDefaultActions,
+            sort_column: sortColumn,
+            key_column: keyColumn,
+            categorized: categorized,
+            reverse_sorting: reverseSorting,
+            static_rendering: staticRendering,
         };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {

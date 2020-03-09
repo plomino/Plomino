@@ -1,85 +1,85 @@
-@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
-@import 'https://code.getmdl.io/1.3.0/material.indigo-pink.min.css';
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
+@import "https://code.getmdl.io/1.3.0/material.indigo-pink.min.css";
 
 .wrap-app {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
 }
 
 .sidebar {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  margin-bottom: 0;
-  padding: 0;
-  border-radius: 0;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  flex-flow: column;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    margin-bottom: 0;
+    padding: 0;
+    border-radius: 0;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-flow: column;
 }
 
 .palette-wrapper {
-  /*max-height: 80%;*/
-  overflow: hidden;
-  /*height: 300px;*/
-  transition: none;
-  /*min-height: 150px;*/
-  /*padding-top: 64px;*/
+    /*max-height: 80%;*/
+    overflow: hidden;
+    /*height: 300px;*/
+    transition: none;
+    /*min-height: 150px;*/
+    /*padding-top: 64px;*/
 }
 
 /deep/[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  /* Required to make elements draggable in old WebKit */
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Required to make elements draggable in old WebKit */
+    -khtml-user-drag: element;
+    -webkit-user-drag: element;
 }
 
 /deep/[data-plomino-position="start"] {
     padding: 2px 10px;
     color: #cccccc;
-    background-color:  #cccccc;
+    background-color: #cccccc;
     background-repeat: no-repeat;
-    margin-right:0.7em;
-    display:inline;
+    margin-right: 0.7em;
+    display: inline;
 }
 
 /deep/[data-plomino-position="end"] {
     padding: 2px 10px;
     color: #cccccc;
-    background-color:  #cccccc;
+    background-color: #cccccc;
     background-repeat: no-repeat;
-    margin-left:0.7em;
-    display:inline-block;
+    margin-left: 0.7em;
+    display: inline-block;
 }
 
 /deep/.nav-link {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /deep/.mdl-button {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /deep/.add-new-form-tab > a {
-  padding: 6px !important;
-  position: relative !important;
-  color: black !important;
-  border: solid 1px #dddddd !important;
-  border-radius: 5px !important;
-  display: flex !important;
+    padding: 6px !important;
+    position: relative !important;
+    color: black !important;
+    border: solid 1px #dddddd !important;
+    border-radius: 5px !important;
+    display: flex !important;
 }
 
 /*/deep/.add-new-form-tab > a:hover {
@@ -87,13 +87,13 @@
 }*/
 
 /deep/.plominoHidewhenClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoHideWhen.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoHideWhen.png");
     position: relative !important;
     display: inline-block !important;
 }
 /deep/#drag-data-cursor {
-  z-index: 10000;
-  transform: translate3d(0, 0, 0);
+    z-index: 10000;
+    transform: translate3d(0, 0, 0);
 }
 /deep/#drag-data-cursor input[type="text"],
 /deep/#drag-data-cursor input[type="email"],
@@ -113,23 +113,23 @@
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
 /deep/.plominoPagebreakClass {
-  width: 100% !important;
-  min-width: 200px !important;
-  border-width: 10px !important;
-  margin: 0 !important;
+    width: 100% !important;
+    min-width: 200px !important;
+    border-width: 10px !important;
+    margin: 0 !important;
 }
 
 /deep/.plominoLabelClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoLabel.png");
 }
 /deep/.plominoCacheClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoCache.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoCache.png");
 }
 
 /deep/[data-plomino-position]:after {
@@ -139,7 +139,7 @@
     width: 0;
     position: absolute;
     pointer-events: none;
-    border-color: rgba(187,0,0,0);
+    border-color: rgba(187, 0, 0, 0);
     border-width: 0.7em;
     margin-top: -0.7em;
     z-index: 1;
@@ -149,13 +149,13 @@
 /deep/[data-plomino-position="start"]:after {
     left: 100%;
     border-left-width: 8px;
-    border-left-color:  #cccccc;
+    border-left-color: #cccccc;
 }
 
 /deep/[data-plomino-position="end"]:after {
     right: 100%;
     border-right-width: 8px;
-    border-right-color:  #cccccc;
+    border-right-color: #cccccc;
 }
 
 /*/deep/.dnd-drag-start {
@@ -176,20 +176,20 @@
 }*/
 
 .dnd-sortable-drag {
-  -moz-transform:scale(0.9);
-  -webkit-transform:scale(0.9);
-  transform:scale(0.9);
-  opacity:0.7;
-  border: 1px dashed #000;
+    -moz-transform: scale(0.9);
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+    opacity: 0.7;
+    border: 1px dashed #000;
 }
 
 .palette-wrapper /deep/ .mdl-tabs:not(.default) {
-  display: block;
+    display: block;
     width: 100%;
 }
 
 .palette-wrapper /deep/ .add-wrapper {
-  padding-top: 5px;
+    padding-top: 5px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab-bar:not(.default) {
@@ -203,12 +203,12 @@
 }
 
 .palette-wrapper /deep/ .mdl-tabs__panel:not(.default) {
-  overflow-y: auto;
-  min-height: 300px;
+    overflow-y: auto;
+    min-height: 300px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab fieldset {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .palette-wrapper /deep/ .mdl-tabs__tab:not(.default) {
@@ -226,120 +226,119 @@
     font-weight: 500;
     font-size: 14px;
     text-transform: none;
-    color: rgba(0,0,0,.54);
+    color: rgba(0, 0, 0, 0.54);
     overflow: hidden;
     white-space: normal;
     max-width: 25%;
     text-align: center;
     -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
     -webkit-box-align: start;
-        -ms-flex-align: start;
-            align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
 }
 
 .palette-wrapper /deep/ .nav-tabs {
-  width: 336px;
-  position: fixed;
-  top: 0;
-  left: 4px;
-  background: white;
-  z-index: 1;
-  overflow-x: scroll;
+    width: 336px;
+    position: fixed;
+    top: 0;
+    left: 4px;
+    background: white;
+    z-index: 1;
+    overflow-x: scroll;
 }
 
 .palette-wrapper /deep/ .nav-tabs .nav-item:first-child a {
-  height: 64px;
-  display: flex;
-  justify-content: center;
-  line-height: 0;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    line-height: 0;
 }
 
 .palette-wrapper /deep/ .nav-tabs .nav-item:first-child a span {
-  -ms-align-self: center;
-  height: 17px;
-  align-self: center;
-} 
+    -ms-align-self: center;
+    height: 17px;
+    align-self: center;
+}
 
 .tab-name {
-  margin-left: 5px;
-  margin-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .tree-wrapper {
-  position: relative;
-  flex: 1;
-  overflow-y: scroll;
+    position: relative;
+    flex: 1;
+    overflow-y: scroll;
 }
 
 .tree-wrapper .title {
-  font-size: 14px;
-  text-transform: uppercase;
-  padding: 5px 0px;
-  color: black;
-  background-color: white;
-  font-weight: 500; 
+    font-size: 14px;
+    text-transform: uppercase;
+    padding: 5px 0px;
+    color: black;
+    background-color: white;
+    font-weight: 500;
 }
 
 .tree-wrapper .content {
-  height: calc(100% - 29px);
-  overflow-y: auto;
+    height: calc(100% - 29px);
+    overflow-y: auto;
 }
 
 .main-app {
-  width: 100%;
-  height: 100vh;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
 }
 
 tab {
-  height: calc(100vh - 43px);
-  overflow-y: auto;
+    height: calc(100vh - 43px);
+    overflow-y: auto;
 }
 
 .well,
 plomino-palette,
 plomino-tree {
-  /* Should be able to bind this value to the wrapperWidth property in app.component.ts */
-   width: 600px;
-   transition: none;
+    /* Should be able to bind this value to the wrapperWidth property in app.component.ts */
+    width: 600px;
+    transition: none;
 }
 
 .tabunsaved {
-  font-style: italic;
+    font-style: italic;
 }
 
-
 .drop-zone-container {
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  justify-content: center;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    justify-content: center;
 }
 
 .drop-zone-label {
-  -ms-align-self: center;
-  align-self: center;
-  text-align: center;
+    -ms-align-self: center;
+    align-self: center;
+    text-align: center;
 }
 
 .drop-zone-label .glyphicon {
-  font-size: 40px;
+    font-size: 40px;
 }
 
 .drop-zone-label .heading {
-  font-size: 25px;
+    font-size: 25px;
 }

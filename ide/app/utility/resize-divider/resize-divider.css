@@ -1,42 +1,42 @@
 plomino-resize-divider {
-  z-index: 1;
+    z-index: 1;
 }
 
 .resizeable-divider {
-  background-color: white;
-  text-align: center;
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  user-drag: none;
-  -webkit-user-drag: none;
+    background-color: white;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    user-drag: none;
+    -webkit-user-drag: none;
 }
 
 .resizeable-divider--row {
-  cursor: row-resize;
+    cursor: row-resize;
 }
 
 .resizeable-divider--column {
-  cursor: col-resize;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  z-index: 1;
-  /*border-right: 1px solid #e3e3e3;*/
-  height: 100%;
+    cursor: col-resize;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    z-index: 1;
+    /*border-right: 1px solid #e3e3e3;*/
+    height: 100%;
 }
 
 .resizeable-divider__control {
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  -moz-user-select: none;
-  user-drag: none;
-  -webkit-user-drag: none;
-  width: 18px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    user-drag: none;
+    -webkit-user-drag: none;
+    width: 18px;
 }

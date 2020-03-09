@@ -1,9 +1,8 @@
-import {Component} from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-    selector: 'loading',
+    selector: "loading",
     template: require("./loading.component.html"),
-    styles: [require("./loading.component.css")]
+    styles: [require("./loading.component.css")],
 })
-export class LoadingComponent {
-}
+export class LoadingComponent {}

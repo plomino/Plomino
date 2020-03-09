@@ -1,70 +1,66 @@
 <div>
-  <header class="mdl-layout__header mdl-layout__header--scroll">
-    <div class="mdl-layout__header-row">
-      <span class="mdl-layout-title">{{dbName}}</span>
-      <div class="mdl-layout-spacer"></div>
-      <nav class="mdl-navigation mdl-layout--large-screen-only">
-        <a class="mdl-navigation__link" [href]="getPloneLink()">Close IDE</a>
-        <a class="mdl-navigation__link" [href]="getPloneLink() + '/logout'">Logout</a>
-      </nav>
-    </div>
-  </header>
-  <div class="mdl-layout__drawer"></div>
-  <main class="mdl-layout__content" style="width: 100%">
-    <div class="page-content">
-      <plomino-block-preloader [loading]="false"></plomino-block-preloader>
-      
-      <div class="wrap-app" style="height: calc(100vh - 64px);">
-  
-        <div class="well sidebar mdl-color--grey-50" style="height: 100%">
-
-          <div class="palette-wrapper">
-            <plomino-palette>
-            </plomino-palette>
-          </div>
-          
-          <div class="tree-wrapper">
-            <plomino-resize-divider listen="VERTICAL"
-              (move)="resizeTree($event)"></plomino-resize-divider>
-            <div class="content">
-              <plomino-tree [data]="data" 
-                            [selected]="selected" 
-                            (add)="onAdd($event)">
-              </plomino-tree>
-            </div>
-          </div>
+    <header class="mdl-layout__header mdl-layout__header--scroll">
+        <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">{{ dbName }}</span>
+            <div class="mdl-layout-spacer"></div>
+            <nav class="mdl-navigation mdl-layout--large-screen-only">
+                <a class="mdl-navigation__link" [href]="getPloneLink()">Close IDE</a>
+                <a class="mdl-navigation__link" [href]="getPloneLink() + '/logout'">Logout</a>
+            </nav>
         </div>
+    </header>
+    <div class="mdl-layout__drawer"></div>
+    <main class="mdl-layout__content" style="width: 100%">
+        <div class="page-content">
+            <plomino-block-preloader [loading]="false"></plomino-block-preloader>
 
-        <plomino-resize-divider
-          listen="HORIZONTAL"
-          [columnResize]="true"
-          (move)="resizeColumns($event)"></plomino-resize-divider>
-        
-        <!-- This should really be in a component -->
-        <div class="main-app panel"  style="height: 100%; overflow-y: scroll; flex: 1">
-          <div class="drop-zone-container"        
-            *ngIf="isDragging && 
-                  dragData !== null &&
-                  (dragData['@type'] === 'PlominoForm' ||
-                  dragData['@type'] === 'PlominoView/custom' ||
-                    dragData['@type'] === 'PlominoView')"
-            dnd-droppable
-            [allowDrop]="allowDrop()"
-            (onDropSuccess)="dropped()">
-            <div class="drop-zone-label">
-              <p class="glyphicon glyphicon-download" 
-                  aria-hidden="true">
-              </p>
-              <p class="heading">
-                Drop Selected Item here
-              </p>
+            <div class="wrap-app" style="height: calc(100vh - 64px);">
+                <div class="well sidebar mdl-color--grey-50" style="height: 100%">
+                    <div class="palette-wrapper">
+                        <plomino-palette> </plomino-palette>
+                    </div>
+
+                    <div class="tree-wrapper">
+                        <plomino-resize-divider listen="VERTICAL" (move)="resizeTree($event)"></plomino-resize-divider>
+                        <div class="content">
+                            <plomino-tree [data]="data" [selected]="selected" (add)="onAdd($event)"> </plomino-tree>
+                        </div>
+                    </div>
+                </div>
+
+                <plomino-resize-divider
+                    listen="HORIZONTAL"
+                    [columnResize]="true"
+                    (move)="resizeColumns($event)"
+                ></plomino-resize-divider>
+
+                <!-- This should really be in a component -->
+                <div class="main-app panel" style="height: 100%; overflow-y: scroll; flex: 1">
+                    <div
+                        class="drop-zone-container"
+                        *ngIf="
+                            isDragging &&
+                            dragData !== null &&
+                            (dragData['@type'] === 'PlominoForm' ||
+                                dragData['@type'] === 'PlominoView/custom' ||
+                                dragData['@type'] === 'PlominoView')
+                        "
+                        dnd-droppable
+                        [allowDrop]="allowDrop()"
+                        (onDropSuccess)="dropped()"
+                    >
+                        <div class="drop-zone-label">
+                            <p class="glyphicon glyphicon-download" aria-hidden="true"></p>
+                            <p class="heading">
+                                Drop Selected Item here
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <plomino-tabs></plomino-tabs>
+                </div>
             </div>
-          </div>
-
-          <!-- Tabs -->
-          <plomino-tabs></plomino-tabs>
         </div>
-      </div>
-    </div>
-  </main>
+    </main>
 </div>

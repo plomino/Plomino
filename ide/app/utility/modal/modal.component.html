@@ -1,33 +1,39 @@
 <modal #modal (onClose)="onModalClose()" (onDismiss)="onModalDismiss()">
-  <modal-header [show-close]="true">
-    <h4 class="modal-title">Add new {{data.type}}</h4>
-  </modal-header>
-  <modal-body>
-    <alert *ngIf="nameError" [type]="'danger'">Please enter a name</alert>
-    <form class="form-horizontal">
-      <div class="form-group" [class.has-error]="nameError">
-        <label class="col-sm-3 control-label">Name:</label>
-        <div class="col-sm-9">
-          <input name="name" [(ngModel)]="name" autofocus (keyup.enter)="onModalClose()" class="form-control input-sm">
-        </div>
-      </div>
-      <div class="form-group" *ngIf="data.isAction">
-        <label class="col-sm-3 control-label">Action Type:</label>
-        <div class="col-sm-9">
-          <select name="actionType" class="form-control input-sm" [(ngModel)]="action_type">
-            <option value="OPENFORM">Open form</option>
-            <option value="OPENVIEW">Open view</option>
-            <option value="CLOSE">Close</option>
-            <option value="SAVE">Save</option>
-            <option value="PYTHON">Python script</option>
-            <option value="REDIRECT">Redirect formula</option>
-          </select>
-        </div>
-      </div>
-    </form>
-  </modal-body>
-  <modal-footer>
+    <modal-header [show-close]="true">
+        <h4 class="modal-title">Add new {{ data.type }}</h4>
+    </modal-header>
+    <modal-body>
+        <alert *ngIf="nameError" [type]="'danger'">Please enter a name</alert>
+        <form class="form-horizontal">
+            <div class="form-group" [class.has-error]="nameError">
+                <label class="col-sm-3 control-label">Name:</label>
+                <div class="col-sm-9">
+                    <input
+                        name="name"
+                        [(ngModel)]="name"
+                        autofocus
+                        (keyup.enter)="onModalClose()"
+                        class="form-control input-sm"
+                    />
+                </div>
+            </div>
+            <div class="form-group" *ngIf="data.isAction">
+                <label class="col-sm-3 control-label">Action Type:</label>
+                <div class="col-sm-9">
+                    <select name="actionType" class="form-control input-sm" [(ngModel)]="action_type">
+                        <option value="OPENFORM">Open form</option>
+                        <option value="OPENVIEW">Open view</option>
+                        <option value="CLOSE">Close</option>
+                        <option value="SAVE">Save</option>
+                        <option value="PYTHON">Python script</option>
+                        <option value="REDIRECT">Redirect formula</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </modal-body>
+    <modal-footer>
         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="modal.dismiss()">Cancel</button>
         <button type="button" class="btn btn-primary" (click)="modal.close()">Add</button>
-  </modal-footer>
+    </modal-footer>
 </modal>

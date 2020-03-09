@@ -1,31 +1,40 @@
 <div class="mdl-tabs__panel" [class.is-active]="isActive" [id]="id">
-  <plomino-tiny-mce 
-    *ngIf="editor === 'layout'" 
-    [id]="url" [item]="{
-      label: label || id.replace('tab-content_', ''), 
-      url: url, editor: editor
-    }"
-    (isLoading)="onLoadingStateChange($event)"
-    (isDirty)="onDirtyStateChange($event)"
-    (fieldSelected)="onLayoutFieldSelected($event)">
-  </plomino-tiny-mce>
-  <plomino-workflow-editor 
-    *ngIf="editor === 'workflow'"
-    [id]="url" [item]="{
-      label: label || id.replace('tab-content_', ''), 
-      url: url, editor: editor }">
-  </plomino-workflow-editor>
+    <plomino-tiny-mce
+        *ngIf="editor === 'layout'"
+        [id]="url"
+        [item]="{
+            label: label || id.replace('tab-content_', ''),
+            url: url,
+            editor: editor
+        }"
+        (isLoading)="onLoadingStateChange($event)"
+        (isDirty)="onDirtyStateChange($event)"
+        (fieldSelected)="onLayoutFieldSelected($event)"
+    >
+    </plomino-tiny-mce>
+    <plomino-workflow-editor
+        *ngIf="editor === 'workflow'"
+        [id]="url"
+        [item]="{
+            label: label || id.replace('tab-content_', ''),
+            url: url,
+            editor: editor
+        }"
+    >
+    </plomino-workflow-editor>
 
-  <plomino-view-editor 
-    *ngIf="editor === 'view'"
-    [id]="url" [item]="{
-      label: label || id.replace('tab-content_', ''), 
-      url: url, editor: editor }"
-    (isLoading)="onLoadingStateChange($event)">
-  </plomino-view-editor>
-  
-  <plomino-ace-editor 
-    *ngIf="editor === 'code'"
-    [url]="url" (isDirty)="onDirtyStateChange($event)">
-  </plomino-ace-editor>
+    <plomino-view-editor
+        *ngIf="editor === 'view'"
+        [id]="url"
+        [item]="{
+            label: label || id.replace('tab-content_', ''),
+            url: url,
+            editor: editor
+        }"
+        (isLoading)="onLoadingStateChange($event)"
+    >
+    </plomino-view-editor>
+
+    <plomino-ace-editor *ngIf="editor === 'code'" [url]="url" (isDirty)="onDirtyStateChange($event)">
+    </plomino-ace-editor>
 </div>

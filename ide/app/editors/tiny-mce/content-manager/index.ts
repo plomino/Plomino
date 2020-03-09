@@ -1,1 +1,1 @@
-export { TinyMCEFormContentManagerService } from './content-manager.service';
+export { TinyMCEFormContentManagerService } from "./content-manager.service";

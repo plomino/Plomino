@@ -1,44 +1,75 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,actionType.value,actionDisplay.value,inActionBar.checked)' #form="ngForm">
-  <div class="form-group">
-    <label for="title">Titre</label>
-    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" id="title" required="true">
-  </div>
-  <div class="form-group">
-    <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true">
-  </div>
-  <div class="form-group">
-    <label for="desc">Description</label>
-    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc type="text" formControlName="form.controls.desc" class="form-control" id="desc" [value]="data?.description"></textarea>
-  </div>
-  <div class="form-group">
-    <label>Action type</label>
-    <p class="help-block">Select the type for this action</p>
-    <select formControlName="form.controls.actionType" #actionType class="form-control" [value]="data?.action_type">
-      <option value="OPENFORM">Open form</option>
-      <option value="OPENVIEW">Open view</option>
-      <option value="CLOSE">Close</option>
-      <option value="SAVE">Save</option>
-      <option value="PYTHON">Python script</option>
-      <option value="REDIRECT">Redirect formula</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Action display</label>
-    <p class="help-block">How the action is shown</p>
-    <select formControlName="form.controls.actionDisplay" #actionDisplay class="form-control" [value]="data?.action_display">
-      <option value="LINK">Link</option>
-      <option value="SUBMIT">Submit button</option>
-      <option value="BUTTON">Button</option>
-    </select>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input formControlName="form.controls.inActionBar" #inActionBar type="checkbox" [checked]="data?.in_action_bar"> Display action in action bar (yes/no)
-    </label>
-  </div>
+<form
+    (ngSubmit)="
+        onSubmit(data['@id'], title.value, desc.value, actionType.value, actionDisplay.value, inActionBar.checked)
+    "
+    #form="ngForm"
+>
+    <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+            #title
+            formControlName="form.controls.title"
+            [value]="data?.title"
+            type="text"
+            class="form-control"
+            id="title"
+            required="true"
+        />
+    </div>
+    <div class="form-group">
+        <label for="id">ID</label>
+        <input type="text" class="form-control" [value]="data ? data['@id'] : ''" id="id" disabled="true" />
+    </div>
+    <div class="form-group">
+        <label for="desc">Description</label>
+        <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+        <textarea
+            #desc
+            type="text"
+            formControlName="form.controls.desc"
+            class="form-control"
+            id="desc"
+            [value]="data?.description"
+        ></textarea>
+    </div>
+    <div class="form-group">
+        <label>Action type</label>
+        <p class="help-block">Select the type for this action</p>
+        <select formControlName="form.controls.actionType" #actionType class="form-control" [value]="data?.action_type">
+            <option value="OPENFORM">Open form</option>
+            <option value="OPENVIEW">Open view</option>
+            <option value="CLOSE">Close</option>
+            <option value="SAVE">Save</option>
+            <option value="PYTHON">Python script</option>
+            <option value="REDIRECT">Redirect formula</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Action display</label>
+        <p class="help-block">How the action is shown</p>
+        <select
+            formControlName="form.controls.actionDisplay"
+            #actionDisplay
+            class="form-control"
+            [value]="data?.action_display"
+        >
+            <option value="LINK">Link</option>
+            <option value="SUBMIT">Submit button</option>
+            <option value="BUTTON">Button</option>
+        </select>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                formControlName="form.controls.inActionBar"
+                #inActionBar
+                type="checkbox"
+                [checked]="data?.in_action_bar"
+            />
+            Display action in action bar (yes/no)
+        </label>
+    </div>
 
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

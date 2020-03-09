@@ -1,65 +1,65 @@
 <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-  <div class="mdl-tabs__tab-bar">
-    <a [href]="'#palette-tab-0-panel'"
-      [hidden]="tabs[0].hidden"
-      [class.is-active]="tabs[0].active"
-      (click)="setActiveTab($event, 0)"
-      class="mdl-tabs__tab">
-      {{ tabs[0].title }}
-    </a>
-    <a [href]="'#palette-tab-1-panel'"
-      [hidden]="tabs[1].hidden"
-      [class.is-active]="tabs[1].active"
-      (click)="setActiveTab($event, 1)"
-      class="mdl-tabs__tab">
-      {{ tabs[1].title }}
-    </a>
-    <a [href]="'#palette-tab-4-panel'"
-      [hidden]="tabs[4].hidden"
-      [class.is-active]="tabs[4].active"
-      (click)="setActiveTab($event, 4)"
-      class="mdl-tabs__tab">
-      {{ tabs[4].title }}
-    </a>
-    <a [href]="'#palette-tab-2-panel'"
-      [hidden]="tabs[2].hidden"
-      [class.is-active]="tabs[2].active"
-      (click)="setActiveTab($event, 2)"
-      class="mdl-tabs__tab">
-      {{ tabs[2].title }}
-    </a>
-    <a [href]="'#palette-tab-3-panel'"
-      [hidden]="tabs[3].hidden"
-      [class.is-active]="tabs[3].active"
-      (click)="setActiveTab($event, 3)"
-      class="mdl-tabs__tab">
-      {{ tabs[3].title }}
-    </a>
-  </div>
+    <div class="mdl-tabs__tab-bar">
+        <a
+            [href]="'#palette-tab-0-panel'"
+            [hidden]="tabs[0].hidden"
+            [class.is-active]="tabs[0].active"
+            (click)="setActiveTab($event, 0)"
+            class="mdl-tabs__tab"
+        >
+            {{ tabs[0].title }}
+        </a>
+        <a
+            [href]="'#palette-tab-1-panel'"
+            [hidden]="tabs[1].hidden"
+            [class.is-active]="tabs[1].active"
+            (click)="setActiveTab($event, 1)"
+            class="mdl-tabs__tab"
+        >
+            {{ tabs[1].title }}
+        </a>
+        <a
+            [href]="'#palette-tab-4-panel'"
+            [hidden]="tabs[4].hidden"
+            [class.is-active]="tabs[4].active"
+            (click)="setActiveTab($event, 4)"
+            class="mdl-tabs__tab"
+        >
+            {{ tabs[4].title }}
+        </a>
+        <a
+            [href]="'#palette-tab-2-panel'"
+            [hidden]="tabs[2].hidden"
+            [class.is-active]="tabs[2].active"
+            (click)="setActiveTab($event, 2)"
+            class="mdl-tabs__tab"
+        >
+            {{ tabs[2].title }}
+        </a>
+        <a
+            [href]="'#palette-tab-3-panel'"
+            [hidden]="tabs[3].hidden"
+            [class.is-active]="tabs[3].active"
+            (click)="setActiveTab($event, 3)"
+            class="mdl-tabs__tab"
+        >
+            {{ tabs[3].title }}
+        </a>
+    </div>
 
-  <div class="mdl-tabs__panel"
-    [class.is-active]="tabs[0].active"
-    id="palette-tab-0-panel">
-    <plomino-palette-add></plomino-palette-add>
-  </div>
-  <div class="mdl-tabs__panel"
-    [class.is-active]="tabs[1].active"
-    id="palette-tab-1-panel">
-    <plomino-palette-fieldsettings></plomino-palette-fieldsettings>
-  </div>
-  <div class="mdl-tabs__panel"
-    [class.is-active]="tabs[4].active"
-    id="palette-tab-4-panel">
-    <plomino-workflow-node-settings></plomino-workflow-node-settings>
-  </div>
-  <div class="mdl-tabs__panel"
-    [class.is-active]="tabs[2].active"
-    id="palette-tab-2-panel">
-    <plomino-palette-formsettings></plomino-palette-formsettings>
-  </div>
-  <div class="mdl-tabs__panel"
-    [class.is-active]="tabs[3].active"
-    id="palette-tab-3-panel">
-    <plomino-palette-dbsettings></plomino-palette-dbsettings>
-  </div>
+    <div class="mdl-tabs__panel" [class.is-active]="tabs[0].active" id="palette-tab-0-panel">
+        <plomino-palette-add></plomino-palette-add>
+    </div>
+    <div class="mdl-tabs__panel" [class.is-active]="tabs[1].active" id="palette-tab-1-panel">
+        <plomino-palette-fieldsettings></plomino-palette-fieldsettings>
+    </div>
+    <div class="mdl-tabs__panel" [class.is-active]="tabs[4].active" id="palette-tab-4-panel">
+        <plomino-workflow-node-settings></plomino-workflow-node-settings>
+    </div>
+    <div class="mdl-tabs__panel" [class.is-active]="tabs[2].active" id="palette-tab-2-panel">
+        <plomino-palette-formsettings></plomino-palette-formsettings>
+    </div>
+    <div class="mdl-tabs__panel" [class.is-active]="tabs[3].active" id="palette-tab-3-panel">
+        <plomino-palette-dbsettings></plomino-palette-dbsettings>
+    </div>
 </div>

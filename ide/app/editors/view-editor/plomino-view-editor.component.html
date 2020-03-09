@@ -1,12 +1,20 @@
 <plomino-block-preloader [loading]="loading"></plomino-block-preloader>
 <section class="view-editor" [attr.data-url]="item.url" [attr.data-columns]="columns.length">
     <div class="view-editor__inner" [innerHTML]="viewSourceTable"></div>
-    <div class="view-editor__empty-actions-drop-place" *ngIf="!actions.length"
+    <div
+        class="view-editor__empty-actions-drop-place"
+        *ngIf="!actions.length"
         (onDragLeave)="onDragLeave($event)"
-        dnd-droppable (onDragEnter)="onDragEnter($event)"
-        (onDropSuccess)="onDropSuccess($event)"></div>
-    <div class="view-editor__empty-columns-drop-place" *ngIf="!columns.length"
+        dnd-droppable
+        (onDragEnter)="onDragEnter($event)"
+        (onDropSuccess)="onDropSuccess($event)"
+    ></div>
+    <div
+        class="view-editor__empty-columns-drop-place"
+        *ngIf="!columns.length"
         (onDragLeave)="onDragLeave($event)"
-        dnd-droppable (onDragEnter)="onDragEnter($event)"
-        (onDropSuccess)="onDropSuccess($event)"></div>
+        dnd-droppable
+        (onDragEnter)="onDragEnter($event)"
+        (onDropSuccess)="onDropSuccess($event)"
+    ></div>
 </section>

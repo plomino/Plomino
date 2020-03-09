@@ -1,1 +1,1 @@
-export { PopoverComponent } from './popover.component';
+export { PopoverComponent } from "./popover.component";

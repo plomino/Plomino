@@ -9,7 +9,7 @@
     "postinstall": "npm run typings install",
     "install": "napa git://github.com/BorisMoore/jquery-tmpl",
     "typings": "typings",
-    "lint": "eslint -c .eslintrc.js --ext .ts --rule '{prettier/prettier: off}' app"
+    "lint": "eslint -c .eslintrc.js app"
   },
   "dependencies": {
     "@angular/common": "2.0.0-rc.4",
@@ -64,9 +64,11 @@
     "exports-loader": "^0.6.3",
     "extract-text-webpack-plugin": "^1.0.1",
     "html-webpack-plugin": "^2.17.0",
+    "husky": "^4.2.3",
     "imports-loader": "^0.6.5",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
+    "lint-staged": "^10.0.7",
     "napa": "^2.3.0",
     "prettier": "^1.19.1",
     "raw-loader": "^0.5.1",

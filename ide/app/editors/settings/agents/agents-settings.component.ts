@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../../services';
+import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { REACTIVE_FORM_DIRECTIVES } from "@angular/forms";
+import { ElementService } from "../../../services";
 
 @Component({
-    selector: 'plomino-agents-settings',
-    template: require('./agents-settings.component.html'),
-    styles: ['form {margin: 15px;} .help-block {font-style: italix;}'],
+    selector: "plomino-agents-settings",
+    template: require("./agents-settings.component.html"),
+    styles: ["form {margin: 15px;} .help-block {font-style: italix;}"],
     providers: [ElementService],
-    directives: [ REACTIVE_FORM_DIRECTIVES ]
+    directives: [REACTIVE_FORM_DIRECTIVES],
 })
 export class AgentsSettingsComponent {
     @Input() id: string;
@@ -15,7 +15,7 @@ export class AgentsSettingsComponent {
     @Output() isDirty = new EventEmitter();
     @Output() titleChanged = new EventEmitter();
     @Output() elementDeleted = new EventEmitter();
-    @ViewChild('form') form: any;
+    @ViewChild("form") form: any;
 
     constructor(private _elementService: ElementService) {}
 
@@ -24,8 +24,7 @@ export class AgentsSettingsComponent {
     }
 
     ngAfterViewInit() {
-        this.form.control.valueChanges
-            .subscribe(() => this.isDirty.emit(true));
+        this.form.control.valueChanges.subscribe(() => this.isDirty.emit(true));
     }
 
     getElement() {

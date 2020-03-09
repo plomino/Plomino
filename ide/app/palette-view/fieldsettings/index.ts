@@ -1,1 +1,1 @@
-export { FieldSettingsComponent } from './fieldsettings.component';
+export { FieldSettingsComponent } from "./fieldsettings.component";

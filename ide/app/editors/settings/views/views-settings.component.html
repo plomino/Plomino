@@ -1,57 +1,128 @@
-<form (ngSubmit)='onSubmit(data["@id"],title.value,desc.value,hideDefaultActions.checked,sortColumn.value,keyColumn.value,categorized.checked,reverseSorting.checked,staticRendering.checked)' #form="ngForm">
-  <div class="form-group">
-    <label for="title">Titre</label>
-    <input #title formControlName="form.controls.title" [value]='data?.title' type="text" class="form-control" required="true">
-  </div>
-  <div class="form-group">
-    <label for="id">ID</label>
-    <input type="text" class="form-control" [value]="data ? data['@id'] : ''" disabled="true">
-  </div>
-  <div class="form-group">
-    <label for="desc">Description</label>
-    <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
-    <textarea #desc formControlName="form.controls.desc" type="text" class="form-control" id="desc" [value]="data?.description"></textarea>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #hideDefaultActions formControlName="form.controls.hideDefaultActions" type="checkbox" [checked]="data?.hide_default_actions"> Hide default actions
-    </label>
-    <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
-  </div>
-  <div class="form-group">
-    <label for="viewsSortColumn">Sort column</label>
-    <p class="help-block">Column used to sort the view, and for key lookup</p>
-    <input #sortColumn formControlName="form.controls.sortColumn" type="text" class="form-control" [value]="data?.sort_column">
-  </div>
-  <div class="form-group">
-    <label for="formSearchView">Key column</label>
-    <p class="help-block">Column used for key lookup, if different from sort column</p>
-    <input #keyColumn formControlName="form.controls.keyColumn" type="text" class="form-control" [value]="data?.key_column">
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #categorized formControlName="form.controls.categorized" type="checkbox" [checked]="data?.categorized"> Categorized
-    </label>
-    <p class="help-block">Categorised on first column</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #reverseSorting formControlName="form.controls.reverseSorting" type="checkbox" [checked]="data?.reverse_sorting"> Reverse sorting
-    </label>
-    <p class="help-block">Reverse the sort ordering</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #hideCheckboxes formControlName="form.controls.hideCheckboxes" type="checkbox" [checked]="data?.hide_checkboxes"> Hide checkboxes
-    </label>
-    <p class="help-block">The first column with checkboxes will not be displayed</p>
-  </div>
-  <div class="checkbox">
-    <label>
-      <input #staticRendering formControlName="form.controls.staticRendering" type="checkbox" [checked]="data?.static_rendering"> Static rendering
-    </label>
-    <p class="help-block">Use inline HTML, without AJAX.</p>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
+<form
+    (ngSubmit)="
+        onSubmit(
+            data['@id'],
+            title.value,
+            desc.value,
+            hideDefaultActions.checked,
+            sortColumn.value,
+            keyColumn.value,
+            categorized.checked,
+            reverseSorting.checked,
+            staticRendering.checked
+        )
+    "
+    #form="ngForm"
+>
+    <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+            #title
+            formControlName="form.controls.title"
+            [value]="data?.title"
+            type="text"
+            class="form-control"
+            required="true"
+        />
+    </div>
+    <div class="form-group">
+        <label for="id">ID</label>
+        <input type="text" class="form-control" [value]="data ? data['@id'] : ''" disabled="true" />
+    </div>
+    <div class="form-group">
+        <label for="desc">Description</label>
+        <p class="help-block">Utilisé dans les pages listant des éléments et les pages de résultats de recherche.</p>
+        <textarea
+            #desc
+            formControlName="form.controls.desc"
+            type="text"
+            class="form-control"
+            id="desc"
+            [value]="data?.description"
+        ></textarea>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #hideDefaultActions
+                formControlName="form.controls.hideDefaultActions"
+                type="checkbox"
+                [checked]="data?.hide_default_actions"
+            />
+            Hide default actions
+        </label>
+        <p class="help-block">Edit, Save, Delete, Close actions will not be displayed in the action bar</p>
+    </div>
+    <div class="form-group">
+        <label for="viewsSortColumn">Sort column</label>
+        <p class="help-block">Column used to sort the view, and for key lookup</p>
+        <input
+            #sortColumn
+            formControlName="form.controls.sortColumn"
+            type="text"
+            class="form-control"
+            [value]="data?.sort_column"
+        />
+    </div>
+    <div class="form-group">
+        <label for="formSearchView">Key column</label>
+        <p class="help-block">Column used for key lookup, if different from sort column</p>
+        <input
+            #keyColumn
+            formControlName="form.controls.keyColumn"
+            type="text"
+            class="form-control"
+            [value]="data?.key_column"
+        />
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #categorized
+                formControlName="form.controls.categorized"
+                type="checkbox"
+                [checked]="data?.categorized"
+            />
+            Categorized
+        </label>
+        <p class="help-block">Categorised on first column</p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #reverseSorting
+                formControlName="form.controls.reverseSorting"
+                type="checkbox"
+                [checked]="data?.reverse_sorting"
+            />
+            Reverse sorting
+        </label>
+        <p class="help-block">Reverse the sort ordering</p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #hideCheckboxes
+                formControlName="form.controls.hideCheckboxes"
+                type="checkbox"
+                [checked]="data?.hide_checkboxes"
+            />
+            Hide checkboxes
+        </label>
+        <p class="help-block">The first column with checkboxes will not be displayed</p>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input
+                #staticRendering
+                formControlName="form.controls.staticRendering"
+                type="checkbox"
+                [checked]="data?.static_rendering"
+            />
+            Static rendering
+        </label>
+        <p class="help-block">Use inline HTML, without AJAX.</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" (click)="deleteElement()" class="btn btn-danger">Delete</button>
 </form>

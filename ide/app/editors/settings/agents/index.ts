@@ -1,1 +1,1 @@
-export { AgentsSettingsComponent } from './agents-settings.component';
+export { AgentsSettingsComponent } from "./agents-settings.component";

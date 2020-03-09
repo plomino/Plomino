@@ -1,4 +1,5 @@
-<div class="plomino-workflow-editor"
+<div
+    class="plomino-workflow-editor"
     #workflowEditorNode
     dnd-droppable
     (dragenter)="dragController.receive($event, 'enter', dragService.dndType)"
@@ -6,5 +7,6 @@
     (drop)="dragController.receive($event, 'drop', dragService.dndType)"
     (click)="onClickReceive($event)"
     style="max-width: 100%"
-    ><plomino-block-preloader [id]="'preloader_workflow'"
-        [loading]="true" [palette]="false"></plomino-block-preloader></div>
+>
+    <plomino-block-preloader [id]="'preloader_workflow'" [loading]="true" [palette]="false"></plomino-block-preloader>
+</div>

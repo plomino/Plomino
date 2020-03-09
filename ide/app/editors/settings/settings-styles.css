@@ -2,7 +2,7 @@
     border-left: 4px solid #019919;
 }
 .ng-invalid.ng-touched {
-    border-left: 4px solid #B51515;
+    border-left: 4px solid #b51515;
 }
 textarea {
     resize: vertical;

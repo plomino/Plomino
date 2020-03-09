@@ -1,1 +1,1 @@
-export { DBSettingsComponent } from './dbsettings.component';
+export { DBSettingsComponent } from "./dbsettings.component";

@@ -1,1 +1,1 @@
-export { ActionsSettingsComponent } from './actions-settings.component';
+export { ActionsSettingsComponent } from "./actions-settings.component";

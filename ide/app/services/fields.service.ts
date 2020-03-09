@@ -1,96 +1,92 @@
-import { IField } from './../interfaces/field.interface';
-import { LogService } from './log.service';
-import { PlominoHTTPAPIService } from './http-api.service';
-import { Response } from '@angular/http';
-import { Injectable } from '@angular/core';
+import { IField } from "./../interfaces/field.interface";
+import { LogService } from "./log.service";
+import { PlominoHTTPAPIService } from "./http-api.service";
+import { Response } from "@angular/http";
+import { Injectable } from "@angular/core";
 
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class FieldsService {
-  viewColumnInserted: Subject<string> = new Subject<string>();
-  viewActionInserted: Subject<string> = new Subject<string>();
-  viewReIndex: Subject<any> = new Subject<any>();
-  viewColumnCreated: Subject<any> = new Subject<any>();
-  viewColumnUpdated: Subject<any> = new Subject<any>();
+    viewColumnInserted: Subject<string> = new Subject<string>();
+    viewActionInserted: Subject<string> = new Subject<string>();
+    viewReIndex: Subject<any> = new Subject<any>();
+    viewColumnCreated: Subject<any> = new Subject<any>();
+    viewColumnUpdated: Subject<any> = new Subject<any>();
 
-  deleteSelectedColumn: Subject<string> = new Subject<string>();
-  deleteSelectedAction: Subject<string> = new Subject<string>();
-  
-  private insertionStream$: Subject<InsertFieldEvent> 
-    = new Subject<InsertFieldEvent>();
-  private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> 
-    = new Subject<PlominoFieldUpdatesStreamEvent>();
-  
-  constructor(private http: PlominoHTTPAPIService, private log: LogService) { }
+    deleteSelectedColumn: Subject<string> = new Subject<string>();
+    deleteSelectedAction: Subject<string> = new Subject<string>();
 
-  onReIndexItems() {
-    return this.viewReIndex.asObservable();
-  }
+    private insertionStream$: Subject<InsertFieldEvent> = new Subject<InsertFieldEvent>();
+    private updatesStream$: Subject<PlominoFieldUpdatesStreamEvent> = new Subject<PlominoFieldUpdatesStreamEvent>();
 
-  /**
-   * happens when you save new column in field settings
-   */
-  onColumnCreated() {
-    return this.viewColumnCreated.asObservable();
-  }
+    constructor(private http: PlominoHTTPAPIService, private log: LogService) {}
 
-  /**
-   * happens when you save existing column in field settings
-   */
-  onColumnUpdated() {
-    return this.viewColumnUpdated.asObservable();
-  }
+    onReIndexItems() {
+        return this.viewReIndex.asObservable();
+    }
 
-  onDeleteSelectedViewColumn(): Observable<string> {
-    return this.deleteSelectedColumn.asObservable();
-  }
+    /**
+     * happens when you save new column in field settings
+     */
+    onColumnCreated() {
+        return this.viewColumnCreated.asObservable();
+    }
 
-  onDeleteSelectedViewAction(): Observable<string> {
-    return this.deleteSelectedAction.asObservable();
-  }
+    /**
+     * happens when you save existing column in field settings
+     */
+    onColumnUpdated() {
+        return this.viewColumnUpdated.asObservable();
+    }
 
-  onNewColumn() {
-    return this.viewColumnInserted.asObservable();
-  }
+    onDeleteSelectedViewColumn(): Observable<string> {
+        return this.deleteSelectedColumn.asObservable();
+    }
 
-  onNewAction() {
-    return this.viewActionInserted.asObservable();
-  }
-  
-  insertField(field: InsertFieldEvent) {
-    this.log.info('insertField', field);
-    this.insertionStream$.next(field);
-  }
+    onDeleteSelectedViewAction(): Observable<string> {
+        return this.deleteSelectedAction.asObservable();
+    }
 
-  updateField(
-    fieldData: IField,
-    newFieldData: PlominoFieldSettingsFormDataObject,
-    id: string
-  ) {
-    this.updatesStream$.next(<PlominoFieldUpdatesStreamEvent> {
-      fieldData: fieldData,
-      newData: newFieldData,
-      newId: id
-    });
-  }
+    onNewColumn() {
+        return this.viewColumnInserted.asObservable();
+    }
 
-  listenToUpdates(): Observable<PlominoFieldUpdatesStreamEvent> {
-    return this.updatesStream$.asObservable();
-  }
+    onNewAction() {
+        return this.viewActionInserted.asObservable();
+    }
 
-  getTemplate(formUrl: string, widgetType: string) {
-    return this.http.post(
-      `${formUrl}/@@tinyform/example_widget`, JSON.stringify({widget_type:widgetType}),
-      'fields.service.ts getTemplate'
-    )
-    .map((response: Response) => {
-      return response.json();
-    });
-  }
+    insertField(field: InsertFieldEvent) {
+        this.log.info("insertField", field);
+        this.insertionStream$.next(field);
+    }
 
-  getInsertion(): Observable<InsertFieldEvent> {
-    return this.insertionStream$.asObservable();
-  }
+    updateField(fieldData: IField, newFieldData: PlominoFieldSettingsFormDataObject, id: string) {
+        this.updatesStream$.next(<PlominoFieldUpdatesStreamEvent>{
+            fieldData: fieldData,
+            newData: newFieldData,
+            newId: id,
+        });
+    }
+
+    listenToUpdates(): Observable<PlominoFieldUpdatesStreamEvent> {
+        return this.updatesStream$.asObservable();
+    }
+
+    getTemplate(formUrl: string, widgetType: string) {
+        return this.http
+            .post(
+                `${formUrl}/@@tinyform/example_widget`,
+                JSON.stringify({ widget_type: widgetType }),
+                "fields.service.ts getTemplate"
+            )
+            .map((response: Response) => {
+                return response.json();
+            });
+    }
+
+    getInsertion(): Observable<InsertFieldEvent> {
+        return this.insertionStream$.asObservable();
+    }
 }

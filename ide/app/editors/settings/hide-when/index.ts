@@ -1,1 +1,1 @@
-export { HideWhenSettingsComponent } from './hide_when-settings.component';
+export { HideWhenSettingsComponent } from "./hide_when-settings.component";

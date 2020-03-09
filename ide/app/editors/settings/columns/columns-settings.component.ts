@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { REACTIVE_FORM_DIRECTIVES } from '@angular/forms';
-import { ElementService } from '../../../services';
+import { Component, Input, Output, EventEmitter, ViewChild } from "@angular/core";
+import { REACTIVE_FORM_DIRECTIVES } from "@angular/forms";
+import { ElementService } from "../../../services";
 
 @Component({
-    selector: 'plomino-columns-settings',
-    template: require('./columns-settings.component.html'),
-    styles: ['form {margin: 15px;} .help-block {font-style: italic;}'],
+    selector: "plomino-columns-settings",
+    template: require("./columns-settings.component.html"),
+    styles: ["form {margin: 15px;} .help-block {font-style: italic;}"],
     providers: [ElementService],
-    directives: [ REACTIVE_FORM_DIRECTIVES ]
+    directives: [REACTIVE_FORM_DIRECTIVES],
 })
 export class ColumnsSettingsComponent {
     @Input() id: string;
@@ -15,17 +15,16 @@ export class ColumnsSettingsComponent {
     @Output() isDirty = new EventEmitter();
     @Output() titleChanged = new EventEmitter();
     @Output() elementDeleted = new EventEmitter();
-    @ViewChild('form') form: any;
+    @ViewChild("form") form: any;
 
-    constructor(private _elementService: ElementService) { }
+    constructor(private _elementService: ElementService) {}
 
     ngOnInit() {
         this.getElement();
     }
 
     ngAfterViewInit() {
-        this.form.control.valueChanges
-            .subscribe(() => this.isDirty.emit(true));
+        this.form.control.valueChanges.subscribe(() => this.isDirty.emit(true));
     }
 
     getElement() {
@@ -41,9 +40,9 @@ export class ColumnsSettingsComponent {
 
     onSubmit(id: string, title: string, description: string, hiddenColumn: boolean) {
         const element = {
-            "title": title,
-            "description": description,
-            "hidden_column": hiddenColumn
+            title: title,
+            description: description,
+            hidden_column: hiddenColumn,
         };
         this._elementService.patchElement(id, JSON.stringify(element)).subscribe(
             () => {

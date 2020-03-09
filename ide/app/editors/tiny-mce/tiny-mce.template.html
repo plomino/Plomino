@@ -1,20 +1,21 @@
 <!--<pre style="position: fixed; z-index: 1111111111; display: block; width: 400px; height: auto;">
     <code>{{ item.url }}</code></pre>-->
-<form #theEditor 
-    class="tiny-editor">
-    <plomino-block-preloader [id]="'preloader_' + id"
-        [loading]="true" [palette]="false"></plomino-block-preloader>
-    <textarea class="pat-tinymce tinymce-wrap" 
-            [attr.data-pat-tinymce]="dataPatTinyMCE"
-            data-pat-plone-modal='{"actionOptions": {"displayInModal": false}}'
-            [id]="id.split('/').pop()">
+<form #theEditor class="tiny-editor">
+    <plomino-block-preloader [id]="'preloader_' + id" [loading]="true" [palette]="false"></plomino-block-preloader>
+    <textarea
+        class="pat-tinymce tinymce-wrap"
+        [attr.data-pat-tinymce]="dataPatTinyMCE"
+        data-pat-plone-modal='{"actionOptions": {"displayInModal": false}}'
+        [id]="id.split('/').pop()"
+    >
     </textarea>
 </form>
-  <div *ngIf="isDragged" 
-    dnd-droppable 
+<div
+    *ngIf="isDragged"
+    dnd-droppable
     class="drop-zone"
-    [style.height]="theEditor.offsetHeight+'px'" 
-    [style.margin-top]="'-'+theEditor.offsetHeight+'px'" 
-    [allowDrop]="allowDrop()"  
-    (onDropSuccess)="dropped($event)">
-</div>  
+    [style.height]="theEditor.offsetHeight+'px'"
+    [style.margin-top]="'-'+theEditor.offsetHeight+'px'"
+    [allowDrop]="allowDrop()"
+    (onDropSuccess)="dropped($event)"
+></div>

@@ -8,7 +8,6 @@
 -->
 
 <div class="treeview-wrapper">
-
     <!--<ul *ngIf="filtered">
         
         <li *ngFor="let result of searchResults.member">
@@ -32,74 +31,100 @@
     </ul>-->
 
     <ul *ngIf="!filtered" class="tree-node">
-    
-    <li 
-        class="tree-node--collapsible"
-        [class.closed]="false"
-        >
-        
-        <span class="tree-node--name click-cursor" (click)="selectDBSettingsTab()" style="text-transform: capitalize">
-            {{ data && data.length ? data[0].url.split('/')[data[0].url.split('/').length - 2] : '' }}
-        </span>
-        
-        <ul [collapse]="false">
-            
-            <li *ngFor="let typeName of data"
-                class="tree-node--collapsible"
-                (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
-                (mousedown)="treeFormItemClick(selected, $event, typeName.typeLabel, typeName.url, typeName.label, typeName.formUniqueId)"
-                [class.closed]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))"
-                [class.tree-node--is-view]="typeName.typeLabel === 'Views'"
-                (click)="onEdit({formUniqueId: typeName.formUniqueId, label:typeName.label, url:typeName.url, editor: typeName.typeLabel === 'Views' ? 'view' : 'layout', path:[{name:typeName.label,type:typeName.typeLabel}]})"
-                [class.hasChild]="typeName.children.length !== 0">
+        <li class="tree-node--collapsible" [class.closed]="false">
+            <span
+                class="tree-node--name click-cursor"
+                (click)="selectDBSettingsTab()"
+                style="text-transform: capitalize"
+            >
+                {{ data && data.length ? data[0].url.split("/")[data[0].url.split("/").length - 2] : "" }}
+            </span>
 
-                <span class="tree-node--name click-cursor"
-                    #selectable
-                    [attr.id]="'tree_' + typeName.url"
-                    [attr.data-type]="typeName.type"
-                    [class.selected]="selected && (typeName.url === selected.url)"
-                    [attr.draggable]="workflowMode ? 'true' : null"
-                    (dragstart)="workflowMode ? dragSubformToWorkflow($event, typeName.url, typeName.label, typeName.typeLabel) : null"
-                    (click)="treeArrowClick($event, typeName)">
-                    
-                    <span class="tree-node__child-type-image" aria-hidden="true">
-                      <img [src]="getTypeImage(typeName)">
-                    </span>
-                    
-                    {{ typeName.url | extractName }}
-                </span>
-
-                <div class="mdl-tooltip mdl-tooltip--right"
-                    [attr.data-mdl-for]="'tree_' + typeName.url">
-                    {{ typeName.label }}
-                </div>
-                
-                <ul [collapse]="getCollapseState(typeName.collapsed, selected && (typeName.url === selected.url))" *ngIf="typeName.children.length">
-                    <li *ngFor="let childName of typeName.children">
-
-                        <span #selectable 
-                            class="tree-node__child--name click-cursor"
-                            [class.selected]="isItSelected(childName)"
-                            (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
-                            (mousedown)="treeFormItemClick(selected, $event, childName.type, childName.url, typeName.url)"
-                            (click)="onTreeFieldClick({
-                                name: childName.url, 
-                                type: childName.type, 
-                                parent: childName.typeNameUrl,
-                                resolved: true
-                            })">
-                        
-                            <span class="tree-node__child-type-image">
-                              <img [src]="getTypeImage(childName)">
-                            </span>
-
-                            {{childName.url | extractName}}
+            <ul [collapse]="false">
+                <li
+                    *ngFor="let typeName of data"
+                    class="tree-node--collapsible"
+                    (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
+                    (mousedown)="
+                        treeFormItemClick(
+                            selected,
+                            $event,
+                            typeName.typeLabel,
+                            typeName.url,
+                            typeName.label,
+                            typeName.formUniqueId
+                        )
+                    "
+                    [class.closed]="getCollapseState(typeName.collapsed, selected && typeName.url === selected.url)"
+                    [class.tree-node--is-view]="typeName.typeLabel === 'Views'"
+                    (click)="
+                        onEdit({
+                            formUniqueId: typeName.formUniqueId,
+                            label: typeName.label,
+                            url: typeName.url,
+                            editor: typeName.typeLabel === 'Views' ? 'view' : 'layout',
+                            path: [{ name: typeName.label, type: typeName.typeLabel }]
+                        })
+                    "
+                    [class.hasChild]="typeName.children.length !== 0"
+                >
+                    <span
+                        class="tree-node--name click-cursor"
+                        #selectable
+                        [attr.id]="'tree_' + typeName.url"
+                        [attr.data-type]="typeName.type"
+                        [class.selected]="selected && typeName.url === selected.url"
+                        [attr.draggable]="workflowMode ? 'true' : null"
+                        (dragstart)="
+                            workflowMode
+                                ? dragSubformToWorkflow($event, typeName.url, typeName.label, typeName.typeLabel)
+                                : null
+                        "
+                        (click)="treeArrowClick($event, typeName)"
+                    >
+                        <span class="tree-node__child-type-image" aria-hidden="true">
+                            <img [src]="getTypeImage(typeName)" />
                         </span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </li>
 
+                        {{ typeName.url | extractName }}
+                    </span>
+
+                    <div class="mdl-tooltip mdl-tooltip--right" [attr.data-mdl-for]="'tree_' + typeName.url">
+                        {{ typeName.label }}
+                    </div>
+
+                    <ul
+                        [collapse]="getCollapseState(typeName.collapsed, selected && typeName.url === selected.url)"
+                        *ngIf="typeName.children.length"
+                    >
+                        <li *ngFor="let childName of typeName.children">
+                            <span
+                                #selectable
+                                class="tree-node__child--name click-cursor"
+                                [class.selected]="isItSelected(childName)"
+                                (mouseup)="click2DragDelay ? click2DragDelay.unsubscribe() : true"
+                                (mousedown)="
+                                    treeFormItemClick(selected, $event, childName.type, childName.url, typeName.url)
+                                "
+                                (click)="
+                                    onTreeFieldClick({
+                                        name: childName.url,
+                                        type: childName.type,
+                                        parent: childName.typeNameUrl,
+                                        resolved: true
+                                    })
+                                "
+                            >
+                                <span class="tree-node__child-type-image">
+                                    <img [src]="getTypeImage(childName)" />
+                                </span>
+
+                                {{ childName.url | extractName }}
+                            </span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
     </ul>
 </div>
