@@ -192,7 +192,7 @@ class SelectionField(BaseField):
             plural = False
             select_opts = \
                 [i.split('|')[-1] for i in self.getSelectionList(None)]
-            if type(submitted_value) == str:
+            if type(submitted_value) in (str, unicode):
                 values_match = submitted_value in select_opts
                 pretty_value = submitted_value
             else:

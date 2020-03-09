@@ -14,6 +14,7 @@ PretaForm Releases
 - Fixed indexes being destroyed on database import [djay, jeffersonbledsoe]
 - Fixed issue with numer in range macro incorrectly handling empty values.
   [instification]
+- Fixed validation of selection lists [instification]
 
 0.9.34 (2020-02-14)
 -------------------
