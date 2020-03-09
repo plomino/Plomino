@@ -4,7 +4,7 @@ Changelog
 PretaForm Releases
 ==================
 
-0.9.35 (unreleased)
+0.9.35 (2020-03-09)
 -------------------
 
 - Change behavior of Close IDE button so that it will display the current database after closing the IDE [quang]
