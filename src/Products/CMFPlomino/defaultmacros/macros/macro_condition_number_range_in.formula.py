@@ -12,7 +12,9 @@ if field_id =='@@CURRENT_FIELD':
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
 less_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
-lf_field = getattr(form, field_id)
+lf_field = getattr(form, field_id, None)
+if lf_field is None:
+    return False
 if lf_field.field_mode in ["COMPUTED","COMPUTEDONSAVE"]:
     try:
         less_field_result = float(form.computeFieldValue(field_id, plominoContext))
@@ -32,7 +34,9 @@ if field_id =='@@CURRENT_FIELD':
     field_id, formula = rest.rsplit(SCRIPT_ID_DELIMITER, 1)
 more_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
-mf_field = getattr(form, field_id)
+mf_field = getattr(form, field_id, None)
+if mf_field is None:
+    return False
 if mf_field.field_mode in ["COMPUTED","COMPUTEDONSAVE"]:
     try:
         more_field_result = float(form.computeFieldValue(field_id, plominoContext))
@@ -53,13 +57,17 @@ if field_id =='@@CURRENT_FIELD':
 less_field_result = plominoContext.getItem(field_id)
 more_field_result = plominoContext.getItem(field_id)
 form = plominoContext.getForm()
-lf_field = getattr(form, field_id)
+lf_field = getattr(form, field_id, None)
+if lf_field is None:
+    return False
 if lf_field.field_mode in ["COMPUTED","COMPUTEDONSAVE"]:
     try:
         less_field_result = float(form.computeFieldValue(field_id, plominoContext))
     except ValueError:
         less_field_result = 0
-mf_field = getattr(form, field_id)
+mf_field = getattr(form, field_id, None)
+if mf_field is None:
+    return False
 if mf_field.field_mode in ["COMPUTED","COMPUTEDONSAVE"]:
     try:
         more_field_result = float(form.computeFieldValue(field_id, plominoContext))

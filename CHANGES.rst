@@ -7,7 +7,8 @@ PretaForm Releases
 0.9.35 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fixed issue with numer in range macro incorrectly handling empty values.
+  [instification]
 
 
 0.9.34 (2020-02-14)
