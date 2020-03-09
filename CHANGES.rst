@@ -7,6 +7,7 @@ PretaForm Releases
 0.9.35 (unreleased)
 -------------------
 
+- Fix issue handling unicode in csv [instification]
 - Fixed indexes being destroyed on database import [djay, jeffersonbledsoe]
 - Fixed issue with numer in range macro incorrectly handling empty values.
   [instification]

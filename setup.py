@@ -45,6 +45,7 @@ setup(
         'setuptools',
         'plone.app.dexterity',
         'jsonutil',
+        'unicodecsv',
         'collective.instancebehavior',
         'pyquery < 1.3.0', # seems to break labels in macros somehow. Need to fix
         'plone.rest>=1.0a7',
