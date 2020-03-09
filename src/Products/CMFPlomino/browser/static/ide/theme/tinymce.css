@@ -2,20 +2,20 @@ span.plominoFieldClass,
 span.plominoLabelClass,
 span.plominoHidewhenClass,
 span.plominoActionClass,
-span.plominoSubformClass{
-    position:relative;
+span.plominoSubformClass {
+    position: relative;
     display: inline-block;
 }
 span.drag-autopreview {
-  display: inline-block;
+    display: inline-block;
 }
 div.plominoFieldClass,
 div.plominoLabelClass,
 div.plominoHidewhenClass,
 div.plominoActionClass,
-div.plominoSubformClass{
-    position:relative;
-    display:block;
+div.plominoSubformClass {
+    position: relative;
+    display: block;
     margin-top: 15px;
 }
 
@@ -23,11 +23,11 @@ div.plominoSubformClass{
 .plominoLabelClass:hover:before,
 .plominoHidewhenClass:hover:before,
 .plominoActionClass:hover:before,
-.plominoSubformClass:hover:before{
-    background: rgba(0,0,0,.8);
+.plominoSubformClass:hover:before {
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 5px 5px 0px 0px;
     color: #fff;
-    bottom:100%;
+    bottom: 100%;
     left: 0%;
     content: attr(data-plominoid);
     padding: 2px 5px;
@@ -45,7 +45,6 @@ div.plominoLabelClass {
     margin-bottom: 10px;
 }
 
-
 .plominoFieldClass {
     outline: none;
     /*outline: 1px dashed #1b6899;*/
@@ -57,12 +56,12 @@ div.plominoLabelClass {
 
 .plominoFieldClass--selected,
 .plominoLabelClass--selected {
-  outline-style: dotted !important;
-  outline-width: 2px !important;
-  outline-color: #1b6899 !important;
+    outline-style: dotted !important;
+    outline-width: 2px !important;
+    outline-color: #1b6899 !important;
 }
 
-.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
+.mce-content-body .plominoGroupClass[contentEditable="false"][data-mce-selected],
 .mce-content-body .plominoGroupClass:hover {
     outline-style: dashed;
     outline-width: 2px;
@@ -70,28 +69,28 @@ div.plominoLabelClass {
 }
 
 input[type="checkbox"] {
-  margin-right: 6px !important;
+    margin-right: 6px !important;
 }
 
 [class$="-selectionfield"] label {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 [class$="-selectionfield"] input[type="radio"] {
-  margin-right: 6px !important;
+    margin-right: 6px !important;
 }
 
 [class$="-selectionfield"] label {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .drag-autopreview {
-  opacity: 0.3;
-  outline: 2px dashed #cccccc;
-  outline-offset: 5px;
+    opacity: 0.3;
+    outline: 2px dashed #cccccc;
+    outline-offset: 5px;
 }
 
-.mce-content-body .plominoGroupClass[contentEditable=false][data-mce-selected],
+.mce-content-body .plominoGroupClass[contentEditable="false"][data-mce-selected],
 .mce-content-body .plominoGroupClass:focus {
     outline-color: navy;
 }
@@ -110,7 +109,7 @@ input[type="checkbox"] {
 }
 .plominoLabelClass:hover:before {
     color: #ffffff;
-    background-color: #03632C;
+    background-color: #03632c;
 }
 div.plominoLabelClass {
     background-color: #ccc;
@@ -132,7 +131,7 @@ div.plominoLabelContent {
 div.plominoLabelContent:after {
     content: " ";
     float: right;
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoLabel.png");
     background-position: 4px;
     background-repeat: no-repeat;
     width: 28px;
@@ -144,13 +143,12 @@ div.plominoLabelContent:before {
     content: " ";
 }
 
-
 .plominoActionClass {
     outline: none !important;
 }
 .plominoActionClass:hover:before {
-    color:  #ffffff;
-    background-color:#124465;
+    color: #ffffff;
+    background-color: #124465;
 }
 
 .plominoSubformClass {
@@ -161,51 +159,49 @@ div.plominoLabelContent:before {
     /*border: 1px solid #cccccc;*/
     /*border-radius: 4px;*/
     /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
-
 }
 .plominoSubformClass:hover:before {
-    color:  #ffffff;
-    background-color:#cccccc;
+    color: #ffffff;
+    background-color: #cccccc;
 }
 
 hr.plominoPagebreakClass {
-    height:10px;
+    height: 10px;
     border: 0;
     background-color: #8c8b8b;
     width: 100%;
 }
 hr.plominoPagebreakClass:hover:before {
-    content: 'Page break';
+    content: "Page break";
     display: inline-block;
     position: relative;
     background-color: #8c8b8b;
     color: #fff;
-    top:-16px;
+    top: -16px;
     left: 0;
     padding: 2px 5px;
     font-size: 10px;
     border-radius: 5px 5px 0px 0px;
 }
 
-.plominoEditWidgetTab{
+.plominoEditWidgetTab {
     background: #333;
-    background: rgba(0,0,0,.8);
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 5px 5px 0px 0px;
     color: #fff;
     left: 90%;
-    top:-50%;
+    top: -50%;
     padding: 2px 5px;
     position: absolute;
     z-index: 98;
     font-size: 10px;
 }
 
-.mce-content-body *[contentEditable=false][data-mce-selected] select,
-.mce-content-body *[contentEditable=false][data-mce-selected] input,
-.mce-content-body *[contentEditable=false][data-mce-selected] button,
-.mce-content-body *[contentEditable=false][data-mce-selected] a,
-.mce-content-body *[contentEditable=false][data-mce-selected] textarea
-{
+.mce-content-body *[contentEditable="false"][data-mce-selected] select,
+.mce-content-body *[contentEditable="false"][data-mce-selected] input,
+.mce-content-body *[contentEditable="false"][data-mce-selected] button,
+.mce-content-body *[contentEditable="false"][data-mce-selected] a,
+.mce-content-body *[contentEditable="false"][data-mce-selected] textarea {
     /*outline: 2px solid #2d8ac7;*/
     /*padding: 3px;*/
     pointer-events: none;
@@ -214,36 +210,34 @@ hr.plominoPagebreakClass:hover:before {
 *[data-plomino-position="start"] {
     padding: 2px 10px;
     color: #cccccc;
-    background-color:  #cccccc;
+    background-color: #cccccc;
     background-repeat: no-repeat;
-    margin-right:0.7em;
-    display:inline;
+    margin-right: 0.7em;
+    display: inline;
 }
 
 *[data-plomino-position="end"] {
     padding: 2px 10px;
     color: #cccccc;
-    background-color:  #cccccc;
+    background-color: #cccccc;
     background-repeat: no-repeat;
-    margin-left:0.7em;
-    display:inline-block;
+    margin-left: 0.7em;
+    display: inline-block;
 }
 
 .plominoLabelClass[data-plomino-position] {
     min-width: 10px !important;
     outline: none;
-
 }
-
 
 .plominoHidewhenClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoHideWhen.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoHideWhen.png");
 }
 .plominoLabelClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoLabel.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoLabel.png");
 }
 .plominoCacheClass[data-plomino-position] {
-    background-image: url('++resource++Products.CMFPlomino/img/PlominoCache.png');
+    background-image: url("++resource++Products.CMFPlomino/img/PlominoCache.png");
 }
 
 *[data-plomino-position]:after {
@@ -253,7 +247,7 @@ hr.plominoPagebreakClass:hover:before {
     width: 0;
     position: absolute;
     pointer-events: none;
-    border-color: rgba(187,0,0,0);
+    border-color: rgba(187, 0, 0, 0);
     border-width: 0.7em;
     margin-top: -0.7em;
     z-index: 1;
@@ -263,41 +257,39 @@ hr.plominoPagebreakClass:hover:before {
 *[data-plomino-position="start"]:after {
     left: 100%;
     border-left-width: 8px;
-    border-left-color:  #cccccc;
+    border-left-color: #cccccc;
 }
 
 *[data-plomino-position="end"]:after {
     right: 100%;
     border-right-width: 8px;
-    border-right-color:  #cccccc;
+    border-right-color: #cccccc;
 }
 
-
-
 /*.plominoActionClass {*/
-    /*padding: 2px 10px;*/
-    /*color: #ffffff;*/
-    /*background-color: #1b6899;*/
-    /*border: 1px solid #124465;*/
-    /*border-radius: 4px;*/
-    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+/*padding: 2px 10px;*/
+/*color: #ffffff;*/
+/*background-color: #1b6899;*/
+/*border: 1px solid #124465;*/
+/*border-radius: 4px;*/
+/*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
 /*}*/
 
 /*.plominoFieldClass {*/
-    /*padding: 2px 10px;*/
-    /*color: #1b6899;*/
-    /*background-color: #ffffff;*/
-    /*border: 1px solid #1b6899;*/
-    /*border-radius: 4px;*/
-    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+/*padding: 2px 10px;*/
+/*color: #1b6899;*/
+/*background-color: #ffffff;*/
+/*border: 1px solid #1b6899;*/
+/*border-radius: 4px;*/
+/*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
 /*}*/
 /*.plominoSubformClass {*/
-    /*padding: 2px 10px;*/
-    /*color: #ffffff;*/
-    /*background-color: #cccccc;*/
-    /*border: 1px solid #cccccc;*/
-    /*border-radius: 4px;*/
-    /*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
+/*padding: 2px 10px;*/
+/*color: #ffffff;*/
+/*background-color: #cccccc;*/
+/*border: 1px solid #cccccc;*/
+/*border-radius: 4px;*/
+/*box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);*/
 /*}*/
 
 .mce-content-body {
