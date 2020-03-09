@@ -269,6 +269,12 @@ Scenario: I can export design from a database
     and I select Export To Zip File
    Then I can click Export button
 
+Scenario: I can exit from the IDE
+  Given a logged-in test user
+    and I open the ide for "mydb"
+  When I close the IDE
+  Then I should see the start page for the database "mydb"
+
 Scenario: I can create a subform and change the form it should display
   Given a logged-in test user
     and I open the ide for "mydb"

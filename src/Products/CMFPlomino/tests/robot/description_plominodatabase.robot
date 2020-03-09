@@ -908,6 +908,9 @@ I press save on the current settings page
   Wait Until Element Is Visible     jquery=.mce-tinymce     30s
   Wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
+I close the IDE
+  Click Element  xpath=//header//*[text()="Close IDE"]
+
 I can see the item with the id "${field_id}" in the preview
   Select frame  jquery=.mce-edit-area iframe:visible
   Wait until element is visible  xpath=//*[@data-plominoid="${field_id}"]
@@ -946,6 +949,12 @@ I can see that the ${hidewhen_position} handle of the "${hidewhen_id}" is ${posi
   ...  //*[@id="tinymce"]//*[@data-plominoid="${field_to_check_position_against}"]
   ...  position=${position}
   Unselect frame
+
+
+I should see the start page for the database "${db_id}"
+  Element should be visible  xpath=//*[text()="${db_id}"]
+  Element should be visible  xpath=//main//*[text()="Add new content"]
+  Element should be visible  xpath=//main//*[text()="Add new content"]//following-sibling::*//*[text()="Form 1"]
 
 
 I select the newly added subform in the editor

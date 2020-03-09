@@ -7,6 +7,7 @@ PretaForm Releases
 0.9.35 (unreleased)
 -------------------
 
+- Change behavior of Close IDE button so that it will display the current database after closing the IDE [quang]
 - Fix IDE layout to remove an unneeded outer scrollbar [jeffersonbledsoe]
 - Fix subforms with no content breaking the content of the parent form [jeffersonbledsoe]
 - Fix issue handling unicode in csv [instification]

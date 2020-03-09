@@ -391,6 +391,10 @@ export class AppComponent implements OnInit {
             .slice(0, -1)
             .join("/");
     }
+    
+  getDbLink(): string {
+    return this.dbService.getDBLink();
+  }
 
     private resolveData(data: any, resolver: Function): void {
         resolver(null, data);
