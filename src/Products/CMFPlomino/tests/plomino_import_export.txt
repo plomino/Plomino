@@ -244,7 +244,7 @@ A field can contains helpers
 # Ensure the imported order is correct and the same as before
 
     >>> db.objectIds()
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> s = db.exportDesignAsJSON()
 
     >>> print s
@@ -323,7 +323,7 @@ Check if zip bunlde include JSON, HTML, PY files
 
 Test contents is in the same order as the db
     >>> print [f for f in db.objectIds() if 'frm' in f or 'view' in f]
-    ['frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
+    ['frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
     >>> print [f.split('/')[1].split('.')[0] for f in json_files if 'frm' in f or 'view' in f]
     ['frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
 
@@ -371,12 +371,12 @@ Check if PY file contains the formula for the field
 
     >>> old_contents = db.objectIds()
     >>> print old_contents
-    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', u'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
+    ['plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files', 'frm_test', 'frm1', 'frm2', 'frm3', 'frm4', 'view1', 'view2', 'view3', 'view4']
 
 #    >>> import os, zipfile
 #    >>> dir, _f = os.path.split(os.path.abspath(__file__))
 #    >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle.zip"), "r")
-    >>> db.importDesignFromZip(export_zip_file, replace=True)
+    >>> db.importDesignFromJSON(from_zip=export_zip_file, replace=True)
 
 #    >>> db.refreshDB()
 #    [...]
@@ -422,7 +422,7 @@ Check that that if we export again, no extra lines etc are added.
     >>> import os
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
     >>> import_zip_file = ZipFile(os.path.join(dir, "filestoimport", "macros_bundle_old_style.zip"), "r")
-    >>> db.importDesignFromZip(import_zip_file)
+    >>> db.importDesignFromJSON(from_zip=import_zip_file)
     >>> db.refreshDB()
     [...]
     >>> macro_field_number_between_old_style = getattr(db, 'macro_field_number_between', None)

@@ -706,7 +706,7 @@ class DesignManager:
                     'application/x-zip-compressed'
                 ]:
                     zip_file = ZipFile(fileToImport)
-                    self.importDesignFromZip(zip_file, replace=replace)
+                    self.importDesignFromJSON(from_zip=zip_file, replace=replace)
                 else:
                     jsonstring = fileToImport.read()
                     self.importDesignFromJSON(jsonstring, replace=replace)
@@ -1503,7 +1503,7 @@ class DesignManager:
     security.declareProtected(DESIGN_PERMISSION, 'importDesignFromJSON')
 
     def importDesignFromJSON(self, jsonstring=None, REQUEST=None,
-            from_folder=None, replace=False):
+            from_folder=None, from_zip=None, replace=False):
         """
         """
         logger.info("Start design import")
@@ -1514,15 +1514,20 @@ class DesignManager:
         count = 0
         total = 0
         bundle = None
-        if from_folder:
-            if not os.path.isdir(from_folder):
-                raise PlominoDesignException('%s does not exist' % from_folder)
-            bundle = Bundle(folder=from_folder)
+        if from_folder is not None or from_zip is not None:
+            if from_folder is not None:
+                if not os.path.isdir(from_folder):
+                    raise PlominoDesignException('%s does not exist' % from_folder)
+                bundle = Bundle(folder=from_folder)
+            elif from_zip is not None:
+                bundle = Bundle(zip_file=from_zip)
+            else:
+                raise PlominoDesignException('No file to import')
+
             total_elements = 0
             for obj_id, obj_type, jsonstring in bundle.contents('json'):
                 total_elements += 1
                 json_strings.append(jsonstring)
-
         else:
             if REQUEST:
                 filename = REQUEST.get('filename')
@@ -1560,20 +1565,24 @@ class DesignManager:
             if not total_elements:
                 total_elements = len(elements)
 
+            pos = 6 # have these existing elements 'plomino_documents', 'plomino_index', 'resources', 'scripts', 'temporary_files'
             for (name, element) in design.items():
                 if name == 'dbsettings':
                     logger.info("Import db settings")
                     self.importDbSettingsFromJSON(element)
                 elif name == 'resources':
+                    res_pos = 0
                     for (res_id, res) in design['resources'].items():
                         logger.info("Import resource" + res_id)
                         self.importResourceFromJSON(
-                            self.resources, res_id, res)
+                            self.resources, res_id, res, pos=res_pos)
+                        res_pos += 1
                 else:
                     logger.info("Import " + name)
                     if bundle:
                         self.composeJsonElementFromBundle(name, element, bundle)
-                    self.importElementFromJSON(self, name, element)
+                    self.importElementFromJSON(self, name, element, pos=pos)
+                    pos += 1
                 count = count + 1
                 total = total + 1
                 if count == 10:
@@ -1584,65 +1593,7 @@ class DesignManager:
                         "(%d elements committed, still running...)" % total)
                     txn.savepoint(optimistic=True)
                     count = 0
-
-        logger.info("(%d elements imported)" % total)
-        self.setStatus("Ready")
-        txn.commit()
-        self.getIndex().no_refresh = False
-
-    security.declareProtected(DESIGN_PERMISSION, 'importDesignFromZip')
-
-    def importDesignFromZip(self, zip_file, replace=False):
-        """Import the design from a zip file
-        """
-        logger.info("Start design import")
-        self.setStatus("Importing design")
-        self.getIndex().no_refresh = True
-        txn = transaction.get()
-        count = 0
-        total = 0
-        if replace:
-            logger.info("Replace mode: removing current design")
-            designelements = (
-                [o.id for o in self.getDesignElements(sortbyid=False)])
-            ObjectManager.manage_delObjects(self, designelements)
-            ObjectManager.manage_delObjects(
-                self.resources,
-                list(self.resources.objectIds()))
-            logger.info("Current design removed")
-        total_elements = None
-        bundle = Bundle(zip_file = zip_file)
-        for file_name, _, json_string in bundle.contents('json'):
-            if not json_string:
-                # E.g. if the zipfile contains entries for directories
-                continue
-            design = json.loads(json_string, object_pairs_hook=OrderedDict)["design"]
-            elements = design.items()
-            if not total_elements:
-                total_elements = len(elements)
-            for (name, element) in elements:
-                if name == 'dbsettings':
-                    logger.info("Import db settings")
-                    self.importDbSettingsFromJSON(element)
-                elif name == 'resources':
-                    for (res_id, res) in design['resources'].items():
-                        logger.info("Import resource: " + res_id)
-                        self.loadScriptIntoResource(res_id, res, bundle)
-                        self.importResourceFromJSON(
-                            self.resources, res_id, res)
-                else:
-                    logger.info("Import " + name)
-                    self.composeJsonElementFromBundle( name, element, bundle)
-                    self.importElementFromJSON(self, name, element)
-                count = count + 1
-                total = total + 1
-                if count == 10:
-                    self.setStatus("Importing design (%d%%)" % int(
-                        100 * total / total_elements))
-                    logger.info(
-                        "(%d elements committed, still running...)" % total)
-                    txn.savepoint(optimistic=True)
-                    count = 0
+            #TODO: should remove any orphaned elements?
 
         logger.info("(%d elements imported)" % total)
         self.setStatus("Ready")
@@ -1688,23 +1639,26 @@ class DesignManager:
 
     security.declareProtected(DESIGN_PERMISSION, 'importElementFromJSON')
 
-    def importElementFromJSON(self, container, id, element):
+    def importElementFromJSON(self, container, id, element, pos):
         """
         """
         #TODO: security problem. Shouldn't allow any type to be created
         element_type = element['type']
-        pos = None
         if id in container.objectIds():
             ob = getattr(container, id)
             if wl_isLocked(ob):
                 ob.wl_clearLocks()
-            pos = container.getObjectPosition(id)
-            container.manage_delObjects([id])
-        params = element['params']
-        container.invokeFactory(element_type, id=id)
-        if pos is not None:
-            container.moveObject(id, pos)
+            old_pos = container.getObjectPosition(id)
+            #container.manage_delObjects([id])
+        else:
+            container.invokeFactory(element_type, id=id)
+            old_pos = container.getObjectPosition(id)
+        #TODO What happens if import order is different from order in DB? e.g. field order.
+        # Do we move things not in the import to the end or start? or just ensure relative positions are the same?
+        #if pos != old_pos:
+        #    container.moveObject(id, pos)
             #TODO above line seems to turn id into unicode for some reason
+        params = element['params']
         obj = getattr(container, id)
         obj.title = element['title']
 
@@ -1735,9 +1689,17 @@ class DesignManager:
         #     # they must be re-set
         #     for param in params:
         #         setattr(obj, param, params[param])
-        if 'elements' in element:
-            for (child_id, child) in element['elements'].items():
-                self.importElementFromJSON(obj, child_id, child)
+        if 'elements' not in element:
+            return
+        pos = 0
+        for (child_id, child) in element['elements'].items():
+            self.importElementFromJSON(obj, child_id, child, pos)
+            pos+=1
+        # remove any left over children
+        for child_id in set(obj.objectIds()) - set(element['elements'].keys()):
+            obj.manage_delObjects([child_id])
+
+
 
 
     security.declareProtected(DESIGN_PERMISSION, 'importDbSettingsFromJSON')

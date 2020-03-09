@@ -156,6 +156,90 @@ When we close we will go back to the search form again
 
 
 
+===============================================================================
+Test import and export doesn't change view content
+===============================================================================
+Define the import + export function
+   >>> def import_export():
+   ...     dir, _ = os.path.split(os.path.abspath(__file__))
+   ...     dir = os.path.join(dir,'tmp_export')
+   ...     output_dir = os.path.join(dir,'mydb')
+   ...     db.exportDesign(targettype='folder', targetfolder=dir)
+   ...     db.importDesignFromJSON(from_folder=output_dir, replace=False)
+
+
+    >>> import json, os
+    >>> from os.path import join
+    >>> db.view1.static_rendering = True
+    >>> transaction.commit()
+    >>> browser.open(db.view1.absolute_url())
+    
+    >>> '<th data-column="col1">Col 1</th>' in browser.contents
+    True
+    >>> len(db.view1.getAllDocuments())
+    2
+    >>> browser.open(portal_url +'/mydb/view1')
+    >>> 'sumi' in browser.contents
+    True
+    >>> '2 documents' in browser.contents
+    True
+
+    # Without replace mode
+    >>> dir, _ = os.path.split(os.path.abspath(__file__))
+    >>> dir = os.path.join(dir,'tmp_export')
+    >>> output_dir = os.path.join(dir,'mydb')
+    >>> db.exportDesign(targettype='folder', targetfolder=dir)
+    >>> db.importDesignFromJSON(from_folder=output_dir, replace=False)
+
+    >>> len(db.view1.getAllDocuments())
+    2
+    >>> browser.open(portal_url +'/mydb/view1')
+    >>> 'sumi' in browser.contents
+    True
+    >>> '2 documents' in browser.contents
+    True
+
+    # With replace mode. Test disabled until this is fixed
+    >>> #dir, _ = os.path.split(os.path.abspath(__file__))
+    >>> #dir = os.path.join(dir,'tmp_export')
+    >>> #output_dir = os.path.join(dir,'mydb')
+    >>> #db.exportDesign(targettype='folder', targetfolder=dir)
+    >>> #db.importDesignFromJSON(from_folder=output_dir, replace=True)
+
+    >>> #len(db.view1.getAllDocuments())
+    #2
+    >>> #browser.open(portal_url +'/mydb/view1')
+    >>> #'sumi' in browser.contents
+    #True
+    >>> #'2 documents' in browser.contents
+    #True
+
+Exporting then importing the same database after some content has changes doesn't break the views
+    >>> doc1.setItem("field4", "Field 4 exists!")
+    >>> doc2.setItem("field4", "Field 4 exists!")
+    >>> _ = db.frm1.invokeFactory("PlominoField",
+    ...                            id="field4",
+    ...                            title="Title for field 4",
+    ...                            field_type="TEXT",
+    ...                            field_mode="EDITABLE")
+    >>> _ = db.view1.invokeFactory("PlominoColumn",
+    ...                             id="col4",
+    ...                             title="Col 4",
+    ...                             displayed_field="frm1/field4")
+    >>> db.refreshDB()
+    [...]
+
+    >>> len(db.view1.getAllDocuments())
+    2
+    >>> browser.open(portal_url +'/mydb/view1')
+
+    >>> import_export()
+
+    >>> len(db.view1.getAllDocuments())
+    2
+    >>> browser.open(portal_url +'/mydb/view1')
+
+
 
 =======================================
 Test unindexing document after deleted
