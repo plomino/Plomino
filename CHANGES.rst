@@ -4,6 +4,12 @@ Changelog
 PretaForm Releases
 ==================
 
+0.9.36 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 0.9.35 (2020-03-09)
 -------------------
 
