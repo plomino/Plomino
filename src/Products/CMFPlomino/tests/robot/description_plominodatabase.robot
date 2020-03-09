@@ -876,21 +876,51 @@ I open the "${tab_text}" tab
   Wait Until Element Is Visible  xpath=//plomino-palette//*[@class="mdl-tabs__tab-bar"]//*[contains(text(), "${tab_text}")]/*
 
 
+I open the "${tab_text}" form tab
+  Wait Until Element Is Visible     jquery=.mce-tinymce     30s
+  Wait until page does not contain element  jquery=.plomino-block-preloader:visible
+  Click element  xpath=//plomino-tabs//*[text()="new-form"]
+  Wait Until Element Is Visible     jquery=.mce-tinymce     30s
+  Wait until page does not contain element  jquery=.plomino-block-preloader:visible
+
+
 I add a "${item_title}" item
   I open the "Add" tab
   Wait Until Element Is Visible     xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
   Click Element  xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
   Wait Until Element Is Visible     jquery=.mce-tinymce     60s
 
+I create a form titled "${form_title}" with the id "${form_id}"
+  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
+  I add a "Form" item
+  I open the "Form Settings" tab
+  I change the setting "Id" to "${form_id}"
+  I change the setting "Title" to "${form_title}"
+  I press save on the current settings page
+
+I change the setting "${settings_title}" to "${new_settings_value}"
+  Input Text  xpath=//plomino-palette//*[contains(@class, "is-active")]//*[normalize-space(text())="${settings_title}"]/following-sibling::input  ${new_settings_value}
+
 
 I press save on the current settings page
   Wait until element is visible  xpath=//plomino-palette//*[contains(@class, "mdl-tabs__panel") and contains(@class, "is-active")]//a[*//text()="save"]
   Click Element  xpath=//plomino-palette//*[contains(@class, "mdl-tabs__panel") and contains(@class, "is-active")]//a[*//text()="save"]
+  Wait Until Element Is Visible     jquery=.mce-tinymce     30s
+  Wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I can see the item with the id "${field_id}" in the preview
   Select frame  jquery=.mce-edit-area iframe:visible
   Wait until element is visible  xpath=//*[@data-plominoid="${field_id}"]
   Unselect Frame
+
+I can see an item "${field_id}" inside the subform "${subform_id}" in the preview
+  Select frame  jquery=.mce-edit-area iframe:visible
+  Wait until element is visible  xpath=//*[contains(@class, "plominoSubformClass") and @data-plominoid="${subform_id}"]//*[@id="${field_id}"]
+  Unselect Frame
+
+I can see a field with the id "${item_id}"
+  Wait until element is visible  xpath=//*[@id="${item_id}"]
+  Element should be visible      xpath=//*[@id="${item_id}"]
 
 
 I can see the ${position} of the "${hidewhen_id}" hidewhen
@@ -926,10 +956,28 @@ I select the newly added subform in the editor
   Unselect frame
 
 
+I select the subform with a form id of "${new_subform_id}"
+  ${subform_xpath}=  Convert to string  body[@id="tinymce"]//*[contains(@class, "plominoSubformClass") and @data-plominoid="${new_subform_id}"]
+  Select frame  jquery=.mce-edit-area iframe:visible 
+  Wait until element is visible  xpath=//${subform_xpath}
+  Sleep  2 sec  # Bit hacky, but the subform needs to render before it is selectable for some reason
+  Click element  xpath=//${subform_xpath}
+  Unselect frame
+
+
 I set the form with the title "${form_title}" as the currently selected subform's form
   Click element  css=#s2id_form-widgets-subform-id a
   Wait until element is visible  xpath=//li[contains(@class, "select2-result-selectable") and *//text() = "${form_title}"]
-  Click element  xpath=//li[contains(@class, "select2-result-selectable ") and *//text() = "${form_title}"]
+  Click element  xpath=//li[contains(@class, "select2-result-selectable") and *//text() = "${form_title}"]
+
+
+I create an empty subform on the current form
+  I add a "Subform" item
+  I open the "Form Settings" tab
+  I press save on the current settings page
+  Reload page
+  Wait Until page does not contain element  id=application-loader
+  Wait until element is visible  css=.mce-edit-area
 
 
 I create a subform on the current form
@@ -941,6 +989,30 @@ I create a subform on the current form
   Reload page
   Wait Until page does not contain element  id=application-loader
   Wait until element is visible  css=.mce-edit-area
+
+
+I change the subform "${subform_id}" to use the subform "${new_subform_title}"
+  I select the subform with a form id of "${subform_id}"
+  I set the form with the title "${new_subform_title}" as the currently selected subform's form
+  I open the "Form Settings" tab
+  I press save on the current settings page
+  Reload page
+  Wait Until page does not contain element  id=application-loader
+  Wait until element is visible  css=.mce-edit-area
+
+
+I should see an empty subform
+  ${subform_xpath}=  Convert to string  body[@id="tinymce"]//*[contains(@class, "plominoSubformClass")]
+  Select frame  jquery=.mce-edit-area iframe:visible
+  Wait until element is visible  css=#tinymce
+  Wait until element is visible  xpath=//${subform_xpath}
+  Element should be visible  xpath=//${subform_xpath}
+
+  # This is how empty subforms are displayed. It doesn't look nice, it's just how it is...
+  Element should be visible  xpath=//${subform_xpath}/h2
+  Element should be visible  xpath=//${subform_xpath}/input[@value="..."]
+
+  Unselect frame
 
 
 I move the item "${item_to_move}" ${drag_position} the item "${item_to_move_about}"

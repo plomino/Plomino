@@ -51,8 +51,8 @@ Scenario: As a site administrator I can view a PlominoDatabase
 Scenario: As a site administrator I can open a form
   Given a logged-in test user
     and I open the ide for "mydb"
-   When I open a form "frm_test"
-   Then I can see field "field_1" in the editor
+  When I open a form "frm_test"
+  Then I can see field "field_1" in the editor
 
 Scenario: As a site administrator I can open a form (2 tabs)
   Given I have an empty form open
@@ -268,3 +268,33 @@ Scenario: I can export design from a database
    When I click the tab "Design import/export" in Import/Export dialog
     and I select Export To Zip File
    Then I can click Export button
+
+Scenario: I can create a subform and change the form it should display
+  Given a logged-in test user
+    and I open the ide for "mydb"
+    and I add a form by click
+    and I create a form titled "Date Form" with the id "form_with_date"
+    and I add a "Date" item
+    and I can see the item with the id "date" in the preview
+    and I create a form titled "Empty Form" with the id "empty_form"
+    and I open the "new-form" form tab
+  
+  # Creating an empty subform
+  When I create an empty subform on the current form
+    and I open the "new-form" form tab       # Need to open the tab as to update the rendered subform I need to re-open the IDE, causing the open form to change
+  Then I should see an empty subform
+
+  # Changing the subform to one that is empty
+  When I change the subform "Subform" to use the subform "Empty Form"   # Existing subforms with no ID have an id of 'Subform'
+    and I open the "new-form" form tab       # Need to open the tab as to update the rendered subform I need to re-open the IDE, causing the open form to change
+  Then I should see an empty subform
+  
+  # Changing the subform to one with content
+  When I change the subform "empty_form" to use the subform "Date Form"   # Subform is empty_form from the last part of the test
+    and I open the "new-form" form tab       # Need to open the tab as to update the rendered subform I need to re-open the IDE, causing the open form to change
+  Then I can see an item "date" inside the subform "form_with_date" in the preview
+  
+  When I save the form as "subform_rendering"
+    and I preview "subform_rendering"
+  Then I can see a field with the id "date"
+

@@ -7,11 +7,11 @@ PretaForm Releases
 0.9.35 (unreleased)
 -------------------
 
+- Fix subforms with no content breaking the content of the parent form [jeffersonbledsoe]
 - Fix issue handling unicode in csv [instification]
 - Fixed indexes being destroyed on database import [djay, jeffersonbledsoe]
 - Fixed issue with numer in range macro incorrectly handling empty values.
   [instification]
-
 
 0.9.34 (2020-02-14)
 -------------------

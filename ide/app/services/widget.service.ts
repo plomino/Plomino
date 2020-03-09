@@ -665,7 +665,9 @@ export class WidgetService {
                 .get(0);
             return result
                 ? result.outerHTML
-                : '<div class="mceNonEditable" data-plominoid="' + $id + '"><h2>Subform</h2><input value="..."/></div>';
+                : '<div class="mceNonEditable plominoSubformClass" data-plominoid="' +
+                      $id +
+                      '"><h2>Subform</h2><input value="..."/></div>';
         });
     }
 
