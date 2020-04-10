@@ -4,6 +4,7 @@ Resource  plone/app/robotframework/selenium.robot
 Resource  plone/app/robotframework/saucelabs.robot
 Resource  plone/app/robotframework/keywords.robot
 Resource  description_views.robot
+Resource  utils.robot
 
 Library  Remote  ${PLONE_URL}/RobotRemote
 # Was used to try and do better DnD tests
@@ -649,7 +650,7 @@ I will see the "${position}" hidewhen on the path "${xpath}"
   wait until page contains element  jquery=.mce-edit-area iframe:visible
   select frame  jquery=.mce-edit-area iframe:visible
   Wait until page contains element  css=.plominoHidewhenClass.mceNonEditable  #TODO change for test based on spinner
-  Page should contain element  xpath=//*[@id="tinymce"]${xpath}[contains(@class,"plominoHidewhenClass")][@data-plomino-position="${position}"]
+  Page should contain element  xpath=//*[@id="tinymce"]${xpath}\[contains(@class,"plominoHidewhenClass")][@data-plomino-position="${position}"]
   unselect frame
 
 I see "${value}" in "${field}" in "${tab}"
@@ -1030,14 +1031,14 @@ I move the item "${item_to_move}" ${drag_position} the item "${item_to_move_abou
   Sleep  2 sec    # Another timing hack. Elements will sometimes remount
 
   Select frame  jquery=.mce-edit-area iframe:visible
-  ${item_to_move_position}=        Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move}"]
-  ${item_to_move_about_position}=  Get Vertical Position  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move_about}"]
-  # The below code should work, however it's complaining that "Get Element Size" isn't a keyword (Test written in Robot Framework 3.0)
-  # ${UNUSED}  ${field_to_move_under_height}=  Get Element Size  xpath=//body[@id="tinymce"]//*[contains(@class="plominoFieldClass") and @data-plominoid="${field_to_move_under_id}"]
-  ${item_height}=  Evaluate  250
+  ${item_to_move_position}=        Get item or parent group top position  item_id=${item_to_move}
+  ${item_to_move_about_position}=  Get item or parent group top position  item_id=${item_to_move_about}
 
-  ${above_offset_value}=  Evaluate  (${item_to_move_position} - ${item_to_move_about_position}) - ${item_height}
-  ${below_offset_value}=  Evaluate  (${item_to_move_about_position} - ${item_to_move_position}) + ${item_height}
+  ${item_to_move_height}=  Get item or parent group height  item_id=${item_to_move}
+  ${item_to_move_about_height}=  Get item or parent group height  item_id=${item_to_move_about}
+  ${midpoint_drag_offset}=  Evaluate  ${item_to_move_height} / 2  # This is because robot framework drag + drop starts from the middle
+  ${above_offset_value}=  Evaluate  (${item_to_move_position} - ${item_to_move_about_position}) - ${item_to_move_height} - ${midpoint_drag_offset}
+  ${below_offset_value}=  Evaluate  (${item_to_move_about_position} - ${item_to_move_position}) + ${item_to_move_height} + ${midpoint_drag_offset}
   ${drag_offset}=  Set variable if  "${drag_position}" == "above"  ${above_offset_value}
   ${drag_offset}=  Set variable if  "${drag_position}" == "below"  ${below_offset_value}  ${drag_offset}
 

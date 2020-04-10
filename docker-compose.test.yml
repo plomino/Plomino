@@ -3,7 +3,7 @@
 version: '3'
 services:
   selenium:
-    image: selenium/standalone-chrome:3.141.59-oxygen
+    image: selenium/standalone-chrome:3.141.59-20200326
     volumes:
       - /dev/shm:/dev/shm
     privileged: true
@@ -78,6 +78,7 @@ services:
     environment:
       - ROBOT_REMOTE_URL=http://selenium:4444/wd/hub
       - ROBOT_PLONE_URL=http://plominotest:55001/plone
+      - ROBOT_DESIRED_CAPABILITIES=platform:Linux,browserName:chrome
     volumes:
       - /dev/shm:/dev/shm
 # doesn't work with remote docker
