@@ -56,13 +56,15 @@ if you are modifying tests and also want to see the test output
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
 
-### D. Run only robot tests
+### D. Run using robot-server (faster to debug tests)
 
-Firstly, you need start robot-server
+Firstly, you need start robot-server (this will take some time)
 
 ```
 docker-compose -f docker-compose.test.yml -p grid up -d robot-server
 ```
+
+#TODO should be able to use docker logs to see when its ready, or have some other test. ```docker-compose -f docker-compose.test.yml -p grid logs -f robot-server``` should work but doesn't
 
 and then you got two options to run the tests:
 
@@ -72,11 +74,15 @@ i. run all robot tests
 docker-compose -f docker-compose.test.yml -p grid up robot
 ```
 
-ii. run a single robot test
+ii. OR run a single robot test
 
 ```
 docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_views.robot
 ```
+
+
+
+
 
 ## 2. Using docker directly (equiv to above)
 

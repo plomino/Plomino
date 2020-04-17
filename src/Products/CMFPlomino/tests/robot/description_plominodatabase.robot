@@ -14,6 +14,7 @@ Library  Remote  ${PLONE_URL}/RobotRemote
 *** Variables ****************************************************************
 
 ${BROWSER}  Chrome
+${DESIRED_CAPABILITIES}  platform:Linux,browserName:chrome
 
 *** Keywords *****************************************************************
 
