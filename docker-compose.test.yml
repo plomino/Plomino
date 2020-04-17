@@ -11,7 +11,7 @@ services:
     environment:
       - VNC_NO_PASSWORD=1
     ports:
-      - "127.0.0.1:5900:5900"
+      - "5900:5900"
       - "4444:4444"
     networks: 
       - testnet
@@ -26,11 +26,10 @@ services:
       - ROBOT_DESIRED_CAPABILITIES=platform:Linux,browserName:chrome
     volumes:
       - /dev/shm:/dev/shm
+      - ./test/testoutput:/buildout/parts/test  # doesn't work with remote docker
+      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests # doesn't work with remote docker
     networks:
       - testnet
-# doesn't work with remote docker
-#      - ./test/testoutput:/buildout/parts/test
-#      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
     command: /bin/sh -c "/plone/instance/bin/test -vv -s Products.CMFPlomino && /plone/instance/bin/test --all -vv -t robot -s Products.CMFPlomino"
     depends_on:
       - "selenium"
@@ -41,6 +40,8 @@ services:
     image: robot_tests
     depends_on:
        - selenium
+    networks:
+      - testnet
     command: bin/robot-server --no-reload -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING
     volumes:
       - /dev/shm:/dev/shm
@@ -56,17 +57,16 @@ services:
     depends_on:
        - selenium
        - robot-server
+    networks:
+      - testnet
     environment:
-# Not sure why this doesn't work as advertised
-#       - ROBOT_OPTIONS="--outputdir=/buildout/parts/test --variable=REMOTE_URL:http://hub:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone "
        - LISTENER_PORT=49999
        - LISTENER_HOST=robot-server
     command: bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
     volumes:
       - /dev/shm:/dev/shm
-# doesn't work with remote docker
-      - ./test/testoutput:/buildout/parts/test
-      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests
+      - ./test/testoutput:/buildout/parts/test # doesn't work with remote docker
+      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests # doesn't work with remote docker
     privileged: true
 
   instance:
@@ -79,66 +79,38 @@ services:
       - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
 
 
-#  hub:
-#    image: elgalu/selenium:2
-#    ports:
-#      - 4444:4444
-#      # We need a fixed port range to expose VNC
-#      # due to a bug in Docker for Mac beta (1.12)
-#      # https://forums.docker.com/t/docker-for-mac-beta-not-forwarding-ports/8658/6
-#      - ${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}:${VNC_FROM_PORT-40650}-${VNC_TO_PORT-40700}
-#      # e.g. (hard-coded)
-#      # - 40650-40700:40650-40700
-#
-#    volumes:
-#      - /dev/shm:/dev/shm
-#    privileged: true
-#    environment:
-#      - PICK_ALL_RANDOM_PORTS=true
-#      - SELENIUM_HUB_HOST=hub
-#      - SELENIUM_HUB_PORT=4444
-#      - GRID=true
-#      - CHROME=false
-#      - FIREFOX=false
-#      - MOCK_SERVER_HOST=mock
-#  chrome:
-#    image: elgalu/selenium:2
-#    depends_on:
-#      - hub
-#    volumes:
-#      - /dev/shm:/dev/shm
-#    privileged: true
-#    environment:
-#      - PICK_ALL_RANDOM_PORTS=true
-#      - SELENIUM_HUB_HOST=hub
-#      - SELENIUM_HUB_PORT=4444
-#      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
-#      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
-#      - VNC_TO_PORT=${VNC_TO_PORT-40700}
-#      - SCREEN_WIDTH=1300
-#      - SCREEN_HEIGHT=999
-#      - VIDEO=${VIDEO-false}
-#      - GRID=false
-#      - CHROME=true
-#      - FIREFOX=false
-#
-#  firefox:
-#    image: elgalu/selenium:2
-#    depends_on:
-#      - hub
-#    volumes:
-#      - /dev/shm:/dev/shm
-#    privileged: true
-#    environment:
-#      - PICK_ALL_RANDOM_PORTS=true
-#      - SELENIUM_HUB_HOST=hub
-#      - SELENIUM_HUB_PORT=4444
-#      - SELENIUM_NODE_HOST={{CONTAINER_IP}}
-#      - VNC_FROM_PORT=${VNC_FROM_PORT-40650}
-#      - VNC_TO_PORT=${VNC_TO_PORT-40700}
-#      - SCREEN_WIDTH=1300
-#      - SCREEN_HEIGHT=999
-#      - VIDEO=${VIDEO-false}
-#      - GRID=false
-#      - CHROME=false
-#      - FIREFOX=true
+  selenium-hub:
+    image: selenium/hub:3.141.59-20200409
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+
+  firefox:
+    image: selenium/node-firefox:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+
+  opera:
+    image: selenium/node-opera:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
