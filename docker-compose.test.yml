@@ -1,6 +1,6 @@
 #docker run --rm -d -p 4444:24444 -p 7777:25900 -p 55001:55001 -p8080:8080 -v /dev/shm:/dev/shm -v $PWD/src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v $PWD/test:/buildout/parts/test --privileged --rm --name rtests robot_tests
 #docker exec -ti rtests /bin/bash -c "cd /buildout; ROBOT_REMOTE_URL=http://127.0.0.1:24444/wd/hub bin/test --all"
-version: '3.5'
+version: '3'
 networks:
   testnet:
 services:
