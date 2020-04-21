@@ -6,25 +6,40 @@ You can follow these instructions below to run it locally.
 
 ## Build docker image
 
-Before you run any test, you need to build the base image first.
+Before you run any test, you need to build the base image first. If the code has buildout has changed
+or the code has changed then you will need to rebuild. To rebuild run the follwing
 
-```
-docker build --tag robot_tests -f Dockerfile-bootstrap .
-```
-
-Then this command below will run buildout and npm build inside docker image.
-If the code changes you need to redo this step.
 
 ```
 docker build --tag robot_tests .
 ```
 
+This command will fail the first time as you will need to bootstrap the image first. To boottrap run.
+
+```
+docker build --tag robot_tests -f Dockerfile-bootstrap .
+```
+
+During any part of the buildout it could fail due to changed external packages no being version controlled properly.
+In this case the docker build will not fail so you will need to read its output carefully. The reason it doesn't fail is
+that it allows you to rerun the build from where buildout got stuck which signifantly reduces the time to rebuild in case of
+code changes or buildout issues.
+
+
+## Tests overview
+
 There are two ways to run the tests:
 
-1. using docker compose (recommended)
-2. using docker directly
+1. using docker compose and bin/test 
+  - lets you run all the tests, not just robot tests
+2. using docker compose and robot-server 
+  - faster for debuggung tests
+3. using docker directly
+  - shouldn't need to use this
 
-## 1. Using docker compose (recommended)
+
+
+## 1. Using docker compose and bin/test
 
 ### Start selenium at background
 
@@ -42,11 +57,13 @@ and then choose the few options below to run the tests.
 docker-compose -f docker-compose.test.yml -p grid run plominotest --rm -e bin/test --all
 ```
 
-### B. Run a single test
+### B. Run a single test with bin/test
 
 ```
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
+
+NB Some chars get stripped out of the test names with bin/test 
 
 ### C. Run the all the tests with output statement (not working)
 
@@ -55,6 +72,9 @@ if you are modifying tests and also want to see the test output
 ```
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
+
+
+## 2. Using docker-compose and robot-server
 
 ### D. Run using robot-server (faster to debug tests)
 
@@ -77,14 +97,15 @@ docker-compose -f docker-compose.test.yml -p grid up robot
 ii. OR run a single robot test
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_views.robot
+docker-compose -f docker-compose.test.yml -p grid run -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_views.robot
 ```
 
+NB: you will need to include the full test name in this case including special chars like colon.
 
 
 
 
-## 2. Using docker directly (equiv to above)
+## 3. Using docker directly (equiv to above)
 
 Start the selenium server
 
