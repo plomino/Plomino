@@ -21,7 +21,7 @@
     "bootstrap": "^3.3.6",
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.35.0",
-    "jquery": "^2.2.3",
+    "jquery": "^3.5.0",
     "ng2-bootstrap": "^1.0.13",
     "ng2-bs3-modal": "^0.6.0",
     "ng2-dnd": "^1.8.2",
