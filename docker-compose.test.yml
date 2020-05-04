@@ -1,8 +1,6 @@
 #docker run --rm -d -p 4444:24444 -p 7777:25900 -p 55001:55001 -p8080:8080 -v /dev/shm:/dev/shm -v $PWD/src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests -v $PWD/test:/buildout/parts/test --privileged --rm --name rtests robot_tests
 #docker exec -ti rtests /bin/bash -c "cd /buildout; ROBOT_REMOTE_URL=http://127.0.0.1:24444/wd/hub bin/test --all"
 version: '3'
-networks:
-  testnet:
 services:
   selenium:
     image: selenium/standalone-chrome-debug:3.141.59-20200326
@@ -13,23 +11,23 @@ services:
     ports:
       - "5900:5900"
       - "4444:4444"
-    networks: 
-      - testnet
 #    privileged: true
   plominotest:
     image: robot_tests
+    container_name: plominotest
     ports:
       - "8080:8080"
+      - "55001:55001"
     environment:
       - ROBOT_REMOTE_URL=http://selenium:4444/wd/hub
       - ROBOT_PLONE_URL=http://plominotest:55001/plone
       - ROBOT_DESIRED_CAPABILITIES=platform:Linux,browserName:chrome
+      - ZSERVER_HOST=0.0.0.0
+      - ZSERVER_PORT=55001
     volumes:
       - /dev/shm:/dev/shm
       - ./test/testoutput:/buildout/parts/test  # doesn't work with remote docker
       - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests # doesn't work with remote docker
-    networks:
-      - testnet
     command: /bin/sh -c "/plone/instance/bin/test -vv -s Products.CMFPlomino && /plone/instance/bin/test --all -vv -t robot -s Products.CMFPlomino"
     depends_on:
       - "selenium"
@@ -40,8 +38,6 @@ services:
     image: robot_tests
     depends_on:
        - selenium
-    networks:
-      - testnet
     command: bin/robot-server --no-reload -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING -v 
     volumes:
       - /dev/shm:/dev/shm
@@ -59,8 +55,6 @@ services:
     depends_on:
        - selenium
        - robot-server
-    networks:
-      - testnet
     environment:
        - LISTENER_PORT=49999
        - LISTENER_HOST=robot-server
@@ -79,8 +73,6 @@ services:
     volumes:
       - /dev/shm:/dev/shm
       - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
-    networks:
-      - testnet
   
 
   selenium-hub:
@@ -88,8 +80,6 @@ services:
     container_name: selenium-hub
     ports:
       - "4444:4444"
-    networks:
-      - testnet
   
   chrome:
     image: selenium/node-chrome:3.141.59-20200409
@@ -100,8 +90,6 @@ services:
     environment:
       - HUB_HOST=selenium-hub
       - HUB_PORT=4444
-    networks:
-      - testnet
   
   firefox:
     image: selenium/node-firefox:3.141.59-20200409
@@ -112,8 +100,6 @@ services:
     environment:
       - HUB_HOST=selenium-hub
       - HUB_PORT=4444
-    networks:
-      - testnet
   
   opera:
     image: selenium/node-opera:3.141.59-20200409
@@ -124,6 +110,4 @@ services:
     environment:
       - HUB_HOST=selenium-hub
       - HUB_PORT=4444
-    networks:
-      - testnet
   

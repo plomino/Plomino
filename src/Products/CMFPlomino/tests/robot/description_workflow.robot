@@ -93,16 +93,12 @@ I can add a Form Task element
     Wait Until Element Is Visible       jquery=#wf-vrt-btn-1     1s
 # I think this mouse over might be what is making this test unstable. lets remove it for now
     Mouse Over       jquery=#wf-vrt-btn-1
-    Capture Page Screenshot
     Click Element       jquery=#wf-vrt-btn-1
-    Capture Page Screenshot
     Sleep       1s
 #    Mouse Over       jquery=#wf-vrt-btn-1
     Mouse Over       jquery=.mdl-menu__container
-    Capture Page Screenshot
     Wait Until Element Is Visible       jquery=.mdl-menu__container .mdl-menu li:contains('Form task')      2s
     Click Element       jquery=.mdl-menu__container .mdl-menu li:contains('Form task')
-#    Capture Page Screenshot
     Element Should Be Visible       jquery=.workflow-node__text--task[id='workflow-node__text--task-2']
     Element Should Be Visible       jquery=.workflow-node__text--form[id='workflow-node__text--form-2']
     Element Should Be Visible       jquery=.workflow-node__text--process[id='workflow-node__text--process-2']

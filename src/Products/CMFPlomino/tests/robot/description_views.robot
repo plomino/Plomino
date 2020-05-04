@@ -95,7 +95,6 @@ I edit the title to "${newtitle}"
 I save the current field settings
   Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
   Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
-  Capture Page Screenshot
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']
   Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons    60s
 
@@ -172,7 +171,6 @@ I associate the datagrid to main form
   Wait Until Element Is Visible     jquery=select option[value='new-form-1']      60s
   Click Element   jquery=select option[value='new-form-1']
   Sleep   3s
-  Capture Page Screenshot
   I save the current field settings
 
 # --- WHEN -------------------------------------------------------------------
@@ -184,7 +182,6 @@ I add a row to the datagrid form to display the main form "${mainform}"
   Press Key   jquery=.actions .add-row    \\9
   Execute Javascript  $(".actions .add-row").click()
   Sleep   5s
-  Capture Page Screenshot
 
 I fill in the fields and save the form "${mainform}"
   Wait Until Element Is Visible     jquery=input[name='plomino_save']   60s
@@ -366,7 +363,6 @@ I add a column "${col}" with retries
   # Run Keyword And Ignore Error    Wait Until Element Is Visible     jquery=.mdl-button--colored[id='${col}']     60s
   # Run Keyword And Ignore Error    Wait Until Element Is Enabled     jquery=.mdl-button--colored[id='${col}']     60s
   Wait Until Keyword Succeeds   7 min   10 sec    I add a column "${col}" only
-  Capture Page Screenshot
   I input column name and title "${col}"
   Set Selenium Timeout    60s
 
@@ -381,13 +377,11 @@ I input column name and title "${col}"
   Input Text  jquery=#form-widgets-IShortName-id  ${col}
   Click Element   jquery=#form-widgets-IBasic-title
   Input Text  jquery=#form-widgets-IBasic-title  ${col}
-  Capture Page Screenshot
   Wait Until Keyword Succeeds   3 min   30 s    Save the column properties for "${col}"
 
 Save the column properties for "${col}"
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']     #this saves #{myfield column}
   I will see column "${col}" in the view
-  Capture Page Screenshot
 
 I add a column "${col}" only
   Execute Javascript    $(".mdl-button--colored[id='column']").click()
@@ -422,7 +416,6 @@ I add a column "${column}"
   Wait Until Element Is Enabled     jquery=#column    60s
   Click Element     jquery=#column
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
-  Capture Page Screenshot
   Click Element     jquery=#form-widgets-IShortName-id
   Input Text      jquery=#form-widgets-IShortName-id    ${column}
   Click Element     jquery=#form-widgets-IBasic-title
@@ -431,7 +424,6 @@ I add a column "${column}"
   Wait Until Element Is Enabled     jquery=#ide-fieldsettings__save-button
   Click Element     jquery=#ide-fieldsettings__save-button
   Sleep     10s
-  Capture Page Screenshot
 
 I add a second column "${column}"
   I click on Add tab

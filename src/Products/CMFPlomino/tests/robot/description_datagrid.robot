@@ -27,7 +27,6 @@ I fill in the name and address fields and and go to the next page
     Input Text    jquery=#address     123 Main St
     Wait Until Element Is Visible     jquery=input[name='next']
     Click Element     jquery=input[name='next']
-    Capture Page Screenshot
 
 I can see the datagrid with civil status and job title fields
     Wait Until Page Contains Element        jquery=.plomino-datagrid        60s
@@ -91,7 +90,6 @@ I reload the document view "${page}"
     Reload Page
     Wait Until Element Is Visible     jquery=table tbody tr:eq(0)     60s
     Wait Until Element Is Visible     jquery=table tbody tr:eq(1)     60s
-    Capture Page Screenshot
 
 I can see the datagrid form view is arranged according to field mapping
     Wait Until Element Is Visible   jquery=tr th:contains('Pick an option')

@@ -23,6 +23,8 @@ jobs:
       - name: Build application Docker image
         run: |
           docker build --no-cache -t robot_tests . || (docker build --no-cache -t robot_tests -f Dockerfile-bootstrap .; docker build --no-cache -t robot_tests .)
+          # make sure we actually built it
+          docker-compose -f docker-compose.test.yml -p grid run plominotest ls bin/test 
       - name: Run tests
         timeout-minutes: 60
         run: |
@@ -33,8 +35,8 @@ jobs:
       - name: Clean up tests
         if: always()
         run: |
-          docker cp  grid_plominotest_1:/plone/instance/parts/test .
-          docker cp  grid_plominotest_1:/plone/instance/var/log .
+          docker cp plominotest:/plone/instance/parts/test .
+          docker cp plominotest:/plone/instance/var/log .
           ls -al test
           docker-compose -f docker-compose.test.yml -p grid down
       - name: Archive test results

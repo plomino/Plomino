@@ -148,10 +148,8 @@ I add a dynamic computed field "${fieldid}": with field mode "${fieldmode}"
 
 I fill in the fields name for Display Total screen with "${field}"
   Click Element     jquery=#s2id_fields_name
-  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=.pat-select2 option[value='${field}']
   Click Element     jquery=.pat-select2 option[value='${field}']
-  Capture Page Screenshot
   Sleep   2s
 
 I select field mode "${fieldmode}"
@@ -183,15 +181,11 @@ I insert formula that displays text
   Click Element     jquery=button:contains('Insert formula')
   Wait Until Element Is Visible     jquery=.dropdown-menu li a:eq(1)
   Sleep   5s
-  Capture Page Screenshot
   Click Element     jquery=.dropdown-menu li a:eq(1)
-  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=.ace_line:eq(3)
 
   Click Element     jquery=.ace_content
-  Capture Page Screenshot
   Execute Javascript         $(".ace_text-input").click();
-  Capture Page Screenshot
   Press Key     jquery=.ace_text-input      \\8
   Press Key     jquery=.ace_text-input      \\8
   Press Key     jquery=.ace_text-input      \\8
@@ -215,9 +209,7 @@ I insert formula that displays text
 
 
   Press Key     jquery=.ace_text-input    return 'Display This Text'\n
-  Capture Page Screenshot
   Enter formula "## END formula }"
-  Capture Page Screenshot
   I save the formula
   Sleep   5s
 
@@ -247,18 +239,13 @@ I edit the number field "${fieldid}" to "${newid}"
   I edit the field as Number type
   Sleep     3s
   Click Element     jquery=#form-widgets-IShortName-id
-  Capture Page Screenshot
   Input Text    jquery=#form-widgets-IShortName-id      ${newid}
-  Capture Page Screenshot
 
 I edit the field as Number type
   Press Key     jquery=#form-widgets-field_type     \9
-  Capture Page Screenshot
   Click Element     jquery=#form-widgets-field_type
-  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=select option[value='NUMBER']
   Click Element     jquery=select option[value='NUMBER']
-  Capture Page Screenshot
 
 I input a value "${value}" on the Library Fee field and move to the next field
   Wait Until Element Is Visible     jquery=#amount1
@@ -298,23 +285,18 @@ I save the macro and the form
   I save the fieldsettings
 
 I save the macro
-  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    60s
   Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    60s
   Execute Javascript    $(".actionButtons input[name='plomino_save']").click()
-  Sleep     5s
-  Capture Page Screenshot
+  Sleep     10s
   # Wait Until Element Is Not Visible     jquery=.plone-modal-dialog    60s
 
 I select current field
   # Click Element     jquery=.select2-container[id='s2id_field_name']     #input Click on the search box
   Click Element     jquery=#s2id_field_name
-  Capture Page Screenshot
   # Sleep   3s
   Wait Until Element Is Visible     jquery=.select2-results li div:contains('Current field')      100s
-  Capture Page Screenshot
   Click Element     jquery=.select2-results li div:contains('Current field')
-  Capture Page Screenshot
   Sleep   3s
 
 I save the settings
@@ -359,18 +341,15 @@ I add a dynamic hidewhen by click
   Add macro "Hide"
   I save the macro
   I save the hidewhen settings
-  Capture Page Screenshot
 
 I add another dynamic hidewhen by click
   I click on Add tab
   Sleep   5s
   I add a hidewhen by click
-  Capture Page Screenshot
   I select dynamic hide-when checkbox
   Add macro "Hide"
   I save the macro
   I save the hidewhen settings
-  Capture Page Screenshot
 
 I select dynamic hide-when checkbox
   Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    100s    #increase waiting time to prevent stale element error
@@ -381,7 +360,6 @@ I can add a text field in the hidewhen
   I select the hidewhen start
   I click on Add tab
   I add a "Text" field
-  Capture Page Screenshot
   Click Link  Form Settings
   Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
   Click Element     jquery=#ide-formsettings__save-button
@@ -391,7 +369,6 @@ I can add a text field in the second hidewhen
   I select the second hidewhen start
   I click on Add tab
   I add a "Text" field
-  Capture Page Screenshot
   Click Link  Form Settings
   Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
   Click Element     jquery=#ide-formsettings__save-button
@@ -445,24 +422,18 @@ I can add datagrid in the hidewhen
 I select the hidewhen start
   wait until form is loaded
   Sleep     5s
-  Capture Page Screenshot
   select frame  jquery=.mce-edit-area iframe:visible
   Click Element     css=.plominoHidewhenClass[data-plomino-position='start']
-  Sleep   3s  
-  Capture Page Screenshot
+  Sleep   3s
   unselect frame
-  Capture Page Screenshot
 
 I select the second hidewhen start
   wait until form is loaded
   Sleep     5s
-  Capture Page Screenshot
   select frame  jquery=.mce-edit-area iframe:visible
   Click Element     css=.plominoHidewhenClass[data-plomino-position='start'][data-plominoid='defaulthidewhen-1']
-  Sleep   3s  
-  Capture Page Screenshot
+  Sleep   3s
   unselect frame
-  Capture Page Screenshot
 
 I save the hidewhen settings
   Wait Until Element Is Visible     jquery=.mdl-button[id='ide-fieldsettings__save-button']    60s
@@ -583,7 +554,6 @@ Add macro "${macro}"
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
   wait until page contains element  css=.plominoSave    60s
   Sleep     5s
-  Capture Page Screenshot
 
 I input the text "${text}" inside the field with id "${fieldid}"
   Input Text  jquery=#${fieldid}  ${text}
@@ -674,18 +644,15 @@ I have a source and target forms with a field on them
   I save the form as "target"
   Close the form
   Sleep   5s
-  Capture Page Screenshot
   I add a source form
   Click Link  Form Settings
   Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
 
   Wait Until Element Is Visible     jquery=.select2-input:eq(1)
   Click Element     jquery=.select2-input:eq(1)
-  Capture Page Screenshot
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
   wait until page contains element  css=.plominoSave    60s
-  Capture Page Screenshot
 
   I select redirect type = Form
   I select retain form data in target form
@@ -719,9 +686,7 @@ I add a name field on the source form
   I edit the field "text" to "name"
   I edit the title to "Name:"
   Sleep   5s
-  Capture Page Screenshot
   I save the current field settings
-  Capture Page Screenshot
   Sleep   10s
 
 I select redirect type = Form
@@ -731,11 +696,8 @@ I select redirect type = Form
 
   Wait Until Element Is Visible     jquery=#s2id_form_redirect    60s
   Click Element     jquery=#s2id_form_redirect
-  Capture Page Screenshot
   Wait Until Element Is Visible     jquery=.pat-select2 option[value='target']    60s
-  Capture Page Screenshot
   Click Element     jquery=.pat-select2 option[value='target']
-  Capture Page Screenshot
   Sleep   3s
 
 I select retain form data in target form
@@ -748,7 +710,6 @@ I preview the source form
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/source/view
-  Capture Page Screenshot
 
 I preview the form "${form}"
   #Preview Redirect Form
@@ -757,7 +718,6 @@ I preview the form "${form}"
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   Sleep  2s
   select window  url=${PLONE_URL}/test_redirect/${form}/view
-  Capture Page Screenshot
 
 I fill in the "${name}" field and save the source form
   Wait Until Element Is Visible     jquery=#${name}
@@ -765,7 +725,6 @@ I fill in the "${name}" field and save the source form
   Wait Until Element Is Visible     jquery=input[name='plomino_save']
   Click Element     jquery=input[name='plomino_save']
   Wait Until Element Is Visible     jquery=#name
-  Capture Page Screenshot
 
 I can see that the value entered on the source form is displayed on the "${name}" field of the target form
   Element Should Be Visible     jquery=input[name='${name}'][value='Tester']
@@ -777,18 +736,15 @@ I have a source form with AUTO request and a target form with POST request
   I save the target form as "target"
   Close the form
   Sleep   5s
-  Capture Page Screenshot
   I add a source form
   Click Link  Form Settings
   Execute Javascript    window.document.getElementById("form-widgets-isPage").scrollIntoView(true);
 
   Wait Until Element Is Visible     jquery=.select2-input:eq(1)
   Click Element     jquery=.select2-input:eq(1)
-  Capture Page Screenshot
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
   wait until page contains element  css=.plominoSave    60s
-  Capture Page Screenshot
 
   I select redirect type = Form
   I select retain form data in target form
@@ -808,7 +764,6 @@ I click on ADVANCED tab of the Form Settings
   Wait Until Element Is Visible     jquery=a:contains('Advanced'):eq(1)   60s
   Click Element     jquery=a:contains('Advanced'):eq(1)
   Wait Until Element Is Visible     jquery=#form-widgets-form_method    60s
-  Capture Page Screenshot
 
 I select form method="${value}"
   #value = GET, POST, Auto
@@ -839,7 +794,6 @@ I have source and target forms
   I save the form as "target"
   Close the form
   Sleep   5s
-  Capture Page Screenshot
   I add a source form
 
 I select the "Redirect On Load" radio button
@@ -848,11 +802,9 @@ I select the "Redirect On Load" radio button
 
   Wait Until Element Is Visible     jquery=.select2-input:eq(1)
   Click Element     jquery=.select2-input:eq(1)
-  Capture Page Screenshot
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
   wait until page contains element  css=.plominoSave    60s
-  Capture Page Screenshot
 
   I select redirect type = Form
   I select retain form data in target form
@@ -1035,15 +987,20 @@ I move the item "${item_to_move}" ${drag_position} the item "${item_to_move_abou
   ${item_to_move_position}=        Get item or parent group top position  item_id=${item_to_move}
   ${item_to_move_about_position}=  Get item or parent group top position  item_id=${item_to_move_about}
 
-  ${item_to_move_height}=  Get item or parent group height  item_id=${item_to_move}
-  ${item_to_move_about_height}=  Get item or parent group height  item_id=${item_to_move_about}
-  ${midpoint_drag_offset}=  Evaluate  ${item_to_move_height} / 2  # This is because robot framework drag + drop starts from the middle
-  ${above_offset_value}=  Evaluate  (${item_to_move_position} - ${item_to_move_about_position}) - ${item_to_move_height} - ${midpoint_drag_offset}
-  ${below_offset_value}=  Evaluate  (${item_to_move_about_position} - ${item_to_move_position}) + ${item_to_move_height} + ${midpoint_drag_offset}
-  ${drag_offset}=  Set variable if  "${drag_position}" == "above"  ${above_offset_value}
-  ${drag_offset}=  Set variable if  "${drag_position}" == "below"  ${below_offset_value}  ${drag_offset}
+  ${item_to_move_width}  ${item_to_move_height}=  Get item or parent group size  item_id=${item_to_move}
+  ${item_to_move_about_width}  ${item_to_move_about_height}=  Get item or parent group size  item_id=${item_to_move_about}
+  ${midpoint_vertical_offset}=  Evaluate  ${item_to_move_height} / 2        # This is because robot framework drag + drop starts from the middle
+  ${midpoint_horizontal_offset}=  Evaluate  ${item_to_move_width} / 2       # This is because robot framework drag + drop starts from the middle
+  ${above_offset_value}=  Evaluate  ${item_to_move_about_position} - ${item_to_move_position} - ${midpoint_vertical_offset}
+  ${below_offset_value}=  Evaluate  (${item_to_move_about_position} - ${item_to_move_position}) + ${item_to_move_height} + ${midpoint_vertical_offset}
+  ${left_offset_value}=  Evaluate  0 - ${midpoint_horizontal_offset} - 8    # Move a little more to the left of destination element
+  ${right_offset_value}=  Evaluate  0                                       # Not known if this is required for move below
+  ${vertical_offset}=  Set variable if  "${drag_position}" == "above"  ${above_offset_value}
+  ${vertical_offset}=  Set variable if  "${drag_position}" == "below"  ${below_offset_value}  ${vertical_offset}
+  ${horizontal_offset}=  Set variable if  "${drag_position}" == "above"  ${left_offset_value}
+  ${horizontal_offset}=  Set variable if  "${drag_position}" == "below"  ${right_offset_value}  ${horizontal_offset}
 
-  Drag And Drop By Offset  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move}"]  0  ${drag_offset}
+  Drag And Drop By Offset  xpath=//body[@id="tinymce"]//*[@data-plominoid="${item_to_move}"]  ${horizontal_offset}  ${vertical_offset}
   Unselect frame
 
 

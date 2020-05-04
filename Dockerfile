@@ -14,5 +14,6 @@ USER plone
 RUN cd /plone/instance && bin/buildout -c buildout.cfg install test resources robot instance && source $NVM_DIR/nvm.sh && cd /plone/instance/ide  && npm install && npm run build || true
 USER root
 RUN chown -R --from=root:root plone:plone .
+USER plone
 #RUN ["/bin/bash","-c", "source $NVM_DIR/nvm.sh && cd /plone/instance/ide  && npm install && npm run build"]
 

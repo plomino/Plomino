@@ -15,11 +15,9 @@ I have a source form "${source}" with POST request and a target form "${target}"
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -40,11 +38,9 @@ I select the redirect type=Form
 
 I select the target form "${target}"
   Click Element     jquery=#s2id_form_redirect
-  Capture Page Screenshot
+  Sleep   3s
   Wait Until Element Is Visible     jquery=.pat-select2 option[value='${target}']    60s
-  Capture Page Screenshot
   Click Element     jquery=.pat-select2 option[value='${target}']
-  Capture Page Screenshot
   Sleep   3s
 
 I have a source form "${source}" with AUTO request and a target form "${target}" with AUTO request
@@ -57,11 +53,9 @@ I have a source form "${source}" with AUTO request and a target form "${target}"
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -79,11 +73,9 @@ I have a source form "${source}" with AUTO request and a target form "${target}"
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -101,11 +93,9 @@ I have a source form "${source}" with POST request and a target form "${target}"
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -123,11 +113,9 @@ I have a single-page source form "${source}" and a multi-page target form "${tar
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -162,11 +150,9 @@ I have a source form "${source}" with an attachment and a source form "${target}
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
@@ -180,7 +166,6 @@ I attach a document and save the source form
     Wait Until Element Is Visible     jquery=input[name='plomino_save']
     Click Element     jquery=input[name='plomino_save']
     Wait Until Element Is Visible     jquery=#file_attachment
-    Capture Page Screenshot
 
 I can see that the document attachment will also be displayed on the target form
     Wait Until Element Is Visible   jquery=a:contains('testdocument.pdf')       60s
@@ -192,7 +177,6 @@ I attach an image and save the source form
     Wait Until Element Is Visible     jquery=input[name='plomino_save']
     Click Element     jquery=input[name='plomino_save']
     Wait Until Element Is Visible     jquery=#file_attachment
-    Capture Page Screenshot
 
 I can see that the image attachment will also be displayed on the target form
     Wait Until Element Is Visible   jquery=a:contains('image.jpg')       60s
@@ -208,11 +192,9 @@ I have a multi-page source form "${source}" and a multi-page target form "${targ
 
     Wait Until Element Is Visible     css=.plomino-macros-rule .select2-container input
     Click element  css=.plomino-macros-rule .select2-container input
-    Capture Page Screenshot
 
     Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
     wait until page contains element  css=.plominoSave    60s
-    Capture Page Screenshot
 
     I select the redirect type=Form
     I select the target form "${target}"
