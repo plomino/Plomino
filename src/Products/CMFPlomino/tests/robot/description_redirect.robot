@@ -32,14 +32,11 @@ I select the redirect type=Form
   Wait Until Element Is Visible     jquery=#redirect_type-form      60s
   Click Element   jquery=#redirect_type-form
 
-  Sleep     10s
-  Wait Until Page Contains Element  jquery=#s2id_form_redirect    90s
-  Wait Until Element Is Visible     jquery=#s2id_form_redirect    90s
-
 I select the target form "${target}"
+  Wait Until Page Contains Element  jquery=#s2id_form_redirect    20s
+  Wait Until Element Is Visible     jquery=#s2id_form_redirect    20s
   Click Element     jquery=#s2id_form_redirect
-  Sleep   3s
-  Wait Until Element Is Visible     jquery=.pat-select2 option[value='${target}']    60s
+  Wait Until Element Is Visible     jquery=.pat-select2 option[value='${target}']    20s
   Click Element     jquery=.pat-select2 option[value='${target}']
   Sleep   3s
 

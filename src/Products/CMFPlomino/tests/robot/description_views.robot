@@ -103,7 +103,6 @@ I save the current layout
   Wait Until Element Is Enabled     jquery=#ide-formsettings__save-button   60s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
-  Sleep   10s
 
 # --- Given ------------------------------------------------------------------
 I added some contents to the form "${formid}"

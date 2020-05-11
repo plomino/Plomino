@@ -285,11 +285,10 @@ I save the macro and the form
   I save the fieldsettings
 
 I save the macro
-  Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    60s
-  Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    60s
-  Execute Javascript    $(".actionButtons input[name='plomino_save']").click()
-  Sleep     10s
-  # Wait Until Element Is Not Visible     jquery=.plone-modal-dialog    60s
+  Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    20s
+  Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    20s
+  Click Element     jquery=.actionButtons input[name='plomino_save']
+  Wait Until Element Is Not Visible     jquery=.actionButtons input[name='plomino_save']    20s
 
 I select current field
   # Click Element     jquery=.select2-container[id='s2id_field_name']     #input Click on the search box
