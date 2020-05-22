@@ -124,7 +124,6 @@ I add some number fields
   I edit the title to "Library Fee:"
   and I save the current field settings
   and I click on Add tab
-  Sleep   5s
   and I add a "Text" field
   I edit the number field "text" to "amount2"
   I edit the title to "Misc Fee:"
@@ -150,7 +149,6 @@ I fill in the fields name for Display Total screen with "${field}"
   Click Element     jquery=#s2id_fields_name
   Wait Until Element Is Visible     jquery=.pat-select2 option[value='${field}']
   Click Element     jquery=.pat-select2 option[value='${field}']
-  Sleep   2s
 
 I select field mode "${fieldmode}"
   Press Key     jquery=#form-widgets-field_mode   \9
@@ -172,15 +170,15 @@ I add a dynamic text with field mode = computed for display
   I save the current field settings
 
 I show the code of the current field
-  Sleep   2s
+  Sleep  2s
+  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__code-button']
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__code-button']
-  Wait Until Element Is Visible     jquery=.ace-editor .ace_content     60s
+  Wait Until Element Is Visible     jquery=.ace-editor .ace_content     20s
 
 I insert formula that displays text
-  Wait Until Element Is Visible     jquery=button:contains('Insert formula')    60s
+  Wait Until Element Is Visible     jquery=button:contains('Insert formula')    20s
   Click Element     jquery=button:contains('Insert formula')
   Wait Until Element Is Visible     jquery=.dropdown-menu li a:eq(1)
-  Sleep   5s
   Click Element     jquery=.dropdown-menu li a:eq(1)
   Wait Until Element Is Visible     jquery=.ace_line:eq(3)
 
@@ -207,11 +205,9 @@ I insert formula that displays text
   Press Key     jquery=.ace_text-input      \\8  
   Press Key     jquery=.ace_text-input      \\8  
 
-
   Press Key     jquery=.ace_text-input    return 'Display This Text'\n
   Enter formula "## END formula }"
   I save the formula
-  Sleep   5s
 
 Enter formula "${formula}"
   Input Text    jquery=.ace_text-input    ${formula}
@@ -230,14 +226,12 @@ I can see the text created for the dynamic text field
 I edit the number field "${fieldid}" to "${newid}"
   sleep  5s
   select frame  jquery=.mce-edit-area iframe:visible
-  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
-  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     60s
-  Sleep   5s
+  wait until page contains element  css=.plominoFieldClass[data-plominoid="${fieldid}"]     20s
+  Wait Until Element Is Visible     css=.plominoFieldClass[data-plominoid="${fieldid}"]     20s
   Click Element   css=.plominoFieldClass[data-plominoid="${fieldid}"]
   Unselect Frame
-  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    60s
+  Wait Until Element Is Visible     jquery=#form-widgets-IShortName-id    20s
   I edit the field as Number type
-  Sleep     3s
   Click Element     jquery=#form-widgets-IShortName-id
   Input Text    jquery=#form-widgets-IShortName-id      ${newid}
 
@@ -273,18 +267,18 @@ I submit the form
   Click Button  Save
 
 I submit the plominodatabase form
-  Wait Until Element Is Visible     jquery=.formControls input[id='form-buttons-save']    60s
-  Wait Until Element Is Enabled     jquery=.formControls input[id='form-buttons-save']    60s
+  Wait Until Element Is Visible     jquery=.formControls input[id='form-buttons-save']    20s
+  Wait Until Element Is Enabled     jquery=.formControls input[id='form-buttons-save']    20s
   Execute Javascript    $(".formControls input[id='form-buttons-save']").click()
 
 
 I save the macro and the form
   I save the macro
-  Sleep   5s
   wait until form is loaded
   I save the fieldsettings
 
 I save the macro
+  Sleep  5s
   Wait Until Element Is Visible     jquery=.actionButtons input[name='plomino_save']    20s
   Wait Until Element Is Enabled     jquery=.actionButtons input[name='plomino_save']    20s
   Click Element     jquery=.actionButtons input[name='plomino_save']
@@ -293,21 +287,18 @@ I save the macro
 I select current field
   # Click Element     jquery=.select2-container[id='s2id_field_name']     #input Click on the search box
   Click Element     jquery=#s2id_field_name
-  # Sleep   3s
-  Wait Until Element Is Visible     jquery=.select2-results li div:contains('Current field')      100s
+  Wait Until Element Is Visible     jquery=.select2-results li div:contains('Current field')      20s
   Click Element     jquery=.select2-results li div:contains('Current field')
-  Sleep   3s
 
 I save the settings
   Click link  link=SAVE
 
 I save the fieldsettings
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
-  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")   60s
-  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a:contains("Save")   60s
-  Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a:contains("Save")   60s
+  Wait until page contains element  jquery=.fieldsettings--control-buttons a:contains("Save")   20s
+  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a:contains("Save")   20s
+  Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a:contains("Save")   20s
   Wait Until Keyword Succeeds     100 sec    5 sec   Click Element  jquery=.fieldsettings--control-buttons a:contains("Save")
-  sleep  0.5s
   wait until page does not contain element  jquery=.plomino-block-preloader:visible
 
 I save the form
@@ -319,20 +310,19 @@ I go to the plominodatabase view
 
 
 I add a form by click
-  wait until page does not contain element  jquery=.plomino-block-preloader:visible   60s
-  Wait Until Element Is Visible     jquery=#add-new-form-tab    60s
+  wait until page does not contain element  jquery=.plomino-block-preloader:visible   20s
+  Wait Until Element Is Visible     jquery=#add-new-form-tab    20s
   Click Element  jquery=#add-new-form-tab
-  wait until page contains element  jquery=#modal-tab-plus[open]    60s
+  wait until page contains element  jquery=#modal-tab-plus[open]    20s
   Click Element  jquery=#modal-tab-plus button[data-create="form"]
-  wait until page contains element  css=div.mce-tinymce   60s
-  Wait Until Element Is Visible     css=div.mce-tinymce   60s
+  wait until page contains element  css=div.mce-tinymce   20s
+  Wait Until Element Is Visible     css=div.mce-tinymce   20s
 
 I add a hidewhen by click
-  Wait Until Element Is Visible     jquery=.mdl-button[title='Hide When']   60s
-  Wait Until Element Is Enabled     jquery=.mdl-button[title='Hide When']   60s
+  Wait Until Element Is Visible     jquery=.mdl-button[title='Hide When']   20s
+  Wait Until Element Is Enabled     jquery=.mdl-button[title='Hide When']   20s
   Execute Javascript    $(".mdl-button[title='Hide When']").click()
   wait until form is loaded
-  Sleep     5s
 
 I add a dynamic hidewhen by click
   I add a hidewhen by click
@@ -360,7 +350,7 @@ I can add a text field in the hidewhen
   I click on Add tab
   I add a "Text" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -369,7 +359,7 @@ I can add a text field in the second hidewhen
   I click on Add tab
   I add a "Text" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -378,7 +368,7 @@ I can add a dropdown field in the hidewhen
   I click on Add tab
   I add a "Dropdown" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -387,7 +377,7 @@ I can add radio buttons in the hidewhen
   I click on Add tab
   I add a "Radio buttons" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -396,7 +386,7 @@ I can add a multi-selection field in the hidewhen
   I click on Add tab
   I add a "Multi selection" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -405,7 +395,7 @@ I can add checkboxes in the hidewhen
   I click on Add tab
   I add a "Checkboxes" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -414,7 +404,7 @@ I can add datagrid in the hidewhen
   I click on Add tab
   I add a "Datagrid" field
   Click Link  Form Settings
-  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
+  Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   20s
   Click Element     jquery=#ide-formsettings__save-button
   wait until form is loaded
 
@@ -435,7 +425,7 @@ I select the second hidewhen start
   unselect frame
 
 I save the hidewhen settings
-  Wait Until Element Is Visible     jquery=.mdl-button[id='ide-fieldsettings__save-button']    60s
+  Wait Until Element Is Visible     jquery=.mdl-button[id='ide-fieldsettings__save-button']    20s
   Wait Until Keyword Succeeds     1 min   5 sec     Click Element     jquery=.mdl-button[id='ide-fieldsettings__save-button']
 
 
@@ -443,9 +433,9 @@ I click on HideWhen Settings tab
   Click Element     jquery=a:contains('Hidewhen Settings')
 
 I add a "${field}" field
-  Wait Until Element Is Visible     jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']     60s
+  Wait Until Element Is Visible     jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']     20s
   Click Element   jquery=plomino-palette-add .add-wrapper .templates button[title='${field}']
-  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
+  Wait Until Element Is Visible     jquery=.mce-tinymce     20s
 
 ## *DEPRECATED!* Use keyword `I add a ${item_title} item` instead.
 I add a "${field}" field by dnd
@@ -489,21 +479,20 @@ I change the fieldmode to "${mode}"
   Select From List By Value  jquery=#form-widgets-field_mode  ${mode}
 
 wait until form is loaded
-  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   100s
-  wait until page contains element   jquery=.mce-edit-area iframe:visible   60s
-  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible   60s
+  wait until page contains element   xpath=//div[@class="palette-wrapper"]//*[@title="Field"]   20s
+  wait until page contains element   jquery=.mce-edit-area iframe:visible   20s
+  Wait Until Element Is Visible     jquery=.mce-edit-area iframe:visible   20s
 
 I enter "${value}" in "${field}" in "${tab}"
   Click Link  ${tab}
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Wait Until Keyword Succeeds   100 sec  5 sec   Click Element   xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
   Input Text  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]   ${value}
-  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Save")     60s
-  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Save")     60s
+  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Save")     20s
+  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Save")     20s
   Click Element  jquery=.mdl-button:visible:contains("Save")
-  wait until page contains element   jquery=.mdl-button:visible:contains("Save")   60s
+  wait until page contains element   jquery=.mdl-button:visible:contains("Save")   20s
   wait until form is loaded
-  Sleep   5s
 
 I enter "${value}" in "${field}" in the form
   wait until page contains element  xpath=//input[@id=//label[normalize-space(text())="${field}"]/@for]
@@ -551,8 +540,7 @@ Add macro "${macro}"
 
   Click element  css=.plomino-macros-rule .select2-container input
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="${macro}"]
-  wait until page contains element  css=.plominoSave    60s
-  Sleep     5s
+  wait until page contains element  css=.plominoSave    20s
 
 I input the text "${text}" inside the field with id "${fieldid}"
   Input Text  jquery=#${fieldid}  ${text}
@@ -570,7 +558,7 @@ I open service tab for Import/export of data
   Click Link    Service
   Wait Until Element Is Visible     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
   Click Element     jquery=plomino-palette-dbsettings .db-settings-wrapper .dbsettings--control-buttons button[id='ide-dbsettings__export-button']
-  Wait Until Element Is Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']     100s
+  Wait Until Element Is Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']     20s
 
 I can see Import/Export dialog open
   Element Should Be Visible   jquery=dialog[id='db-import-export-dialog'] .mdl-dialog__content .mdl-tabs div[id='csv-importation'] form[name='importCSV']
@@ -631,7 +619,7 @@ I see "${value}" in "${field}" in "${tab}"
   should be equal  ${text}  ${value}
 
 I will see the validation error "${error}"
-  Wait Until Page Contains      ${error}      60s
+  Wait Until Page Contains      ${error}      20s
 
 I will see the preview form saved
   page should contain button  Close
@@ -651,7 +639,7 @@ I have a source and target forms with a field on them
   Click Element     jquery=.select2-input:eq(1)
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
-  wait until page contains element  css=.plominoSave    60s
+  wait until page contains element  css=.plominoSave    20s
 
   I select redirect type = Form
   I select retain form data in target form
@@ -659,9 +647,9 @@ I have a source and target forms with a field on them
   I save the form as "source"
 
 Close the form
-  Wait Until Element Is Visible     jquery=.mdl-tabs__tab-close-button:eq(1)    60s
+  Wait Until Element Is Visible     jquery=.mdl-tabs__tab-close-button:eq(1)    20s
   Execute Javascript    $(".mdl-tabs__tab-close-button:eq(1)").click();
-  Wait Until Element Is Visible       jquery=.workflow-node__start-text        60s
+  Wait Until Element Is Visible       jquery=.workflow-node__start-text        20s
 
 I add a target form
   I add a form by click
@@ -672,49 +660,45 @@ I add a name field on the target form
   I edit the field "text" to "name"
   I edit the title to "Thank you"
   I save the current field settings
-  Sleep   5s
 
 I add a source form
   I add a form by click
   I add a name field on the source form
 
 I add a name field on the source form
-  Wait Until Element Is Visible     jquery=button[title='Text']   100s
-  Wait Until Element Is Enabled     jquery=button[title='Text']   100s
+  Wait Until Element Is Visible     jquery=button[title='Text']   20s
+  Wait Until Element Is Enabled     jquery=button[title='Text']   20s
   Click Element     jquery=button[title='Text']
   I edit the field "text" to "name"
   I edit the title to "Name:"
   Sleep   5s
   I save the current field settings
-  Sleep   10s
 
 I select redirect type = Form
-  Wait Until Page Contains Element    jquery=.plone-modal-title:contains('Redirect in form on save')    60s
-  Wait Until Element Is Visible       jquery=.plone-modal-title:contains('Redirect in form on save')    60s
+  Wait Until Page Contains Element    jquery=.plone-modal-title:contains('Redirect in form on save')    20s
+  Wait Until Element Is Visible       jquery=.plone-modal-title:contains('Redirect in form on save')    20s
   Click Element   jquery=#redirect_type-form
-
-  Wait Until Element Is Visible     jquery=#s2id_form_redirect    60s
+  Wait Until Element Is Visible     jquery=#s2id_form_redirect    20s
   Click Element     jquery=#s2id_form_redirect
-  Wait Until Element Is Visible     jquery=.pat-select2 option[value='target']    60s
+  Wait Until Element Is Visible     jquery=.pat-select2 option[value='target']    20s
   Click Element     jquery=.pat-select2 option[value='target']
-  Sleep   3s
 
 I select retain form data in target form
   Wait Until Element Is Visible     jquery=#retain_form_data
   Click Element   jquery=#retain_form_data
 
 I preview the source form
-  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Preview")    60s
-  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Preview")    60s
+  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Preview")    20s
+  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Preview")    20s
   Click Element  jquery=.mdl-button:visible:contains("Preview")
   Sleep  2s
   select window  url=${PLONE_URL}/mydb/source/view
 
 I preview the form "${form}"
   #Preview Redirect Form
-  Wait Until Element Is Visible     jquery=.mdl-button:visible:contains("Preview")    60s
-  Wait Until Element Is Enabled     jquery=.mdl-button:visible:contains("Preview")    60s
-  Click Element  jquery=.mdl-button:visible:contains("Preview")
+  Wait Until Element Is Visible     jquery=.mdl-button[id='ide-formsettings__preview-button']    60s
+  Wait Until Element Is Enabled     jquery=.mdl-button[id='ide-formsettings__preview-button']    60s
+  Click Element  jquery=.mdl-button[id='ide-formsettings__preview-button']
   Sleep  2s
   select window  url=${PLONE_URL}/test_redirect/${form}/view
 
@@ -743,7 +727,7 @@ I have a source form with AUTO request and a target form with POST request
   Click Element     jquery=.select2-input:eq(1)
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
-  wait until page contains element  css=.plominoSave    60s
+  wait until page contains element  css=.plominoSave    20s
 
   I select redirect type = Form
   I select retain form data in target form
@@ -755,35 +739,32 @@ I add a target form with POST request
   I add a name field on the source form
   I click on ADVANCED tab of the Form Settings
   I select form method="POST"
-  Sleep   10s
 
 I click on ADVANCED tab of the Form Settings
   Click Element       jquery=.mdl-tabs .mdl-tabs__tab-bar a:contains('Form Settings')
   Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .form-settings-wrapper .formsettings--control-buttons
-  Wait Until Element Is Visible     jquery=a:contains('Advanced'):eq(1)   60s
+  Wait Until Element Is Visible     jquery=a:contains('Advanced'):eq(1)   20s
   Click Element     jquery=a:contains('Advanced'):eq(1)
-  Wait Until Element Is Visible     jquery=#form-widgets-form_method    60s
+  Wait Until Element Is Visible     jquery=#form-widgets-form_method    20s
 
 I select form method="${value}"
   #value = GET, POST, Auto
-  Wait Until Element Is Visible     jquery=#form-widgets-form_method    60s
+  Wait Until Element Is Visible     jquery=#form-widgets-form_method    20s
   Click Element     jquery=#form-widgets-form_method
   Wait Until Element Is Visible     jquery=select option[value='${value}']
   Click Element     jquery=select option[value='${value}']
 
 I save the target form as "${form_name}"
-  Wait Until Element Is Visible     jquery=a:contains('Default'):eq(1)    60s
+  Wait Until Element Is Visible     jquery=a:contains('Default'):eq(1)    20s
   Click Element   jquery=a:contains('Default'):eq(1)
-  Sleep   5s
-  Wait Until Element Is Visible     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last    60s
+  Wait Until Element Is Visible     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last    20s
   Click Element     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last
   Input Text     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IShortName-id']:last     ${form_name}
-  Sleep   3s
+  Wait Until Element Is Visible     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IBasic-title']:last
   Click Element   jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IBasic-title']:last
   Input Text     jquery=form .mdl-tabs__panel fieldset .field input[id='form-widgets-IBasic-title']:last     ${form_name}
   Click Element       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']
-  Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']     100s
-  Sleep   3s
+  Wait Until Element Is Visible       jquery=.mdl-tabs__panel plomino-palette-formsettings .formsettings--control-buttons .mdl-button[id='ide-formsettings__save-button']     20s
   wait until form is loaded
 
 I have source and target forms
@@ -803,7 +784,7 @@ I select the "Redirect On Load" radio button
   Click Element     jquery=.select2-input:eq(1)
 
   Click element  xpath=//*[contains(@class,"select2-result")][normalize-space(text())="Redirect in form on save"]
-  wait until page contains element  css=.plominoSave    60s
+  wait until page contains element  css=.plominoSave    20s
 
   I select redirect type = Form
   I select retain form data in target form
@@ -841,10 +822,10 @@ I add a "${item_title}" item
   I open the "Add" tab
   Wait Until Element Is Visible     xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
   Click Element  xpath=//plomino-palette-add//*[contains(@class, "add-wrapper")]//*[text()="${item_title}"]
-  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
+  Wait Until Element Is Visible     jquery=.mce-tinymce     20s
 
 I create a form titled "${form_title}" with the id "${form_id}"
-  Wait Until Element Is Visible     jquery=.mce-tinymce     60s
+  Wait Until Element Is Visible     jquery=.mce-tinymce     20s
   I add a "Form" item
   I open the "Form Settings" tab
   I change the setting "Id" to "${form_id}"

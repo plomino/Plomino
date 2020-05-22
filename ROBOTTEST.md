@@ -1,41 +1,42 @@
 
-# Instruction to run all tests using docker
+# Instructions to run all tests using docker
 
 This is the same way circle ci run the tests.
 You can follow these instructions below to run it locally.
 
 ## Build docker image
 
-Before you run any test, you need to build the base image first. If the code has buildout has changed
-or the code has changed then you will need to rebuild. To rebuild run the follwing
+It is necessary to bootstrap the image first. To do this run the following command:
+
+```
+docker build --tag robot_tests -f Dockerfile-bootstrap .
+```
+
+Before running tests, this base image needs to be built.  If the buildout.cfg or the code has changed then you will need to rebuild. 
+To build the image, run the following command:
 
 
 ```
 docker build --tag robot_tests .
 ```
 
-This command will fail the first time as you will need to bootstrap the image first. To boottrap run.
 
-```
-docker build --tag robot_tests -f Dockerfile-bootstrap .
-```
-
-During any part of the buildout it could fail due to changed external packages no being version controlled properly.
+During any part of the buildout it could fail due to changed external packages not being version controlled properly.
 In this case the docker build will not fail so you will need to read its output carefully. The reason it doesn't fail is
-that it allows you to rerun the build from where buildout got stuck which signifantly reduces the time to rebuild in case of
+that it allows you to rerun the build from where buildout got stuck which significantly reduces the time to rebuild in case of
 code changes or buildout issues.
 
 
 ## Tests overview
 
-There are two ways to run the tests:
+There are three ways to run the tests:
 
 1. using docker compose and bin/test 
-  - lets you run all the tests, not just robot tests
+   - lets you run all the tests, not just robot tests
 2. using docker compose and robot-server 
-  - faster for debuggung tests
+   - faster for debuggung tests
 3. using docker directly
-  - shouldn't need to use this
+   - shouldn't need to use this
 
 
 
@@ -49,9 +50,9 @@ Firstly, run selenium in the background using docker-compose
 docker-compose -f docker-compose.test.yml -p grid up -d selenium
 ```
 
-and then choose the few options below to run the tests.
+and then choose from the options below to run the tests.
 
-### A. Run the all the tests (not working)
+### A. Run the all the tests
 
 ```
 docker-compose -f docker-compose.test.yml -p grid run plominotest --rm -e bin/test --all
@@ -63,20 +64,19 @@ docker-compose -f docker-compose.test.yml -p grid run plominotest --rm -e bin/te
 docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
 
-NB Some chars get stripped out of the test names with bin/test 
+NB Some chars get stripped out of the test names with bin/test (e.g. colon ':', brackets '(' & ')' and equals '=')
 
-### C. Run the all the tests with output statement (not working)
+### C. Run a single test with volume maps
 
 if you are modifying tests and also want to see the test output
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test  plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
+docker-compose -f docker-compose.test.yml -p grid run --rm --name "plominotest" -v /$PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v /$PWD/test:/plone/instance/parts/test plominotest bin/test --all -t "Scenario I can add a validation rule to a field"
 ```
-
 
 ## 2. Using docker-compose and robot-server
 
-### D. Run using robot-server (faster to debug tests)
+### Run using robot-server (faster to debug tests)
 
 Firstly, you need start robot-server (this will take some time)
 
@@ -86,7 +86,7 @@ docker-compose -f docker-compose.test.yml -p grid up -d robot-server
 
 #TODO should be able to use docker logs to see when its ready, or have some other test. ```docker-compose -f docker-compose.test.yml -p grid logs -f robot-server``` should work but doesn't
 
-and then you got two options to run the tests:
+and then you have two options to run the tests:
 
 i. run all robot tests
 
@@ -97,11 +97,10 @@ docker-compose -f docker-compose.test.yml -p grid up robot
 ii. OR run a single robot test
 
 ```
-docker-compose -f docker-compose.test.yml -p grid run -v $PWD/src/Products/CMFPlomino/tests/:/plone/instance/src/Products/CMFPlomino/tests -v $PWD/test:/plone/instance/parts/test robot bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  -t "Scenario: I can add a new empty view from '+' button" /buildout/src/Products/CMFPlomino/tests/robot/test_views.robot
+docker-compose -f docker-compose.test.yml -p grid run --rm robot bin/robot --outputdir=parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone -t "Scenario: I can add a new empty view from '+' button" src/Products/CMFPlomino/tests/robot/test_views.robot
 ```
 
 NB: you will need to include the full test name in this case including special chars like colon.
-
 
 
 

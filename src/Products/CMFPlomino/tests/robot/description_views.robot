@@ -96,12 +96,12 @@ I save the current field settings
   Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
   Wait Until Element Is Enabled     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']   60s
   Click Element     jquery=.fieldsettings--control-buttons a[id='ide-fieldsettings__save-button']
-  Wait Until Element Is Visible     jquery=.fieldsettings--control-buttons    60s
 
 I save the current layout
   Wait Until Element Is Visible     jquery=#ide-formsettings__save-button   60s
   Wait Until Element Is Enabled     jquery=#ide-formsettings__save-button   60s
   Click Element     jquery=#ide-formsettings__save-button
+  Sleep  8s
   wait until form is loaded
 
 # --- Given ------------------------------------------------------------------

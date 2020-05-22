@@ -26,8 +26,8 @@ services:
       - ZSERVER_PORT=55001
     volumes:
       - /dev/shm:/dev/shm
-      - ./test/testoutput:/buildout/parts/test  # doesn't work with remote docker
-      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests # doesn't work with remote docker
+#      - ./test:/plone/instance/parts/test
+#      - ./src/Products/CMFPlomino/tests:/plone/instance/src/Products/CMFPlomino/tests
     command: /bin/sh -c "/plone/instance/bin/test -vv -s Products.CMFPlomino && /plone/instance/bin/test --all -vv -t robot -s Products.CMFPlomino"
     depends_on:
       - "selenium"
@@ -41,7 +41,7 @@ services:
     command: bin/robot-server --no-reload -v Products.CMFPlomino.testing.PRODUCTS_CMFPLOMINO_ACCEPTANCE_TESTING -v 
     volumes:
       - /dev/shm:/dev/shm
-#      - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
+#      - ./src/Products/CMFPlomino:/plone/instance/src/Products/CMFPlomino
     environment:
       - ZSERVER_HOST=0.0.0.0
       - ZSERVER_PORT=55001
@@ -62,8 +62,8 @@ services:
     command: bin/robot --outputdir=/buildout/parts/test --variable=REMOTE_URL:http://selenium:4444/wd/hub --variable=PLONE_URL:http://robot-server:55001/plone  --variable=DESIRED_CAPABILITIES=platform:Linux,browserName:chrome /buildout/src/Products/CMFPlomino/tests/robot/test_*.robot
     volumes:
       - /dev/shm:/dev/shm
-      - ./test/testoutput:/buildout/parts/test # doesn't work with remote docker
-      - ./src/Products/CMFPlomino/tests/:/buildout/src/Products/CMFPlomino/tests # doesn't work with remote docker
+      - ./test:/plone/instance/parts/test
+      - ./src/Products/CMFPlomino/tests:/plone/instance/src/Products/CMFPlomino/tests
 
   instance:
     image: robot_tests
@@ -72,8 +72,7 @@ services:
       - 8080:8080
     volumes:
       - /dev/shm:/dev/shm
-      - ./src/Products/CMFPlomino:/buildout/src/Products/CMFPlomino
-  
+      - ./src/Products/CMFPlomino:/plone/instance/src/Products/CMFPlomino
 
   selenium-hub:
     image: selenium/hub:3.141.59-20200409
